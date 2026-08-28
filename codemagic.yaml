@@ -17,9 +17,10 @@ workflows:
       vars:
         XCODE_WORKSPACE: "ios/App/App.xcworkspace"
         XCODE_SCHEME: "App"
-        APP_STORE_CONNECT_ISSUER_ID: Encrypted(••••••••)
-        APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(••••••••)
-        APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(••••••••)
+        # These variables must be added via Codemagic UI -> Environment variables (with Secure toggle ON)
+        # APP_STORE_CONNECT_ISSUER_ID
+        # APP_STORE_CONNECT_KEY_IDENTIFIER
+        # APP_STORE_CONNECT_PRIVATE_KEY
         
     triggering:
       events:

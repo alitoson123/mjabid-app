@@ -18,8 +18,8 @@ workflows:
     triggering:
       events:
         - push
-      branches:
-        - main
+      branch_patterns:
+        - pattern: main
         
     scripts:
       - name: Install npm dependencies

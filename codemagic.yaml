@@ -28,6 +28,7 @@ workflows:
           
       - name: Sync Capacitor project (copy web assets and update plugins)
         script: |
+          chmod +x node_modules/.bin/cap
           npx cap sync ios
           
       - name: Install Pods

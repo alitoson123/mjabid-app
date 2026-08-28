@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة تحكم — مجابيد</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --clay:#5e2f0e; --clay2:#7a4318; --sand:#f7ecd9; --sand2:#efe0c4; --ink:#2b2118; --ink2:#54443344;
+    --line:#e6d8bd; --sage:#5b7a52; --red:#c0392b; --gold:#d67f48; --fh:'Lalezar'; --fb:'Tajawal';
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--fb);background:#f4ece0;color:var(--ink);min-height:100vh}
+  .hidden{display:none!important}
+  #loginScreen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#2b3a24,#1c2617);padding:20px}
+  #loginBox{width:100%;max-width:340px;background:#fff;border-radius:20px;padding:28px 24px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+  #loginBox h1{font-family:var(--fh);font-size:28px;color:var(--clay);text-align:center;margin:0 0 4px}
+  #loginBox p{text-align:center;color:#8a7a63;font-size:13px;margin:0 0 20px;font-weight:700}
+  #loginBox input{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:var(--fb);font-size:14px;margin-bottom:10px;background:#fbf6ec}
+  #loginBox button{width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(#e2925c,#d67f48);color:#fff7ef;font-family:var(--fh);font-size:18px;cursor:pointer;margin-top:6px}
+  #loginErr{color:var(--red);font-size:12.5px;font-weight:700;text-align:center;margin-top:10px;min-height:16px}
+  #app{display:none;min-height:100vh}
+  #topbar{background:var(--clay);color:#fff7ef;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 3px 10px rgba(0,0,0,.15)}
+  #topbar h1{font-family:var(--fh);font-size:22px;margin:0}
+  #topbar button{background:rgba(255,255,255,.15);color:#fff7ef;border:none;border-radius:999px;padding:7px 16px;font-family:var(--fb);font-weight:700;font-size:12.5px;cursor:pointer}
+  #tabs{display:flex;gap:6px;padding:14px 20px 0;overflow-x:auto}
+  .tab{flex:none;padding:9px 18px;border-radius:999px;border:none;background:#e9dcc2;color:#8a6a4a;font-family:var(--fb);font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap}
+  .tab.on{background:var(--clay);color:#fff7ef}
+  .panel{padding:20px;max-width:900px;margin:0 auto}
+  .panel.hidden{display:none}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+  .statCard{background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(60,45,30,.1)}
+  .statCard .num{font-family:var(--fh);font-size:30px;color:var(--clay)}
+  .statCard .lbl{font-size:12.5px;font-weight:700;color:#8a7a63}
+  .card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 2px 8px rgba(60,45,30,.1);margin-bottom:14px}
+  .card h3{font-family:var(--fh);font-size:19px;color:var(--clay);margin:0 0 14px}
+  #searchBox{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:var(--fb);font-size:14px;margin-bottom:14px}
+  .pRow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .pRow:last-child{border-bottom:none}
+  .pAva{width:42px;height:42px;border-radius:999px;background:var(--sand2);display:flex;align-items:center;justify-content:center;font-size:20px;flex:none}
+  .pInfo{flex:1;min-width:0}
+  .pName{font-weight:800;font-size:14.5px;color:var(--ink)}
+  .pMeta{font-size:11.5px;color:#8a7a63;font-weight:700}
+  .pActions{display:flex;gap:6px;flex-wrap:wrap}
+  .miniBtn{padding:7px 12px;border-radius:10px;border:none;font-family:var(--fb);font-weight:800;font-size:12px;cursor:pointer;background:#efe0c4;color:var(--clay)}
+  .miniBtn.danger{background:#f5dbd6;color:var(--red)}
+  .miniBtn.ok{background:#dcebd6;color:var(--sage)}
+  .editRow{display:none;padding:14px;background:#faf5ea;border-radius:12px;margin-top:8px;gap:10px;flex-direction:column}
+  .editRow.show{display:flex}
+  .editRow label{font-size:12px;font-weight:800;color:#8a7a63}
+  .editRow input{padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-family:var(--fb);font-size:13.5px}
+  .tierEdit{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:10px}
+  .tierEdit label{font-size:11.5px;font-weight:800;color:#8a7a63;display:block;margin-bottom:4px}
+  .tierEdit input{width:100%;padding:9px 10px;border:1.5px solid var(--line);border-radius:10px;font-family:var(--fb);font-size:13.5px}
+  .saveBar{position:sticky;bottom:0;background:#fff;padding:12px 18px;box-shadow:0 -3px 10px rgba(0,0,0,.08);border-radius:16px 16px 0 0;margin-top:16px}
+  .saveBar button{width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(#e2925c,#d67f48);color:#fff7ef;font-family:var(--fh);font-size:18px;cursor:pointer}
+  .roomChip{display:inline-flex;align-items:center;gap:6px;background:#efe0c4;color:var(--clay);padding:5px 12px;border-radius:999px;font-size:12px;font-weight:800;margin:3px}
+  .empty{text-align:center;padding:40px 20px;color:#8a7a63;font-weight:700}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;font-weight:700;z-index:100;opacity:0;transition:opacity .3s;pointer-events:none}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div id="loginBox">
+    <h1>🃏 لوحة التحكم</h1>
+    <p>وقّف بيلوت — دخول إداري</p>
+    <input id="liEmail" type="email" placeholder="البريد الإلكتروني" autocomplete="username">
+    <input id="liPass" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+    <button id="liBtn">دخول</button>
+    <div id="loginErr"></div>
+  </div>
+</div>
+
+<div id="app">
+  <div id="topbar">
+    <h1>🃏 لوحة التحكم</h1>
+    <button id="logoutBtn">خروج</button>
+  </div>
+  <div id="tabs">
+    <button class="tab on" data-tab="overview">نظرة عامة</button>
+    <button class="tab" data-tab="players">اللاعبون</button>
+    <button class="tab" data-tab="economy">الاقتصاد</button>
+    <button class="tab" data-tab="rooms">الغرف النشطة</button>
+    <button class="tab" data-tab="reports">البلاغات</button>
+    <button class="tab" data-tab="visits">الزيارات</button>
+    <button class="tab" data-tab="version">تحديث التطبيق</button>
+    <button class="tab" data-tab="messages">الرسائل</button>
+  </div>
+
+  <div class="panel" id="panel-overview">
+    <div class="cards">
+      <div class="statCard"><div class="num" id="statTotal">—</div><div class="lbl">إجمالي اللاعبين</div></div>
+      <div class="statCard"><div class="num" id="statActive">—</div><div class="lbl">بالطاولة الآن</div></div>
+      <div class="statCard"><div class="num" id="statBanned">—</div><div class="lbl">محظورون</div></div>
+    </div>
+    <div class="card">
+      <h3>ملاحظة مهمة</h3>
+      <p style="font-size:13px;line-height:1.9;color:#54433a;font-weight:600;margin:0">
+        هذي اللوحة تدير بيانات اللاعبين (Firestore) مباشرة. تعديل الذهب هنا يكتب بالحساب فورًا.
+        لتوزيع الجوائز التلقائي والتحقق الكامل من الذهب أثناء اللعب، يحتاج ربط إضافي بالخادم (Cloudflare) — راجع مع Claude.
+      </p>
+    </div>
+  </div>
+
+  <div class="panel hidden" id="panel-players">
+    <div class="card">
+      <input id="searchBox" placeholder="ابحث بالاسم أو اسم المستخدم...">
+      <div id="playersList"></div>
+    </div>
+  </div>
+
+  <div class="panel hidden" id="panel-economy">
+    <div class="card">
+      <h3>أسعار الطبقات</h3>
+      <div id="tiersEditor"></div>
+    </div>
+    <div class="saveBar"><button id="saveTiers">حفظ التعديلات</button></div>
+  </div>
+
+  <div class="panel hidden" id="panel-rooms">
+    <div class="card">
+      <h3>الغرف النشطة الآن</h3>
+      <div id="roomsList"></div>
+    </div>
+  </div>
+
+  <div class="panel hidden" id="panel-reports">
+    <div class="card">
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <button class="tab on" id="repFilterOpen" style="padding:7px 16px">مفتوحة</button>
+        <button class="tab" id="repFilterAll" style="padding:7px 16px">الكل</button>
+      </div>
+      <div id="reportsList"></div>
+    </div>
+  </div>
+
+  <div class="panel hidden" id="panel-visits">
+    <div class="cards" id="visitsCards"></div>
+    <div class="card">
+      <h3>آخر 14 يوم</h3>
+      <div id="visitsList"></div>
+    </div>
+  </div>
+
+  <div class="panel hidden" id="panel-version">
+    <div class="card">
+      <h3>التحديث الإجباري</h3>
+      <p style="font-size:12.5px;color:var(--mut);margin-bottom:14px">لما تنزّل نسخة جديدة للتطبيق على المتاجر (آبل/قوقل بلاي)، فعّل هذا وحدد رقم النسخة — أي مستخدم بنسخة أقدم يشوف نافذة تحديث إجباري ما يقدر يتجاوزها.</p>
+      <label style="display:block;font-size:12px;font-weight:800;margin-bottom:4px">تفعيل الإجبار</label>
+      <select id="vForce" style="width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-family:var(--fb);font-size:13.5px;margin-bottom:12px;background:#fff">
+        <option value="false">معطّل</option>
+        <option value="true">مفعّل</option>
+      </select>
+      <label style="display:block;font-size:12px;font-weight:800;margin-bottom:4px">أقل نسخة مسموحة (مثال: 1.0.0)</label>
+      <input id="vMin" placeholder="1.0.0" style="width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-family:var(--fb);font-size:13.5px;margin-bottom:12px">
+      <label style="display:block;font-size:12px;font-weight:800;margin-bottom:4px">النسخة الأحدث (تظهر بالرسالة فقط)</label>
+      <input id="vLatest" placeholder="1.0.0" style="width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-family:var(--fb);font-size:13.5px;margin-bottom:12px">
+      <label style="display:block;font-size:12px;font-weight:800;margin-bottom:4px">رابط التحميل — أندرويد</label>
+      <input id="vUrlAndroid" placeholder="https://play.google.com/store/apps/details?id=..." style="width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-family:var(--fb);font-size:13.5px;margin-bottom:12px">
+      <label style="display:block;font-size:12px;font-weight:800;margin-bottom:4px">رابط التحميل — آيفون</label>
+      <input id="vUrlIos" placeholder="https://apps.apple.com/app/..." style="width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-family:var(--fb);font-size:13.5px;margin-bottom:12px">
+      <label style="display:block;font-size:12px;font-weight:800;margin-bottom:4px">رسالة مخصصة (اختياري)</label>
+      <input id="vMsg" placeholder="فضلاً قم بتحميل أحدث نسخة..." style="width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-family:var(--fb);font-size:13.5px;margin-bottom:16px">
+      <button class="tab on" id="vSaveBtn" style="width:100%;padding:12px">حفظ الإعدادات</button>
+    </div>
+  </div>
+
+  <div class="panel hidden" id="panel-messages">
+    <div class="card">
+      <h3>إرسال رسالة جديدة</h3>
+      <p style="font-size:12.5px;color:var(--mut);margin-bottom:14px">تظهر فورًا بصندوق الوارد عند كل لاعب (حتى الضيوف) — ما يحتاجون يحدّثوا التطبيق.</p>
+      <label style="display:block;font-size:12px;font-weight:800;margin-bottom:4px">العنوان</label>
+      <input id="msgTitle" placeholder="مثال: تحديث جديد بالتطبيق" style="width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-family:var(--fb);font-size:13.5px;margin-bottom:12px">
+      <label style="display:block;font-size:12px;font-weight:800;margin-bottom:4px">النص</label>
+      <textarea id="msgBody" rows="3" placeholder="نص الرسالة اللي يشوفه كل لاعب بصندوق واردهم" style="width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-family:var(--fb);font-size:13.5px;margin-bottom:12px;resize:vertical"></textarea>
+      <button class="tab on" id="msgSendBtn" style="width:100%;padding:12px">إرسال لكل اللاعبين</button>
+    </div>
+    <div class="card">
+      <h3>الرسائل المرسلة</h3>
+      <div id="messagesList"></div>
+    </div>
+    <div class="card">
+      <h3>🎁 إرسال هدية ذهب لكل اللاعبين</h3>
+      <p style="font-size:12.5px;color:var(--mut);margin-bottom:14px">تظهر بصندوق الوارد بزر "استلام" — كل لاعب يستلمها مرة واحدة فقط بالضبط، والذهب يُضاف عبر السيرفر مباشرة (لا يعتمد على العميل إطلاقاً، فلا يمكن استلامها مرتين حتى بالتلاعب).</p>
+      <label style="display:block;font-size:12px;font-weight:800;margin-bottom:4px">العنوان</label>
+      <input id="giftTitle" placeholder="مثال: هدية بمناسبة إطلاق التحديث 🎉" style="width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-family:var(--fb);font-size:13.5px;margin-bottom:12px">
+      <label style="display:block;font-size:12px;font-weight:800;margin-bottom:4px">رسالة التهنئة (اختياري)</label>
+      <textarea id="giftBody" rows="2" placeholder="نص قصير يظهر فوق زر الاستلام" style="width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-family:var(--fb);font-size:13.5px;margin-bottom:12px;resize:vertical"></textarea>
+      <label style="display:block;font-size:12px;font-weight:800;margin-bottom:4px">كمية الذهب لكل لاعب</label>
+      <input id="giftGold" type="number" min="1" step="1" placeholder="مثال: 5000" style="width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-family:var(--fb);font-size:13.5px;margin-bottom:12px">
+      <button class="tab on" id="giftSendBtn" style="width:100%;padding:12px">إرسال هدية للجميع</button>
+    </div>
+    <div class="card">
+      <h3>الهدايا المرسلة</h3>
+      <div id="giftsList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCZZrU2tip4efYEfYhUi9F_DNfuRZ22adU",
+  authDomain: "jops-e508d.firebaseapp.com",
+  projectId: "jops-e508d",
+  storageBucket: "jops-e508d.firebasestorage.app",
+  messagingSenderId: "918859951453",
+  appId: "1:918859951453:web:4985d5ebfa6428ee51ccb4"
+};
+// ⚠️ ضروري: حط معرّف حسابك (UID) هنا — من Firebase Console > Authentication > انسخ UID حسابك
+// بدون هذا، محد يقدر يدخل اللوحة حتى لو دخل بالبريد وكلمة المرور الصح
+const ADMIN_UIDS = ["H2DQNd46XhdC2ci9v805fWkJjvG3"];
+
+firebase.initializeApp(FIREBASE_CONFIG);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const $ = s => document.querySelector(s);
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+// ===== تسجيل الدخول =====
+$('#liBtn').onclick = async () => {
+  const email = $('#liEmail').value.trim(), pass = $('#liPass').value;
+  if(!email || !pass){ $('#loginErr').textContent = 'أدخل البريد وكلمة المرور'; return; }
+  $('#loginErr').textContent = '';
+  try{
+    await auth.signInWithEmailAndPassword(email, pass);
+  }catch(e){
+    $('#loginErr').textContent = 'بيانات الدخول غير صحيحة';
+  }
+};
+$('#logoutBtn').onclick = () => auth.signOut();
+
+auth.onAuthStateChanged(async (user) => {
+  if(user && ADMIN_UIDS.includes(user.uid)){
+    $('#loginScreen').style.display = 'none';
+    $('#app').style.display = 'block';
+    loadOverview();
+  }else if(user){
+    $('#loginErr').textContent = 'هذا الحساب ليس له صلاحية إدارية';
+    await auth.signOut();
+  }else{
+    $('#loginScreen').style.display = 'flex';
+    $('#app').style.display = 'none';
+  }
+});
+
+// ===== التبويبات =====
+document.querySelectorAll('.tab').forEach(t => {
+  t.onclick = () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x===t));
+    document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
+    $('#panel-'+t.dataset.tab).classList.remove('hidden');
+    if(t.dataset.tab==='players') loadPlayers();
+    if(t.dataset.tab==='economy') loadEconomy();
+    if(t.dataset.tab==='rooms') loadRooms();
+    if(t.dataset.tab==='reports') loadReports();
+    if(t.dataset.tab==='visits') loadVisits();
+    if(t.dataset.tab==='version') loadVersion();
+    if(t.dataset.tab==='messages'){ loadMessages(); loadGifts(); }
+  };
+});
+
+// ===== نظرة عامة =====
+async function loadOverview(){
+  try{
+    const snap = await db.collection('players').get();
+    let total=0, active=0, banned=0;
+    const staleCutoff = Date.now() - 3*60*60*1000;
+    snap.forEach(doc=>{
+      const d = doc.data();
+      total++;
+      if(d.activeRoom && !(d.activeSince && d.activeSince < staleCutoff)) active++;
+      if(d.banned) banned++;
+    });
+    $('#statTotal').textContent = total;
+    $('#statActive').textContent = active;
+    $('#statBanned').textContent = banned;
+  }catch(e){ toast('تعذّر تحميل الإحصائيات'); }
+}
+
+// ===== اللاعبون =====
+let ALL_PLAYERS = [];
+// NEW CODE — تحميل تدريجي بدفعات عبر مؤشر Firestore حقيقي (startAfter) بدل سقف 200 صامت،
+// والبحث يكمل تحميل الدفعات تلقائياً بالخلفية لحد ما يلقى تطابقاً أو تنتهي القاعدة كاملة.
+let PLAYERS_CURSOR = null;
+let PLAYERS_DONE = false;
+let SEARCH_TOKEN = 0;
+const PLAYERS_BATCH = 200;
+async function loadPlayers(){
+  ALL_PLAYERS = []; PLAYERS_CURSOR = null; PLAYERS_DONE = false;
+  $('#playersList').innerHTML = '<div class="empty">جارٍ التحميل...</div>';
+  await loadPlayersBatch();
+}
+async function loadPlayersBatch(){
+  try{
+    let q = db.collection('players').orderBy(firebase.firestore.FieldPath.documentId()).limit(PLAYERS_BATCH);
+    if(PLAYERS_CURSOR) q = q.startAfter(PLAYERS_CURSOR);
+    const snap = await q.get();
+    snap.forEach(doc => ALL_PLAYERS.push({uid: doc.id, ...doc.data()}));
+    if(snap.docs.length){ PLAYERS_CURSOR = snap.docs[snap.docs.length-1]; }
+    if(snap.docs.length < PLAYERS_BATCH) PLAYERS_DONE = true;
+    await applyPlayersFilter();
+  }catch(e){ $('#playersList').innerHTML = '<div class="empty">تعذّر التحميل: '+escHtml(e.message||'')+'</div>'; }
+}
+async function applyPlayersFilter(){
+  const q = $('#searchBox').value.trim().toLowerCase();
+  const myToken = ++SEARCH_TOKEN;
+  const matches = () => ALL_PLAYERS.filter(p =>
+    (p.name||'').toLowerCase().includes(q) || (p.username||'').toLowerCase().includes(q)
+  );
+  if(!q){ renderPlayers(ALL_PLAYERS); return; }
+  let list = matches();
+  while(!list.length && !PLAYERS_DONE){
+    $('#playersList').innerHTML = `<div class="empty">جارٍ البحث... (${ALL_PLAYERS.length} مُحمَّل حتى الآن)</div>`;
+    await loadPlayersBatch();
+    if(myToken !== SEARCH_TOKEN) return;
+    list = matches();
+  }
+  if(myToken !== SEARCH_TOKEN) return;
+  renderPlayers(list);
+}
+$('#searchBox').oninput = applyPlayersFilter;
+// NEW CODE — عرض الأفاتار: مسارات الصور تُعرض كصورة <img> فعلية (كانت تُطبَع كنص خام فتتراكب مع بيانات اللاعب)
+function avaHtml(p){
+  const a = p.avatar||'';
+  if(a && (a.includes('/') || /\.(png|jpg|jpeg|webp|gif)$/i.test(a))){
+    return `<img src="${escHtml(a)}" style="width:100%;height:100%;border-radius:999px;object-fit:cover" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'😎'}))">`;
+  }
+  return escHtml(a||'😎');
+}
+function renderPlayers(list){
+  const el = $('#playersList');
+  if(!list.length){ el.innerHTML = '<div class="empty">لا يوجد لاعبون مطابقون</div>'; return; }
+  el.innerHTML = list.map(p => `
+    <div class="pRow">
+      <div class="pAva">${avaHtml(p)}</div>
+      <div class="pInfo">
+        <div class="pName">${escHtml(p.name||'لاعب')} ${p.banned?'🚫 محظور'+(p.banReason?(' — '+escHtml(p.banReason)):''):''}</div>
+        <div class="pMeta">🪙 ${(p.gold||0).toLocaleString('en')} · ⭐ ${(p.xp||0).toLocaleString('en')} XP · 🏆 ${(p.rank||0).toLocaleString('en')} رتبة · مباريات ${p.games||0} · فوز ${p.wins||0} ${p.activeRoom?' · 🟢 بطاولة':''}</div>
+        ${p.activeRoom?`<div class="pMeta" style="opacity:.65;font-size:11px">🔧 تشخيص: activeRoom="${escHtml(p.activeRoom)}" · activeSince=${p.activeSince?new Date(p.activeSince).toLocaleTimeString('ar-SA'):'—'} (منذ ${p.activeSince?Math.round((Date.now()-p.activeSince)/1000):'?'}ث)</div>`:''}
+      </div>
+      <div class="pActions">
+        <button class="miniBtn" onclick="toggleEdit('${p.uid}')">تعديل</button>
+      </div>
+    </div>
+    <div class="editRow" id="edit-${p.uid}">
+      <label>الذهب</label>
+      <input type="number" id="gold-${p.uid}" value="${p.gold||0}">
+      <label>نقاط الخبرة (XP)</label>
+      <input type="number" id="xp-${p.uid}" value="${p.xp||0}">
+      <label>نقاط الرتبة التنافسية</label>
+      <input type="number" id="rank-${p.uid}" value="${p.rank||0}">
+      <label>سبب الحظر (اختياري — يظهر للاعب لو مفعّل الحظر)</label>
+      <input type="text" id="banReason-${p.uid}" value="${escHtml(p.banReason||'')}" placeholder="مثلاً: إساءة بالدردشة">
+      <div style="display:flex;gap:8px">
+        <button class="miniBtn ok" onclick="saveStats('${p.uid}')">حفظ الكل</button>
+        <button class="miniBtn ${p.banned?'ok':'danger'}" onclick="toggleBan('${p.uid}', ${!p.banned})">${p.banned?'رفع الحظر':'حظر الحساب'}</button>
+      </div>
+    </div>
+  `).join('') + (PLAYERS_DONE ? '' : `<button class="miniBtn" id="loadMorePlayers" style="width:100%;margin-top:10px">تحميل المزيد (${ALL_PLAYERS.length} مُحمَّل حتى الآن)</button>`);
+  const lm=$('#loadMorePlayers'); if(lm) lm.onclick=async()=>{ lm.textContent='جارٍ التحميل...'; lm.disabled=true; await loadPlayersBatch(); };
+}
+function toggleEdit(uid){ $('#edit-'+uid).classList.toggle('show'); }
+async function saveStats(uid){
+  const gold = parseInt($('#gold-'+uid).value, 10) || 0;
+  const xp = parseInt($('#xp-'+uid).value, 10) || 0;
+  const rank = parseInt($('#rank-'+uid).value, 10) || 0;
+  try{
+    await db.collection('players').doc(uid).set({gold, xp, rank}, {merge:true});
+    toast('تم تحديث البيانات');
+    loadPlayers();
+  }catch(e){ toast('فشل الحفظ'); }
+}
+async function toggleBan(uid, banned){
+  try{
+    const reasonEl = $('#banReason-'+uid);
+    const banReason = banned ? ((reasonEl&&reasonEl.value.trim())||'') : '';
+    await db.collection('players').doc(uid).set({banned, banReason}, {merge:true});
+    toast(banned?('تم حظر الحساب'+(banReason?' — السبب: '+banReason:'')):'تم رفع الحظر');
+    loadPlayers();
+  }catch(e){ toast('فشل التنفيذ'); }
+}
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ===== الاقتصاد =====
+const TIER_KEYS = [
+  {key:'beginner', name:'مبتدئ'}, {key:'amateur', name:'هاوي'}, {key:'pro', name:'محترف'},
+  {key:'elite', name:'نخبة'}, {key:'legend', name:'أسطوري'}
+];
+async function loadEconomy(){
+  let overrides = {};
+  try{
+    const doc = await db.collection('config').doc('tiers').get();
+    if(doc.exists) overrides = doc.data();
+  }catch(e){}
+  $('#tiersEditor').innerHTML = TIER_KEYS.map(t => {
+    const o = overrides[t.key] || {};
+    return `<div style="margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--line)">
+      <div style="font-family:var(--fh);font-size:17px;color:var(--clay);margin-bottom:8px">${t.name}</div>
+      <div class="tierEdit">
+        <div><label>رسم الدخول (فردي)</label><input type="number" id="t-${t.key}-soloFee" placeholder="اتركه فاضي = افتراضي" value="${o.soloFee!=null?o.soloFee:''}"></div>
+        <div><label>ربح الفوز (فردي)</label><input type="number" id="t-${t.key}-soloWin" placeholder="اتركه فاضي = افتراضي" value="${o.soloWin!=null?o.soloWin:''}"></div>
+        <div><label>رسم الدخول (فريقي)</label><input type="number" id="t-${t.key}-teamFee" placeholder="اتركه فاضي = افتراضي" value="${o.teamFee!=null?o.teamFee:''}"></div>
+        <div><label>ربح الفوز (فريقي)</label><input type="number" id="t-${t.key}-teamWin" placeholder="اتركه فاضي = افتراضي" value="${o.teamWin!=null?o.teamWin:''}"></div>
+        <div><label>هدف النقاط</label><input type="number" id="t-${t.key}-goal" placeholder="اتركه فاضي = افتراضي" value="${o.goal!=null?o.goal:''}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+$('#saveTiers').onclick = async () => {
+  const data = {};
+  for(const t of TIER_KEYS){
+    const entry = {};
+    for(const field of ['soloFee','soloWin','teamFee','teamWin','goal']){
+      const v = $(`#t-${t.key}-${field}`).value.trim();
+      if(v !== '') entry[field] = parseInt(v, 10);
+    }
+    if(Object.keys(entry).length) data[t.key] = entry;
+  }
+  try{
+    await db.collection('config').doc('tiers').set(data);
+    toast('تم حفظ الأسعار — تنعكس فورًا على كل اللاعبين');
+  }catch(e){ toast('فشل الحفظ'); }
+};
+
+// ===== الغرف النشطة =====
+// NEW CODE — قراءة مباشرة من active_rooms: المجموعة اللي يديرها السيرفر نفسه (server.js → _syncActiveRoomListing)
+// بكل نقطة تغيير حقيقية بحياة الغرفة (انضمام/بدء/إغلاق/انسحاب) — مصدر حقيقة واحد موثوق، لا كتابة متفرقة من كل
+// متصفح لنفسه. يحل جذرياً مشكلة انقسام نفس الطاولة لعدة "غرف" وهمية، ويُظهر البوتات بأسمائها الحقيقية.
+const ONLINE_STALE_MS = 3*60*1000; // NEW CODE — لعدّاد "المتصلون الآن" العام فقط (يشمل من هو بالقائمة الرئيسية، لا بطاولة بالضرورة) — يعتمد على نبضة activeSince
+async function loadRooms(){
+  $('#roomsList').innerHTML = '<div class="empty">جارٍ التحميل...</div>';
+  try{
+    const [roomsSnap, playersSnap] = await Promise.all([
+      db.collection('active_rooms').orderBy('updatedAt','desc').limit(100).get(),
+      db.collection('players').limit(500).get() // NEW CODE — بس لعدّاد "متصل الآن" العام، منفصل عن تجميع الغرف
+    ]);
+    let onlineCount = 0;
+    const onlineCutoff = Date.now() - ONLINE_STALE_MS;
+    playersSnap.forEach(doc => { const d=doc.data(); if(d.activeSince && d.activeSince>=onlineCutoff) onlineCount++; });
+    const onlineBanner = `<div class="pRow" style="background:var(--sand2)"><div class="pInfo"><div class="pName">🟢 المتصلون الآن: ${onlineCount}</div><div class="pMeta">آخر نبضة خلال ${Math.round(ONLINE_STALE_MS/60000)} دقائق (كل مكان بالتطبيق، لا بطاولة بالضرورة)</div></div></div>`;
+    const rooms = []; roomsSnap.forEach(doc => rooms.push({id: doc.id, ...doc.data()}));
+    if(!rooms.length){ $('#roomsList').innerHTML = onlineBanner+'<div class="empty">لا توجد طاولات نشطة الآن</div>'; return; }
+    const totalReal = rooms.reduce((sum,r)=>sum+(r.seats||[]).filter(s=>s&&!s.isBot).length,0);
+    const botOnly = rooms.filter(r=>(r.seats||[]).length && (r.seats||[]).every(s=>s&&s.isBot)); // NEW CODE — طاولات كلها بوتات (عالقة غالباً)
+    const totalsBanner = `<div class="pRow" style="background:var(--sand2)"><div class="pInfo"><div class="pName">🎮 طاولات نشطة: ${rooms.length} — لاعبون حقيقيون بها: ${totalReal}</div>
+      ${botOnly.length?`<div class="pMeta">⚠️ ${botOnly.length} طاولة كلها بوتات (بلا أي لاعب حقيقي) — <button class="miniBtn danger" onclick="deleteBotOnlyRooms()">🧹 حذفها كلها</button></div>`:''}
+    </div></div>`; // NEW CODE — زر حذف جماعي للعالقة
+    $('#roomsList').innerHTML = onlineBanner + totalsBanner + rooms.map(r => {
+      const seats = r.seats||[];
+      const realCount = seats.filter(s=>s&&!s.isBot).length;
+      const names = seats.length ? seats.map(s=>s?(escHtml(s.name)+(s.isBot?' 🤖':'')):'—فاضي—').join('، ') : '—';
+      const statusTxt = r.status==='playing'?'🎮 جارية':'⏳ لوبي (بانتظار البدء)';
+      return `<div class="pRow">
+        <div class="pInfo">
+          <div class="pName">${statusTxt} — ${escHtml(r.name||r.id)} <span style="opacity:.55;font-size:11px">(${escHtml(r.id)})</span></div>
+          <div class="pMeta">${realCount} لاعب حقيقي من ${seats.length||4}: ${names}</div>
+        </div>
+        <div class="pActs"><button class="miniBtn danger" onclick="deleteRoom('${escHtml(r.id)}')">🗑 حذف من القائمة</button></div>
+      </div>`; // NEW CODE — زر حذف لكل غرفة
+    }).join('');
+  }catch(e){ $('#roomsList').innerHTML = '<div class="empty">تعذّر التحميل: '+escHtml(e.message||'')+'</div>'; }
+}
+// NEW CODE — حذف إعلان غرفة من active_rooms (القائمة فقط — لا يمس الطاولة الحية نفسها لو كانت فعلاً جارية:
+// أي غرفة حية تعيد نشر نفسها تلقائياً مع أول تغيير بمقاعدها؛ الغرف الميتة/العالقة تختفي نهائياً)
+async function deleteRoom(id){
+  if(!confirm('حذف "'+id+'" من قائمة الجلسات النشطة؟\n(لو الطاولة لسا حية فعلاً بترجع تظهر تلقائياً — الحذف آمن)'))return;
+  try{ await db.collection('active_rooms').doc(id).delete(); toast('حُذفت من القائمة ✓'); loadRooms(); }
+  catch(e){ toast('فشل الحذف: '+(e.message||'')); }
+}
+// NEW CODE — حذف جماعي لكل الطاولات اللي كل مقاعدها بوتات (بلا أي لاعب حقيقي) — العالقة نموذجياً
+async function deleteBotOnlyRooms(){
+  try{
+    const snap = await db.collection('active_rooms').limit(200).get();
+    const ids = []; snap.forEach(d=>{ const st=(d.data().seats||[]); if(st.length && st.every(s=>s&&s.isBot)) ids.push(d.id); });
+    if(!ids.length){ toast('ما فيه طاولات كلها بوتات'); return; }
+    if(!confirm('حذف '+ids.length+' طاولة كلها بوتات من القائمة؟'))return;
+    const batch = db.batch(); ids.forEach(id=>batch.delete(db.collection('active_rooms').doc(id))); await batch.commit();
+    toast('حُذفت '+ids.length+' طاولة ✓'); loadRooms();
+  }catch(e){ toast('فشل الحذف: '+(e.message||'')); }
+}
+
+
+// ===== البلاغات =====
+let REPORTS_FILTER = 'open';
+$('#repFilterOpen').onclick = () => { REPORTS_FILTER='open'; $('#repFilterOpen').classList.add('on'); $('#repFilterAll').classList.remove('on'); loadReports(); };
+$('#repFilterAll').onclick = () => { REPORTS_FILTER='all'; $('#repFilterAll').classList.add('on'); $('#repFilterOpen').classList.remove('on'); loadReports(); };
+async function loadReports(){
+  $('#reportsList').innerHTML = '<div class="empty">جارٍ التحميل...</div>';
+  try{
+    let q = db.collection('reports').orderBy('ts','desc').limit(100);
+    if(REPORTS_FILTER==='open') q = db.collection('reports').where('status','==','open').orderBy('ts','desc').limit(100);
+    const snap = await q.get();
+    const items = [];
+    snap.forEach(doc => items.push({id:doc.id, ...doc.data()}));
+    if(!items.length){ $('#reportsList').innerHTML = '<div class="empty">لا توجد بلاغات</div>'; return; }
+    $('#reportsList').innerHTML = items.map(r => {
+      const isMsg = r.kind==='message';
+      const isProfile = r.kind==='profile';
+      const title = isMsg ? `⚑ بلاغ رسالة من ${escHtml(r.reporterName||'لاعب')} ضد ${escHtml(r.reportedName||'لاعب')}`
+                    : isProfile ? `👤 بلاغ حساب من ${escHtml(r.reporterName||'لاعب')} ضد ${escHtml(r.reportedName||'لاعب')}`
+                    : `${r.category==='bug'?'🐞':'💡'} ${r.category==='bug'?'مشكلة':'اقتراح'} من ${escHtml(r.reporterName||'لاعب')}`;
+      const body = isMsg ? `الرسالة: "${escHtml(r.messageText||'')}"${r.reason?'<br>السبب: '+escHtml(r.reason):''}`
+                   : isProfile ? '(بلاغ على الحساب — الاسم أو الصورة الشخصية)'
+                   : escHtml(r.text||'');
+      return `<div class="pRow" style="align-items:flex-start;flex-direction:column;gap:6px">
+        <div class="pName">${title} ${r.status==='resolved'?'<span style="color:var(--sage);font-size:11px">✓ تم الحل</span>':''}</div>
+        <div class="pMeta" style="white-space:normal;line-height:1.6">${body}</div>
+        <div class="pActions">
+          ${r.status!=='resolved'?`<button class="miniBtn ok" onclick="resolveReport('${r.id}')">تحديد كمُعالَج</button>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){ $('#reportsList').innerHTML = '<div class="empty">تعذّر التحميل (قد تحتاج فهرس Firestore — راجع Console)</div>'; }
+}
+async function resolveReport(id){
+  try{ await db.collection('reports').doc(id).set({status:'resolved'},{merge:true}); toast('تم التحديث'); loadReports(); }
+  catch(e){ toast('فشل التحديث'); }
+}
+
+// ===== الزيارات =====
+async function loadVisits(){
+  $('#visitsCards').innerHTML = '<div class="empty">جارٍ التحميل...</div>';
+  $('#visitsList').innerHTML = '';
+  try{
+    const today = new Date();
+    const days = [];
+    for(let i=0;i<14;i++){
+      const d = new Date(today); d.setDate(d.getDate()-i);
+      days.push(`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`);
+    }
+    const docs = await Promise.all(days.map(k => db.collection('visits').doc(k).get()));
+    const rows = days.map((k,i) => {
+      const d = docs[i];
+      const data = d.exists ? d.data() : {};
+      return {day:k, total: data.total||0, unique: (data.uniqueUids||[]).length};
+    });
+    $('#visitsCards').innerHTML = `
+      <div class="statCard"><div class="num">${rows[0].total}</div><div class="lbl">زيارات اليوم</div></div>
+      <div class="statCard"><div class="num">${rows[0].unique}</div><div class="lbl">لاعبون فريدون اليوم</div></div>
+      <div class="statCard"><div class="num">${rows.reduce((s,r)=>s+r.total,0)}</div><div class="lbl">إجمالي آخر 14 يوم</div></div>
+    `;
+    $('#visitsList').innerHTML = rows.map(r => `
+      <div class="pRow">
+        <div class="pInfo"><div class="pName">${r.day}</div></div>
+        <div class="pMeta">👁️ ${r.total} زيارة · 👤 ${r.unique} فريد</div>
+      </div>
+    `).join('');
+  }catch(e){ $('#visitsCards').innerHTML = '<div class="empty">تعذّر التحميل</div>'; }
+}
+
+// ===== التحديث الإجباري =====
+async function loadVersion(){
+  try{
+    const doc = await db.collection('config').doc('version').get();
+    const d = doc.exists ? doc.data() : {};
+    $('#vForce').value = d.force ? 'true' : 'false';
+    $('#vMin').value = d.min_required || '';
+    $('#vLatest').value = d.latest_version || '';
+    $('#vUrlAndroid').value = d.url_android || '';
+    $('#vUrlIos').value = d.url_ios || '';
+    $('#vMsg').value = d.message || '';
+  }catch(e){ toast('تعذّر تحميل إعدادات التحديث'); }
+}
+$('#vSaveBtn').onclick = async () => {
+  const btn = $('#vSaveBtn'); const orig = btn.textContent; btn.textContent = '...جارٍ الحفظ'; btn.disabled = true;
+  try{
+    await db.collection('config').doc('version').set({
+      force: $('#vForce').value === 'true',
+      min_required: $('#vMin').value.trim(),
+      latest_version: $('#vLatest').value.trim(),
+      url_android: $('#vUrlAndroid').value.trim(),
+      url_ios: $('#vUrlIos').value.trim(),
+      message: $('#vMsg').value.trim()
+    }, {merge:true});
+    toast('تم الحفظ بنجاح');
+  }catch(e){ toast('فشل الحفظ'); }
+  finally{ btn.textContent = orig; btn.disabled = false; }
+};
+
+// ===== الرسائل (صندوق وارد اللاعبين) =====
+async function loadMessages(){
+  $('#messagesList').innerHTML = '<div class="empty">جارٍ التحميل...</div>';
+  try{
+    const snap = await db.collection('system_messages').orderBy('ts','desc').limit(50).get();
+    const items = []; snap.forEach(doc => items.push({id:doc.id, ...doc.data()}));
+    if(!items.length){ $('#messagesList').innerHTML = '<div class="empty">لا توجد رسائل مرسلة بعد</div>'; return; }
+    $('#messagesList').innerHTML = items.map(m => `
+      <div class="pRow" style="align-items:flex-start;flex-direction:column;gap:6px">
+        <div class="pName">${escHtml(m.title||'')}</div>
+        <div class="pMeta" style="white-space:normal;line-height:1.6">${escHtml(m.body||'')}</div>
+        <div class="pActions">
+          <button class="miniBtn danger" onclick="deleteMessage('${m.id}')">حذف (يوقف وصولها للاعبين الجدد فقط — من استلمها أصلاً تبقى عنده)</button>
+        </div>
+      </div>`).join('');
+  }catch(e){ $('#messagesList').innerHTML = '<div class="empty">تعذّر التحميل: '+escHtml(e.message||'')+'</div>'; }
+}
+$('#msgSendBtn').onclick = async () => {
+  const title = $('#msgTitle').value.trim(), body = $('#msgBody').value.trim();
+  if(!title || !body){ toast('اكتب العنوان والنص'); return; }
+  const btn = $('#msgSendBtn'); const orig = btn.textContent; btn.textContent = '...جارٍ الإرسال'; btn.disabled = true;
+  try{
+    await db.collection('system_messages').add({title, body, ts: Date.now()});
+    $('#msgTitle').value=''; $('#msgBody').value='';
+    toast('تم الإرسال — يصل فورًا لكل اللاعبين');
+    loadMessages();
+  }catch(e){ toast('فشل الإرسال'); }
+  finally{ btn.textContent = orig; btn.disabled = false; }
+};
+async function deleteMessage(id){
+  try{ await db.collection('system_messages').doc(id).delete(); toast('تم الحذف'); loadMessages(); }
+  catch(e){ toast('فشل الحذف'); }
+}
+// ===== الهدايا العامة (ذهب لكل اللاعبين) =====
+async function loadGifts(){
+  $('#giftsList').innerHTML = '<div class="empty">جارٍ التحميل...</div>';
+  try{
+    const snap = await db.collection('global_gifts').orderBy('ts','desc').limit(30).get();
+    const items = []; snap.forEach(doc => items.push({id:doc.id, ...doc.data()}));
+    if(!items.length){ $('#giftsList').innerHTML = '<div class="empty">لا توجد هدايا مرسلة بعد</div>'; return; }
+    $('#giftsList').innerHTML = items.map(g => `
+      <div class="pRow" style="align-items:flex-start;flex-direction:column;gap:6px">
+        <div class="pName">🎁 ${escHtml(g.title||'')} — ${(g.gold||0).toLocaleString('en')} ذهب</div>
+        <div class="pMeta" style="white-space:normal;line-height:1.6">${escHtml(g.body||'')}</div>
+        <div class="pMeta">استلمها ${(g.claimedBy||[]).length} لاعب حتى الآن</div>
+        <div class="pActions">
+          <button class="miniBtn danger" onclick="deleteGift('${g.id}')">حذف (يوقف وصولها للاعبين الجدد فقط — من استلمها أصلاً يحتفظ بذهبه)</button>
+        </div>
+      </div>`).join('');
+  }catch(e){ $('#giftsList').innerHTML = '<div class="empty">تعذّر التحميل: '+escHtml(e.message||'')+'</div>'; }
+}
+$('#giftSendBtn').onclick = async () => {
+  const title = $('#giftTitle').value.trim(), body = $('#giftBody').value.trim();
+  const gold = parseInt($('#giftGold').value, 10);
+  if(!title){ toast('اكتب العنوان'); return; }
+  if(!gold || gold<1){ toast('اكتب كمية ذهب صحيحة (أكبر من صفر)'); return; }
+  const btn = $('#giftSendBtn'); const orig = btn.textContent; btn.textContent = '...جارٍ الإرسال'; btn.disabled = true;
+  try{
+    await db.collection('global_gifts').add({title, body, gold, ts: Date.now(), claimedBy: []});
+    $('#giftTitle').value=''; $('#giftBody').value=''; $('#giftGold').value='';
+    toast('تم الإرسال — تظهر فورًا بصندوق وارد كل لاعب');
+    loadGifts();
+  }catch(e){ toast('فشل الإرسال'); }
+  finally{ btn.textContent = orig; btn.disabled = false; }
+};
+async function deleteGift(id){
+  try{ await db.collection('global_gifts').doc(id).delete(); toast('تم الحذف'); loadGifts(); }
+  catch(e){ toast('فشل الحذف'); }
+}
+</script>
+</body>
+</html>

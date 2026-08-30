@@ -40,6 +40,11 @@ workflows:
           chmod +x node_modules/.bin/cap
           npx cap sync ios
           
+      - name: Set up build number
+        script: |
+          cd ios/App
+          agvtool new-version -all $(($BUILD_NUMBER + 1))
+          
       - name: Install Pods
         script: |
           cd ios/App

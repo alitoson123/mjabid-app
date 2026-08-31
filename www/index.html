@@ -1034,6 +1034,8 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
         <div class="lgOr">أو</div>
         <div class="lgSoc">
           <button id="lgGoogle"><svg width="19" height="19" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.2 6 29.4 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"></path><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.2 6 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"></path><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"></path><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.1 5.7l6.2 5.2C36.9 40.4 44 35 44 24c0-1.3-.1-2.6-.4-3.9z"></path></svg>المتابعة بحساب Google</button>
+          <!-- NEW CODE — زر Apple: يظهر على iOS فقط (يُفعَّل بجافاسكربت وقت الجاهزية — راجع isIOS/doApple)، بتصميم أبل الرسمي (خلفية سوداء + الشعار الحرفي) -->
+          <button id="lgApple" style="display:none;background:#000;color:#fff;border:none"><svg width="17" height="17" viewBox="0 0 384 512" fill="#fff"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg><span>المتابعة بحساب Apple</span></button>
         </div>
         <button id="lgNew">إنشاء حساب جديد</button>
       </div>
@@ -3301,6 +3303,10 @@ async function withIdToken(payload){
 // ===== إعداد خادم الطاولات =====
 // للتبديل لخادم Cloudflare: ضع رابط الـWorker هنا (مثل 'waggif-baloot.اسمك.workers.dev')
 // اتركه على Higgsfield حالياً حتى يجهز نشر Cloudflare.
+// ⚠️ NEW CODE — علم مؤقت لإصدار App Store الأول (بلا أي شراء داخل التطبيق): يُخفي المتجر بالكامل (كل
+// أقسامه: باقات الذهب الحقيقية وشراء الثيمات) من التنقّل والزر الرئيسي معاً. بعد قبول أبل للنسخة الأولى،
+// غيّر القيمة لـ true وارفع تحديثاً — سطر واحد فقط، بلا حاجة للبحث عن أي تعليقات متفرقة بالكود.
+const SHOW_STORE=false;
 const GAME_SRV='waggif-baloot.samisalimhdmaol.workers.dev';
 // ============ إعلانات AdMob — التكامل الفعلي منقول لكتلة <script type="module"> منفصلة تماماً (ابحث عن
 // "تكامل AdMob الفعلي" بأسفل الصفحة) — لا يمكن وضع import داخل هذا السكربت الكلاسيكي، يكسر الملف كاملاً فوراً
@@ -4492,7 +4498,7 @@ function shopEquipped(kind){
   const dflt=kind==='theme'?'theme-persian':'back-default'; // NEW CODE — الافتراضي الجديد للاعبين اللي ما اختاروا ثيم صراحة
   try{return localStorage.getItem('wb-eq-'+kind)||dflt}catch(e){return dflt}
 }
-function openShop(){ renderShop(); renderAdRewardBtn(); show('shop'); mountNav('shop','shop'); } // FIX — أضفنا renderAdRewardBtn
+function openShop(){ if(!SHOW_STORE)return; renderShop(); renderAdRewardBtn(); show('shop'); mountNav('shop','shop'); } // FIX — أضفنا renderAdRewardBtn // NEW CODE — يتجاهل أي استدعاء بالكامل لما SHOW_STORE=false (يحمي كل نقاط الدخول دفعة واحدة، بلا تكرار الفحص بكل واحدة)
 function renderShop(){
   $('#shopGold').textContent=ST.n('gold').toLocaleString('en');
   renderGoldPackages(); // NEW CODE — باقات الذهب الحقيقية (Paymob)، منفصلة عن حلقة الثيمات أسفلها
@@ -4782,7 +4788,7 @@ function openAwards(){
 const NAV_ITEMS=[
   {k:'home',   label:'الرئيسية', svg:'<path d="M3 11l9-8 9 8"></path><path d="M5 10v10h14V10"></path>', go:()=>goHome()},
   {k:'chat',   label:'الدردشة',  svg:'<path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"></path>', go:()=>openChat()},
-  {k:'shop',   label:'المتجر',   svg:'<path d="M6 8h12l1 12H5z"></path><path d="M9 8V6a3 3 0 016 0v2"></path>', go:()=>openShop()},
+  ...(SHOW_STORE?[{k:'shop',   label:'المتجر',   svg:'<path d="M6 8h12l1 12H5z"></path><path d="M9 8V6a3 3 0 016 0v2"></path>', go:()=>openShop()}]:[]), // NEW CODE — يُستثنى كلياً من شريط التنقّل لما SHOW_STORE=false
   {k:'board',  label:'الصدارة',  svg:'<path d="M7 4h10v5a5 5 0 01-10 0z"></path><path d="M7 6H4v2a3 3 0 003 3M17 6h3v2a3 3 0 01-3 3"></path><path d="M12 14v3M8 21h8M10 21v-2a2 2 0 014 0v2"></path>', go:()=>openBoard()},
   {k:'friends',label:'الأصدقاء', svg:'<circle cx="9" cy="8" r="3.5"></circle><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"></path><circle cx="17" cy="9" r="2.5"></circle><path d="M21 20c0-2.8-1.8-5-4.5-5"></path>', go:()=>openFriends()},
 ];
@@ -5555,6 +5561,23 @@ async function doSignup(){
   catch(e){ window.wbLog&&window.wbLog('  ❌ فشل الإنشاء: '+(e&&e.code||e.message||e)); toast2(authErr(e)); }
 }
 // دخول بـGoogle
+// NEW CODE — تسجيل الدخول بـApple: يستخدم @capacitor-firebase/authentication المثبَّتة أصلاً (تدعم Apple أصلياً
+// عبر ASAuthorizationController الحقيقية على iOS — لا علاقة لها بقيد الـWebView اللي منع دخول جوجل الأصلي؛
+// أبل تشترط هذا المسار الأصلي بالذات لأي تطبيق يعرض خيار دخول اجتماعي). النتيجة تحدّث FB.auth الوِبي مباشرة
+// (المكوّن يستخدم نفس getAuth() المشترك داخلياً)، فنمرّ afterAuth() بنفس أسلوب مسار جوجل بالضبط — صفر تكرار منطق.
+async function doApple(){
+  try{
+    const {FirebaseAuthentication}=Capacitor.Plugins;
+    if(!FirebaseAuthentication){ toast2('الدخول بـ Apple غير متاح بهذا الإصدار'); return; }
+    await FirebaseAuthentication.signInWithApple();
+    if(!FB.auth.currentUser){ toast2('تعذّر إكمال الدخول — حاول مرة أخرى'); return; }
+    await afterAuth(FB.auth.currentUser);
+    toast2('تم الدخول بنجاح ✓');
+  }catch(e){
+    if(e&&/cancel/i.test(e.message||e.code||''))return; // المستخدم ألغى بنفسه — بلا رسالة خطأ مزعجة
+    toast2('تعذّر الدخول بحساب Apple — حاول مرة أخرى');
+  }
+}
 async function doGoogle(){
   // FIX — جوجل يمنع OAuth داخل أي WebView مضمّن (سياسة أمنية عامة من يوليو 2023) — signInWithRedirect/Popup
   // الوِبيّة محكوم عليها بالفشل حتماً داخل تطبيق أندرويد الأصلي. الحل الحقيقي (لا مجرد حجب الميزة كالسابق):
@@ -5634,6 +5657,8 @@ bindTap('lgGo', doLogin);
 bindTap('lgNew', openSignup);
 bindTap('lgSignupLink', openSignup);
 bindTap('lgGoogle', doGoogle);
+bindTap('lgApple', doApple);
+if(window.Capacitor&&window.Capacitor.getPlatform&&window.Capacitor.getPlatform()==='ios'){ const ab=document.getElementById('lgApple'); if(ab)ab.style.display=''; } // NEW CODE — نفس فحص isIOS المعتمد أصلاً لمعرّفات AdMob
 bindTap('lgForgot', doForgot);
 // زر فحص الاتصال: يختبر وصول جهازك لخوادم Firebase ويكتب النتيجة على الشريط
 async function runDiag(){
@@ -5856,7 +5881,15 @@ function renderTiers(){
     }; // NEW CODE
   }); // NEW CODE
 }
-function enterTier(t){
+async function freshGold(){ // NEW CODE — قراءة ذهب طازجة مضمونة مباشرة من الخادم، بمعزل عن أي مزامنة عامة أخرى جارية (لا تتأثر بعلم _pullingStats المشترك بـpullServerStats)
+  try{
+    if(!(await ensureFB())||!FB.user)return ST.n('gold'); // بلا حساب مسجَّل — القيمة المحلية كافية هنا (لا يدخل تنافسياً أصلاً بلا حساب)
+    const doc=await FB.db.collection('players').doc(FB.user.uid).get();
+    if(doc.exists&&doc.data().gold!=null){ const g=doc.data().gold; localStorage.setItem('wb-gold',String(g)); return g; }
+  }catch(e){}
+  return ST.n('gold'); // فشل السحب (شبكة مثلاً) — رجوع للمحلي كحل احتياطي بدل منع اللاعب كليًا بخلل عابر
+}
+async function enterTier(t){
   const isSession=tiersMode==='session'||tiersMode==='session-team';
   const isQuickOnline=tiersMode==='online'||tiersMode==='online-team'; // لعب سريع أونلاين تحديدًا (مو جلسة كاملة)
   const online=isQuickOnline||isSession;
@@ -5864,7 +5897,12 @@ function enterTier(t){
   const fee=teamPlay?tierVal(t,'teamFee'):tierVal(t,'soloFee');
   const win=isSession?fee*3:(teamPlay?tierVal(t,'teamWin'):tierVal(t,'soloWin'));
   const goal=isSession?null:tierVal(t,'goal'); // FIX — اللعب السريع صار بنظام هدف النقاط أيضاً، لا استثناء له بعد الآن
-  if(ST.n('gold')<fee){toast2('ذهبك لا يكفي');return}
+  if(fee>0){ // FIX — تحقق طازج فقط للطبقات المدفوعة (لا داعي له بالمجانية)؛ كان الفحص يعتمد على رصيد محلي مخبّأ فقط،
+    // فلاعب رصيده الحقيقي تغيّر (إنفاق بجهاز/تبويب ثاني، أو تأخر تزامن) يدخل بثقة زائفة ويُطرد لاحقاً وقت خصم السيرفر —
+    // ولو تصادف هذا مع أكثر من لاعب بنفس الغرفة، الجميع يُطردون معاً (نفس تمريرة الفحص بالسيرفر). هذا يمنعه من جذره.
+    const g=await freshGold(); // FIX
+    if(g<fee){toast2(`ذهبك لا يكفي — تحتاج ${toH(fee)} 🪙`);return} // FIX
+  }
   // رسم الدخول وربح الفوز يُحسمان ويُصرفان من طرف السيرفر مباشرة (موثوق)، مو من الجهاز — يظهران بعد لحظات من بدء/انتهاء الجولة
   G_TIER={tier:t.key,mode:teamPlay?'team':'solo',fee,win,goal,name:isSession?'جلسة كاملة — '+t.name:(isQuickOnline?'جلسة سريعة — '+t.name:t.name),online};
   toast2(`دخلت ${G_TIER.name} — رسم الدخول ${toH(fee)} 🪙، الفوز يرجّع ${toH(win)}`);
@@ -6832,6 +6870,7 @@ $('#hProfBtn').onclick=()=>openProfile();
 // NEW CODE — حذفنا $('#hChat').onclick — الزر نفسه اتحذف من الترويسة العلوية، الدردشة صارت بالشريط السفلي فقط
 $('#hDaily').onclick=()=>{SFX.tick();showRewardChoice()};
 $('#hGoldBtn').onclick=()=>{SFX.tick();openShop()};
+if(!SHOW_STORE){ const plus=document.querySelector('#hGoldBtn b'); if(plus)plus.style.display='none'; } // NEW CODE — يخفي إشارة "+" (تلمّح لعملية شراء) طالما المتجر مقفل — لا يترك زراً يبدو تفاعلياً بلا أثر
 $('#setupBack').onclick=()=>goHome();
 
 /* توجيه البدء */

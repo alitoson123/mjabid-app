@@ -52,7 +52,7 @@ workflows:
 
       - name: Set up code signing
         script: |
-          xcode-project use-profiles
+          xcode-project use-profiles --export-type app-store
           
       - name: Build IPA for App Store / TestFlight
         script: |

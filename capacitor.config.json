@@ -1,5 +1,12 @@
 {
   "appId": "com.mjabid.play",
   "appName": "Majabeed",
-  "webDir": "www"
+  "webDir": "www",
+  "plugins": {
+    "StatusBar": {
+      "overlaysWebView": true,
+      "style": "DARK"
+    }
+  }
 }
+

@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>لوحة تحكم — مجابيد</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,7 +23,7 @@
   #loginBox button{width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(#e2925c,#d67f48);color:#fff7ef;font-family:var(--fh);font-size:18px;cursor:pointer;margin-top:6px}
   #loginErr{color:var(--red);font-size:12.5px;font-weight:700;text-align:center;margin-top:10px;min-height:16px}
   #app{display:none;min-height:100vh}
-  #topbar{background:var(--clay);color:#fff7ef;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 3px 10px rgba(0,0,0,.15)}
+  #topbar{background:var(--clay);color:#fff7ef;padding:calc(14px + env(safe-area-inset-top, 0px)) calc(20px + env(safe-area-inset-right, 0px)) 14px calc(20px + env(safe-area-inset-left, 0px));display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 3px 10px rgba(0,0,0,.15)}
   #topbar h1{font-family:var(--fh);font-size:22px;margin:0}
   #topbar button{background:rgba(255,255,255,.15);color:#fff7ef;border:none;border-radius:999px;padding:7px 16px;font-family:var(--fb);font-weight:700;font-size:12.5px;cursor:pointer}
   #tabs{display:flex;gap:6px;padding:14px 20px 0;overflow-x:auto}
@@ -55,11 +55,11 @@
   .tierEdit{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:10px}
   .tierEdit label{font-size:11.5px;font-weight:800;color:#8a7a63;display:block;margin-bottom:4px}
   .tierEdit input{width:100%;padding:9px 10px;border:1.5px solid var(--line);border-radius:10px;font-family:var(--fb);font-size:13.5px}
-  .saveBar{position:sticky;bottom:0;background:#fff;padding:12px 18px;box-shadow:0 -3px 10px rgba(0,0,0,.08);border-radius:16px 16px 0 0;margin-top:16px}
+  .saveBar{position:sticky;bottom:0;background:#fff;padding:12px calc(18px + env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) calc(18px + env(safe-area-inset-left, 0px));box-shadow:0 -3px 10px rgba(0,0,0,.08);border-radius:16px 16px 0 0;margin-top:16px}
   .saveBar button{width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(#e2925c,#d67f48);color:#fff7ef;font-family:var(--fh);font-size:18px;cursor:pointer}
   .roomChip{display:inline-flex;align-items:center;gap:6px;background:#efe0c4;color:var(--clay);padding:5px 12px;border-radius:999px;font-size:12px;font-weight:800;margin:3px}
   .empty{text-align:center;padding:40px 20px;color:#8a7a63;font-weight:700}
-  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;font-weight:700;z-index:100;opacity:0;transition:opacity .3s;pointer-events:none}
+  .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom, 0px));left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;font-weight:700;z-index:100;opacity:0;transition:opacity .3s;pointer-events:none}
   .toast.show{opacity:1}
 </style>
 </head>

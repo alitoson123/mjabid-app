@@ -5,8 +5,8 @@
 <!-- AdSense — كود تحقق الملكية فقط (client=ca-pub-9959043037119536)، لا يعرض إعلانات فعلية بذاته -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9959043037119536" crossorigin="anonymous"></script>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#272e1b">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#102e25">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"><!-- FIX (من نسخة آيفون) — viewport-fit=cover إلزامي وإلا env(safe-area-inset-*) = 0 على iOS -->
 <title>مجابيد</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400;500;600;700;800&family=Lalezar&display=swap" rel="stylesheet">
@@ -110,12 +110,14 @@ img,.card,.suAv,.avatarImg{image-rendering:auto;image-rendering:high-quality;bac
 /* المقاعد */
 .seat{position:absolute;display:flex;flex-direction:column;align-items:center;gap:3px;width:96px;z-index:5;padding:8px 9px;border-radius:20px;background:rgba(0,0,0,.28);transition:box-shadow .3s}
 .seat .ava{width:52px;height:52px;border-radius:50%;background:#f0e3cc;color:#5e2f0e;display:flex;align-items:center;justify-content:center;font-size:23px;position:relative;border:2.5px solid transparent;transition:.2s}
+/* NEW CODE — مؤقت الأفاتار: استُبدل SVG (stroke-dasharray) بـconic-gradient — يتجنّب أعطال رندر معروفة على iOS Safari
+   مع transform:rotate على SVG. @property تسجّل النسبة كقيمة قابلة للانتقال السلس (fallback: قفزة مباشرة بلا كسر بالمتصفحات الأقدم) */
 @property --timerPct{syntax:'<percentage>';inherits:false;initial-value:100%}
 .avaRing{position:absolute;inset:-5px;pointer-events:none;display:none;z-index:5;border-radius:50%;
   --timerPct:100%;--timerColor:#f6c14d;
   background:conic-gradient(var(--timerColor) var(--timerPct), rgba(0,0,0,.25) 0);
   transition:--timerPct .95s linear,background .3s;
-  -webkit-mask-image:radial-gradient(circle farthest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3.5px));
+  -webkit-mask-image:radial-gradient(circle farthest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3.5px)); /* NEW CODE — circle صريحة بدل الشكل الضمني (ellipse افتراضياً) — يمنع أي بيضاوية محتملة على iOS */
   mask-image:radial-gradient(circle farthest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3.5px));
   -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;}
 .avaRing.on{display:block}
@@ -125,11 +127,13 @@ img,.card,.suAv,.avatarImg{image-rendering:auto;image-rendering:high-quality;bac
 #seatT .nm,#oSeat .nm{max-width:150px;font-size:11.5px;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;white-space:nowrap}
 .seat .inf{display:flex;gap:5px;align-items:center}
 .seat .hc{font-family:var(--fh);font-weight:400;font-size:14px;color:#ffe9b8;text-shadow:0 1px 3px rgba(0,0,0,.6)}
-.seat .pts{font-family:var(--fh);font-size:12px;color:#ffd98f;background:rgba(0,0,0,.55);border-radius:99px;padding:1px 7px}
-.seat .pileBox{margin-top:0;position:relative;min-height:40px;display:flex;align-items:center;gap:4px}
+.seat .pts{position:relative;overflow:hidden;font-family:var(--fh);font-size:12px;color:#fff7ef;background:rgba(0,0,0,.55);border-radius:99px;padding:1px 7px}
+.seat .pts .ptsFill{position:absolute;inset:0;width:0%;background:#f6c14d;transition:width .4s}
+.seat .pts b{position:relative;font-weight:inherit}
+.seat .pileBox{margin-top:0;position:relative;min-height:40px;display:flex;align-items:center;gap:4px} /* REVERT — رجعت لعنصر تدفّق flex عادي بطلب صريح، بنفس مكان/حجم النسخة المرفقة */
 .pileCntX{font-family:var(--fh);font-weight:400;font-size:15px;color:#ffd98f;text-shadow:0 1px 3px rgba(0,0,0,.5);white-space:nowrap;flex:none}
-.seat .pileBox .cnt{position:absolute;bottom:-4px;right:-8px;background:var(--ink);color:var(--sand);font-size:9px;font-weight:800;border-radius:999px;padding:0 5px}
-.runB{position:absolute;top:-7px;left:-9px;background:var(--clay3);color:#fff;font-size:9px;font-weight:800;border-radius:999px;padding:0 5px;z-index:2}
+.seat .pileBox .cnt{position:absolute;bottom:-4px;right:-8px;background:var(--ink);color:var(--sand);font-size:9px;font-weight:800;border-radius:99px;padding:0 5px}
+.runB{position:absolute;top:-7px;left:-9px;background:var(--clay3);color:#fff;font-size:9px;font-weight:800;border-radius:99px;padding:0 5px;z-index:2}
 .seat.turnGlow{box-shadow:0 0 0 2px rgba(255,217,143,.5)}
 .seat.turnGlow .ava{border-color:#f6c14d;box-shadow:0 0 0 4px rgba(246,193,77,.35),0 0 22px rgba(246,193,77,.55)}
 .seat .bubble{position:absolute;top:-13px;right:-6px;z-index:6;width:24px;height:24px;border-radius:999px;background:#f6c14d;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 0 12px rgba(246,193,77,.9);animation:wSeatPulse .8s infinite;font-weight:400}
@@ -138,18 +142,18 @@ img,.card,.suAv,.avatarImg{image-rendering:auto;image-rendering:high-quality;bac
 @keyframes bob{50%{transform:translateY(-3px)}}
 .seat .team{font-size:9px;font-weight:800;color:var(--sageL);background:rgba(0,0,0,.3);border-radius:99px;padding:0 6px}
 #seatT{top:calc(54px + env(safe-area-inset-top, 47px));right:50%;transform:translateX(50%);flex-direction:row;gap:10px;width:auto;border-radius:22px;padding:7px 12px}
-#seatT .pileBox{order:1;margin-top:0;flex-shrink:0}
-#seatT .avaWrap{order:2;width:56px;height:56px;flex-shrink:0}
+#seatT .pileBox{order:1;margin-top:0;flex-shrink:0} /* REVERT — pileBox رجعت لتدفّق الفلكس (طلب صريح)، فorder صار له معنى مرة ثانية */
+#seatT .avaWrap{order:2;width:56px;height:56px;flex-shrink:0} /* FIX — كانت order:2 على .ava مباشرة، وما عاد لها أي أثر لأن .ava صارت مغلَّفة داخل .avaWrap (مو ابناً مباشراً لـ.seat الفلكس بعد إضافة مروحة الخصم) — الترتيب الحقيقي (كومة← أفاتار← اسم← معلومات) كان ينكسر بصمت لمقعد العلوي تحديداً، وهذا سبب "التداخل العشوائي" اللي وصفته */
 #seatT .nm{order:3}
 #seatT .inf{order:4;flex-direction:column;align-items:center;gap:3px;flex-shrink:0}
-#oSeat .pileBox{order:1;flex-shrink:0}
-#oSeat .avaWrap{order:2;width:56px;height:56px;flex-shrink:0}
+#oSeat .pileBox{order:1;flex-shrink:0} /* REVERT */
+#oSeat .avaWrap{order:2;width:56px;height:56px;flex-shrink:0} /* FIX — نفس إصلاح #seatT بالضبط */
 #oSeat .nm{order:3}
 #oSeat .inf{order:4;flex-direction:column;align-items:center;gap:3px;flex-shrink:0}
-#seatT .avaWrap>.ava,#oSeat .avaWrap>.ava{width:56px;height:56px}
+#seatT .avaWrap>.ava,#oSeat .avaWrap>.ava{width:56px;height:56px} /* FIX — الأفاتار نفسه أيضاً 56×56 (كان محدَّداً بـ.ava مباشرة، أبقيته متّسقاً مع حجم avaWrap الجديد فوق) */
 #seatR{top:calc(168px + env(safe-area-inset-top, 47px));right:calc(10px + env(safe-area-inset-right, 0px));width:auto;border-radius:20px}
 #seatL{top:calc(168px + env(safe-area-inset-top, 47px));left:calc(10px + env(safe-area-inset-left, 0px));width:auto;border-radius:20px}
-#seatR .pileBox,#seatL .pileBox{margin-top:0}
+#seatR .pileBox,#seatL .pileBox{margin-top:0} /* REVERT */
 #seatR{align-items:center}
 #seatL{align-items:center}
 /* الرزمة المرئية */
@@ -187,7 +191,7 @@ img,.card,.suAv,.avatarImg{image-rendering:auto;image-rendering:high-quality;bac
 #game #fieldRing{display:none}
 #fieldLbl{position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:10.5px;font-weight:800;color:#ffd98f;background:#1c3222;border-radius:999px;padding:1px 12px;white-space:nowrap;box-shadow:0 0 0 1.5px rgba(249,244,237,.15);z-index:3}
 #field{position:relative;width:100%;height:100%;overflow:visible}
-#field .card,#oField .card{transition:transform .3s ease,box-shadow .15s;box-shadow:0 4px 9px rgba(0,0,0,.5)}
+#field .card,#oField .card{transition:transform .3s ease,box-shadow .15s;box-shadow:0 4px 9px rgba(0,0,0,.5)} /* FIX — أضفنا #oField .card (كانت القاعدة تخص الفردي فقط، فكروت الميدان بالأونلاين ما كان لها أي انتقال سلس إطلاقاً)، والمدة صارت 0.3s ease كما طلبت */
 #field .card.match,#oField .card.match{animation:eatGlow 1s infinite}
 @keyframes eatGlow{0%,100%{box-shadow:0 4px 9px rgba(0,0,0,.5),0 0 0 2.5px #f6c14d,0 0 10px 2px rgba(246,193,77,.6)}50%{box-shadow:0 4px 9px rgba(0,0,0,.5),0 0 0 3.5px #f6c14d,0 0 22px 8px rgba(246,193,77,.95)}}
 .eatFxPts{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:40;font-family:var(--fh);font-size:22px;color:#f6c14d;text-shadow:0 2px 6px rgba(0,0,0,.7);white-space:nowrap;pointer-events:none;animation:ptsUp 1.1s both}
@@ -206,7 +210,9 @@ img,.card,.suAv,.avatarImg{image-rendering:auto;image-rendering:high-quality;bac
 #meTop,#oMeTop{display:flex;justify-content:flex-start;align-items:center;padding:0 16px;gap:8px}
 #myPile,#oMyPile{display:flex;align-items:center;gap:6px;margin-right:auto}
 #myPile .lbl,#oMyPile .lbl{display:none}
-#myPile .pts,#oMyPile .pts,#oMyPile>span{font-size:10px;font-weight:800;color:#ffd98f;background:rgba(0,0,0,.5);border-radius:999px;padding:2px 9px;white-space:nowrap}
+#myPile .pts,#oMyPile .pts,#oMyPile>span{position:relative;overflow:hidden;font-size:10px;font-weight:800;color:#fff7ef;background:rgba(0,0,0,.5);border-radius:999px;padding:2px 9px;white-space:nowrap}
+#myPile .pts .ptsFill,#oMyPile .pts .ptsFill,#oMyPile>span .ptsFill{position:absolute;inset:0;width:0%;background:#f6c14d;transition:width .4s}
+#myPile .pts b,#oMyPile .pts b,#oMyPile>span b{position:relative;font-weight:inherit}
 #meIdent,#oIdent{display:flex;align-items:center;gap:8px;flex-direction:row-reverse;flex:none}
 #meIdent .ava,#oIdent .ava{width:42px;height:42px;border-radius:50%;background:#f0e3cc;color:#5e2f0e;display:flex;align-items:center;justify-content:center;font-size:21px;border:2.5px solid transparent;position:relative}
 #meIdent.turnGlow .ava,#oIdent.turnGlow .ava{border-color:#f6c14d;box-shadow:0 0 0 4px rgba(246,193,77,.35),0 0 20px rgba(246,193,77,.6)}
@@ -351,6 +357,7 @@ img,.card,.suAv,.avatarImg{image-rendering:auto;image-rendering:high-quality;bac
 .lobbyRow .lr-ava{width:38px;height:38px;border-radius:999px;background:#f0e3cc;display:flex;align-items:center;justify-content:center;font-size:19px;box-shadow:0 0 0 2px rgba(214,127,72,.6);flex:none}
 .lobbyRow .lr-nm{flex:1;font-size:13.5px;font-weight:800;color:#f9f4ed}
 .lobbyRow .lr-tag{font-size:10px;font-weight:800;color:#ffd98f}
+/* NEW CODE — منطقتا الفريقين بشاشة اللوبي الجماعي: تسمية واضحة + سحب وإفلات لتحديد الشريك */
 .teamZone{border:1.5px dashed rgba(249,244,237,.3);border-radius:18px;padding:10px 10px 4px;margin-bottom:10px;transition:border-color .2s,background .2s}
 .teamZone.dropTarget{border-color:#ffd98f;background:rgba(255,217,143,.08)}
 .teamZoneLabel{font-size:12px;font-weight:800;color:#ffd98f;margin-bottom:8px;padding:0 4px}
@@ -401,11 +408,20 @@ img,.card,.suAv,.avatarImg{image-rendering:auto;image-rendering:high-quality;bac
 .hBig.onl .live i{width:7px;height:7px;border-radius:999px;background:#7de08a;box-shadow:0 0 8px 2px rgba(125,224,138,.9);animation:glowDot 1.6s ease-in-out infinite;display:inline-block}
 .hBig.qk{background:linear-gradient(135deg,#4a2d5e,#2a1838);color:#fff7ef;box-shadow:0 5px 0 #1c1128}
 .hBig.grp{background:rgba(253,249,240,.08);color:#ccdbb2;border:2.5px solid rgba(185,202,162,.55);box-shadow:0 5px 0 rgba(0,0,0,.35)}
+/* NEW CODE — بطاقة الرتبة المضغوطة بمكان "جلسة كاملة" بالشبكة الثنائية (88px). الخلفية (بانر الرتبة) والحدود تُضبط ديناميكياً من refreshRankCard */
+.hBig.rank{overflow:hidden;color:#fff;gap:4px!important;padding:10px 10px 9px!important;border:1.5px solid rgba(255,255,255,.18);box-shadow:0 5px 0 rgba(0,0,0,.35)}
+.hBig.rank>span{text-shadow:0 1px 3px rgba(0,0,0,.65);position:relative;z-index:1}
+.hBig.rank .rcRemain{font-size:11px!important;font-weight:800;opacity:1!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.hBig.rank .rcNext{display:flex!important;align-items:center;gap:3px;font-size:10.5px!important;font-weight:800;opacity:.95!important}
+.hBig.rank .rcBar{display:block;width:100%;height:6px;border-radius:99px;background:rgba(0,0,0,.4);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15);margin-top:2px}
+.hBig.rank .rcBar i{display:block;height:100%;border-radius:99px;width:4%;transition:width .4s}
+/* NEW CODE — زر "الجلسات النشطة": صف أفقي (لا عمودي مثل باقي hBig)، أخضر غامق يطابق ألوان الطاولة (--table) */
 .hBig.sess{height:60px;flex-direction:row;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(135deg,var(--table2),var(--table));color:#e8f0da;box-shadow:0 5px 0 #171d10}
 .hBig.sess .sessIcoWrap{display:flex;align-items:center;gap:12px}
 .hBig.sess .sessCount{font-size:11px;font-weight:800;color:#c8e6a0;background:rgba(0,0,0,.28);border-radius:999px;padding:4px 11px;display:flex;align-items:center;gap:5px;white-space:nowrap;flex:none}
 .hBig.sess .sessCount i{width:7px;height:7px;border-radius:999px;background:#7de08a;box-shadow:0 0 8px 2px rgba(125,224,138,.9);animation:glowDot 1.6s ease-in-out infinite;display:inline-block}
 .hBig.sess:active{transform:translateY(4px)}
+/* بطاقة جلسة داخل نافذة الجلسات النشطة */
 .sessCard{background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:14px 16px;margin-bottom:10px}
 .sessCard .avaRow{display:flex;flex-direction:row-reverse}
 .sessCard .avaRow>span{width:26px;height:26px;border-radius:50%;margin-right:-8px;display:flex;align-items:center;justify-content:center;flex:none}
@@ -433,7 +449,7 @@ img,.card,.suAv,.avatarImg{image-rendering:auto;image-rendering:high-quality;bac
 .lgBtn.guest{background:var(--clay);color:var(--sand);font-family:var(--fh);font-size:20px;box-shadow:0 5px 0 #5e2f0e}
 .lgBtn.gg{background:#fff;color:#1c1a19;border:1.5px solid var(--line)}
 .lgBtn.ap{background:#1c1a19;color:#fff}
-.lgSoon{font-size:10px;font-weight:800;background:var(--peach);color:var(--clay);border-radius:999px;padding:1px 7px}
+.lgSoon{font-size:10px;font-weight:800;background:var(--peach);color:var(--clay);border-radius:99px;padding:1px 7px}
 #rules{position:absolute;inset:0;background:rgba(12,10,6,.6);backdrop-filter:blur(2px);z-index:60;display:flex;align-items:flex-end;padding:0}
 #rulesCard{width:100%;max-width:none;max-height:88%;background:#fdf9f0;border-radius:30px 30px 0 0;padding:0;display:flex;flex-direction:column;animation:floatIn .35s both}
 #rulesHead{display:flex;align-items:center;gap:10px;padding:calc(18px + env(safe-area-inset-top, 47px)) calc(20px + env(safe-area-inset-right, 0px)) 8px calc(20px + env(safe-area-inset-left, 0px))}
@@ -498,7 +514,9 @@ img,.card,.suAv,.avatarImg{image-rendering:auto;image-rendering:high-quality;bac
 #wLogin{width:100%;height:58px;padding:0;border-radius:999px;background:linear-gradient(#e2925c,#d67f48);color:#fff7ef;font-family:var(--fh);font-weight:400;font-size:22px;border:none;cursor:pointer;animation:ringGlow 2.2s infinite}
 #wLogin:active{transform:translateY(4px)}
 #wVer{text-align:center;color:#b39a78;font-size:11px;font-weight:700;padding:14px 0 22px}
-#wLoading{text-align:center;color:#8a6a4a;font-size:13px;font-weight:700;padding:15px}
+#wLoading{display:flex;align-items:center;justify-content:center;padding:15px}
+.wSpinner{width:26px;height:26px;border-radius:50%;border:3px solid rgba(138,106,74,.22);border-top-color:#8a6a4a;animation:wSpin .8s linear infinite}
+@keyframes wSpin{to{transform:rotate(360deg)}}
 #lgWrap{position:absolute;inset:0;display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch}
 #suWrap{position:absolute;inset:0;display:flex;flex-direction:column;padding:calc(18px + env(safe-area-inset-top, 47px)) 24px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(28px + env(safe-area-inset-bottom, 20px))}
 .suTopHead{display:flex;align-items:center;gap:10px;padding:4px 0 6px}
@@ -547,15 +565,17 @@ img,.card,.suAv,.avatarImg{image-rendering:auto;image-rendering:high-quality;bac
 #pfHead{background:radial-gradient(120% 120% at 50% 0%,#2f5138 0%,#16281c 90%);border-radius:0 0 40px 40px;padding:calc(18px + env(safe-area-inset-top, 47px)) 16px 26px;text-align:center;position:relative}
 #pfBack{position:absolute;top:calc(16px + env(safe-area-inset-top, 47px));right:16px;background:rgba(249,244,237,.14);color:#f9f4ed;border:none}
 #pfEdit{position:absolute;top:calc(16px + env(safe-area-inset-top, 47px));left:16px;background:rgba(249,244,237,.14);color:#f9f4ed;border:none;border-radius:999px;padding:0 16px;height:38px;font-family:var(--fb);font-weight:800;font-size:12.5px;cursor:pointer}
-#pfAva{width:88px;height:88px;border-radius:999px;background:#f0e3cc;box-shadow:0 0 0 3.5px #d67f48;margin:22px auto 8px;display:flex;align-items:center;justify-content:center;font-size:42px;border:none}
+#pfAva{width:88px;height:88px;border-radius:999px;background:#f0e3cc;box-shadow:0 0 0 3.5px var(--rankColor,#d67f48),0 0 22px 2px var(--rankGlow,rgba(214,127,72,.45));margin:22px auto 8px;display:flex;align-items:center;justify-content:center;font-size:42px;border:none}
 #pfName{font-family:var(--fh);font-size:28px;color:#f9f4ed}
 #pfMeta{display:flex;gap:8px;justify-content:center;margin-top:6px}
 #pfMeta span{font-size:11.5px;font-weight:800;border-radius:999px;padding:3px 12px;color:#ccdbb2;background:rgba(249,244,237,.12)}
 #pfStats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:16px 18px 0}
 .pfStat{background:#fff;border-radius:18px;padding:13px 8px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);border:none}
+.pfStatIc{display:block;font-size:17px;margin-bottom:2px}
 #pfWin{margin:12px 18px 0;background:#fff;border-radius:18px;padding:14px 16px;box-shadow:0 2px 8px rgba(0,0,0,.08);border:none}
 #pfBar{height:8px;border-radius:999px;background:#f0e3cc;overflow:hidden}
 #pfBar i{display:block;height:100%;background:linear-gradient(90deg,#8a9b6c,#7a8a5e);border-radius:999px}
+/* NEW CODE — حُذفت #pfAw و#pfAwRow و#pfAw .t بالكامل (كانت هنا) مع حذف قسم "الأوسمة المكتسبة" — تنظيف كامل */
 #pfOut{margin:20px 18px 40px;height:48px;padding:0;border-radius:999px;background:transparent;border:1.5px solid #d8c9a8;color:#a89880;font-family:var(--fb);font-weight:800;font-size:14px;cursor:pointer}
 #pfCode{background:rgba(249,244,237,.12);color:#ccdbb2}
 .pfStat b{display:block;font-family:var(--fh);font-size:24px;color:#5e2f0e}
@@ -572,8 +592,8 @@ img,.card,.suAv,.avatarImg{image-rendering:auto;image-rendering:high-quality;bac
 #frame *::-webkit-scrollbar{width:5px;height:5px}
 #frame *::-webkit-scrollbar-track{background:transparent}
 #frame *::-webkit-scrollbar-thumb{background:rgba(0,0,0,.2);border-radius:99px}
-#chList{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:10px;padding-bottom:8px;scrollbar-width:none}
-#chList::-webkit-scrollbar,#frBody::-webkit-scrollbar{display:none;width:0}
+#chList{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:10px;padding-bottom:8px;scrollbar-width:none} /* FIX — أخفينا شريط التمرير ("الخط الجانبي") كلياً + قفلنا أي تمرير أفقي */
+#chList::-webkit-scrollbar,#frBody::-webkit-scrollbar{display:none;width:0} /* FIX — نفس الإخفاء لمتصفحات ويبكت */
 #chList::-webkit-scrollbar{width:5px}
 #chList::-webkit-scrollbar-track{background:transparent}
 #chList::-webkit-scrollbar-thumb{background:rgba(249,244,237,.25);border-radius:99px}
@@ -658,7 +678,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 #miniProfileCard{width:100%;max-width:290px;background:linear-gradient(165deg,#333c22,#1c2114 78%);border-radius:24px;box-shadow:0 0 0 2px #f6c14d,0 0 28px 4px rgba(246,193,77,.28),0 24px 50px rgba(0,0,0,.55);padding:22px 18px 18px;position:relative;text-align:center;animation:mpPop .22s ease}
 @keyframes mpPop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
 #mpClose{position:absolute;top:10px;left:10px;width:28px;height:28px;border-radius:50%;background:rgba(249,244,237,.12);color:#f9f4ed;font-size:14px;display:flex;align-items:center;justify-content:center}
-#mpAva{width:72px;height:72px;border-radius:50%;margin:0 auto 10px;overflow:hidden;background:#f0e3cc;box-shadow:0 0 0 3px #f6c14d,0 0 18px 3px rgba(246,193,77,.4);display:flex;align-items:center;justify-content:center}
+#mpAva{width:72px;height:72px;border-radius:50%;margin:0 auto 10px;overflow:hidden;background:#f0e3cc;box-shadow:0 0 0 3px var(--rankColor,#f6c14d),0 0 18px 3px var(--rankGlow,rgba(246,193,77,.4));display:flex;align-items:center;justify-content:center}
 #mpName{font-family:var(--fh);font-size:19px;color:#f9f4ed;margin-bottom:6px}
 #mpBadge{display:flex;justify-content:center;margin-bottom:14px;min-height:20px}
 #mpStats{display:flex;justify-content:space-around;background:rgba(0,0,0,.22);border-radius:16px;padding:12px 4px;margin-bottom:12px}
@@ -675,6 +695,8 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<link rel="stylesheet" href="ui-polish.css">
+<script defer src="ui-polish.js"></script>
 </head>
 <body>
 <div id="frame">
@@ -706,9 +728,9 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
     <button id="invNo" style="background:none;border:1.5px solid var(--line);color:var(--mut);border-radius:99px;padding:7px 11px;font-family:var(--fb);font-weight:800;font-size:12px;cursor:pointer">رفض</button>
   </div>
   <div id="ranksModal" class="hidden" style="position:absolute;inset:12px;z-index:60;border-radius:22px;box-shadow:0 20px 50px rgba(0,0,0,.5);display:flex;flex-direction:column;overflow:hidden;transition:background .3s">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 10px">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:calc(6px + env(safe-area-inset-top, 47px)) 16px 10px"><!-- FIX — نفس معادلة زر العودة بالشات (#chWrap: 18px + المنطقة الآمنة)؛ النافذة تبدأ من 12px فتُطرح: 12+6 = 18 -->
       <span style="font-family:Lalezar;font-size:20px;color:#ffc6a5">مستويات اللاعبين</span>
-      <button id="ranksClose" style="width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#fff;font-size:15px;cursor:pointer">✕</button>
+      <button id="ranksClose" style="width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button><!-- FIX — 40px بنفس حجم زر العودة (.qBtn) ليتطابق مركزه معه -->
     </div>
     <div id="ranksList" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 14px 28px;display:flex;flex-direction:column;gap:8px"></div>
   </div>
@@ -1001,7 +1023,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
       </div>
       <div id="wBtns">
         <button id="wLogin" style="display:none">تسجيل الدخول</button>
-        <div id="wLoading">جارٍ التحميل...</div>
+        <div id="wLoading"><span class="wSpinner"></span></div>
       </div>
       <div id="wVer">النسخة 1.0 — بيتا</div>
       <div id="buildTag" style="position:absolute;bottom:4px;left:8px;font-size:9px;color:rgba(184,157,120,.55);font-weight:700"></div>
@@ -1089,9 +1111,9 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
         <div id="pfMeta"><span id="pfRankBadge"></span><span id="pfCode">@--------</span></div>
       </div>
       <div id="pfStats">
-        <div class="pfStat"><b id="stGames">0</b><span>مباراة</span></div>
-        <div class="pfStat"><b id="stWins">0</b><span>فوز</span></div>
-        <div class="pfStat"><b id="stBest">0</b><span>أعلى نتيجة</span></div>
+        <div class="pfStat"><span class="pfStatIc">🎴</span><b id="stGames">0</b><span>مباراة</span></div>
+        <div class="pfStat"><span class="pfStatIc">🏆</span><b id="stWins">0</b><span>فوز</span></div>
+        <div class="pfStat"><span class="pfStatIc">⭐</span><b id="stBest">0</b><span>أعلى نتيجة</span></div>
       </div>
       <div id="pfWin"><div class="row"><span id="stRate">0%</span><span>نسبة الفوز</span></div><div id="pfBar"><i style="width:0%"></i></div></div>
       <!-- NEW CODE — تفاصيل تقدم الرتبة -->
@@ -1129,7 +1151,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
         <button class="chTab on" data-ct="public" style="flex:1;height:38px;border:0;border-radius:999px;font-family:var(--fb);font-weight:800;font-size:14px;cursor:pointer">الشات العام</button>
         <button class="chTab" data-ct="friends" style="flex:1;height:38px;border:0;border-radius:999px;font-family:var(--fb);font-weight:800;font-size:14px;cursor:pointer">الخاص</button>
       </div>
-      <div id="chList"></div>
+      <div id="chList"></div><button id="uiNewMessages" type="button" class="hidden" aria-live="polite"></button>
       <div id="chInput"><button id="chSend">➤</button><input id="chMsg" placeholder="اكتب رسالتك..." maxlength="300"></div>
     </div>
   </div>
@@ -1137,12 +1159,12 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
   <!-- إضافة صديق -->
   <div class="screen hidden" id="addfr">
     <div style="position:absolute;inset:0;display:flex;flex-direction:column;background:#f5ead8">
-      <div style="display:flex;align-items:center;gap:12px;padding:16px 16px 12px">
+      <div class="uiAfHeader"><button class="qBtn" id="afBack" aria-label="رجوع">→</button><div><h2>أضف أصدقاءك</h2><p>ابحث عن لاعب وادعه إلى مجلسك</p></div></div>
+      <div class="uiAfSearch">
         <div style="position:relative;flex:1">
           <input id="afSearch" placeholder="ابحث باسم المستخدم @username" style="width:100%;padding:13px 44px 13px 16px;border-radius:999px;border:2px solid var(--clay3);background:#fff;font-family:var(--fb);font-weight:700;font-size:14px;outline:none;text-align:right">
           <span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--clay);font-size:16px">🔍</span>
         </div>
-        <button class="qBtn" id="afBack">→</button>
       </div>
       <div id="afResults" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:9px;padding:0 16px"></div>
       <div id="afRecentWrap" style="padding:6px 16px 18px">
@@ -1180,11 +1202,16 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
   </div>
   <!-- الصدارة -->
   <div class="screen hidden" id="lboard">
-    <div data-navholder style="position:absolute;inset:0;display:flex;flex-direction:column;background:radial-gradient(130% 90% at 50% 22%,#2f5138 0%,#16281c 85%)">
+    <div data-navholder style="position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(130% 90% at 50% 22%,#2f5138 0%,#16281c 85%)">
       <div style="display:flex;align-items:center;gap:10px;padding:calc(18px + env(safe-area-inset-top, 47px)) 16px 0">
         <button class="qBtn" id="lboardBack" style="width:40px;height:40px;border-radius:999px;border:0;background:rgba(0,0,0,.32);color:#ffc6a5;display:flex;align-items:center;justify-content:center;flex:none;font-size:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></button>
         <span style="font-family:var(--fh);font-size:25px;color:#ffc6a5;text-shadow:0 2px 0 rgba(0,0,0,.35)">الصدارة</span>
       </div>
+      <div id="lbTabs" style="display:flex;background:rgba(0,0,0,.28);border-radius:999px;padding:3px;margin:14px 16px 0;flex-shrink:0">
+        <button type="button" class="lbTab" data-lbp="week" style="flex:1;text-align:center;padding:8px 0;border-radius:999px;border:0;background:none;font-family:var(--fb);font-size:12.5px;font-weight:800;color:rgba(255,255,255,.55);cursor:pointer">الأسبوعي</button>
+        <button type="button" class="lbTab" data-lbp="rank" style="flex:1;text-align:center;padding:8px 0;border-radius:999px;border:0;background:none;font-family:var(--fb);font-size:12.5px;font-weight:800;color:rgba(255,255,255,.55);cursor:pointer">العام</button>
+      </div>
+      <div id="uiLeaderboardScroll">
       <div id="lbPrizeBanner" style="margin:14px 16px 0;padding:11px 14px;border-radius:16px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0">
         <span style="font-size:16px">🏆</span>
         <span style="font-size:12px;font-weight:800;color:#ffe3cc">توزيع جوائز الأسبوع خلال</span>
@@ -1192,6 +1219,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
       </div>
       <div id="lbPodium" style="display:flex;align-items:flex-end;justify-content:center;gap:14px;padding:24px 20px 4px;flex-shrink:0;position:relative;z-index:2"></div>
       <div id="lbList" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 18px 78px;display:flex;flex-direction:column;gap:9px;position:relative;z-index:1"></div>
+      </div>
     </div>
   </div>
   <!-- الأوسمة -->
@@ -1216,10 +1244,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
         <span style="margin-right:auto;display:flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:999px;background:#33302c;color:#f6c14d;font-weight:800;font-size:13.5px;flex:none"><i style="width:15px;height:15px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block"></i><span id="tiersGold">0</span></span>
       </div>
       <div id="tiersSubRow" style="padding:2px 18px 0;font-size:12.5px;font-weight:700;color:#8a6a4a" ><span id="tiersSub">فردي — اختر رسوم الدخول</span></div>
-      <div id="tiersModeToggle" class="hidden" style="display:flex;background:#f0e3cc;border-radius:999px;padding:4px;margin:14px 18px 0">
-        <button data-tm="online" class="tmBtn" style="flex:1;height:38px;border:0;border-radius:999px;font-family:var(--fb);font-weight:800;font-size:14px;cursor:pointer">فردي رباعي</button>
-        <button data-tm="online-team" class="tmBtn" style="flex:1;height:38px;border:0;border-radius:999px;font-family:var(--fb);font-weight:800;font-size:14px;cursor:pointer">جماعي ٢×٢</button>
-      </div>
+      <!-- REMOVED — مبدّل فردي/جماعي (#tiersModeToggle): ما بقي إلا وضع أونلاين واحد (جماعي ٢×٢) -->
       <div id="tiersList" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 18px 30px;display:flex;flex-direction:column;gap:12px"></div>
     </div>
   </div>
@@ -1256,10 +1281,10 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
       </div>
       <div class="hMenu">
         <button class="hBig onl" id="hOnl">
-          <span class="live"><i></i>1,204 يلعبون</span>
+          <span class="live"><i></i><span id="uiQuickTotal">العدد غير متاح</span></span>
           <span style="display:flex;align-items:center;gap:14px">
             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.8 2.6 4 5.6 4 9s-1.2 6.4-4 9c-2.8-2.6-4-5.6-4-9s1.2-6.4 4-9z"></path></svg>
-            <span><b style="font-size:24px">لعب سريع</b><span>بحث عن لاعبين — طاولة رباعية</span></span>
+            <span><b style="font-size:24px">لعب سريع</b><span>بحث عن لاعبين — جماعي ٢×٢</span></span><!-- FIX — الطور الفردي الأونلاين حُذف بطلب صريح؛ بقي الجماعي فقط -->
           </span>
         </button>
         <!-- NEW CODE — زر الجلسات النشطة -->
@@ -1271,10 +1296,14 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
           <span class="sessCount"><i></i><span id="sessCountNum">0</span> <span id="sessCountLbl">جلسات مباشرة</span></span>
         </button>
         <div class="row2">
-          <button class="hBig qk" id="hSession">
-            <img src="cards/QS.png" alt="" style="position:absolute;left:14px;bottom:8px;width:44px;border-radius:6px;opacity:.32;pointer-events:none;background:#fdfcf8">
-            <b style="font-size:18px;margin-top:4px">جلسة كاملة</b>
-            <span>حتى يخلص الورق</span>
+          <!-- REMOVED — زر "جلسة كاملة" (#hSession) حُذف بطلب صريح مع كامل عائلة session بالعميل -->
+          <!-- NEW CODE — بطاقة الرتبة انتقلت هنا مضغوطة (كانت شريطاً كامل العرض أسفل الشبكة). نفس المعرّفات
+               rcBadge/rcRemain/rcNextName/rcFill محفوظة حرفياً → refreshRankCard() تشتغل بلا أي تعديل (DRY) -->
+          <button class="hBig rank" id="rankCard">
+            <span id="rcBadge"></span>
+            <span class="rcRemain" id="rcRemain"></span>
+            <span class="rcNext"><span id="rcNextName"></span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg></span>
+            <span class="rcBar"><i id="rcFill"></i></span>
           </button>
           <button class="hBig grp" id="hGroup">
             <img src="cards/JS.png" alt="" style="position:absolute;left:14px;bottom:8px;width:44px;border-radius:6px;opacity:.32;pointer-events:none;background:#fdfcf8">
@@ -1284,23 +1313,6 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 
         </div>
       </div>
-      <!-- NEW CODE — بطاقة الرتبة نزلت هنا (كانت فوق القائمة) — رفعنا "لعب سريع" ليصير أول عنصر تفاعلي بعد الشعار.
-           قلّلنا الهامش العلوي من 34px لـ14px بما إنها صارت تحت قائمة أزرار مباشرة لا تحت الشعار وحده -->
-      <button id="rankCard" style="margin:14px 18px 0;background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:16px 18px;text-align:right;cursor:pointer;font-family:var(--fb);box-shadow:0 3px 0 rgba(0,0,0,.05);transition:background .3s">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-          <span style="display:flex;align-items:center;gap:9px;min-width:0">
-            <span id="rcBadge" style="flex:none"></span>
-            <span style="font-size:13.5px;font-weight:800;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="rcRemain"></span>
-          </span>
-          <span style="display:flex;align-items:center;gap:5px;font-size:13.5px;font-weight:800;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6);flex:none">
-            <span id="rcNextName"></span>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>
-          </span>
-        </div>
-        <div style="height:9px;border-radius:99px;background:rgba(0,0,0,.35);margin-top:12px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)">
-          <div id="rcFill" style="height:100%;border-radius:99px;width:4%;transition:width .4s"></div>
-        </div>
-      </button>
     </div>
   </div>
   <!-- الأصدقاء -->
@@ -1333,11 +1345,13 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
   <div class="screen hidden" id="match">
     <div id="matchWrap">
       <div id="matchHead"><button class="qBtn" id="mBack">←</button><span class="tag">طاولة رباعية</span><span class="t">لعب أونلاين</span></div>
-      <div id="mCircle">🔍</div>
-      <div id="mTitle">جارٍ البحث عن منافسين...</div>
-      <div id="mSub">تكتمل الطاولة خلال 15 ثانية — والبوتات تكمّل الناقص</div>
+      <div id="mCircle" aria-hidden="true"><span class="uiMatchCard">♠</span><span class="uiMatchCard">♦</span><span class="uiMatchCard">♣</span></div>
+      <div id="mTitle" role="status">نجهّز طاولتك…</div>
+      <div id="mSub">تبدأ المباراة بعد اكتمال أربعة لاعبين حقيقيين</div>
       <div id="mTierBadge" class="hidden" style="background:var(--clay);color:#fff;border-radius:99px;padding:7px 18px;font-family:var(--fh);font-size:16px;margin-bottom:16px;display:flex;align-items:center;gap:8px"></div>
+      <div id="uiMatchProgress"><span id="uiMatchCount" role="status">جاري تجهيز المقاعد</span><div id="uiMatchSteps" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div>
       <div id="mGrid"></div>
+      <div class="uiQuickActions"><button id="uiQuickChangeTier" type="button">تغيير المستوى</button><button id="uiQuickRetry" type="button" class="hidden">إعادة المحاولة</button></div>
       <button id="mCancel">إلغاء البحث</button>
     </div>
   </div>
@@ -1495,6 +1509,7 @@ let _fbSaveTimer=null;
 const PROFILE_COSMETIC_KEYS=['avatar','eq-theme','eq-back']; // FIX
 function _buildProfileData(){ // FIX — بناء البيانات مرة واحدة (DRY) — تُستعمل للكتابتين
   const data={name:localStorage.getItem('wb-name')||'لاعب', updated:Date.now(), email:FB.user.email||''};
+  data.name_lc=data.name.toLowerCase().trim(); // NEW CODE — أساس بحث الأصدقاء بالاسم (جنب username_lc الموجود)
   const _un=localStorage.getItem('wb-username'); if(_un)data.username_lc=_un.toLowerCase();
   for(const k of CLOUD_KEYS){
     const v=localStorage.getItem('wb-'+k);
@@ -1936,13 +1951,66 @@ function sendQuickPhrase(ph, bubbleId, panelId){
   if(ONL.active&&ONL.ws&&ONL.ws.readyState===1)oSend({type:'chat',phraseId:ph.v});
 }
 function toggleChatPanel(panelId){ $('#'+panelId).classList.toggle('hidden'); }
+// NEW CODE — إغلاق تلقائي لصندوقي المحادثة معاً (الفردي والأونلاين، أيهما مفتوح فعلاً). دالة مساعدة واحدة
+// تُستدعى من ٤ مواضع: فتح نافذة وقّف (الفردي والأونلاين)، وتحديد ورقة بدور عادي (الفردي والأونلاين) —
+// تحل تعارض z-index بين الكروت المضيئة (.waqfPlayable ٢٠٠، .sel ٩٩) وصندوق المحادثة (٦٠) بلا لمس أي منهما.
+function closeChatPanels(){
+  $('#chatPanel').classList.add('hidden');
+  $('#oChatPanel').classList.add('hidden');
+}
 // تأثير بصري عند الأكل: نقاط طائرة + توهج حلقي في مركز الميدان (لكل الأطوار)
+const UI_REDUCED_MOTION=window.matchMedia('(prefers-reduced-motion: reduce)');
+function uiCardMotion(el,frames,options,removeAfter){
+  const cleanup=()=>{if(removeAfter)el.remove()};
+  if(UI_REDUCED_MOTION.matches||document.hidden||typeof el.animate!=='function'){cleanup();return null}
+  try{
+    const animation=el.animate(frames,options);
+    animation.onfinish=cleanup;
+    animation.oncancel=cleanup;
+    if(removeAfter)setTimeout(cleanup,(options.delay||0)+(options.duration||400)+150);
+    return animation;
+  }catch(_){cleanup();return null}
+}
+function uiSoundButtons(){
+  for(const id of ['sndBtn','oSnd']){
+    const el=document.getElementById(id);if(!el)continue;
+    el.innerHTML='<svg class="uiIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4 6 8H3v8h3l5 4V4Z"/>'+(muted?'<path d="m16 9 6 6m0-6-6 6"/>':'<path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/>')+'</svg>';
+    el.setAttribute('aria-label',muted?'تشغيل الصوت':'كتم الصوت');
+    el.setAttribute('aria-pressed',String(!muted));
+  }
+}
+const UI_HAND_IDS=new WeakMap();
+function uiPresentHand(hand){
+  if(!hand)return;
+  const previous=UI_HAND_IDS.get(hand);
+  const cards=[...hand.querySelectorAll(':scope > .card[data-id]')];
+  let entering=0;
+  cards.forEach(el=>{
+    el.setAttribute('role','button');
+    el.setAttribute('aria-pressed',String(el.classList.contains('sel')));
+    const disabled=el.classList.contains('dimmed-card');
+    el.setAttribute('aria-disabled',String(disabled));el.tabIndex=disabled?-1:0;
+    if(previous&&previous.has(el.dataset.id)||el.classList.contains('sel')||el.classList.contains('waqfPlayable'))return;
+    const animation=uiCardMotion(el,[
+      {opacity:0,transform:'translate(36px,-90px) rotate(12deg) scale(.78)'},
+      {opacity:1,transform:'translate(5px,-10px) rotate(2deg) scale(1.015)',offset:.76},
+      {opacity:1,transform:'translate(0,0) rotate(0deg) scale(1)'}
+    ],{duration:360,delay:Math.min(entering++*32,224),easing:'cubic-bezier(.2,.7,.25,1)',fill:'backwards'});
+    if(animation)el.addEventListener('pointerdown',()=>animation.cancel(),{once:true});
+  });
+  UI_HAND_IDS.set(hand,new Set(cards.map(el=>el.dataset.id)));
+}
 function showEatFx(fieldSelId,points){
-  const fld=$(fieldSelId); if(!fld)return;
-  const ring=document.createElement('div'); ring.className='eatFxRing';
-  const pts=document.createElement('div'); pts.className='eatFxPts'; pts.textContent=`+${toH(points)} 🍽️`;
-  fld.appendChild(ring); fld.appendChild(pts);
-  setTimeout(()=>{ring.remove();pts.remove()},1150);
+  const fld=$(fieldSelId);if(!fld||document.hidden)return;
+  // A sibling layer survives the next field redraw and never intercepts a card.
+  const host=fld.parentElement||fld;
+  let layer=host.querySelector(':scope > .uiEatLayer');
+  if(!layer){layer=document.createElement('div');layer.className='uiEatLayer';layer.style.cssText='position:absolute;inset:0;pointer-events:none;z-index:310';host.appendChild(layer)}
+  layer.replaceChildren();
+  const pts=document.createElement('div');pts.className='eatFxPts';pts.textContent='+'+toH(points)+' نقطة';
+  layer.appendChild(pts);
+  if(!UI_REDUCED_MOTION.matches){const ring=document.createElement('div');ring.className='eatFxRing';layer.appendChild(ring)}
+  setTimeout(()=>layer.replaceChildren(),950);
 }
 buildChatPanel('chatPanel', ph=>sendQuickPhrase(ph,'chatBubble','chatPanel'));
 buildChatPanel('oChatQuickTab', ph=>sendQuickPhrase(ph,'oChatBubble','oChatPanel')); // FIX — الحاوية المستهدفة صارت التبويب تحديداً، لا الصندوق كاملاً
@@ -2021,9 +2089,10 @@ const PIPS={
 const SUIT_CODE={'♠':'S','♥':'H','♦':'D','♣':'C'};
 function cardEl(c,cls){
   const d=document.createElement('div');
-  if(c===null){d.className='card back '+(cls||'');return d}
+  if(c===null){d.className='card back '+(cls||'');d.setAttribute('aria-hidden','true');return d}
   const red=(c.suit==='♥'||c.suit==='♦');
   d.className='card '+(c.rank===JOKER?'jok':(red?'rd':'bk'))+' '+(cls||'');
+  d.setAttribute('aria-label',c.rank===JOKER?'جوكر':rankAr(c.rank)+' '+({'♠':'بستوني','♥':'قلوب','♦':'ديناري','♣':'سباتي'}[c.suit]||''));
   d.dataset.id=c.id;d.dataset.rank=c.rank; // NEW CODE — يخدم اكتشاف هدف السحب والإفلات لاحقاً بلا أي تكرار منطق
   const img=c.rank===JOKER?'court_JOKER.png':`cards/${rankTxt(c.rank)}${SUIT_CODE[c.suit]}.png`;
   d.style.backgroundImage=`url('${img}')`;
@@ -2109,6 +2178,8 @@ const partnerOf=i=>G.opts.mode==='team'?(i+2)%4:null;
 const isOpp=(a,b)=>a!==b&&partnerOf(a)!==b;
 const pileTop=p=>p.pile.length?p.pile[p.pile.length-1]:null;
 const pilePts=p=>p.pile.reduce((s,c)=>s+cardVal(c),0);
+function goalPct(pts,goal){ return goal?Math.max(0,Math.min(100,Math.round(pts/goal*100))):0; } // NEW CODE — نسبة الاقتراب من هدف النقاط، ٠ لو ما فيه هدف
+function teamPts(p){ return p.team==null?pilePts(p):G.players.filter(q=>q.team===p.team).reduce((s,q)=>s+pilePts(q),0); } // NEW CODE — بالجماعي: مجموع نقاط الفريق كامل (نفس معادلة انتهاء الجولة)؛ بالفردي: نقطتي لحالي
 
 /* ================= الحركات القانونية ================= */
 function matchesField(rank){ // أرقام الميدان التي تطابق ورقة بهذا الرقم
@@ -2240,7 +2311,7 @@ function passTurn(pIdx){
     G.passStreak=0;
     if(G.deck.length){
       let guard=G.deck.length;
-      while(guard-- > 0 && G.deck[0].rank===JOKER)G.deck.push(G.deck.shift());
+      while(guard-->0&&G.deck[0].rank===JOKER)G.deck.push(G.deck.shift()); // الجوكر لا يُقلب للميدان
       if(G.deck[0]&&G.deck[0].rank!==JOKER){const c=G.deck.shift();G.field.push(c);toast('انقلبت ورقة من الرزمة للميدان')}
     }
     else{endRound();return}
@@ -2301,6 +2372,7 @@ function runWaqf(contested,rank,holder,src){
     const st={contested,rank,holder,src:src||'',lastGrab:'',t:5.0,done:false,endgame:isEndgame(),onlyBidder:isEndgame()?(holder+1)%4:null};
     G.phase='waqf'; G.waqf=st;
     show('waqf',true); renderWaqf(); // نافذة وقّف تفتح بعد كل أكلة — دائماً
+    closeChatPanels(); // NEW CODE — تعارض z-index بين الكروت وصندوق المحادثة المفتوح
     SFX.waqfOpen();
     planBots();
     const iv=setInterval(()=>{
@@ -2695,6 +2767,7 @@ function show(id,overlay){
   if(!overlay){for(const s of['setup','game','waqf','results','onl','login','signup','gcomplete','home','match','welcome','profile','chat','friends','addfr','tiers','shop','lboard','awardsScr'])$('#'+s).classList.add('hidden')}
   else{$('#waqf').classList.add('hidden');$('#results').classList.add('hidden')}
   $('#'+id).classList.remove('hidden');
+  quickScreen(id,overlay); // QUICK-MATCH — فتح/غلق مراقبة العدد عند التنقل فقط
 }
 let toastT;
 function toast(txt){
@@ -2759,13 +2832,13 @@ function oppHandFanHTML(handCount){ // FIX
   return html; // FIX
 }
 function renderSeatCard(el,opts){
-  const {turn,holderBadgeHtml,avaHtml,nameHtml,handCount,pts,pileTopCard,pileBadgeHtml,onAvaClick}=opts; // NEW CODE — أضفنا onAvaClick اختياري
+  const {turn,holderBadgeHtml,avaHtml,nameHtml,handCount,pts,pct,pileTopCard,pileBadgeHtml,onAvaClick}=opts; // NEW CODE — أضفنا onAvaClick اختياري. FIX — أضفنا pct (نسبة التعبئة نحو هدف النقاط، ٠ لو ما فيه هدف)
   el.classList.toggle('turnGlow',turn);
   el.innerHTML=`
     ${turn?'<div class="bubble">دوره</div>':''}${holderBadgeHtml||''}
     <div class="avaWrap"><div class="oppHandFan">${oppHandFanHTML(handCount)}</div><div class="ava"${onAvaClick?' style="cursor:pointer"':''}>${avaHtml}</div><div class="handCountBadge">${handCount}</div></div>
     <div class="nm">${nameHtml}</div>
-    <div class="inf"><span class="pts">${pts} نقطة</span></div>
+    <div class="inf"><span class="pts"><i class="ptsFill" style="width:${pct||0}%"></i><b>${pts} نقطة</b></span></div>
     <div class="pileBox"></div>`;
   el.querySelector('.ava').onclick=onAvaClick||null; // NEW CODE — الفردي لا يمرر هذا المعامل إطلاقاً، فسلوكه يبقى كما هو تماماً
   const pb=el.querySelector('.pileBox');
@@ -2781,7 +2854,7 @@ const MiniProfile={
     if(this.el)return this.el;
     const ov=document.createElement('div');
     ov.id='miniProfileOverlay'; ov.className='hidden';
-    ov.innerHTML=`<div id="miniProfileCard">
+    ov.innerHTML=`<div id="miniProfileCard" role="dialog" aria-modal="true" aria-labelledby="mpName">
       <button id="mpClose" aria-label="إغلاق">✕</button>
       <div id="mpAva"></div><div id="mpName"></div><div id="mpBadge"></div>
       <div id="mpStats">
@@ -2823,6 +2896,7 @@ const MiniProfile={
     const ov=this.el;
     if(!d||!d.ok){ ov.querySelector('#mpRankLine').textContent='تعذّر تحميل البيانات'; return; }
     ov.querySelector('#mpBadge').innerHTML=rankBadgeHTML(d.rank||0,11);
+    applyRankColor(ov.querySelector('#mpAva'),d.rank||0); // NEW CODE — لون الحلقة حسب رتبة اللاعب الحقيقية (بعد وصولها، لا وقت العرض الأولي)
     ov.querySelector('#mpWins').textContent=toH(d.wins||0);
     ov.querySelector('#mpLoss').textContent=toH(d.losses||0);
     const rate=d.games?Math.round((d.wins||0)/d.games*100):0;
@@ -2917,71 +2991,52 @@ const FIELD_DIR_XY={0:{x:0,y:210},1:{x:120,y:-150},2:{x:0,y:-250},3:{x:-120,y:-1
 function renderScatterField(container,fieldArr,opts){
   const {prevMap,sel,myTurn,dirFor,lastEaterSeat,onMatchClick,emptyHtml}=opts;
   const curIds=new Set(fieldArr.map(f=>f.id));
-  const newMap=new Map();
-  container.innerHTML='';
-  if(!fieldArr.length&&!(prevMap&&prevMap.size))container.innerHTML=emptyHtml;
-  const fieldRankCounts={};
-  for(const f of fieldArr)fieldRankCounts[f.rank]=(fieldRankCounts[f.rank]||0)+1;
-  const layout=fieldLayout(fieldArr.length); // NEW CODE — يُحسب مرة وحدة لكل رسمة حسب العدد الحالي بالضبط
+  const existing=new Map([...container.children].filter(el=>el.classList.contains('card')).map(el=>[el.dataset.id,el]));
+  for(const child of [...container.children])if(!child.classList.contains('card')||!curIds.has(Number(child.dataset.id)))child.remove();
+  const newMap=new Map(),counts={};
+  for(const f of fieldArr)counts[f.rank]=(counts[f.rank]||0)+1;
+  const layout=fieldLayout(fieldArr.length);
   fieldArr.forEach((f,i)=>{
-    const el=cardEl(f,'sm');
-    el.style.width='42px';el.style.height='60px'; // NEW CODE — قياس صريح 42×60 كما طلبت (بدل .sm الافتراضي 44×62)
-    const p=layout[i]; // FIX — من الحساب الديناميكي أعلاه بدل FIELD_SCATTER[i%12] الثابت
-    const match=sel&&(sel.rank===f.rank||sel.rank===JOKER);
-    const lift=(match&&myTurn)?-10:0;
-    const fx=p.x,fy=p.y+lift;
-    const isDup=fieldRankCounts[f.rank]>=2; // رتبة مكررة (زوج فأكثر) بالميدان — أولوية ظهور أعلى
+    const el=existing.get(String(f.id))||cardEl(f,'sm');
+    const p=layout[i],match=!!(sel&&(sel.rank===f.rank||sel.rank===JOKER)&&myTurn);
+    const x=p.x,y=p.y+(match?-10:0);
+    el.style.width='42px';el.style.height='60px';
     el.style.position='absolute';el.style.left='50%';el.style.top='50%';
-    el.style.zIndex=match?200:(isDup?100+i:i+1);
-    const finalT=`translate(-50%,-50%) translate(${fx}px,${fy}px) rotate(${p.r}deg) scale(${p.scale||1})`;
+    el.style.zIndex=match?200:(counts[f.rank]>=2?100+i:i+1);
+    el.classList.toggle('match',match);
+    el.onclick=match?()=>onMatchClick(f):null;
+    const finalT=`translate(-50%,-50%) translate(${x}px,${y}px) rotate(${p.r}deg) scale(${p.scale||1})`;
     el.style.transform=finalT;
-    if(match&&myTurn){el.classList.add('match');el.onclick=()=>onMatchClick(f)}
-    container.appendChild(el);
-    newMap.set(f.id,{x:fx,y:fy,r:p.r});
-    // ورقة جديدة (ما كانت بالميدان بالإطار السابق) — تدخل من اتجاه من رماها، وتستقر بموضعها الطبيعي
+    if(el.parentElement!==container)container.appendChild(el);
+    newMap.set(f.id,{x,y,r:p.r,card:f});
     if(prevMap&&!prevMap.has(f.id)){
-      const d=dirFor(f.by);
-      const toss=(Math.random()*8-4); // FIX — تباين عشوائي طفيف ±4deg بميلان الطيران، يستقر بالدوران الطبيعي (p.r) عند الوصول — يوهم برمية حقيقية لا وضعاً آلياً
-      el.animate([
-        {transform:`translate(-50%,-50%) translate(${fx+d.x*.55}px,${fy+d.y*.55}px) rotate(${p.r+toss}deg) scale(.55)`,opacity:.2},
+      const d=dirFor(f.by)||{x:0,y:160};
+      uiCardMotion(el,[
+        {transform:`translate(-50%,-50%) translate(${x+d.x*.6}px,${y+d.y*.6}px) rotate(${p.r-16}deg) scale(.9)`,opacity:.25},
+        {transform:`translate(-50%,-50%) translate(${x+d.x*.18}px,${y+d.y*.18-12}px) rotate(${p.r-3}deg) scale(1.07)`,opacity:1,offset:.66},
         {transform:finalT,opacity:1}
-      ],{duration:340,easing:'cubic-bezier(.25,.7,.3,1.15)'});
+      ],{duration:390,easing:'cubic-bezier(.18,.7,.22,1)'});
     }
   });
-  // أوراق انسحبت من الميدان (اتأكلت) — نطيّرها كشبح بتجاه من أكلها قبل ما تختفي فعليًا
-  // FIX — القاتل الحقيقي لأنيميشن الأكل: الأشباح كانت تُلحق بحاوية الميدان *نفسها* — وأي رسم تالٍ (يصل خلال
-  // أجزاء الثانية بعد الأكلة: الفاعل يستلم ردّ فعله + بثّاً عاماً متتاليين، والبوتات قد تزايد فوراً فتبثّ
-  // حالة جديدة) يمسح الحاوية بالكامل (innerHTML='') فيقتل الأشباح قبل ما يظهر منها إطار واحد — لذلك "ما يصير
-  // أنيميشن وقتها" ثم "يبين بحدث لاحق" (بقايا خرائط قديمة تُفسَّر رحيلاً متأخراً). الحل: طبقة أشباح دائمة
-  // (أخت للحاوية داخل الغلاف #fieldWrap/#oFieldWrap — نفس الصندوق بالضبط، ولا شيء يمسحه أبداً) — الشبح يكمل
-  // طيرانه كاملاً (٣٢٠مل) مهما توالت الرسومات بعده، ويحذف نفسه بنفسه عند الانتهاء. تخدم الفردي والأونلاين معاً.
-  if(prevMap){
-    let ghostLayer=null; // FIX
-    const par=container.parentElement; // FIX
-    if(par){ // FIX
-      ghostLayer=par.querySelector(':scope > .fieldGhostLayer'); // FIX
-      if(!ghostLayer){ // FIX
-        ghostLayer=document.createElement('div'); ghostLayer.className='fieldGhostLayer'; // FIX
-        ghostLayer.style.cssText='position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:300'; // FIX — inset:0 يطابق صندوق الميدان تماماً (الغلاف بنفس القياس والحاوية 100%×100%)
-        par.appendChild(ghostLayer); // FIX
-      } // FIX
-    } // FIX
-    const ghostHost=ghostLayer||container; // FIX — احتياط نظري فقط لو ما فيه أب
-    for(const [id,info] of prevMap){
-      if(curIds.has(id))continue;
-      const d=dirFor(lastEaterSeat);
+  if(!fieldArr.length)container.innerHTML=emptyHtml;
+  if(prevMap&&!UI_REDUCED_MOTION.matches&&!document.hidden){
+    const parent=container.parentElement;
+    let layer=parent&&parent.querySelector(':scope > .fieldGhostLayer');
+    if(parent&&!layer){layer=document.createElement('div');layer.className='fieldGhostLayer';layer.style.cssText='position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:300';parent.appendChild(layer)}
+    const removed=[...prevMap].filter(([id])=>!curIds.has(id));
+    removed.forEach(([id,info],i)=>{
+      const d=dirFor(lastEaterSeat)||{x:0,y:160};
       const ghost=cardEl(info.card,'sm');
-      // FIX — نفس تصحيح القياس أعلاه: .sm الطبيعي (44×62) بدل تحديد 40×56 يدوي، كي الشبح يطابق حجم الورقة الحقيقية اللي كان عليها قبل ما يطير
-      ghost.style.position='absolute';ghost.style.left='50%';ghost.style.top='50%';ghost.style.zIndex=300;ghost.style.pointerEvents='none';
-      ghost.style.transform=`translate(-50%,-50%) translate(${info.x}px,${info.y}px) rotate(${info.r}deg)`;
-      ghostHost.appendChild(ghost); // FIX — كانت container.appendChild(ghost)
-      ghost.animate([
-        {transform:`translate(-50%,-50%) translate(${info.x}px,${info.y}px) rotate(${info.r}deg) scale(1)`,opacity:1},
-        {transform:`translate(-50%,-50%) translate(${info.x+d.x}px,${info.y+d.y}px) rotate(${info.r}deg) scale(.5)`,opacity:0}
-      ],{duration:320,easing:'cubic-bezier(.4,0,.7,.5)'}).onfinish=()=>ghost.remove();
-    }
+      ghost.style.cssText+=';position:absolute;left:50%;top:50%;width:42px;height:60px;pointer-events:none;z-index:300';
+      (layer||container).appendChild(ghost);
+      uiCardMotion(ghost,[
+        {transform:`translate(-50%,-50%) translate(${info.x}px,${info.y}px) rotate(${info.r}deg)`,opacity:1},
+        {transform:`translate(-50%,-50%) translate(${(i%4)*2}px,${-18+(i%4)*2}px) rotate(${(i%3)-1}deg) scale(1.04)`,opacity:1,offset:.38},
+        {transform:`translate(-50%,-50%) translate(${d.x}px,${d.y}px) rotate(0deg) scale(.45)`,opacity:0}
+      ],{duration:480,delay:Math.min(i*14,84),easing:'cubic-bezier(.35,0,.5,1)',fill:'both'},true);
+    });
   }
-  return new Map(fieldArr.map(f=>[f.id,{...newMap.get(f.id),card:f}]));
+  return newMap;
 }
 
 // اتجاه دخول كومة "وقّف" حسب مقعد صاحب كل ورقة (وحدة اتجاه فقط) — مشترك بين الفردي والأونلاين
@@ -3017,10 +3072,10 @@ function renderBidStack(container,cards,opts){
     el.style.boxShadow='0 8px 16px rgba(0,0,0,.6)';
     if(!prevIds.has(c.id)){
       const ax=dirForCard(c);
-      el.animate([
+      uiCardMotion(el,[
         {transform:`translate(-50%,-50%) translate(${jit.dx+ax.x*STACK_ENTER_DIST}px,${jit.dy+ax.y*STACK_ENTER_DIST}px) rotate(${jit.rot}deg) scale(.5)`,opacity:.2},
         {transform:finalT,opacity:1}
-      ],{duration:400,easing:'cubic-bezier(.16,.84,.28,1)'});
+      ],{duration:280,easing:'cubic-bezier(.22,.75,.25,1)'});
     }
     container.appendChild(el);
   });
@@ -3054,7 +3109,8 @@ function render(){
       avaHtml:p.ava,
       nameHtml:`${p.name}${p.team!=null&&p.team===G.players[0].team?' 🤝':''}`,
       handCount:toH(p.hand.length),
-      pts:toH(pilePts(p)),
+      pts:toH(teamPts(p)), // FIX — كان pilePts(p): بالجماعي يعرض الآن مجموع الفريق (يطابق نسبة التعبئة)
+      pct:goalPct(teamPts(p),G.tierGoal), // NEW CODE
       pileTopCard:pileTop(p),
       pileBadgeHtml:(run>1?`<div class="runB">×${toH(run)}</div>`:'')+`<div class="cnt">${toH(p.pile.length)}</div>`
     });
@@ -3065,7 +3121,7 @@ function render(){
   id.classList.toggle('turnGlow',myTurn);
   const _av=myAvatar();const _avTxt=AV_PRO.find(a=>a.id===_av)?'🛡️':_av;
   id.innerHTML=`${myTurn?'<div class="bubble">دورك</div>':''}<div class="nm">${me.name}${me.team!=null?' 🤝':''}</div><div class="ava">${_avTxt}</div>`;
-  const mp=$('#myPile');mp.innerHTML=`<span class="pts">${toH(pilePts(me))} نقطة</span>`;
+  const mp=$('#myPile');mp.innerHTML=`<span class="pts"><i class="ptsFill" style="width:${goalPct(teamPts(me),G.tierGoal)}%"></i><b>${toH(teamPts(me))} نقطة</b></span>`; // FIX — كان pilePts(me) بلا تعبئة
   const mt=pileTop(me);
   if(mt){const w=document.createElement('div');w.style.position='relative';w.appendChild(cardEl(mt,'sm'));
     const myRun=topRunLen(me.pile);
@@ -3115,9 +3171,10 @@ function render(){
     const canEat=c.rank!==JOKER&&(matchesField(c.rank)||stealTargets(0,c,ts.allowPartner).length)
               || c.rank===JOKER&&(G.field.length||stealTargets(0,c,ts.allowPartner).length);
     if(myTurn&&canEat)el.classList.add('eatable');
-    el.onclick=()=>{if(!myTurn)return;SFX.tick();G.sel=(sel&&sel.id===c.id)?null:c;render()};
+    el.onclick=()=>{if(!myTurn)return;SFX.tick();const wasSel=sel&&sel.id===c.id;G.sel=wasSel?null:c;if(!wasSel)closeChatPanels();render()}; // NEW CODE — إغلاق المحادثة عند تحديد ورقة جديدة فقط (.sel يتعارض z-index مع المحادثة المفتوحة)
     hd.appendChild(el);
   });
+  uiPresentHand(hd);
   // مؤقت الدور: يعمل فقط في دور الإنسان
   if(myTurn){ if(!G.turnDL)startTurnTimer(); }
   else stopTurnTimer();
@@ -3234,7 +3291,7 @@ function segWire(id,key,cast){
 }
 segWire('modeSeg','mode');
 $('#startBtn').onclick=()=>{ac();opts.name=$('#nameIn').value.trim()||'أنت';try{localStorage.setItem('wb-opts',JSON.stringify(opts))}catch(e){};newGame({...opts})};
-$('#sndBtn').onclick=()=>{muted=!muted;$('#sndBtn').textContent=muted?'🔇':'🔊';if(!muted){ac();SFX.tick()}};
+$('#sndBtn').onclick=()=>{muted=!muted;uiSoundButtons();if(!muted){ac();SFX.tick()}};
 $('#throwBtn').onclick=()=>{if(G.sel&&!G.busy&&G.turn===0&&G.phase==='turn'){const ta=throwAllowed(0,G.sel);if(ta.ok)doThrow(0,G.sel)}};
 $('#cancelBtn').onclick=()=>{G.sel=null;render()};
 $('#meWaqfBtn').onclick=()=>{if(!$('#meWaqfBtn').disabled)humanBid()};
@@ -3297,10 +3354,6 @@ async function withIdToken(payload){
 // ===== إعداد خادم الطاولات =====
 // للتبديل لخادم Cloudflare: ضع رابط الـWorker هنا (مثل 'waggif-baloot.اسمك.workers.dev')
 // اتركه على Higgsfield حالياً حتى يجهز نشر Cloudflare.
-// ⚠️ NEW CODE — علم مؤقت لإصدار App Store الأول (بلا أي شراء داخل التطبيق): يُخفي المتجر بالكامل (كل
-// أقسامه: باقات الذهب الحقيقية وشراء الثيمات) من التنقّل والزر الرئيسي معاً. بعد قبول أبل للنسخة الأولى،
-// غيّر القيمة لـ true وارفع تحديثاً — سطر واحد فقط، بلا حاجة للبحث عن أي تعليقات متفرقة بالكود.
-const SHOW_STORE=false;
 const GAME_SRV='waggif-baloot.samisalimhdmaol.workers.dev';
 // ============ إعلانات AdMob — التكامل الفعلي منقول لكتلة <script type="module"> منفصلة تماماً (ابحث عن
 // "تكامل AdMob الفعلي" بأسفل الصفحة) — لا يمكن وضع import داخل هذا السكربت الكلاسيكي، يكسر الملف كاملاً فوراً
@@ -3551,6 +3604,7 @@ function oHandle(msg){
     if(nm)oAction({t:'setName',name:nm});
   }
   renderOnl();
+  if(MATCH.on)renderMatch(); // QUICK-MATCH — تحديث البحث عند وصول حالة فعلية، بلا interval
 }
 function oConnect(){
   if(ONL.transport==='poll'){oPollLoop();return}
@@ -3766,7 +3820,7 @@ function attachHandCardDrag(el,c,isMyTurnNow,opts){
       CardDrag.started=true;
       playVoice('dragSound');
       // نحدد الورقة الآن (نفس أثر الضغط) لتنكشف علامات match/stealable الحقيقية بالميدان والكوم — إلا بوضع وقّف (لا تحديد، الهدف واحد: الميدان)
-      if(!waqfBid&&(!ONL.sel||ONL.sel.id!==c.id)){ONL.sel=c;renderOnl();
+      if(!waqfBid&&(!ONL.sel||ONL.sel.id!==c.id)){ONL.sel=c;closeChatPanels();renderOnl(); // NEW CODE — نفس إغلاق المحادثة، مسار التحديد ببدء السحب
         const fresh=document.querySelector('#oHand [data-id="'+c.id+'"]');
         if(fresh){try{fresh.setPointerCapture(e.pointerId)}catch(_){} CardDrag.el=fresh;}
       }
@@ -3844,6 +3898,10 @@ function renderOnl(){
   $('#onlWait').classList.add('hidden');
   if(st==='over'){renderOver();return} // النتيجة تحاول تظهر حتى لو الـview ما وصل كامل بعد
   let v=ONL.view; if(!v)return;
+  // NEW CODE — إغلاق تلقائي للمحادثة عند دخول مرحلة وقّف تحديداً (كشف انتقال حالة، نفس نمط ONL._lastSettleSeq
+  // بالأسفل): الكروت المضيئة (.waqfPlayable) تتعارض z-index مع صندوق المحادثة المفتوح لو تُرك مفتوحاً
+  if(v.phase==='waqf'&&ONL._lastPhase!=='waqf')closeChatPanels();
+  ONL._lastPhase=v.phase;
   // FIX — المحادثة (حرة + اختصارات معاً، بنفس الصندوق الآن) تظهر فقط بالجلسات الودية، تُخفى كلياً بالمنافسات الرسمية
   // FIX — المحادثة (حرة + اختصارات معاً، بنفس الصندوق الآن) تظهر فقط لمن هو مقعود فعلياً بجلسة ودية — المتفرج
   // (v.me فارغة تحديداً لغير المقعودين حسب viewFor بالسيرفر) لا يراها إطلاقاً، بغض النظر عن نوع الجلسة —
@@ -3878,11 +3936,11 @@ function renderOnl(){
         g.style.width='51px'; g.style.height='72px'; g.style.zIndex='400'; g.style.pointerEvents='none'; // FIX — نفس قياس ورق الكومة
         g.style.transform='rotate('+(j*4)+'deg)'; // FIX
         document.body.appendChild(g); // FIX — مثبّتة على مستوى الصفحة: محصّنة من أي إعادة رسم
-        const anim=g.animate([ // FIX
+        const anim=uiCardMotion(g,[ // FIX
           {transform:'translate(0,0) rotate('+(j*4)+'deg) scale(1)',opacity:1}, // FIX
           {transform:'translate('+(u.x*240)+'px,'+(u.y*240)+'px) rotate('+(j*4)+'deg) scale(.55)',opacity:0} // FIX
-        ],{duration:420,easing:'cubic-bezier(.4,0,.7,.5)',fill:'forwards'}); // FIX — forwards: تبقى مختفية حتى الحذف، بلا ومضة رجوع
-        anim.onfinish=()=>{try{g.remove()}catch(_){}}; // FIX
+        ],{duration:360,easing:'cubic-bezier(.4,0,.7,1)',fill:'forwards'},true); // FIX — forwards: تبقى مختفية حتى الحذف، بلا ومضة رجوع
+        if(anim)anim.onfinish=()=>{try{g.remove()}catch(_){}}; // FIX
         setTimeout(()=>{try{g.remove()}catch(_){}} ,800); // FIX — صمام الأمان
       }); // FIX
     }catch(e){} // FIX
@@ -3930,6 +3988,7 @@ function renderOnl(){
   const seatEls={1:$('#oSeatR'),2:$('#oSeat'),3:$('#oSeatL')};
   const isBot=pid=>v.humans.indexOf(pid)<0;
   const teamOf=pid=>v.seats.indexOf(pid)%2;
+  const teamCombinedPts=pid=>v.mode==='team'?v.seats.filter(q=>teamOf(q)===teamOf(pid)).reduce((s,q)=>s+(v.piles[q]?v.piles[q].points:0),0):v.piles[pid].points; // NEW CODE — بالجماعي: مجموع نقاط الفريق كامل (نفس معادلة انتهاء الجولة بـgameLogic.js)؛ بالفردي: نقطتي لحالي
   // مقاعد الخصوم الثلاثة (منطق مشترك مع الفردي عبر renderSeatCard)
   for(const k of [1,2,3]){
     const pid=seatAt(k), el=seatEls[k];
@@ -3946,7 +4005,8 @@ function renderOnl(){
       avaHtml:avatarHTML(v.avatars&&v.avatars[pid],52), // الإصلاح الجوهري: كانت isBot(pid)?botAvatarFor(pid):... — botAvatarFor دالة منفصلة قديمة تتجاهل v.avatars كلياً (تعتمد فقط على رقم البوت)، فصور البوتات الجديدة من السيرفر ما كانت تظهر إطلاقاً
       nameHtml:`${v.names[pid]||'لاعب'}${mate?' <span style="color:var(--peach2)">(شريكك)</span>':''}`,
       handCount:v.handCounts[pid],
-      pts:p.points,
+      pts:toH(teamCombinedPts(pid)), // FIX — كان p.points: بالجماعي يعرض الآن مجموع الفريق (يطابق نسبة التعبئة)
+      pct:goalPct(teamCombinedPts(pid),v.tierGoal), // NEW CODE
       pileTopCard:p.top,
       pileBadgeHtml:`<span class="pileCntX">×${toH(p.count)}</span>`,
       onAvaClick:seatUid?(()=>MiniProfile.open(seatUid,seatName,seatAva)):null // NEW CODE — بوت أو بلا uid موثّق = بلا تفاعل إطلاقاً
@@ -4023,7 +4083,8 @@ function renderOnl(){
   id.classList.toggle('turnGlow',myTurn);
   id.innerHTML=`${myTurn?'<div class="bubble">دورك</div>':''}<div class="nm">${seated?(v.names[me]||'أنت'):(v.names[bottomPid]||'لاعب')}</div><div class="ava">${seated?avatarHTML(myAvatar(),52):avatarHTML(v.avatars&&v.avatars[bottomPid],52)}</div>`;
   const myPile=v.piles[bottomPid]||{points:0,count:0,top:null};
-  const mp=$('#oMyPile');mp.innerHTML=`<span class="pts">${myPile.points} نقطة</span>`;
+  const myDisplayPts=v.piles[bottomPid]?teamCombinedPts(bottomPid):0; // FIX — كان myPile.points فقط: بالجماعي يعرض الآن مجموع الفريق
+  const mp=$('#oMyPile');mp.innerHTML=`<span class="pts"><i class="ptsFill" style="width:${goalPct(myDisplayPts,v.tierGoal)}%"></i><b>${myDisplayPts} نقطة</b></span>`;
   if(myPile.top){const w2=document.createElement('div');w2.style.cssText='display:flex;align-items:center;gap:4px';w2.appendChild(cardEl(myPile.top,'sm'));
     w2.insertAdjacentHTML('beforeend',`<span class="pileCntX">×${toH(myPile.count)}</span>`);mp.appendChild(w2)}
   // يدي — تباعد ديناميكي يملأ الشاشة (نفس الفردي)
@@ -4078,13 +4139,17 @@ function renderOnl(){
         if(!myTurn)return;SFX.tick();
         const tg=cardTargets(c);
         if(tg.length===1&&!(ONL.sel&&ONL.sel.id===c.id)){ONL.sel=null;oAction(tg[0]);return} // NEW CODE — هدف وحيد: الورقة تروح لهدفها مباشرة بنقرة واحدة
-        ONL.sel=(ONL.sel&&ONL.sel.id===c.id)?null:c;renderOnl(); // أكثر من هدف (أو لا هدف): تحديد كالمعتاد ليختار اللاعب/يرمي
+        const wasSel=ONL.sel&&ONL.sel.id===c.id;
+        ONL.sel=wasSel?null:c;
+        if(!wasSel)closeChatPanels(); // NEW CODE — إغلاق المحادثة عند تحديد ورقة جديدة فقط (.sel يتعارض z-index مع المحادثة المفتوحة)
+        renderOnl(); // أكثر من هدف (أو لا هدف): تحديد كالمعتاد ليختار اللاعب/يرمي
       };
       attachHandCardDrag(el,c,()=>myTurn); // سحب وإفلات، يعمل جنب النقر أعلاه دون أي تعارض
     }
     hd.appendChild(el);
   }
   }
+  uiPresentHand(hd);
   } // FIX — إغلاق شرط "لا سحب جارٍ" — التلميح/الأزرار تحتها تكمل تحدّثها الطبيعي حتى أثناء السحب (لا تمس عناصر اليد)
   // التلميح والأزرار
   const hint=$('#oHint'),tb=$('#oThrow'),pb2=$('#oPass');
@@ -4463,7 +4528,7 @@ $('#oExit').onclick=()=>{
 $('#oMenu').onclick=leaveOnline;
 // FIX — معالج زر الإعادة حُذف مع الزر
 // FIX — كان هنا معالج $('#copyBtn').onclick؛ الزر والعنصر أُزيلا من اللوبي معاً (رابط النسخ غير محتاج)
-$('#oSnd').onclick=()=>{muted=!muted;$('#oSnd').textContent=muted?'🔇':'🔊';$('#sndBtn').textContent=$('#oSnd').textContent;if(!muted){ac();SFX.tick()}};
+$('#oSnd').onclick=()=>{muted=!muted;uiSoundButtons();if(!muted){ac();SFX.tick()}};
 
 /* ================= الدخول والرئيسية والقوانين والبحث ================= */
 
@@ -4472,7 +4537,7 @@ $('#oSnd').onclick=()=>{muted=!muted;$('#oSnd').textContent=muted?'🔇':'🔊';
 // طاولات: تغيّر تدرّج خلفية الطاولة. ظهر الورق: يغيّر تدرّج ظهر البطاقة.
 const BGV='?v64'; // FIX — استبدلت صورة ثيم المجلس الشعبي بالصورة المتّفق عليها فعلياً (كانت الموقعة تعرض صورة أقدم من قبل هذا الاتفاق) // FIX — كسر كاش صورة المجلس الشعبي: أُعيدت بدقتها الأصلية بلا تكبير مصطنع (كان يسبب بكسلة/تنعيماً) // FIX — صورة المجلس الشعبي الجديدة (بالنوافذ الظاهرة) // كسر كاش الصور — حدّثه مع كل تغيير لملفات bg
 const SHOP_THEMES=[
-  {id:'theme-popular', name:'المجلس الشعبي', icon:'🏺', price:10000, grad:'radial-gradient(130% 90% at 50% 30%, #6e3a20 0%, #3a2012 85%)', bg:'bg/majlis-popular.jpg'+BGV, preview:'bg/majlis-popular-preview.jpg'+BGV}, // NEW CODE — لم تعد مجانية، صار للسجاد الفارسي هذا الدور
+  {id:'theme-popular', name:'المجلس الشعبي', icon:'🏺', price:10000, grad:'radial-gradient(130% 90% at 50% 30%, #6e3a20 0%, #3a2012 85%)', bg:'ui-art/majlis-popular-realistic.png', preview:'ui-art/majlis-popular-realistic.png', table:'ui-art/table-popular.svg'}, // NEW CODE — لم تعد مجانية، صار للسجاد الفارسي هذا الدور
   // FIX — حُذفت الديوانية والنفود والواحة والنادي: بقي المجلس الشعبي والسجّاد الفارسي فقط بطلبك
   {id:'theme-persian',name:'السجّاد الفارسي', icon:'🪆', price:0, grad:'radial-gradient(130% 90% at 50% 30%, #6b2a22 0%, #2a1010 85%)', bg:'bg/majlis-persian.jpg'+BGV, preview:'bg/majlis-persian-preview.jpg'+BGV}, // NEW CODE — صارت الخلفية المجانية الافتراضية الجديدة بدل المجلس الشعبي، بطاولة table-center الافتراضية
 ];
@@ -4492,7 +4557,11 @@ function shopEquipped(kind){
   const dflt=kind==='theme'?'theme-persian':'back-default'; // NEW CODE — الافتراضي الجديد للاعبين اللي ما اختاروا ثيم صراحة
   try{return localStorage.getItem('wb-eq-'+kind)||dflt}catch(e){return dflt}
 }
-function openShop(){ if(!SHOW_STORE)return; renderShop(); renderAdRewardBtn(); show('shop'); mountNav('shop','shop'); } // FIX — أضفنا renderAdRewardBtn // NEW CODE — يتجاهل أي استدعاء بالكامل لما SHOW_STORE=false (يحمي كل نقاط الدخول دفعة واحدة، بلا تكرار الفحص بكل واحدة)
+// NEW CODE (توحيد نسخة آيفون) — علم إظهار المتجر: كان ثابتاً يدوياً (SHOW_STORE=false) بنسخة آيفون فقط لإخفاء المتجر (باقات Paymob
+// + الثيمات) عن App Store، لأن آبل تمنع أي دفع خارجي لعناصر داخل التطبيق وتشترط IAP الرسمي. بملف واحد للمنصات كلها يصير
+// العلم بالمنصة: ظاهر على الويب/أندرويد، مخفي على iOS تلقائياً — بلا أي تعديل يدوي عند كل رفعة.
+const SHOW_STORE=!(window.Capacitor&&window.Capacitor.getPlatform&&window.Capacitor.getPlatform()==='ios');
+function openShop(){ if(!SHOW_STORE)return; renderShop(); renderAdRewardBtn(); show('shop'); mountNav('shop','shop'); } // FIX — أضفنا renderAdRewardBtn // NEW CODE — يتجاهل أي استدعاء بالكامل لما SHOW_STORE=false
 function renderShop(){
   $('#shopGold').textContent=ST.n('gold').toLocaleString('en');
   renderGoldPackages(); // NEW CODE — باقات الذهب الحقيقية (Paymob)، منفصلة عن حلقة الثيمات أسفلها
@@ -4504,6 +4573,7 @@ function renderShop(){
     const isOwned=owned.includes(it.id)||it.price===0;
     const isEq=eq===it.id;
     const card=document.createElement('div');
+    card.dataset.theme=it.id;
     card.style.cssText='border-radius:20px;background:#fff;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.25)'+(isEq?';box-shadow:0 0 0 2.5px #d67f48,0 4px 14px rgba(0,0,0,.25)':'');
     card.innerHTML=`
       <div style="width:100%;height:104px;background:${it.preview?`url('${it.preview}') center/cover no-repeat`:(it.bg?`url('${it.bg}') center/cover no-repeat`:it.grad)};display:flex;align-items:center;justify-content:center;font-size:30px">${(it.preview||it.bg)?'':it.icon}</div>
@@ -4570,7 +4640,7 @@ function checkPaymentReturn(){ // NEW CODE
   }catch(e){} // NEW CODE
 } // NEW CODE
 // تطبيق الطاولة المفعّلة على شاشتي اللعب
-function applyEquippedTheme(){
+function applyEquippedTheme(uiThemeOverride){
   try{
     let th=SHOP_THEMES.find(t=>t.id===shopEquipped('theme'));
     if(!th){ th=SHOP_THEMES.find(t=>t.id==='theme-persian'); try{localStorage.setItem('wb-eq-theme','theme-persian');}catch(e){} } // FIX — أي ثيم محذوف مركَّباً يُثبَّت على الفارسي بالتخزين نفسه
@@ -4581,6 +4651,13 @@ function applyEquippedTheme(){
     if(o)o.style.background=bgVal;
     const tableUrl=th.table||'bg/table-center.png'+(typeof BGV!=='undefined'?BGV:''); // NEW CODE — طاولة الثيم الخاصة، أو الافتراضية
     document.querySelectorAll('.tableWood').forEach(el=>{el.style.backgroundImage=`url('${tableUrl}')`});
+    // Device-local visual preference; ownership, shop and server data stay unchanged.
+    let visual=uiThemeOverride||'emerald';
+    if(!uiThemeOverride){try{visual=localStorage.getItem('wb-ui-table')||'emerald'}catch(e){}}
+    if(['emerald','midnight','royal'].includes(visual)){
+      for(const screen of [g,o])if(screen)screen.style.background=`url('ui-art/room-${visual}.svg') center/cover no-repeat`;
+      document.querySelectorAll('.tableWood').forEach(el=>{el.style.backgroundImage=`url('ui-art/table-${visual}.svg')`});
+    }
   }catch(e){}
 }
 /* ================= الصدارة ================= */
@@ -4596,14 +4673,22 @@ const LB_CHAMPIONS=[
   {name:'خالد',      ava:'🎯', gold:5200,  lv:11, rpts:650},
 ];
 let viewedProfile=null;
+let uiProfileReturn='home';
+function uiRememberProfileOrigin(){
+  const current=document.querySelector('.screen:not(.hidden):not(#profile)');
+  if(current)uiProfileReturn=current.id;
+}
 // عرض ملف لاعب آخر (من الصدارة أو الطاولة) مع زر إضافته صديقاً
 function sentReqsSet(){ try{return new Set(JSON.parse(localStorage.getItem('wb-sent-reqs')||'[]'))}catch(e){return new Set()} }
 function markReqSent(uid){ if(!uid)return; const s=sentReqsSet(); s.add(uid); localStorage.setItem('wb-sent-reqs',JSON.stringify([...s])); }
 function hasSentReq(uid){ return !!uid && sentReqsSet().has(uid); }
 function viewProfile(player){
+  uiRememberProfileOrigin();
+  $('#profile').classList.add('uiOtherProfile');
   viewedProfile=player;
   $('#pfAva').innerHTML=avatarHTML(player.ava||'🎭',80);
   $('#pfAva').style.cursor='default';$('#pfAva').onclick=null;
+  applyRankColor($('#pfAva'),player.rpts||0); // NEW CODE — لون الحلقة حسب رتبة اللاعب المعروض
   $('#pfName').textContent=player.name||'لاعب';
   $('#pfRankBadge').innerHTML=rankBadgeHTML(player.rpts||0,12); // NEW CODE — المعيار الوحيد الآن، رفعنا الحجم شوي (كان ١٠.٥)
   $('#pfCode').textContent=player.code?('#'+player.code):'';
@@ -4616,9 +4701,9 @@ function viewProfile(player){
     $('#stRate').textContent=rate+'%';
     $('#pfBar').querySelector('i').style.width=rate+'%';
   }else{
-    // إحصاءات اللاعب غير متاحة — نعرض ذهبه كبديل تقريبي
-    $('#stBest').textContent=player.gold!=null?toH(player.gold):'—';
-    $('#stRate').textContent=player.gold!=null?'ذهب':'';
+    // Unavailable statistics stay empty; gold is not a highest-score value.
+    $('#stBest').textContent='—';
+    $('#stRate').textContent='—';
     $('#pfBar').querySelector('i').style.width='0%';
   }
   $('#pfHistory').style.display='none';
@@ -4667,7 +4752,7 @@ function viewProfile(player){
   show('profile');
 }
 const WEEKLY_PRIZES={1:20000,2:15000,3:10000,4:5000}; // جوائز نهاية الأسبوع حسب الترتيب
-const LB_PERIOD='week'; // الصدارة العامة أسبوعية فقط، حسب النقاط
+let LB_ACTIVE_PERIOD='rank'; // NEW CODE — تبويب الصدارة النشط: 'rank' (العام، افتراضي) أو 'week' (الأسبوعي)
 let LB_COUNTDOWN_TIMER=null;
 function updateLbCountdown(){
   const end=periodStart('week')+7*24*60*60*1000; // نهاية الأسبوع الحالي = بداية الأسبوع القادم
@@ -4676,16 +4761,25 @@ function updateLbCountdown(){
   const el=$('#lbCountdown'); if(!el)return;
   el.textContent=days>0?`${toH(days)}ي ${toH(hrs)}س`:hrs>0?`${toH(hrs)}س ${toH(mins)}د`:`${toH(mins)}د`;
 }
-async function openBoard(){
+async function openBoard(period){
+  period=period||LB_ACTIVE_PERIOD; LB_ACTIVE_PERIOD=period; // NEW CODE — التبويب المطلوب، أو آخر تبويب نشط
   // FIX — كانت الشاشة لا تُعرض إلا *بعد* اكتمال جلب أفضل ٥٠ لاعباً من فايرستور — فيحس المستخدم إن الضغطة
   // ما اشتغلت. الآن: الشاشة تفتح فوراً بحالة "جارٍ التحميل"، والجلب يكمل بالخلفية ويعبّي القائمة لحظة وصوله.
   show('lboard'); mountNav('lboard','board'); // FIX — أول شي
   { const l0=$('#lbList'); if(l0)l0.innerHTML='<div style="text-align:center;color:#b9caa2;font-weight:700;font-size:13px;padding:30px">...جارٍ التحميل</div>'; } // FIX
-  const field='weekPts';
-  ensurePeriodFresh(LB_PERIOD);
-  updateLbCountdown();
-  clearInterval(LB_COUNTDOWN_TIMER);
-  LB_COUNTDOWN_TIMER=setInterval(updateLbCountdown,30000);
+  document.querySelectorAll('.lbTab').forEach(b=>{ // NEW CODE — تفعيل الزر المطابق بصرياً
+    const on=b.dataset.lbp===period;
+    b.classList.toggle('on',on);
+    b.style.background=on?'#f6c14d':'none'; b.style.color=on?'#412402':'rgba(255,255,255,.55)';
+  });
+  $('#lbPrizeBanner').classList.toggle('hidden',period!=='week'); // NEW CODE — بانر جائزة الأسبوع يخص تبويب الأسبوعي فقط
+  const field=period==='week'?'weekPts':'rank'; // FIX — كانت ثابتة weekPts؛ الآن حسب التبويب
+  if(period==='week'){ // FIX — ensurePeriodFresh والعدّاد التنازلي يخصّان الأسبوعي فقط، لا معنى لهما بالعام
+    ensurePeriodFresh(period);
+    updateLbCountdown();
+    clearInterval(LB_COUNTDOWN_TIMER);
+    LB_COUNTDOWN_TIMER=setInterval(updateLbCountdown,30000);
+  }else clearInterval(LB_COUNTDOWN_TIMER);
   const myUid=FB.user?FB.user.uid:null;
   const me={name:localStorage.getItem('wb-name')||'أنت', ava:myAvatar(), gold:ST.n('gold'), lv:ST.n('level')||1, rpts:parseInt(localStorage.getItem('wb-'+field)||'0',10), lifeRank:ST.n('rank'), me:true, pid:myUid};
   let all=[];
@@ -4704,6 +4798,15 @@ async function openBoard(){
   all.push(me);
   all.sort((a,b)=>b.rpts-a.rpts);
   all.forEach((p,i)=>p.rank=i+1);
+  // FIX — الرتبة أعلاه صحيحة لأي لاعب من الخمسين المجلوبين فعلياً (موضعه الحقيقي بالترتيب العام)، لكن غلط لي أنا
+  // لو كنت خارج أفضل ٥٠ أصلاً (تصير مجرد موضعي داخل قائمة صغيرة، تقارب ٥٠ دائماً بغض النظر عن رتبتي الحقيقية).
+  // نحسب رتبتي الفعلية بعدّ كل من نقاطه أعلى مني بكامل القاعدة (بلا تحميل بيانات، استعلام عدّ فقط).
+  if(FB.ready&&FB.db&&myUid){
+    try{
+      const aboveSnap=await FB.db.collection('players').where(field,'>',me.rpts).count().get();
+      me.rank=aboveSnap.data().count+1;
+    }catch(e){ console.warn('true rank count failed',e); }
+  }
   // المنصة (أول ثلاثة)
   const pod=$('#lbPodium');pod.innerHTML='';
   const order=[1,0,2]; // الثاني، الأول، الثالث (شكل منصة)
@@ -4724,7 +4827,7 @@ async function openBoard(){
       <div style="font-size:${slot===1?'13.5px':'12.5px'};font-weight:800;color:#f9f4ed;max-width:${slot===1?92:80}px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.name)}${p.me?' (أنت)':''}</div>
       <div>${rankBadgeHTML(p.lifeRank,8.5)}</div>
       <div style="display:flex;align-items:center;gap:4px;font-size:${slot===1?'12px':'11.5px'};font-weight:800;color:#ccdbb2"><span style="font-size:${slot===1?'13px':'12px'}">🏅</span>${toH(p.rpts)} نقطة</div>
-      <div style="display:flex;align-items:center;gap:3px;font-size:11px;font-weight:800;color:#f6c14d"><i style="width:10px;height:10px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block;flex:none"></i>+${toH(WEEKLY_PRIZES[p.rank])}</div>
+      ${period==='week'?`<div style="display:flex;align-items:center;gap:3px;font-size:11px;font-weight:800;color:#f6c14d"><i style="width:10px;height:10px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block;flex:none"></i>+${toH(WEEKLY_PRIZES[p.rank])}</div>`:''}
       <div style="width:100%;height:${heights[slot]}px;border-radius:14px 14px 0 0;background:${blockBg[slot]};display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:${slot===1?30:24}px;color:${blockTxt[slot]}">${toH(p.rank)}</div>
     </div>`;
     pod.appendChild(podEl);
@@ -4733,12 +4836,13 @@ async function openBoard(){
   const list=$('#lbList');list.innerHTML='';
   all.slice(3).forEach(p=>{
     const row=document.createElement('div');
+    row.className='uiRankRow'+(p.me?' uiSelf':'');
     row.style.cssText=`display:flex;align-items:center;gap:11px;background:${p.me?'#fbe9dc':'#fff'};border-radius:18px;padding:10px 14px;cursor:pointer${p.me?';box-shadow:0 0 0 2.5px #d67f48':';box-shadow:0 2px 8px rgba(0,0,0,.15)'}`;
     row.innerHTML=`<div style="font-family:var(--fh);font-size:17px;color:${p.me?'#b2622d':'#b39a78'};width:26px;text-align:center">${toH(p.rank)}</div>
       <div style="width:40px;height:40px;border-radius:999px;background:#f0e3cc;display:flex;align-items:center;justify-content:center;overflow:hidden">${avatarHTML(p.ava,40)}</div>
       <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:800;color:#201e1d">${esc(p.name)}${p.me?' (أنت)':''}</div>${rankBadgeHTML(p.lifeRank,9)}</div>
       <div style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:800;color:#8a6a4a"><span style="font-size:14px">🏅</span>${toH(p.rpts)} نقطة</div>
-      ${WEEKLY_PRIZES[p.rank]?`<div style="display:flex;align-items:center;gap:3px;font-size:12px;font-weight:800;color:#b2622d;flex:none"><i style="width:11px;height:11px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block;flex:none"></i>+${toH(WEEKLY_PRIZES[p.rank])}</div>`:''}`;
+      ${period==='week'&&WEEKLY_PRIZES[p.rank]?`<div style="display:flex;align-items:center;gap:3px;font-size:12px;font-weight:800;color:#b2622d;flex:none"><i style="width:11px;height:11px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block;flex:none"></i>+${toH(WEEKLY_PRIZES[p.rank])}</div>`:''}`;
     row.onclick=()=>{ if(p.me)openProfile(); else viewProfile({name:p.name,ava:p.ava,lv:p.lv,gold:p.gold,rpts:p.lifeRank,pid:p.pid||null,uid:p.pid||null,games:p.games,wins:p.wins,best:p.best,achievement:p.achievement,achievementDate:p.achievementDate}); }; // NEW CODE — أضفنا achievement/achievementDate
     list.appendChild(row);
   });
@@ -4782,7 +4886,7 @@ function openAwards(){
 const NAV_ITEMS=[
   {k:'home',   label:'الرئيسية', svg:'<path d="M3 11l9-8 9 8"></path><path d="M5 10v10h14V10"></path>', go:()=>goHome()},
   {k:'chat',   label:'الدردشة',  svg:'<path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"></path>', go:()=>openChat()},
-  ...(SHOW_STORE?[{k:'shop',   label:'المتجر',   svg:'<path d="M6 8h12l1 12H5z"></path><path d="M9 8V6a3 3 0 016 0v2"></path>', go:()=>openShop()}]:[]), // NEW CODE — يُستثنى كلياً من شريط التنقّل لما SHOW_STORE=false
+  ...(SHOW_STORE?[{k:'shop',   label:'المتجر',   svg:'<path d="M6 8h12l1 12H5z"></path><path d="M9 8V6a3 3 0 016 0v2"></path>', go:()=>openShop()}]:[]), // NEW CODE — يُستثنى كلياً من شريط التنقّل لما SHOW_STORE=false (iOS)
   {k:'board',  label:'الصدارة',  svg:'<path d="M7 4h10v5a5 5 0 01-10 0z"></path><path d="M7 6H4v2a3 3 0 003 3M17 6h3v2a3 3 0 01-3 3"></path><path d="M12 14v3M8 21h8M10 21v-2a2 2 0 014 0v2"></path>', go:()=>openBoard()},
   {k:'friends',label:'الأصدقاء', svg:'<circle cx="9" cy="8" r="3.5"></circle><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"></path><circle cx="17" cy="9" r="2.5"></circle><path d="M21 20c0-2.8-1.8-5-4.5-5"></path>', go:()=>openFriends()},
 ];
@@ -4797,8 +4901,8 @@ function showPageLoader(label,then){
   },650); /* FIX — رُفعت من 420 بطلبك: مدة أطول تغطي تحميل البيانات (الصدارة مثلاً) — والشاشة تحتها تفتح وتتعبى بالخلفية خلالها */
 }
 function navHTML(active){
-  return `<div class="navBar">`+NAV_ITEMS.map(it=>
-    `<button class="navBtn${it.k===active?' on':''}" data-nav="${it.k}"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round">${it.svg}</svg>${it.label}</button>`
+  return `<div class="navBar" role="navigation" aria-label="القائمة الرئيسية">`+NAV_ITEMS.map(it=>
+    `<button class="navBtn${it.k===active?' on':''}" data-nav="${it.k}" aria-label="${it.label}"${it.k===active?' aria-current="page"':''}><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round">${it.svg}</svg>${it.label}</button>`
   ).join('')+`</div>`;
 }
 function mountNav(screenId,active){
@@ -4812,6 +4916,7 @@ function mountNav(screenId,active){
   }
   bar.querySelectorAll('.navBtn').forEach(b=>{
     b.classList.toggle('on',b.dataset.nav===active);
+      if(b.dataset.nav===active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
     b.onclick=()=>{
       const it=NAV_ITEMS.find(x=>x.k===b.dataset.nav);
       if(!it||b.dataset.nav===active)return;
@@ -5033,14 +5138,14 @@ const DAILY_REWARDS=[100,200,300,400,500,600,700];
 /* ================= نظام المستويات التنافسي ================= */
 // كل مستوى: حد أدنى من النقاط + اسم + لون مميّز (يُطبَّق كخلفية شارة صغيرة جنب كل لاعب)
 const PLAYER_RANKS=[
-  {min:0,     name:'جديد',   color:'#8b857c', banner:'ranks/tier0.jpg'},
-  {min:1000,  name:'مبتدئ',  color:'#7a8a5e', banner:'ranks/tier1.jpg'},
-  {min:2000,  name:'صاعد',   color:'#4a90d9', banner:'ranks/tier2.jpg'},
-  {min:3000,  name:'متقدم',  color:'#d67f48', banner:'ranks/tier3.jpg'},
-  {min:4000,  name:'أسطوري', color:'#c0392b', banner:'ranks/tier4.jpg'},
-  {min:6000,  name:'فنان',   color:'#8e44ad', banner:'ranks/tier5.jpg'},
-  {min:7000,  name:'نخبوي',  color:'#2c3e50', banner:'ranks/tier6.jpg'},
-  {min:10000, name:'نابغة',  color:'#f6c14d', textColor:'#8a5a10', banner:'ranks/tier7.jpg'},
+  {min:0,     name:'جديد',   color:'#8b857c', banner:'ui-art/rank-banner-0.svg'},
+  {min:1000,  name:'مبتدئ',  color:'#7a8a5e', banner:'ui-art/rank-banner-1.svg'},
+  {min:2000,  name:'صاعد',   color:'#4a90d9', banner:'ui-art/rank-banner-2.svg'},
+  {min:3000,  name:'متقدم',  color:'#d67f48', banner:'ui-art/rank-banner-3.svg'},
+  {min:4000,  name:'أسطوري', color:'#c0392b', banner:'ui-art/rank-banner-4.svg'},
+  {min:6000,  name:'فنان',   color:'#8e44ad', banner:'ui-art/rank-banner-5.svg'},
+  {min:7000,  name:'نخبوي',  color:'#2c3e50', banner:'ui-art/rank-banner-6.svg'},
+  {min:10000, name:'نابغة',  color:'#f6c14d', textColor:'#8a5a10', banner:'ui-art/rank-banner-7.svg'},
 ];
 function rankFor(pts){
   pts=pts||0;
@@ -5048,12 +5153,21 @@ function rankFor(pts){
   for(const x of PLAYER_RANKS){ if(pts>=x.min)r=x; else break; }
   return r;
 }
+function hexToRgba(hex,a){ const n=parseInt(hex.slice(1),16); return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`; } // NEW CODE
+// NEW CODE — يطبّق لون رتبة اللاعب (PLAYER_RANKS) على حلقة أي عنصر أفاتار عبر متغيّرَي CSS (--rankColor/--rankGlow)
+// دالة مساعدة واحدة، مشتركة بين ملفي الشخصي وملفات اللاعبين الآخرين والبطاقة المصغّرة — DRY، بلا تكرار حساب اللون
+function applyRankColor(el,pts){
+  if(!el)return;
+  const color=rankFor(pts||0).color;
+  el.style.setProperty('--rankColor',color);
+  el.style.setProperty('--rankGlow',hexToRgba(color,.45));
+}
 // شارة رتبة صغيرة (نص+لون) لعرضها جنب أي اسم بالتطبيق
 function rankBadgeHTML(pts,size){
   const r=rankFor(pts); size=size||10.5;
   const txt=r.textColor||r.color;
-  const dot=Math.max(6,Math.round(size*0.7)); // NEW CODE — حجم المربع اللوني متناسب مع حجم الشارة
-  return `<span style="display:inline-flex;align-items:center;gap:5px;background:${r.color}22;color:${txt};font-size:${size}px;font-weight:800;border-radius:999px;padding:1px 8px 1px 6px;white-space:nowrap"><i style="display:inline-block;width:${dot}px;height:${dot}px;border-radius:3px;background:${r.color};flex:none"></i>${r.name}</span>`; // NEW CODE — أضفنا مربع لوني صريح <i> قبل اسم الرتبة
+  const tier=PLAYER_RANKS.indexOf(r);
+  return `<span class="uiRankBadge" style="--badge-color:${r.color};color:${txt};font-size:${size}px"><img src="ui-art/rank-${tier}.svg" width="24" height="24" alt="" aria-hidden="true">${r.name}</span>`;
 }
 // فرق النقاط عند نهاية الجولة: فوز يزيد، خسارة تنقص (بحد أدنى صفر) — يُستدعى بنهاية كل جولة تنافسية
 const RANK_WIN_PTS=50, RANK_LOSS_PTS=30;
@@ -5287,10 +5401,11 @@ function goHome(){ clearInterval(LB_COUNTDOWN_TIMER); refreshHome(); show('home'
 function toast2(t){ try{toast(t)}catch(e){alert(t)} }
 $('#hRules').onclick=()=>{SFX.tick();$('#rules').classList.remove('hidden')};
 $('#rulesX').onclick=$('#rulesOk').onclick=()=>$('#rules').classList.add('hidden');
-$('#hSession').onclick=()=>{SFX.tick();openTiers('session')}; // جلسة كاملة أونلاين: حتى يخلص الورق
+// REMOVED — $('#hSession') (جلسة كاملة) حُذف مع كامل عائلة session بالعميل
 $('#tiersBack').onclick=()=>goHome();
 $('#shopBack').onclick=()=>goHome();
 $('#lboardBack').onclick=()=>goHome();
+document.querySelectorAll('.lbTab').forEach(b=>b.onclick=()=>openBoard(b.dataset.lbp)); // NEW CODE — تبديل تبويبي الأسبوعي/العام
 $('#awardsBack').onclick=()=>goHome();
 // تبويبات المتجر
 // ربط نقر .shopTab محذوف — شريط التبويبات نفسه اتحذف من الـHTML
@@ -5299,70 +5414,125 @@ $('#hGroup').onclick=()=>{ // FIX — تحقق الذهب قبل الدخول ل
   SFX.tick(); history.replaceState(null,'',location.pathname); ONL.pendingTier=null; ONL.pendingMode=null; enterOnline();
 };
 
-/* ---- البحث عن لاعبين: غرفة عامة زمنية ---- */
+/* ---- QUICK-MATCH: بحث حقيقي تدفع تحديثاته أحداث WebSocket فقط ---- */
 let MATCH={on:false,iv:null};
-$('#hOnl').onclick=()=>{SFX.tick();openTiers('online')};
-$('#mBack').onclick=$('#mCancel').onclick=()=>{ MATCH.on=false; if(MATCH.iv){clearInterval(MATCH.iv);MATCH.iv=null} leaveOnline(); goHome(); };
-function enterMatch(tierKey, mode){
-  MATCH.on=true; MATCH._lastSnap=null;
-  const bucket=Math.floor(Date.now()/25000); // نافذة 25 ثانية تجمع الباحثين
-  // غرفة عامة خاصة بكل طبقة+وضع، كي يتطابق أصحاب نفس الرهان معاً
-  const suffix=tierKey?('-'+tierKey+'-'+(mode||'solo')):'';
-  const params=new URLSearchParams(); params.set('room','pub'+suffix+'-'+bucket);
-  history.replaceState(null,'',location.pathname+'?'+params.toString());
-  enterOnline();               // ينضم للغرفة العامة
-  show('match'); renderMatch();
-  if(MATCH.iv)clearInterval(MATCH.iv);
-  MATCH.iv=setInterval(renderMatch,600);
+var QUICK_SEARCH={ws:null,wanted:false,tier:null,counts:null,seats:[],you:null,assigned:false,error:'',generation:0};
+function quickCounts(){
+  if(!QUICK_SEARCH)return;
+  const counts=QUICK_SEARCH.counts,total=counts?Object.values(counts).reduce((a,b)=>a+b,0):null;
+  const totalEl=document.getElementById('uiQuickTotal');
+  if(totalEl)totalEl.textContent=total===null?'العدد غير متاح':toH(total)+' يبحثون الآن';
+  document.querySelectorAll('[data-quick-tier]').forEach(el=>{
+    el.textContent=counts?'يبحث الآن: '+toH(counts[el.dataset.quickTier]||0)+' لاعبين':'تعذّر تحديث العدد';
+  });
+}
+function quickClose(){
+  const ws=QUICK_SEARCH.ws;QUICK_SEARCH.ws=null;QUICK_SEARCH.generation++;
+  QUICK_SEARCH.counts=null;QUICK_SEARCH.seats=[];
+  if(ws){ws.onclose=null;ws.onerror=null;try{ws.close(1000,'leaving queue');}catch(_){}}
+  quickCounts();
+}
+function quickScreen(id,overlay){
+  if(!QUICK_SEARCH||overlay)return;
+  if(id!=='match'&&MATCH.on&&!QUICK_SEARCH.assigned){MATCH.on=false;QUICK_SEARCH.tier=null;quickClose();}
+  QUICK_SEARCH.wanted=['home','tiers','match'].includes(id)&&!QUICK_SEARCH.assigned;
+  if(QUICK_SEARCH.wanted)quickConnect();else quickClose();
+}
+function quickConnect(){
+  if(!QUICK_SEARCH.wanted||document.hidden||QUICK_SEARCH.ws)return;
+  const url=onSrvHost()?((location.protocol==='https:'?'wss://':'ws://')+location.host+'/quick-match'):('wss://'+GAME_SRV+'/quick-match');
+  let ws;try{ws=new WebSocket(url);}catch(_){QUICK_SEARCH.error='تعذّر الاتصال؛ اضغط إعادة المحاولة';quickCounts();return;}
+  QUICK_SEARCH.ws=ws;const generation=++QUICK_SEARCH.generation;
+  ws.onopen=()=>{if(QUICK_SEARCH.ws===ws&&QUICK_SEARCH.tier)quickJoin();};
+  ws.onmessage=event=>{
+    if(QUICK_SEARCH.ws!==ws||generation!==QUICK_SEARCH.generation)return;
+    let msg;try{msg=JSON.parse(event.data);}catch(_){return;}
+    if(msg.type==='quick-state'){
+      const keys=['beginner','amateur','pro','elite','legend'];
+      if(!msg.counts||keys.some(k=>!Number.isSafeInteger(msg.counts[k])||msg.counts[k]<0))return;
+      QUICK_SEARCH.counts=Object.fromEntries(keys.map(k=>[k,msg.counts[k]]));
+      QUICK_SEARCH.seats=Array.isArray(msg.seats)?msg.seats.slice(0,4):[];QUICK_SEARCH.you=msg.you;
+      if(msg.tier)QUICK_SEARCH.error='';
+      quickCounts();if(MATCH.on)renderMatch();
+    }else if(msg.type==='quick-match'){
+      if(!MATCH.on||msg.tier!==QUICK_SEARCH.tier||!/^pub-live-(beginner|amateur|pro|elite|legend)-[a-f0-9-]{36}$/.test(msg.room))return;
+      QUICK_SEARCH.assigned=true;QUICK_SEARCH.tier=null;quickClose();
+      const params=new URLSearchParams();params.set('room',msg.room);
+      history.replaceState(null,'',location.pathname+'?'+params.toString());
+      enterOnline();show('match');renderMatch();
+    }else if(msg.type==='quick-error'){
+      QUICK_SEARCH.error=String(msg.error||'تعذّر البحث');QUICK_SEARCH.tier=null;
+      quickClose();if(MATCH.on)renderMatch();else toast2(QUICK_SEARCH.error);
+    }
+  };
+  const disconnected=()=>{
+    if(QUICK_SEARCH.ws!==ws)return;
+    quickClose();QUICK_SEARCH.error='انقطع البحث؛ اضغط إعادة المحاولة';
+    if(MATCH.on)renderMatch();
+  };
+  ws.onclose=disconnected;ws.onerror=disconnected;
+}
+async function quickJoin(){
+  const ws=QUICK_SEARCH.ws,tier=QUICK_SEARCH.tier,generation=QUICK_SEARCH.generation;
+  if(!ws||ws.readyState!==1||!tier)return;
+  let pid=localStorage.getItem('wb-player-id')||sessionStorage.getItem('wb-player-id');
+  if(!pid){pid='p-'+crypto.randomUUID();localStorage.setItem('wb-player-id',pid);}
+  const msg=await withIdToken({type:'quick-join',tier,playerId:pid,
+    name:localStorage.getItem('wb-name')||'لاعب',avatar:myAvatar()});
+  if(ws!==QUICK_SEARCH.ws||generation!==QUICK_SEARCH.generation||tier!==QUICK_SEARCH.tier||!MATCH.on)return;
+  if(!msg.idToken){QUICK_SEARCH.error='سجّل الدخول للبحث عن مباراة';QUICK_SEARCH.tier=null;renderMatch();return;}
+  try{ws.send(JSON.stringify(msg));}catch(_){QUICK_SEARCH.error='تعذّر إرسال البحث';quickClose();renderMatch();}
+}
+function cancelQuickMatch(changeTier){
+  const assigned=QUICK_SEARCH.assigned;
+  MATCH.on=false;QUICK_SEARCH.tier=null;QUICK_SEARCH.wanted=false;quickClose();
+  if(assigned&&ONL.active)leaveOnline();
+  QUICK_SEARCH.assigned=false;QUICK_SEARCH.error='';
+  if(changeTier)openTiers('online-team');else goHome();
+}
+$('#hOnl').onclick=()=>{SFX.tick();openTiers('online-team')};
+$('#mBack').onclick=$('#mCancel').onclick=()=>cancelQuickMatch(false);
+$('#uiQuickChangeTier').onclick=()=>cancelQuickMatch(true);
+$('#uiQuickRetry').onclick=()=>{
+  if(QUICK_SEARCH.assigned){cancelQuickMatch(true);return;}
+  if(ONL.pendingTier)enterMatch(ONL.pendingTier.key,'team');
+};
+window.addEventListener('online',()=>{if(QUICK_SEARCH.wanted)quickConnect();});
+window.addEventListener('offline',()=>{if(QUICK_SEARCH.wanted){quickClose();QUICK_SEARCH.error='انقطع الاتصال؛ سيُستأنف البحث عند رجوع الشبكة';if(MATCH.on)renderMatch();}});
+window.addEventListener('pagehide',()=>quickClose());
+window.addEventListener('pageshow',()=>{if(QUICK_SEARCH.wanted)quickConnect();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&QUICK_SEARCH.wanted)quickConnect();});
+function enterMatch(tierKey,mode){
+  if(mode!=='team'){toast2('اللعب السريع متاح جماعي ٢×٢');return;}
+  if(!['beginner','amateur','pro','elite','legend'].includes(tierKey))return;
+  MATCH.on=true;QUICK_SEARCH.assigned=false;QUICK_SEARCH.error='';QUICK_SEARCH.seats=[];QUICK_SEARCH.tier=tierKey;
+  show('match');
+  if(QUICK_SEARCH.ws&&QUICK_SEARCH.ws.readyState===1)quickJoin();
+  renderMatch();
 }
 function renderMatch(){
   if(!MATCH.on)return;
-  // المنشئ يرسل إعداد الطبقة مرة واحدة (قبل بدء الجولة تلقائياً)
+  if(QUICK_SEARCH.assigned&&(ONL.status==='playing'||ONL.status==='over')){
+    MATCH.on=false;QUICK_SEARCH.assigned=false;applyEquippedTheme();show('onl');renderOnl();return;
+  }
+  const tb=$('#mTierBadge'),tier=ONL.pendingTier;
+  if(tier){tb.classList.remove('hidden');tb.textContent='طبقة '+tier.name+' · دخول '+toH(tier.fee)+' 🪙 · ربح '+toH(tier.win);}else tb.classList.add('hidden');
+  const assigned=QUICK_SEARCH.assigned;
   const lb=ONL.lobby||{};
-  if(ONL.pendingTier&&lb.creator===ONL.you&&(!lb.tier||lb.tier.key!==ONL.pendingTier.key)){
-    withIdToken({type:'config',mode:ONL.pendingMode||'solo',tier:ONL.pendingTier}).then(oSend);
-  }
-  // إذا بدأت الجولة انتقل للطاولة
-  if(ONL.status==='playing'||ONL.status==='over'){
-    MATCH.on=false; clearInterval(MATCH.iv); MATCH.iv=null;
-    applyEquippedTheme();
-    show('onl'); renderOnl(); return;
-  }
-  // شارة الطبقة
-  const tb=$('#mTierBadge');
-  const activeTier=(ONL.lobby&&ONL.lobby.tier)||ONL.pendingTier;
-  if(activeTier){tb.classList.remove('hidden');tb.innerHTML=`طبقة ${activeTier.name} · دخول ${toH(activeTier.fee)} 🪙 · ربح ${toH(activeTier.win)}`;}
-  else tb.classList.add('hidden');
-  const seats=ONL.seats||[], names=(ONL.lobby&&ONL.lobby.names)||{}, avatars=(ONL.lobby&&ONL.lobby.avatars)||{}; // FIX — أضفنا avatars
-  const previewBots=(ONL.lobby&&ONL.lobby.previewBots)||[]; // FIX
-  const snapshot=JSON.stringify({seats,names,previewBots}); // FIX — أضفنا previewBots لبصمة إعادة الرسم
-  if(MATCH._lastSnap!==snapshot){
-    MATCH._lastSnap=snapshot;
-    const g=$('#mGrid'); g.innerHTML='';
-    let emptyIdx=0; // FIX — عداد منفصل: المقاعد الشاغرة قد لا تكون مقاعد متتالية بالضبط
-    for(let i=0;i<4;i++){
-      const pid=seats[i];
-      if(pid){
-        const me=pid===ONL.you;
-        g.insertAdjacentHTML('beforeend',`<div class="mSlot${me?' me':''}">
-          <div class="mAva">${me?avatarHTML(myAvatar(),40):avatarHTML(avatars[pid],40)}</div>
-          <div class="mNm">${me?('أنت — '+esc(names[pid]||localStorage.getItem('wb-name')||'ضيف')):esc(names[pid]||'لاعب')}</div>
-          <div class="mTag">جاهز</div></div>`);
-      }else{
-        const pb=previewBots[emptyIdx]; emptyIdx++; // FIX — معاينة بوت لهذا المقعد الشاغر تحديداً، لو وصلت من السيرفر
-        if(pb){ // FIX
-          g.insertAdjacentHTML('beforeend',`<div class="mSlot">
-            <div class="mAva">${avatarHTML(pb.avatar,40)}</div>
-            <div class="mNm">${esc(pb.name)}</div>
-            <div class="mTag">بوت</div></div>`); // FIX
-        }else{ // FIX
-          g.insertAdjacentHTML('beforeend',`<div class="mSlot empty">
-            <div class="mAva">···</div><div class="mNm">بانتظار لاعب</div><div class="mTag">يبحث...</div></div>`);
-        } // FIX
-      }
-    }
-  }
-  $('#mTitle').textContent=seats.length>=4?'اكتملت الطاولة!':'جارٍ البحث عن منافسين...';
+  const seats=assigned?(ONL.seats||[]).map(pid=>({pid,name:(lb.names||{})[pid]||'لاعب',avatar:(lb.avatars||{})[pid]})):QUICK_SEARCH.seats;
+  const you=assigned?ONL.you:QUICK_SEARCH.you;
+  $('#mGrid').innerHTML=Array.from({length:4},(_,i)=>{
+    const p=seats[i];
+    if(!p)return '<div class="mSlot empty"><div class="mAva">···</div><div class="mNm">بانتظار لاعب</div><div class="mTag">مقعد شاغر</div></div>';
+    const me=p.pid===you;
+    return '<div class="mSlot'+(me?' me':'')+'"><div class="mAva">'+avatarHTML(me?myAvatar():p.avatar,40)+'</div><div class="mNm">'+(me?'أنت':esc(p.name||'لاعب'))+'</div><div class="mTag">لاعب حقيقي</div></div>';
+  }).join('');
+  const closed=assigned&&ONL.status==='closed';
+  $('#mTitle').textContent=closed?'تعذّر اكتمال دخول الطاولة':QUICK_SEARCH.error||(assigned?'اكتملت المجموعة، ننتظر اتصال الجميع':'نبحث عن لاعبين لطاولتك');
+  $('#mSub').textContent='تبدأ المباراة بعد اكتمال أربعة لاعبين حقيقيين';
+  $('#uiMatchCount').textContent='اكتمل '+toH(Math.min(seats.length,4))+' من '+toH(4);
+  document.querySelectorAll('#uiMatchSteps i').forEach((step,i)=>step.classList.toggle('ready',i<seats.length));
+  $('#uiQuickRetry').classList.toggle('hidden',!QUICK_SEARCH.error&&!closed);
 }
 
 
@@ -5400,6 +5570,8 @@ async function afterAuth(user){
   } else if(isOldStyleAvatar(cloud.avatar)){ // NEW CODE — الترحيل الإجباري: حساب موجود بأفاتار من المجموعة القديمة (إيموجي أو بلا أفاتار) — لا يشمل شارات AV_PRO المدفوعة
     localStorage.setItem('wb-avatar',randomNewAvatar()); // NEW CODE
     fbSaveProfile(); // NEW CODE — يُحفَظ بفايرستور فوراً، يصير رسمياً من الآن
+  } else if(cloud.name_lc===undefined){ // NEW CODE — ترحيل مشابه: أي حساب موجود قبل إضافة بحث الأصدقاء بالاسم يُحفَظ فوراً عند أول دخول بعد التحديث، فيتوفّر للبحث من نفس الجلسة
+    fbSaveProfile();
   }
   // FIX — إعادة اتصال ذاتية تلقائية: activeRoom كانت تُسجَّل وتُقرأ فقط لعرض حالة الأصدقاء ("يلعب الآن")،
   // لا لإعادة اتصال اللاعب بنفسه إطلاقاً — لو انقطع (بوت أخذ مكانه بالطاولة) ثم أعاد فتح التطبيق من جديد
@@ -5795,39 +5967,25 @@ try{ window._rebindWelcome&&window._rebindWelcome(); }catch(e){}
 /* ================= نظام الطبقات التنافسي ================= */
 // القيم من التصميم: [المفتاح, الاسم, الشارة, الأيقونة, دخول فردي, ربح فردي, دخول جماعي, ربح جماعي, حد المستوى الأدنى, الأعلى, هدف النقاط]
 const TIERS=[
-  {key:'beginner', name:'مبتدئ',  tag:'البلد',     icon:'🌱', soloFee:200,  soloWin:300,  teamFee:200,  teamWin:300,  lvMin:1,  lvMax:9,  goal:400, color:'#8fa073', banner:'tiers/beginner.jpg'},
-  {key:'amateur',  name:'هاوي',   tag:'متاح',      icon:'🪣', soloFee:300,  soloWin:500,  teamFee:300,  teamWin:500,  lvMin:8,  lvMax:16, goal:600, color:'#c0894e', banner:'tiers/amateur.jpg'},
-  {key:'pro',      name:'محترف',  tag:'الأكثر رواجاً', icon:'🔥', soloFee:400,  soloWin:700,  teamFee:400,  teamWin:700,  lvMin:15, lvMax:25, goal:800, color:'#d67f48', banner:'tiers/pro.jpg'},
-  {key:'elite',    name:'نخبة',   tag:'متاح',      icon:'💎', soloFee:500,  soloWin:900,  teamFee:500,  teamWin:900,  lvMin:24, lvMax:99, goal:1000, color:'#4a90d9', banner:'tiers/elite.jpg'},
-  {key:'legend',   name:'أسطوري', tag:'مقفل',      icon:'👑', soloFee:1000, soloWin:1500, teamFee:1000, teamWin:1500, lvMin:40, lvMax:99, goal:1200, color:'#b08d3c', unlockFee:5000, banner:'tiers/legend.jpg'},
+  {key:'beginner', name:'مبتدئ',  tag:'البلد',     icon:'🌱', soloFee:200,  soloWin:300,  teamFee:200,  teamWin:300,  lvMin:1,  lvMax:9,  goal:400, color:'#8fa073', banner:'ui-art/tier-beginner.svg'},
+  {key:'amateur',  name:'هاوي',   tag:'متاح',      icon:'🪣', soloFee:300,  soloWin:500,  teamFee:300,  teamWin:500,  lvMin:8,  lvMax:16, goal:600, color:'#c0894e', banner:'ui-art/tier-amateur.svg'},
+  {key:'pro',      name:'محترف',  tag:'الأكثر رواجاً', icon:'🔥', soloFee:400,  soloWin:700,  teamFee:400,  teamWin:700,  lvMin:15, lvMax:25, goal:800, color:'#d67f48', banner:'ui-art/tier-pro.svg'},
+  {key:'elite',    name:'نخبة',   tag:'متاح',      icon:'💎', soloFee:500,  soloWin:900,  teamFee:500,  teamWin:900,  lvMin:24, lvMax:99, goal:1000, color:'#4a90d9', banner:'ui-art/tier-elite.svg'},
+  {key:'legend',   name:'أسطوري', tag:'مقفل',      icon:'👑', soloFee:1000, soloWin:1500, teamFee:1000, teamWin:1500, lvMin:40, lvMax:99, goal:1200, color:'#b08d3c', unlockFee:5000, banner:'ui-art/tier-legend.svg'},
 ];
-let tiersMode='solo'; // solo | team | online | online-team | session | session-team
+let tiersMode='online-team'; // FIX — الوضع الأونلاين الوحيد المتبقي: لعب سريع جماعي ٢×٢ (حُذفت عائلة "جلسة كاملة" والفردي الأونلاين بطلب صريح)
 // NEW CODE — نفس معادلة resolveTier بالسيرفر بالضبط، لكن للعرض بالتلميح فقط — لا أي حساب اقتصادي فعلي هنا،
 // القيمة الحقيقية تُحسب وتُطبَّق بالسيرفر حصرياً (راجع server.js: resolveTier/_processTierRankPoints)
-function tierRankPtsPreview(tierIdx,isSession){ // NEW CODE
-  const mult=Math.pow(1.1,tierIdx); // NEW CODE
-  const baseWin=isSession?80:50, baseLoss=isSession?50:30; // NEW CODE
-  return {win:Math.round(baseWin*mult), loss:Math.round(baseLoss*mult)}; // NEW CODE
-} // NEW CODE
+function tierRankPtsPreview(tierIdx){ // REMOVED session — بقيت قاعدة اللعب السريع فقط (٥٠ فوز / ٣٠ خسارة × المضاعف)
+  const mult=Math.pow(1.1,tierIdx);
+  return {win:Math.round(50*mult), loss:Math.round(30*mult)};
+}
 function openTiers(mode){
-  tiersMode=mode||'solo';
-  const online=tiersMode==='online'||tiersMode==='online-team'||tiersMode==='session'||tiersMode==='session-team';
-  const isSessionFamily=tiersMode==='session'||tiersMode==='session-team';
-  const label=tiersMode==='session-team'?'جلسة كاملة أونلاين — جماعي ٢×٢':tiersMode==='session'?'جلسة كاملة أونلاين — فردي رباعي':tiersMode==='online-team'?'جلسة سريعة — أونلاين جماعي ٢×٢':tiersMode==='online'?'جلسة سريعة — أونلاين رباعي':tiersMode==='team'?'جلسة سريعة — جماعي ٢×٢':'جلسة سريعة — فردي';
+  tiersMode=mode||'online-team';
+  const label=tiersMode==='online-team'?'جلسة سريعة — أونلاين جماعي ٢×٢':tiersMode==='online'?'جلسة سريعة — أونلاين رباعي':tiersMode==='team'?'جلسة سريعة — جماعي ٢×٢':'جلسة سريعة — فردي';
   $('#tiersSub').textContent=label+' — اختر رسوم الدخول';
   $('#tiersGold').textContent=ST.n('gold').toLocaleString('en');
-  const tog=$('#tiersModeToggle');
-  tog.classList.toggle('hidden',!online);
-  if(online){
-    for(const b of tog.querySelectorAll('.tmBtn')){
-      const teamBtn=b.dataset.tm==='online-team';
-      const myMode=isSessionFamily?(teamBtn?'session-team':'session'):(teamBtn?'online-team':'online');
-      const on=myMode===tiersMode;
-      b.style.background=on?'#5e2f0e':'transparent';
-      b.style.color=on?'#f9f4ed':'#8a6a4a';
-      b.onclick=()=>openTiers(myMode);
-    }
-  }
+  // REMOVED — منطق مبدّل فردي/جماعي (#tiersModeToggle) حُذف مع الطور الفردي الأونلاين
   renderTiers();
   show('tiers');
   loadTierOverrides().then(()=>{ if(!$('#tiers').classList.contains('hidden'))renderTiers(); });
@@ -5841,14 +5999,14 @@ async function loadTierOverrides(){
   }catch(e){ console.warn('tier config load failed',e); }
 }
 function tierVal(t,field){ return (TIER_OVERRIDES[t.key]&&TIER_OVERRIDES[t.key][field]!=null)?TIER_OVERRIDES[t.key][field]:t[field]; }
+function tierTeamPlay(){ return tiersMode==='team'||tiersMode==='online-team'; } // NEW CODE — دالة مساعدة واحدة (DRY) بدل تكرار الشرط بثلاث دوال
 function renderTiers(){
   const list=$('#tiersList');list.innerHTML='';
-  const gold=ST.n('gold'), lv=ST.n('level')||1;
-  const isSession=tiersMode==='session'||tiersMode==='session-team';
-  const teamPlay=tiersMode==='team'||tiersMode==='online-team'||tiersMode==='session-team';
+  const gold=ST.n('gold');
+  const teamPlay=tierTeamPlay();
   TIERS.forEach((t,tIdx)=>{ // NEW CODE — forEach بدل for..of عشان نحتاج الفهرس لحساب نقاط الرتبة
     const fee=teamPlay?tierVal(t,'teamFee'):tierVal(t,'soloFee');
-    const win=isSession?fee*3:(teamPlay?tierVal(t,'teamWin'):tierVal(t,'soloWin')); // جلسة كاملة: الفوز ×3 من رسم الدخول
+    const win=teamPlay?tierVal(t,'teamWin'):tierVal(t,'soloWin'); // REMOVED session — كان ×3 من الرسم لجلسة كاملة
     const goldOk=gold>=fee;
     const locked=!goldOk;               // القفل فقط لو الذهب لا يكفي رسوم الدخول
     const card=document.createElement('div');
@@ -5856,26 +6014,28 @@ function renderTiers(){
     card.innerHTML=`
       <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.1) 0%,rgba(0,0,0,.55) 58%,rgba(0,0,0,.72) 100%)"></div>
       ${t.key==='pro'&&!locked?'<span style="position:absolute;top:9px;right:14px;font-size:10px;font-weight:800;color:#fff7ef;background:#d67f48;border-radius:999px;padding:2px 10px;z-index:2">الأكثر رواجاً</span>':''}
-      <button class="tierInfoBtn" data-tidx="${tIdx}" data-session="${(isSession)?'1':'0'}" title="نقاط الرتبة" style="position:absolute;top:8px;left:8px;z-index:3;width:20px;height:20px;border-radius:50%;border:0;background:rgba(0,0,0,.5);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:var(--fb)">i</button>
+      <button class="tierInfoBtn" data-tidx="${tIdx}" title="نقاط الرتبة" style="position:absolute;top:8px;left:8px;z-index:3;width:20px;height:20px;border-radius:50%;border:0;background:rgba(0,0,0,.5);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:var(--fb)">i</button>
       <div style="position:absolute;top:0;bottom:0;left:14px;display:flex;align-items:center;gap:5px;height:30px;padding:0 11px;border-radius:999px;background:rgba(0,0,0,.55);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.15);color:#f6c14d;font-weight:800;font-size:13px;margin:auto 0"><i style="width:12px;height:12px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block"></i>${toH(fee)}</div>
       <div style="position:absolute;top:0;bottom:0;right:14px;text-align:right;min-width:0;display:flex;flex-direction:column;justify-content:center">
         <div style="display:flex;align-items:center;justify-content:flex-end;gap:7px"><b style="font-size:18px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7);white-space:nowrap">${t.name}</b>${locked?'<span style="font-size:9.5px;font-weight:800;color:#fff;background:rgba(0,0,0,.5);border-radius:999px;padding:1px 8px;white-space:nowrap">ذهب غير كافٍ</span>':''}</div>
-        <div style="font-size:12px;color:#e8e4da;font-weight:700;margin-top:3px;text-shadow:0 1px 4px rgba(0,0,0,.7);white-space:nowrap">${isSession?'حتى يخلص الورق':'هدف '+toH(tierVal(t,'goal'))+' نقطة'} · ربح ${toH(win)} 🪙</div>
+        <div style="font-size:12px;color:#e8e4da;font-weight:700;margin-top:3px;text-shadow:0 1px 4px rgba(0,0,0,.7);white-space:nowrap">هدف ${toH(tierVal(t,'goal'))} نقطة · ربح ${toH(win)} 🪙</div>
+        ${(tiersMode==='online'||tiersMode==='online-team')?'<div class="uiTierSearching" data-quick-tier="'+t.key+'">العدد غير متاح</div>':''}
       </div>`;
     if(!locked)card.onclick=()=>enterTier(t);
     else card.onclick=()=>toast2(`ذهبك لا يكفي — تحتاج ${toH(fee)} 🪙 لدخول ${t.name}`);
     list.appendChild(card);
   }); // NEW CODE — إغلاق forEach
+  quickCounts();
   list.querySelectorAll('.tierInfoBtn').forEach(b=>{ // NEW CODE
     b.onclick=(e)=>{ // NEW CODE
       e.stopPropagation(); // NEW CODE — لا نفتح الطبقة نفسها، فقط نعرض تلميح النقاط
-      const idx=Number(b.dataset.tidx), sess=b.dataset.session==='1'; // NEW CODE
-      const pts=tierRankPtsPreview(idx,sess); // NEW CODE
+      const pts=tierRankPtsPreview(Number(b.dataset.tidx)); // REMOVED session
       toast2(`الفوز: +${toH(pts.win)} نقطة | الخسارة: -${toH(pts.loss)} نقطة`); // NEW CODE
     }; // NEW CODE
   }); // NEW CODE
 }
-async function freshGold(){ // NEW CODE — قراءة ذهب طازجة مضمونة مباشرة من الخادم، بمعزل عن أي مزامنة عامة أخرى جارية (لا تتأثر بعلم _pullingStats المشترك بـpullServerStats)
+// NEW CODE (منقول من نسخة آيفون) — قراءة ذهب طازجة مضمونة مباشرة من الخادم، بمعزل عن أي مزامنة عامة أخرى جارية (لا تتأثر بعلم _pullingStats المشترك بـpullServerStats)
+async function freshGold(){
   try{
     if(!(await ensureFB())||!FB.user)return ST.n('gold'); // بلا حساب مسجَّل — القيمة المحلية كافية هنا (لا يدخل تنافسياً أصلاً بلا حساب)
     const doc=await FB.db.collection('players').doc(FB.user.uid).get();
@@ -5884,30 +6044,24 @@ async function freshGold(){ // NEW CODE — قراءة ذهب طازجة مضم�
   return ST.n('gold'); // فشل السحب (شبكة مثلاً) — رجوع للمحلي كحل احتياطي بدل منع اللاعب كليًا بخلل عابر
 }
 async function enterTier(t){
-  const isSession=tiersMode==='session'||tiersMode==='session-team';
-  const isQuickOnline=tiersMode==='online'||tiersMode==='online-team'; // لعب سريع أونلاين تحديدًا (مو جلسة كاملة)
-  const online=isQuickOnline||isSession;
-  const teamPlay=tiersMode==='team'||tiersMode==='online-team'||tiersMode==='session-team';
+  const isQuickOnline=tiersMode==='online'||tiersMode==='online-team'; // REMOVED session — اللعب السريع الأونلاين هو المسار الأونلاين الوحيد
+  const teamPlay=tierTeamPlay();
   const fee=teamPlay?tierVal(t,'teamFee'):tierVal(t,'soloFee');
-  const win=isSession?fee*3:(teamPlay?tierVal(t,'teamWin'):tierVal(t,'soloWin'));
-  const goal=isSession?null:tierVal(t,'goal'); // FIX — اللعب السريع صار بنظام هدف النقاط أيضاً، لا استثناء له بعد الآن
-  if(fee>0){ // FIX — تحقق طازج فقط للطبقات المدفوعة (لا داعي له بالمجانية)؛ كان الفحص يعتمد على رصيد محلي مخبّأ فقط،
-    // فلاعب رصيده الحقيقي تغيّر (إنفاق بجهاز/تبويب ثاني، أو تأخر تزامن) يدخل بثقة زائفة ويُطرد لاحقاً وقت خصم السيرفر —
-    // ولو تصادف هذا مع أكثر من لاعب بنفس الغرفة، الجميع يُطردون معاً (نفس تمريرة الفحص بالسيرفر). هذا يمنعه من جذره.
-    const g=await freshGold(); // FIX
-    if(g<fee){toast2(`ذهبك لا يكفي — تحتاج ${toH(fee)} 🪙`);return} // FIX
+  const win=teamPlay?tierVal(t,'teamWin'):tierVal(t,'soloWin');
+  const goal=tierVal(t,'goal');
+  if(fee>0){ // FIX (منقول من آيفون) — تحقق طازج فقط للطبقات المدفوعة؛ كان الفحص يعتمد على رصيد محلي مخبّأ فقط، فلاعب رصيده الحقيقي تغيّر
+    // (إنفاق بجهاز/تبويب ثانٍ، أو تأخر تزامن) يدخل بثقة زائفة ويُطرد لاحقاً وقت خصم السيرفر — ولو تصادف مع أكثر من لاعب بنفس الغرفة يُطردون معاً. هذا يمنعه من جذره.
+    const g=await freshGold();
+    if(g<fee){toast2(`ذهبك لا يكفي — تحتاج ${toH(fee)} 🪙`);return}
   }
   // رسم الدخول وربح الفوز يُحسمان ويُصرفان من طرف السيرفر مباشرة (موثوق)، مو من الجهاز — يظهران بعد لحظات من بدء/انتهاء الجولة
-  G_TIER={tier:t.key,mode:teamPlay?'team':'solo',fee,win,goal,name:isSession?'جلسة كاملة — '+t.name:(isQuickOnline?'جلسة سريعة — '+t.name:t.name),online};
+  G_TIER={tier:t.key,mode:teamPlay?'team':'solo',fee,win,goal,name:isQuickOnline?'جلسة سريعة — '+t.name:t.name,online:isQuickOnline};
   toast2(`دخلت ${G_TIER.name} — رسم الدخول ${toH(fee)} 🪙، الفوز يرجّع ${toH(win)}`);
-  if(online){
+  if(isQuickOnline){
     // أونلاين تنافسي: ابحث عن خصوم في غرفة عامة حسب الطبقة والوضع — الخادم يحسم الرهان مركزياً
-    // FIX — كل الأطوار (لعب سريع أو جلسة كاملة) توحّدت على الرزمة الافتراضية — السيرفر لا يقرأ blocks من العميل أصلاً (قيمة رسمية موحّدة بجدوله الخاص)
-    ONL.pendingTier={key:isSession?'session-'+t.key:t.key,name:G_TIER.name,fee,win,goal};
+    ONL.pendingTier={key:t.key,name:G_TIER.name,fee,win,goal}; // REMOVED session — لا بادئة session- بعد الآن
     ONL.pendingMode=teamPlay?'team':'solo';
-    // FIX — الإعلان الخلالي لـ"لعب سريع" تحديداً (isQuickOnline)، لا الجلسة الكاملة — تبقى الأخيرة بلا أي تغيير
-    if(isQuickOnline){ enterMatchWithInterstitial(ONL.pendingTier.key, teamPlay?'team':'solo'); } // FIX
-    else{ enterMatch(ONL.pendingTier.key, teamPlay?'team':'solo'); } // FIX
+    enterMatchWithInterstitial(ONL.pendingTier.key, teamPlay?'team':'solo'); // الإعلان الخلالي يخص اللعب السريع
   }else{
     newGame({mode:'solo',diff: t.lvMax<=9?'easy':t.lvMax<=16?'med':'hard', name:localStorage.getItem('wb-name')||'أنت', tierGoal:t.goal});
   }
@@ -6088,11 +6242,14 @@ function renderAvatarPicker(){
 function myCode(){return (localStorage.getItem('wb-player-id')||'p-????????').slice(2)}
 function myUsername(){return localStorage.getItem('wb-username')||'';}
 function openProfile(){
+  uiRememberProfileOrigin();
+  $('#profile').classList.remove('uiOtherProfile');
   viewedProfile=null; // ملفي أنا
   {const ab=$('#pfAddFriend');if(ab)ab.style.display='none';}
   $('#pfAva').innerHTML=avatarHTML(myAvatar(),80);
   $('#pfAva').style.cursor='pointer';
   $('#pfAva').onclick=()=>openAvatarPicker();
+  applyRankColor($('#pfAva'),ST.n('rank')); // NEW CODE — لون الحلقة حسب رتبتي الحالية
   $('#pfEdit').style.display='';
   $('#pfOut').style.display='';
   $('#pfName').textContent=localStorage.getItem('wb-name')||'ضيف';
@@ -6160,7 +6317,7 @@ function renderAchievements(player){ // NEW CODE — أضفنا معامل playe
       </div>
     </div>`).join('');
 }
-$('#pfBack').onclick=()=>{ if(viewedProfile){viewedProfile=null;openBoard();} else goHome(); };
+$('#pfBack').onclick=()=>{ viewedProfile=null; const target=document.getElementById(uiProfileReturn); if(target&&uiProfileReturn!=='profile')show(uiProfileReturn);else goHome(); };
 $('#pfEdit').onclick=()=>{
   const nm=prompt('اسمك الجديد على الطاولة:',localStorage.getItem('wb-name')||'');
   if(nm&&nm.trim()){localStorage.setItem('wb-name',nm.trim().slice(0,14));try{fbSaveProfile()}catch(e){}openProfile();refreshHome()} // FIX — كان يُحفظ محلياً فقط بلا fbSaveProfile إطلاقاً، فالسحابة تبقى بالاسم القديم وتُرجعه عند التحميل التالي (سبب "غيّرت الاسم وترجع نفس ما هي")
@@ -6214,6 +6371,46 @@ $('#pfDeleteAcc').onclick=async()=>{
 function timeAr(ts){const d=new Date(ts);const h=d.getHours()%12||12,m=String(d.getMinutes()).padStart(2,'0');return h+':'+m+(d.getHours()>=12?' م':' ص')}
 let CHAT_MODE='public';   // public | friends | dm
 let CHAT_DM=null;         // {uid,name} للمحادثة الخاصة المفتوحة
+let UI_CHAT_STATE={keys:null,pending:0,version:0};
+function uiChatReset(){
+  UI_CHAT_STATE={keys:null,pending:0,version:UI_CHAT_STATE.version+1};
+  const button=document.getElementById('uiNewMessages');if(button)button.classList.add('hidden');
+  const list=document.getElementById('chList');
+  if(list)uiCardMotion(list,[{opacity:.4,transform:'translateY(7px)'},{opacity:1,transform:'translateY(0)'}],{duration:180,easing:'ease-out'});
+}
+function uiChatBefore(el,msgs){
+  const counts=new Map();
+  const keys=msgs.map(m=>{
+    const base=JSON.stringify([m.uid||m.from,m.ts,m.text,m.room,m.type]);
+    const count=counts.get(base)||0;counts.set(base,count+1);return base+':'+count;
+  });
+  const old=UI_CHAT_STATE.keys;
+  const added=keys.map((key,i)=>!old||old.has(key)?-1:i).filter(i=>i>=0);
+  const own=added.some(i=>(msgs[i].uid||msgs[i].from)===WBMsg.myUid());
+  const first=[...el.children].find(child=>child.offsetTop+child.offsetHeight>el.scrollTop);
+  return {keys,added,stick:!old||chatListNearBottom(el)||own,version:UI_CHAT_STATE.version,
+    top:el.scrollTop,anchor:first?.dataset.uiMessageKey,offset:first?first.offsetTop-el.scrollTop:0};
+}
+function uiChatAfter(el,update){
+  if(update.version!==UI_CHAT_STATE.version)return;
+  [...el.children].forEach((child,i)=>{if(update.keys[i])child.dataset.uiMessageKey=update.keys[i];});
+  UI_CHAT_STATE.keys=new Set(update.keys);
+  const button=document.getElementById('uiNewMessages');
+  if(update.stick){UI_CHAT_STATE.pending=0;button?.classList.add('hidden');}
+  else{
+    UI_CHAT_STATE.pending+=update.added.length;
+    if(button&&UI_CHAT_STATE.pending){button.textContent='↓ '+UI_CHAT_STATE.pending+' رسائل جديدة';button.classList.remove('hidden');}
+  }
+  const position=()=>{
+    if(update.version!==UI_CHAT_STATE.version)return;
+    if(update.stick)el.scrollTop=el.scrollHeight;
+    else{const anchor=[...el.children].find(child=>child.dataset.uiMessageKey===update.anchor);el.scrollTop=anchor?anchor.offsetTop-update.offset:update.top;}
+  };
+  position();requestAnimationFrame(position);
+  if(update.stick)for(const i of update.added.slice(-3)){
+    const child=el.children[i];if(child)uiCardMotion(child,[{opacity:.2,transform:'translateY(8px)'},{opacity:1,transform:'translateY(0)'}],{duration:220,easing:'ease-out'});
+  }
+}
 function wireReportButtons(el){
   el.querySelectorAll('.cbReport[data-ruid]').forEach(n=>n.onclick=async()=>{
     const reason=prompt('سبب البلاغ (اختياري):','');
@@ -6236,15 +6433,16 @@ function chatListNearBottom(el){
   return (el.scrollHeight-el.scrollTop-el.clientHeight)<120;
 }
 function chatBubble(mine, name, text, ts, uid, ava, rank){
+  if(mine&&rank==null)rank=ST.n('rank'); // Personal rank display only.
   const clickable = (!mine && uid);
   const nameCol = rank!=null ? (rankFor(rank).textColor||rankFor(rank).color) : '#b2622d';
-  const nameRow = !mine ? '<span style="display:flex;align-items:center;gap:5px;margin-bottom:2px"><span style="font-size:10.5px;font-weight:800;color:'+nameCol+'">'+esc(name)+'</span>'+(rank!=null?rankBadgeHTML(rank,8.5):'')+'</span>' : '';
+  const nameRow = '<span class="uiChatIdentity" style="display:flex;align-items:center;gap:5px;margin-bottom:2px"><span style="font-size:10.5px;font-weight:800;color:'+nameCol+'">'+(mine?'أنت':esc(name))+'</span>'+(rank!=null?rankBadgeHTML(rank,8.5):'')+'</span>';
   const avaHtml = !mine ? `<span ${clickable?'class="cbAva" data-puid="'+uid+'"':''} style="width:34px;height:34px;border-radius:999px;background:#f0e3cc;display:flex;align-items:center;justify-content:center;font-size:18px;flex:none;overflow:hidden${clickable?';cursor:pointer':''}">${avatarHTML(ava||'🎭',34)}</span>` : '';
   const reportBtn = (!mine&&uid) ? `<button class="cbReport" data-ruid="${esc(uid)}" data-rname="${esc(name)}" data-rtext="${esc(text)}" style="background:none;border:none;color:#c9b49a;font-size:11px;padding:0 3px;cursor:pointer">⚑</button>` : '';
   return `<div style="display:flex;gap:8px;align-items:flex-end;margin:4px 0;justify-content:${mine?'flex-end':'flex-start'}">
     ${mine?'':avaHtml}
     <div style="display:flex;flex-direction:column;align-items:${mine?'flex-end':'flex-start'};max-width:78%">
-      <div style="padding:8px 14px;border-radius:18px;font-size:13.5px;font-weight:600;line-height:1.6;overflow-wrap:anywhere;word-break:break-word;min-width:0;${mine?'background:linear-gradient(#e2925c,#d67f48);color:#fff7ef;border-bottom-left-radius:5px':'background:#fff;color:#33302c;border-bottom-right-radius:5px'}">
+      <div class="uiMessageText${mine?' uiMine':''}" style="padding:8px 14px;border-radius:18px;font-size:13.5px;font-weight:600;line-height:1.6;overflow-wrap:anywhere;word-break:break-word;min-width:0;${mine?'background:linear-gradient(#e2925c,#d67f48);color:#fff7ef;border-bottom-left-radius:5px':'background:#fff;color:#33302c;border-bottom-right-radius:5px'}">
         ${nameRow}
         <span style="overflow-wrap:anywhere;word-break:break-word">${esc(text)}</span>
       </div>
@@ -6327,6 +6525,7 @@ function openChat(){
   show('chat'); mountNav('chat','chat');
 }
 function setChatTab(mode){
+  uiChatReset();
   CHAT_MODE=mode; CHAT_DM=null;
   document.querySelectorAll('.chTab').forEach(t=>{const on=t.dataset.ct===mode;t.classList.toggle('on',on);
     t.style.background=on?'linear-gradient(#e2925c,#d67f48)':'transparent'; t.style.color=on?'#fff7ef':'#b9caa2';});
@@ -6342,7 +6541,7 @@ function setChatTab(mode){
       // الفعلي، فتُشوَّه مقاييس scrollTop/scrollHeight اللحظية) — فتظهر رسالتي أنا تحديداً مخفية أسفل الشاشة
       // بعد إرسالها مباشرة، مضطراً المستخدم يمرّر يدوياً رغم إنه هو نفسه صاحب الرسالة الجديدة
       const lastMsg=msgs[msgs.length-1]; // FIX
-      const wasNearBottom=!el.children.length||chatListNearBottom(el)||(lastMsg&&lastMsg.uid===WBMsg.myUid()); // FIX — أضفنا الشرط الثالث
+      const uiUpdate=uiChatBefore(el,msgs.filter(m=>!(m.type==='invite'&&m.ts&&Date.now()-m.ts>=INVITE_TTL_MS))); const wasNearBottom=uiUpdate.stick; // FIX — أضفنا الشرط الثالث
       el.innerHTML = msgs.length?'':'<div style="text-align:center;color:var(--mut);font-weight:700;font-size:13px;padding:30px 14px">كن أول من يكتب في المجلس العام 👋</div>';
       // FIX — الإصلاح الأهم: نتخطى أي دعوة منتهية أصلاً وقت العرض، لا نعرضها ثم نحذفها لاحقاً — بدون هذا،
       // أي رسالة جديدة من أي أحد تُعيد رسم الدردشة العامة كاملة (listenPublic)، فتُعيد ظهور دعوات كانت
@@ -6354,7 +6553,7 @@ function setChatTab(mode){
         if(n.dataset.ts&&(Date.now()-parseInt(n.dataset.ts,10))>=INVITE_TTL_MS){ swapInviteBtnToExpired(n); return; }
         joinRoomFromChat(n.dataset.room);
       });
-      stickToBottom(el,wasNearBottom);
+      uiChatAfter(el,uiUpdate);
     }));
   }else if(mode==='friends'){
     // قائمة الأصدقاء لفتح محادثة خاصة — بمعاينة آخر رسالة والوقت مطابقة للتصميم
@@ -6364,27 +6563,28 @@ function setChatTab(mode){
     (async()=>{
       if(!(await ensureFB()))return;
       const rows=await Promise.all(l.map(async f=>{
-        let last='اضغط للمحادثة', lastTs=0, rpts=0;
+        let last='اضغط للمحادثة', lastTs=0, rpts=0, lastFrom=null;
         try{
           const id=WBMsg.dmId(FB.user.uid,f.uid);
           const doc=await FB.db.collection('dms').doc(id).get();
-          if(doc.exists){const d=doc.data(); last=d.last||last; lastTs=d.lastTs||0;}
+          if(doc.exists){const d=doc.data(); last=d.last||last; lastTs=d.lastTs||0; lastFrom=d.lastFrom||null;}
         }catch(e){}
         try{
           const pdoc=await FB.db.collection('players').doc(f.uid).get();
           if(pdoc.exists) rpts=pdoc.data().rank||0;
         }catch(e){}
-        return {f,last,lastTs,rpts};
+        const unread=!!lastFrom&&lastFrom!==FB.user.uid&&lastTs>Number(localStorage.getItem('wb-dmread-'+f.uid)||0);
+        return {f,last,lastTs,rpts,unread};
       }));
       if(CHAT_MODE!=='friends')return;
       rows.sort((a,b)=>b.lastTs-a.lastTs);
       el.innerHTML='';
-      for(const {f,last,lastTs,rpts} of rows){
+      for(const {f,last,lastTs,rpts,unread} of rows){
         const row=document.createElement('button');
-        row.className='chRow';
+        row.className='chRow'+(unread?' uiUnreadConversation':'');
         row.innerHTML=`<span class="cAva" style="overflow:hidden">${avatarHTML(f.ava||'🎭',46)}</span>
           <span class="cBody"><span style="display:flex;align-items:center;gap:5px"><b class="cNm">${esc(f.name)}</b>${rankBadgeHTML(rpts,8.5)}</span><div class="cMsg">${esc(last)}</div></span>
-          <span class="cSide"><div class="cTime">${lastTs?timeAr(lastTs):''}</div></span>
+          <span class="cSide"><div class="cTime">${lastTs?timeAr(lastTs):''}</div>${unread?'<span class="uiUnreadLabel">جديدة</span>':''}</span>
           <button class="cDelBtn" title="مسح المحادثة" style="background:none;border:none;color:#c9a98a;font-size:16px;padding:6px;cursor:pointer;flex:none">🗑️</button>`;
         row.querySelector('.cDelBtn').onclick=async(ev)=>{
           ev.stopPropagation();
@@ -6428,6 +6628,7 @@ function setDmBadgeCount(n){
 }
 function openDM(pid, name, uid, ava){
   if(!uid){ toast2('هذا الصديق يحتاج تحديث — العبوا جولة معاً أو أضفه من البحث'); return; }
+  uiChatReset();
   CHAT_MODE='dm'; CHAT_DM={uid,name,ava};
   localStorage.setItem('wb-dmread-'+uid,String(Date.now())); // نعتبرها مقروءة فور الفتح
   updateDmBadge();
@@ -6449,12 +6650,12 @@ function openDM(pid, name, uid, ava){
     if(CHAT_MODE!=='dm'||!CHAT_DM||CHAT_DM.uid!==uid)return;
     // FIX — نفس إصلاح الشات العام بالضبط: فرض التمرير للأسفل دائماً لو آخر رسالة مني أنا
     const lastMsgDm=msgs[msgs.length-1]; // FIX
-    const wasNearBottom=!el.children.length||chatListNearBottom(el)||(lastMsgDm&&lastMsgDm.from===WBMsg.myUid()); // FIX
+    const uiUpdate=uiChatBefore(el,msgs); const wasNearBottom=uiUpdate.stick; // FIX
     el.innerHTML = msgs.length?'':emptyHTML; // NEW CODE — نفس النص الموحّد الآن
     msgs.forEach(m=>el.insertAdjacentHTML('beforeend',chatBubble(m.from===WBMsg.myUid(), m.fromName, m.text, m.ts, m.from, m.from===WBMsg.myUid()?null:ava, m.from===WBMsg.myUid()?null:m.rank)));
     el.querySelectorAll('.cbAva[data-puid]').forEach(n=>n.onclick=()=>viewPublicProfile(n.dataset.puid));
     wireReportButtons(el);
-    stickToBottom(el,wasNearBottom);
+    uiChatAfter(el,uiUpdate);
   }));
 }
 $('#chBack').onclick=()=>{
@@ -6795,7 +6996,9 @@ function openAddFr(){
 function renderAfRecent(){
   const el=$('#afRecent');el.innerHTML='';
   const l=AF.recent();
-  $('#afRecentWrap').style.display=l.length?'block':'none';
+  $('#afRecentWrap').style.display='block';
+  $('#afRecentWrap').firstElementChild.style.display=l.length?'':'none';
+  el.style.display=l.length?'flex':'none';
   for(const q of l){
     const chip=document.createElement('span');
     chip.style.cssText='background:#fdf9f0;border-radius:999px;padding:7px 14px;font-weight:700;font-size:12.5px;color:var(--ink2);cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 1px 4px rgba(60,45,30,.06)';
@@ -6814,42 +7017,60 @@ function afRow(name,code,lvl,ava,state){
     <span style="display:inline-block;margin-top:3px;background:var(--sageL);color:#2c3320;border-radius:999px;padding:1px 9px;font-weight:700;font-size:10.5px">مستوى ${lvl}</span></div>${btn}</div>`;
 }
 function renderAfResults(q){
+  const requestId=AF.searchId=(AF.searchId||0)+1;
   const el=$('#afResults');el.innerHTML='';
   q=(q||'').trim();
   if(AF.tab==='groups'){
     el.innerHTML='<div style="text-align:center;color:var(--mut);font-weight:700;font-size:13px;padding:30px 14px">المجموعات العامة تتفعّل مع الخادم المستقل قريباً</div>';
     return;
   }
-  if(!q){el.innerHTML='<div style="text-align:center;color:var(--mut);font-weight:700;font-size:13px;padding:24px 14px">ابحث باسم المستخدم (مثل @'+(localStorage.getItem('wb-username')||'username')+') لإضافة صديق</div>';return}
-  // بحث باسم المستخدم في Firestore
+  if(!q){el.innerHTML='<div style="text-align:center;color:var(--mut);font-weight:700;font-size:13px;padding:24px 14px">ابحث بالاسم أو اسم المستخدم (مثل @'+(localStorage.getItem('wb-username')||'username')+') لإضافة صديق</div>';return}
+  // FIX — بحث بالاسم واسم المستخدم معاً (كان يوزرنيم فقط؛ أي بحث بالاسم كان يُرفض فوراً برسالة خطأ بلا أي محاولة)
   const uname=q.replace(/^@/,'').trim().toLowerCase();
-  if(/^[a-z0-9_]{3,16}$/.test(uname)){
-    el.innerHTML='<div style="text-align:center;color:var(--mut);font-weight:700;font-size:13px;padding:16px">جارٍ البحث...</div>';
-    (async()=>{
-      try{
-        await ensureFB();
-        const snap=await FB.db.collection('players').where('username_lc','==',uname).limit(5).get();
-        el.innerHTML='';
-        if(snap.empty){ el.innerHTML='<div style="text-align:center;color:var(--mut);font-weight:700;font-size:13px;padding:24px 14px">لا يوجد لاعب باسم @'+uname+'</div>'; return; }
-        snap.forEach(doc=>{
-          const d=doc.data(); const fullUid=doc.id; const pid='p-'+doc.id.slice(0,10);
-          const already=FR.list().some(f=>f.pid===pid);
-          const pending=hasSentReq(fullUid);
-          const row=document.createElement('div');
-          row.style.cssText='display:flex;align-items:center;gap:12px;padding:12px 14px;margin:6px 0;background:rgba(249,244,237,.06);border-radius:14px';
-          row.innerHTML='<div style="font-size:26px">'+(d.avatar||'🎭')+'</div><div style="flex:1;text-align:right"><div style="color:var(--sand);font-weight:800;font-size:15px">'+esc(d.name||'لاعب')+'</div><div style="color:var(--clay3);font-size:12px;font-weight:700;direction:ltr;text-align:right">@'+esc(d.username||uname)+'</div></div>';
-          const btn=document.createElement('button');
-          btn.style.cssText='padding:9px 16px;border-radius:12px;border:none;font-family:var(--fb);font-weight:800;font-size:13px;cursor:pointer;'+((already||pending)?'background:rgba(204,219,178,.2);color:var(--mint)':'background:var(--clay);color:#fff');
-          btn.textContent=already?'صديق ✓':(pending?'طلب مُرسل ✓':'إضافة');
-          if(!already&&!pending)btn.onclick=async()=>{ btn.disabled=true; const ok=await WBMsg.sendFriendReq(fullUid); markReqSent(fullUid); toast2(ok?('أُرسل طلب صداقة إلى @'+(d.username||uname)):'الطلب معلّق بالفعل'); btn.textContent='طلب مُرسل ✓'; btn.style.background='rgba(204,219,178,.2)'; btn.style.color='var(--mint)'; };
-          row.appendChild(btn); el.appendChild(row);
-        });
-      }catch(e){ el.innerHTML='<div style="text-align:center;color:var(--mut);font-weight:700;font-size:13px;padding:24px 14px">تعذّر البحث — تحقّق من اتصالك</div>'; }
-    })();
+  const nameQ=q.toLowerCase();
+  const wantUsername=/^[a-z0-9_]{3,16}$/.test(uname);
+  const wantName=nameQ.length>=2;
+  if(!wantUsername&&!wantName){
+    el.innerHTML='<div style="text-align:center;color:var(--mut);font-weight:700;font-size:13px;padding:24px 14px">اكتب حرفين على الأقل للبحث بالاسم، أو اسم مستخدم صحيح (٣-١٦ حرفاً إنجليزياً/أرقاماً/_)</div>';
     return;
   }
-  el.innerHTML='<div style="text-align:center;color:var(--mut);font-weight:700;font-size:13px;padding:24px 14px">اسم المستخدم: ٣-١٦ حرفاً إنجليزياً/أرقاماً/_ فقط</div>';
-  return;
+  el.innerHTML='<div style="text-align:center;color:var(--mut);font-weight:700;font-size:13px;padding:16px">جارٍ البحث...</div>';
+  (async()=>{
+    try{
+      await ensureFB();
+      const tasks=[]; // NEW CODE — استعلامان بالتوازي: يوزرنيم (تطابق تام) واسم (تطابق بادئة)، حسب صلاحية كل صيغة بالنص المكتوب
+      if(wantUsername)tasks.push(FB.db.collection('players').where('username_lc','==',uname).limit(5).get());
+      if(wantName)tasks.push(FB.db.collection('players').where('name_lc','>=',nameQ).where('name_lc','<=',nameQ+'\uf8ff').limit(5).get());
+      const snaps=await Promise.all(tasks);
+      if(requestId!==AF.searchId)return;
+      const seen=new Set(); const docs=[];
+      for(const snap of snaps)snap.forEach(doc=>{ if(!seen.has(doc.id)){seen.add(doc.id);docs.push(doc);} }); // NEW CODE — دمج نتيجتي البحث بلا تكرار لنفس اللاعب لو طلع بكلا الاستعلامين
+      el.innerHTML='';
+      if(!docs.length){ el.innerHTML='<div style="text-align:center;color:var(--mut);font-weight:700;font-size:13px;padding:24px 14px">ما فيه نتائج مطابقة</div>'; return; }
+      docs.forEach(doc=>{
+        const d=doc.data(); const fullUid=doc.id; const pid='p-'+doc.id.slice(0,10);
+        const already=FR.list().some(f=>f.pid===pid);
+        const pending=hasSentReq(fullUid);
+        const row=document.createElement('div');
+        row.className='uiFriendResult';
+        row.style.cssText='display:flex;align-items:center;gap:12px;padding:11px 14px;margin:6px 0;background:rgba(249,244,237,.06);border-radius:16px';
+        row.innerHTML=`<div class="frSearchAva" style="width:44px;height:44px;border-radius:50%;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f0e3cc">${avatarHTML(d.avatar,44)}</div>
+          <div style="flex:1;min-width:0">
+            <div style="color:var(--sand);font-weight:800;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(d.name||'لاعب')}</div>
+            <div style="display:flex;align-items:center;gap:7px;margin-top:3px">
+              ${d.username?`<span style="color:var(--clay3);font-size:11.5px;font-weight:700;direction:ltr">@${esc(d.username)}</span>`:''}
+              ${rankBadgeHTML(d.rank||0,9.5)}
+            </div>
+          </div>`;
+        applyRankColor(row.querySelector('.frSearchAva'),d.rank||0); // FIX — كان يطبع d.avatar نصاً خاماً (مسار الصورة يظهر حرفياً لو أفاتار صورة لا إيموجي)؛ الآن avatarHTML الموحّدة + حلقة لون الرتبة (نفس نمط ملفي وملفات اللاعبين)
+        const btn=document.createElement('button');
+        btn.style.cssText='padding:9px 16px;border-radius:12px;border:none;font-family:var(--fb);font-weight:800;font-size:13px;cursor:pointer;flex-shrink:0;'+((already||pending)?'background:rgba(204,219,178,.2);color:var(--mint)':'background:var(--clay);color:#fff');
+        btn.textContent=already?'صديق ✓':(pending?'طلب مُرسل ✓':'إضافة');
+        if(!already&&!pending)btn.onclick=async()=>{ btn.disabled=true; const ok=await WBMsg.sendFriendReq(fullUid); markReqSent(fullUid); toast2(ok?('أُرسل طلب صداقة إلى '+(d.name||'لاعب')):'الطلب معلّق بالفعل'); btn.textContent='طلب مُرسل ✓'; btn.style.background='rgba(204,219,178,.2)'; btn.style.color='var(--mint)'; };
+        row.appendChild(btn); el.appendChild(row);
+      });
+    }catch(e){ if(requestId!==AF.searchId)return; el.innerHTML='<div style="text-align:center;color:var(--mut);font-weight:700;font-size:13px;padding:24px 14px">تعذّر البحث — تحقّق من اتصالك</div>'; }
+  })();
 }
 $('#afBack').onclick=()=>openFriends();
 $('#afSearch').addEventListener('input',()=>renderAfResults($('#afSearch').value));
@@ -6864,7 +7085,7 @@ $('#hProfBtn').onclick=()=>openProfile();
 // NEW CODE — حذفنا $('#hChat').onclick — الزر نفسه اتحذف من الترويسة العلوية، الدردشة صارت بالشريط السفلي فقط
 $('#hDaily').onclick=()=>{SFX.tick();showRewardChoice()};
 $('#hGoldBtn').onclick=()=>{SFX.tick();openShop()};
-if(!SHOW_STORE){ const plus=document.querySelector('#hGoldBtn b'); if(plus)plus.style.display='none'; } // NEW CODE — يخفي إشارة "+" (تلمّح لعملية شراء) طالما المتجر مقفل — لا يترك زراً يبدو تفاعلياً بلا أثر
+if(!SHOW_STORE){ const plus=document.querySelector('#hGoldBtn b'); if(plus)plus.style.display='none'; } // NEW CODE — يخفي إشارة "+" (تلمّح لعملية شراء) طالما المتجر مقفل — لا يترك زراً يبدو تفاعلياً بلا وظيفة
 $('#setupBack').onclick=()=>goHome();
 
 /* توجيه البدء */
@@ -7045,7 +7266,7 @@ if('serviceWorker' in navigator&&location.protocol==='https:'){
 <script src="admob-plugin.js"></script>
 <script>
 (function(){
-  // معرّفات AdMob للاندرويد والـ iOS
+  // معرّفات AdMob للأندرويد والـ iOS (منقولة من نسخة آيفون — وحدات مختلفة لكل منصة)
   const isIOS = window.Capacitor && window.Capacitor.getPlatform && window.Capacitor.getPlatform() === 'ios';
   
   const ADMOB_REWARDED_AD_UNIT_ID = isIOS

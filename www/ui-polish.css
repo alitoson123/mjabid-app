@@ -1066,3 +1066,51 @@ body{position:fixed;inset:0;width:100%;overscroll-behavior:none}
 /* Move each side seat as a unit, including its pile. Field/card layout stays unchanged. */
 #seatR,#seatL,#oSeatR,#oSeatL{transform:translateY(28px)}
 @media(max-height:740px){#seatR,#seatL,#oSeatR,#oSeatL{transform:translateY(52px)}}
+
+/* v337 — home content fits above its navigation; only short-screen menus may scroll. */
+#home{--ui-home-height:calc(100vh - var(--ui-safe-top) - var(--ui-safe-bottom))}
+@supports(height:100dvh){#home{--ui-home-height:calc(100dvh - var(--ui-safe-top) - var(--ui-safe-bottom))}}
+#home .homeWrap{overflow:hidden;overscroll-behavior:none;touch-action:none;-webkit-overflow-scrolling:auto}
+#home .hHead{flex:0 0 auto}
+#home .hSide{top:calc(88px + var(--ui-safe-top));gap:8px}
+#home .hLogo{flex:0 0 auto;min-height:110px;padding-top:clamp(0px,calc(var(--ui-home-height) - 680px),18px);padding-bottom:4px}
+#home .hLogoCards{display:block;margin:0 auto;height:clamp(52px,calc(var(--ui-home-height) - 600px),108px);transform:none}
+#home .hLogoCards img{height:clamp(48px,calc(var(--ui-home-height) - 610px),87px);width:auto;max-width:62px;object-fit:contain}
+#home .hTitle{font-size:clamp(36px,calc(var(--ui-home-height) / 14),48px)}
+#home .hMenu{flex:1 1 auto;min-height:0;max-height:450px;display:grid;grid-template-rows:minmax(84px,1.2fr) minmax(52px,.72fr) minmax(88px,1.1fr) minmax(64px,.8fr);gap:clamp(6px,calc(var(--ui-home-height) - 620px),10px);padding-top:8px;padding-bottom:8px}
+#home .hMenu>.hBig,#home .hMenu>.row2,#home .hMenu>.row2>.hBig{height:100%;min-height:0;margin:0}
+#home #hOnl{padding:26px 14px 8px}
+#home #hOnl>span>span>b{font-size:26px!important;line-height:1.2}
+#home #hOnl>span>span>span{font-size:12px;line-height:1.4;margin-top:2px}
+#home #hOnl .live{top:5px;font-size:11px;line-height:1.5}
+#home #hSessions{flex-wrap:nowrap;gap:6px;padding:8px 10px}
+#home #hSessions .sessIcoWrap{gap:5px;min-width:0}
+#home #hSessions .sessIcoWrap>b{font-size:15px!important;line-height:1.4}
+#home #hSessions .sessCount{margin-inline-start:0;gap:4px;padding:4px 6px;font-size:11px}
+#home .hMenu .hBig.rank{padding:7px 9px!important;gap:2px!important;justify-content:center}
+#home .hMenu .hBig.rank .rcRemain,#home .hMenu .hBig.rank .rcNext{font-size:11px!important;line-height:1.4}
+#home .hMenu .hBig.rank .rcBar{margin-top:2px}
+#home #rcBadge .uiRankBadge{font-size:12px!important;line-height:1.2;padding-block:1px}
+#home #rcBadge .uiRankBadge img{width:20px;height:20px}
+#home #hGroup{padding:8px 10px;justify-content:center;line-height:1.4}
+#home #hGroup>b{font-size:16px!important}
+#home #hGroup>span{font-size:12px!important}
+#home #hTournament{padding:8px 12px;gap:8px}
+#home #hTournament b{font-size:18px;line-height:1.4}
+#home #hTournament small{font-size:11px;line-height:1.5}
+#home #hTournament .cupButtonIcon{flex-basis:32px}
+#home #hTournament .cupButtonIcon svg{width:32px;height:32px}
+@media(max-height:740px){
+ #home .hLogo{height:110px;padding-top:0;padding-bottom:0}
+ #home .hLogoCards{height:64px}
+ #home .hLogoCards img{height:60px}
+ #home .hTitle{font-size:36px}
+ #home .hMenu{grid-template-rows:minmax(76px,1.2fr) minmax(48px,.72fr) minmax(88px,1.1fr) minmax(60px,.8fr);gap:6px}
+ #home #hOnl{padding-top:23px;padding-bottom:6px}
+ #home #hOnl>span>span>b{font-size:23px!important}
+}
+/* Preserve every action on very short/landscape screens; the header and nav stay fixed. */
+@media(max-height:700px){
+ #home .homeWrap{touch-action:pan-y}
+ #home .hMenu{overflow-x:hidden;overflow-y:auto;overscroll-behavior:none;touch-action:pan-y;-webkit-overflow-scrolling:touch}
+}

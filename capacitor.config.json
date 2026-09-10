@@ -6,7 +6,11 @@
     "StatusBar": {
       "overlaysWebView": true,
       "style": "DARK"
+    },
+    "FirebaseAuthentication": {
+      "providers": [
+        "apple.com"
+      ]
     }
   }
 }
-

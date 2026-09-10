@@ -29,7 +29,7 @@
     const old=button.querySelector('svg');if(old)old.outerHTML=icon(name);
   }
   for(const [id,label] of [['hProfBtn','ملفي الشخصي'],['hGoldBtn','رصيد الذهب والمتجر'],['sndBtn','الصوت'],['boardBtn','نتائج الطاولة'],['oBoardBtn','نتائج الطاولة']]){
-    const el=document.getElementById(id);if(el)el.setAttribute('aria-label',label);
+    const el=document.getElementById(id);if(el)el.setAttribute('aria-label',id==='hGoldBtn'&&!SHOW_STORE?'رصيد الذهب':label);
   }
   if(typeof uiSoundButtons==='function')uiSoundButtons();
   for(const [id,name,label] of [
@@ -67,32 +67,12 @@
     },{passive:true});
   }
   const profileExit=document.getElementById('pfOut');
-  if(profileExit){
-    const themes=[['emerald','النادي الزمردي'],['midnight','الليلة الكحلية'],['royal','المجلس الملكي'],['original','خلفية المتجر المفعّلة']];
-    const button=document.createElement('button');button.id='uiAppearanceBtn';
-    button.type='button';button.innerHTML=icon('cards')+'<span>مظهر الطاولة</span>';
-    profileExit.before(button);
-    const sheet=document.createElement('div');sheet.id='uiAppearance';sheet.className='hidden';
-    sheet.innerHTML='<div class="uiAppearanceCard" role="dialog" aria-modal="true" aria-labelledby="uiAppearanceTitle"><div class="uiAppearanceHead"><h2 id="uiAppearanceTitle">مظهر الطاولة</h2><button type="button" class="qBtn" aria-label="إغلاق">'+icon('close')+'</button></div><p>اختر خلفيتك المفضلة على هذا الجهاز</p><div class="uiThemeGrid">'+themes.map(([id,label])=>'<button type="button" class="uiThemeChoice" data-theme="'+id+'" aria-pressed="false"><span class="uiThemePreview"'+(id==='original'?'':' style="background-image:url(ui-art/room-'+id+'.svg)"')+'>'+(id==='original'?icon('gift'):'<img src="ui-art/table-'+id+'.svg" alt="">')+'</span><span>'+label+'</span><small class="uiThemeState"></small></button>').join('')+'</div></div>';
-    (document.getElementById('frame')||document.body).appendChild(sheet);
-    let selected='emerald';try{selected=localStorage.getItem('wb-ui-table')||selected}catch(_){}
-    const choices=[...sheet.querySelectorAll('[data-theme]')];
-    const refresh=()=>choices.forEach(el=>{const active=el.dataset.theme===selected;el.setAttribute('aria-pressed',String(active));el.querySelector('.uiThemeState').textContent=active?'مفعّلة':'اختيار';});
-    const close=()=>{sheet.classList.add('hidden');button.focus();};
-    button.onclick=()=>{refresh();sheet.classList.remove('hidden');sheet.querySelector('.qBtn').focus();};
-    sheet.querySelector('.qBtn').onclick=close;
-    sheet.addEventListener('click',event=>{if(event.target===sheet)close();});
-    sheet.addEventListener('keydown',event=>{
-      if(event.key==='Escape'){event.preventDefault();close();}
-      if(event.key==='Tab'){
-        const first=sheet.querySelector('.qBtn'),last=choices[choices.length-1];
-        if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
-        else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
-      }
-    });
-    choices.forEach(el=>{el.onclick=()=>{selected=el.dataset.theme;try{localStorage.setItem('wb-ui-table',selected)}catch(_){}if(typeof applyEquippedTheme==='function')applyEquippedTheme(selected);refresh();};});
-    if(typeof applyEquippedTheme==='function')applyEquippedTheme();
+  if(profileExit&&SHOW_STORE){
+    const button=document.createElement('button');button.id='uiAppearanceBtn';button.type='button';
+    button.innerHTML=icon('cards')+'<span>خلفياتي في المتجر</span>';
+    button.onclick=()=>openShop('themes');profileExit.before(button);
   }
+  if(typeof applyEquippedTheme==='function')applyEquippedTheme();
   const toast=document.querySelector('#toastG span');if(toast){toast.setAttribute('role','status');toast.setAttribute('aria-live','polite');}
   // Keyboard activation mirrors the existing click handler, including its guards.
   document.addEventListener('keydown',event=>{

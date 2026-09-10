@@ -1,0 +1,1723 @@
+--- a/capacitor.config.json
++++ b/capacitor.config.json
+@@ -6,8 +6,11 @@
+     "StatusBar": {
+       "overlaysWebView": true,
+       "style": "DARK"
++    },
++    "FirebaseAuthentication": {
++      "providers": [
++        "apple.com"
++      ]
+     }
+   }
+ }
+-
+-
+--- a/www/index.html
++++ b/www/index.html
+@@ -696,16 +696,19 @@
+ <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+ <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+ <link rel="stylesheet" href="ui-polish.css">
++<script defer src="ui-results-store.js"></script>
+ <script defer src="ui-polish.js"></script>
+ </head>
+ <body>
+ <div id="frame">
+   <div id="toastG"><span id="toastGTxt"></span></div>
+-  <div id="specNotice" class="hidden" style="position:fixed;top:14px;left:12px;right:12px;z-index:500;background:#33302c;color:#fff;border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.35)">
+-    <span style="font-size:20px;flex:none">👀</span>
+-    <span id="specNoticeTxt" style="flex:1;font-size:12.5px;font-weight:700;line-height:1.5">الدعوة انتهت — الجولة بدأت وامتلأت المقاعد. أنت تشاهد الآن كمشاهد.</span>
+-    <button id="specLeaveBtn" style="background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:999px;padding:7px 14px;font-family:var(--fb);font-weight:800;font-size:12px;cursor:pointer;flex:none">رجوع</button>
+-    <button id="specDismissBtn" style="background:none;border:none;color:#fff;font-size:16px;cursor:pointer;flex:none">✕</button>
++  <div id="specNotice" class="hidden uiSpectatorNotice" role="status" aria-live="polite" aria-atomic="true">
++    <span class="uiNoticeEmblem" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></span>
++    <div class="uiNoticeCopy"><strong id="uiSpecTitle">مقعدك في المدرّج</strong><p id="specNoticeTxt">أنت تشاهد الجولة الحالية.</p></div>
++    <div class="uiNoticeActions">
++      <button id="specDismissBtn" type="button">متابعة المشاهدة</button>
++      <button id="specLeaveBtn" type="button">مغادرة الطاولة</button>
++    </div>
+   </div>
+   <!-- NEW CODE — توست تغيّر نقاط الرتبة (فوز/خسارة/انسحاب من جلسة تنافسية) -->
+   <div id="rankToast" class="hidden" style="position:fixed;top:70px;left:16px;right:16px;z-index:400;background:#fff;border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:360px;margin:0 auto">
+@@ -780,12 +783,23 @@
+     </div>
+   </div>
+   <div id="pageLoader" class="hidden">
+-    <div id="plCards">
++    <div class="uiEntryBrand" aria-hidden="true">مجابيد</div>
++    <div id="plCards" aria-hidden="true">
+       <img src="cards/KH.png" alt="">
+       <img src="cards/AS.png" alt="">
+       <img src="cards/QD.png" alt="">
+     </div>
+-    <div id="pageLoaderTxt">فتح...</div>
++    <div id="pageLoaderTxt" role="status" aria-live="polite">نجهّز جلستك…</div>
++    <span class="uiEntryRail" aria-hidden="true"></span>
++    <div class="uiEntryTips">
++        <span class="uiEntryTipsTitle" aria-hidden="true">من سوالف المجلس</span>
++        <div class="uiEntryTipsText" aria-hidden="true">
++          <span>راقب الميدان قبل ما تختار ورقتك.</span>
++          <span>العب بهدوء؛ كل ورقة ممكن تغيّر الجولة.</span>
++          <span>تقدر تغيّر اسمك وصورتك من ملفك الشخصي.</span>
++        </div>
++        <span class="uiEntrySr">نصيحة: راقب الميدان قبل ما تختار ورقتك.</span>
++      </div>
+   </div>
+ 
+   <!-- الإعداد -->
+@@ -810,7 +824,7 @@
+     <span id="gameBumpR"></span><span id="gameBumpL"></span>
+     <div id="topbar">
+       <button id="exitBtn">خروج ✕</button>
+-      <div class="meta"><div class="ttl" id="modeTtl">فردي</div></div>
++      <div class="meta uiMatchHeader"><div class="uiMatchWords"><div class="ttl" id="modeTtl">تدريب</div><span id="uiLocalMode" class="uiMatchDetail">فردي</span></div><span id="uiLocalGoal" class="uiMatchGoal hidden"></span></div>
+       <button id="sndBtn" title="الصوت">🔊</button>
+       <button id="boardBtn" title="الصدارة"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 01-10 0z"></path></svg></button>
+     </div>
+@@ -885,8 +899,10 @@
+     </div>
+     <div id="topbar" style="position:relative;z-index:35">
+       <button class="exitLike" id="oExit" style="background:none;color:var(--sageL);font-size:12px;font-weight:700;text-decoration:underline;border:none;cursor:pointer">خروج</button>
+-      <div class="ttl" id="oHeaderTtl" style="font-family:var(--fh);font-size:19px;color:var(--mint);display:flex;align-items:center;gap:8px;flex-wrap:wrap">مبارزة أونلاين <span id="oHeaderGoal" class="hidden" style="font-family:var(--fb);font-size:12.5px;font-weight:800;color:#1c1a19;background:#f6c14d;border-radius:999px;padding:3px 11px;box-shadow:0 0 0 2px rgba(255,255,255,.25),0 2px 5px rgba(0,0,0,.35);white-space:nowrap"></span><span id="connDot"></span></div>
+-      <span id="oSpecCount" class="hidden" style="background:rgba(240,250,225,.12);color:var(--mint);border-radius:99px;padding:4px 9px;font-size:11.5px;font-weight:800;display:flex;align-items:center;gap:4px">👁️ <span id="oSpecN">0</span></span>
++      <div class="ttl uiMatchHeader" id="oHeaderTtl">
++        <div class="uiMatchWords"><div class="uiMatchTitleLine"><span id="uiOnlineTitle">جلسة سريعة</span><span id="connDot"></span><span id="oSpecCount" class="hidden" aria-label="عدد المشاهدين">◉ <span id="oSpecN">0</span></span></div><span id="uiOnlineMode" class="uiMatchDetail">جماعي ٢×٢</span></div>
++        <span id="oHeaderGoal" class="hidden uiMatchGoal"></span>
++      </div>
+       <button id="oSnd" style="background:rgba(240,250,225,.12);color:var(--mint);border-radius:99px;padding:4px 10px;font-size:13px;border:none;cursor:pointer">🔊</button>
+     </div>
+     <div id="oTimerTop"><div class="fill"></div></div>
+@@ -948,7 +964,7 @@
+           </span>
+           <button class="abtn" id="oThrow">رمي</button>
+           <button class="abtn" id="oPass" style="display:none">تجاوز</button>
+-          <button id="oReactBtn">التفاعلات</button>
++          <button id="oReactBtn">التعبيرات</button>
+         </div>
+       </div>
+     </div>
+@@ -978,29 +994,23 @@
+     </div>
+     <div id="oWaqf" class="hidden"></div>
+     <div id="oOver" class="hidden">
+-      <div id="resCard" style="width:100%;max-width:340px;background:var(--sand);border-radius:24px;padding:22px 20px;text-align:center">
++      <div id="resCard" class="uiResultCard" style="width:100%;max-width:340px;background:var(--sand);border-radius:24px;padding:22px 20px;text-align:center">
++        <span id="oResultKind" class="uiResultKind"></span><div id="oResultArt" class="uiResultArt"></div>
+         <h2 id="oResTtl" style="font-family:var(--fh);font-size:30px;color:var(--clay)"></h2>
+         <div id="oResSub" style="font-size:14px;font-weight:700;color:var(--mut);margin-bottom:14px"></div>
+         <div id="oForfeitBanner" class="hidden" style="margin:0 0 14px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,#f6c14d,#e3a93c);color:#5c3a0a;font-family:var(--fh);font-size:15px;font-weight:800;box-shadow:0 3px 0 #a97a1f">🏆 انسحب الخصم! فوز مستحق لفريقك</div>
+-        <!-- NEW CODE — إحصاءات اللاعب المتحركة (ذهب + نقاط رتبة) لجلسة تنافسية فقط -->
+-        <div id="oMyStats" class="hidden" style="display:flex;justify-content:center;gap:18px;margin-bottom:14px">
+-          <div style="display:flex;align-items:center;gap:4px">
+-            <i style="width:14px;height:14px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block"></i>
+-            <span id="oMyGoldNum" style="font-family:var(--fh);font-size:16px;color:var(--ink)">0</span>
+-            <span id="oMyGoldDelta" style="font-size:11px;font-weight:800"></span>
+-          </div>
+-          <div style="display:flex;align-items:center;gap:4px">
+-            <span id="oMyRankNum" style="font-family:var(--fh);font-size:16px;color:var(--ink)">0</span>
+-            <span id="oMyRankDelta" style="font-size:11px;font-weight:800"></span>
+-            <span style="font-size:10px;color:var(--mut);font-weight:800">رتبة</span>
+-          </div>
++        <div id="oMyStats" class="uiRewardGrid hidden">
++          <div id="oGoldReward" class="uiRewardTile uiRewardGold"><span class="uiRewardIcon" aria-hidden="true">◈</span><span>رصيد الذهب</span><strong id="oMyGoldNum">0</strong><b id="oMyGoldDelta" class="uiRewardDelta"></b><i class="uiRewardSpark" aria-hidden="true">✦</i></div>
++          <div class="uiRewardTile uiRewardXp"><span class="uiRewardIcon" aria-hidden="true">✧</span><span>الخبرة</span><strong id="oMyXpNum">0</strong><b id="oMyXpDelta" class="uiRewardDelta"></b></div>
++          <div class="uiXpProgress"><div><span id="oXpLevel"></span><span>خبرتك للمستوى التالي</span></div><div class="uiXpTrack"><i id="oXpFill"></i></div></div>
++          <div id="oRankReward" class="uiRankReward"><span>النقاط التنافسية</span><strong id="oMyRankNum">0</strong><b id="oMyRankDelta"></b></div><p id="oRewardNote" class="uiRewardNote" role="status"></p>
+         </div>
+         <!-- FIX — سطر واضح: رسوم الدخول والجائزة منفصلين، لا الفارق الصافي فقط -->
+         <div id="oFeeWinLine" class="hidden" style="font-size:12.5px;font-weight:700;color:var(--mut);margin-bottom:14px;display:flex;justify-content:center;gap:14px"></div>
+-        <div id="oResRows"></div>
++        <div class="uiResultSectionLabel">حصيلة الطاولة</div><div id="oResRows"></div>
+         <div style="display:flex;gap:10px;margin-top:8px">
+           <!-- FIX — حُذف زر "العب مرة أخرى" بالكامل بطلبك (إلغاء إعادة اللعبة) -->
+-          <button id="oMenu" style="flex:1;padding:14px;border-radius:16px;font-family:var(--fh);font-size:19px;background:var(--sand2);color:var(--ink2);border:2px solid var(--line);cursor:pointer">القائمة</button>
++          <button id="oMenu" style="flex:1;padding:14px;border-radius:16px;font-family:var(--fh);font-size:19px;background:var(--sand2);color:var(--ink2);border:2px solid var(--line);cursor:pointer">العودة للمجلس</button>
+         </div>
+       </div>
+     </div>
+@@ -1012,18 +1022,32 @@
+     <div id="wWrap">
+       <svg class="saduSvg" width="100%" height="46" viewBox="0 0 390 46" preserveAspectRatio="none"><defs><pattern id="sdWelcome" width="32" height="46" patternUnits="userSpaceOnUse"><rect width="32" height="46" fill="#273322"></rect><path d="M16 6l11 17-11 17L5 23z" fill="none" stroke="#d67f48" stroke-width="2.5"></path><path d="M16 16l6 7-6 7-6-7z" fill="#8fa073"></path></pattern></defs><rect width="390" height="46" fill="url(#sdWelcome)"></rect></svg>
+       <div id="wMid">
+-        <div id="wCards">
++        <div class="uiEntryEyebrow" lang="en" dir="ltr">MAJABEED · CARD CLUB</div>
++        <div id="wCards" aria-hidden="true">
+           <img src="court_K.png" alt="">
+           <img src="court_Q.png" alt="">
+           <img src="court_J.png" alt="">
+           <img src="court_JOKER.png" alt="">
+         </div>
+         <div id="wTitle">مجابيد</div>
+-        <div id="wSub">ورق المجالس... كِل ولا تنكِل</div>
++        <div id="wSub">ورق المجالس… كِل ولا تنكِل</div>
++      </div>
++      <div class="uiEntryTips">
++        <span class="uiEntryTipsTitle" aria-hidden="true">من سوالف المجلس</span>
++        <div class="uiEntryTipsText" aria-hidden="true">
++          <span>راقب الميدان قبل ما تختار ورقتك.</span>
++          <span>العب بهدوء؛ كل ورقة ممكن تغيّر الجولة.</span>
++          <span>تقدر تغيّر اسمك وصورتك من ملفك الشخصي.</span>
++        </div>
++        <span class="uiEntrySr">نصيحة: راقب الميدان قبل ما تختار ورقتك.</span>
+       </div>
+       <div id="wBtns">
+         <button id="wLogin" style="display:none">تسجيل الدخول</button>
+-        <div id="wLoading"><span class="wSpinner"></span></div>
++        <div id="wLoading" role="status" aria-live="polite">
++          <span class="wSpinner" aria-hidden="true"></span>
++          <span>نجهّز جلستك…</span>
++          <span class="uiEntryRail" aria-hidden="true"></span>
++        </div>
+       </div>
+       <div id="wVer">النسخة 1.0 — بيتا</div>
+       <div id="buildTag" style="position:absolute;bottom:4px;left:8px;font-size:9px;color:rgba(184,157,120,.55);font-weight:700"></div>
+@@ -1033,19 +1057,19 @@
+   <div class="screen hidden" id="login">
+     <div id="lgWrap">
+       <svg class="saduSvg" width="100%" height="40" viewBox="0 0 390 40" preserveAspectRatio="none" style="opacity:.55"><defs><pattern id="sdLogin" width="30" height="40" patternUnits="userSpaceOnUse"><path d="M15 5l10 15-10 15L5 20z" fill="none" stroke="#d67f48" stroke-width="2.5"></path><path d="M15 14l5 6-5 6-5-6z" fill="#8fa073"></path></pattern></defs><rect width="390" height="40" fill="url(#sdLogin)"></rect></svg>
+-      <div id="lgTopRow"><button id="lgBack" class="qBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button></div>
+-      <div id="lgHead"><span class="t">أهلاً من جديد</span><span class="sub">ادخل وكمّل جولاتك</span></div>
++      <div id="lgTopRow"><button id="lgBack" class="qBtn" type="button" aria-label="العودة للبداية"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span class="uiEntryWordmark" aria-hidden="true">مجابيد <i>♠</i></span></div>
++      <div id="lgHead"><span class="t">أهلاً من جديد</span><span class="sub">سجّل دخولك، وكمّل جولاتك مع الربع</span></div>
+       <div id="lgAva"></div>
+       <div id="lgFields">
+         <div>
+-          <div class="lgLbl">البريد الإلكتروني</div>
+-          <div class="lgField"><input id="lgEmail" type="email" placeholder="you@example.com"><span class="fic">✉</span></div>
++          <label class="lgLbl" for="lgEmail">البريد الإلكتروني</label>
++          <div class="lgField"><input id="lgEmail" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" placeholder="you@example.com"><span class="fic" aria-hidden="true">✉</span></div>
+         </div>
+         <div>
+-          <div class="lgLbl">كلمة المرور</div>
+-          <div class="lgField"><input id="lgPass" type="password" placeholder="••••••••"><span class="fic">🔒</span></div>
++          <label class="lgLbl" for="lgPass">كلمة المرور</label>
++          <div class="lgField"><input id="lgPass" type="password" autocomplete="current-password" placeholder="••••••••"><span class="fic" aria-hidden="true">🔒</span></div>
+         </div>
+-        <div id="lgForgot">نسيت كلمة المرور؟ استعادة</div>
++        <button id="lgForgot" type="button">نسيت كلمة المرور؟</button>
+         <button id="lgGo">دخول</button>
+         <div class="lgOr">أو</div>
+         <div class="lgSoc">
+@@ -1056,7 +1080,7 @@
+         <button id="lgNew">إنشاء حساب جديد</button>
+       </div>
+       <div id="lgBottom">
+-        <span id="lgSignupLink">ما عندك حساب؟ سجّل الآن</span>
++        <button id="lgSignupLink" type="button">جديد في المجلس؟ أنشئ حسابك</button>
+         <div id="lgTerms">بدخولك أنت توافق على <a href="https://mjabid.com/terms.html" target="_blank" style="color:inherit;text-decoration:underline">شروط الاستخدام</a> و<a href="https://mjabid.com/privacy.html" target="_blank" style="color:inherit;text-decoration:underline">سياسة الخصوصية</a></div>
+       </div>
+     </div>
+@@ -1064,39 +1088,45 @@
+   <!-- إنشاء حساب جديد (هوية اللاعب) -->
+   <div class="screen hidden" id="signup">
+     <div id="suWrap">
+-      <div class="suTopHead"><button class="qBtn" id="suBack"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></button><span class="t">سوّ هويتك</span></div>
+-      <div class="suLbl2">اختر أفاتارك</div>
++      <div class="suTopHead"><button class="qBtn" id="suBack" type="button" aria-label="العودة لتسجيل الدخول"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></button><span class="t">حساب جديد<small>حيّاك في المجلس، خلّنا نتعرّف عليك</small></span></div>
++      <label class="lgLbl" for="suName">الاسم المعروض</label>
++      <div class="lgField"><input id="suName" autocomplete="nickname" type="text" maxlength="14" placeholder="اسمك في اللعبة"><span aria-hidden="true" class="fic">👤</span></div>
++      <label class="lgLbl" for="suUser">اسم المستخدم</label>
++      <div class="lgField"><input id="suUser" autocapitalize="none" spellcheck="false" inputmode="text" autocomplete="username" type="text" maxlength="16" placeholder="username" style="direction:ltr;text-align:left;padding-left:40px"><span aria-hidden="true" class="fic" style="right:14px;left:auto">@</span></div>
++      <div id="suUserHint">من 3 إلى 16 حرفًا إنجليزيًا أو رقمًا أو _، ليجدك أصدقاؤك</div>
++      <label class="lgLbl" for="suEmail">البريد الإلكتروني</label>
++      <div class="lgField"><input id="suEmail" autocapitalize="none" spellcheck="false" inputmode="email" autocomplete="email" type="email" placeholder="you@example.com" style="direction:ltr;text-align:left;padding-left:40px"><span aria-hidden="true" class="fic">✉</span></div>
++      <label class="lgLbl" for="suPass">كلمة المرور</label>
++      <div class="lgField"><input id="suPass" autocomplete="new-password" type="password" placeholder="٦ أحرف على الأقل" style="direction:ltr;text-align:left;padding-left:40px"><span aria-hidden="true" class="fic">🔒</span></div>
++      <label class="lgLbl" for="suPass2">تأكيد كلمة المرور</label>
++      <div class="lgField"><input id="suPass2" autocomplete="new-password" type="password" placeholder="أعد كتابة كلمة المرور" style="direction:ltr;text-align:left;padding-left:40px"><span aria-hidden="true" class="fic">🔒</span></div>
++      <details class="uiEntryAvatarPicker">
++        <summary>صورتك في المجلس <span>اختياري</span></summary>
++      <div class="suLbl2">اختر من الصور، أو ارفع صورتك من جهازك</div>
+       <button id="suUploadBtn" type="button" style="width:100%;padding:11px;border-radius:14px;border:1.5px dashed var(--clay);background:#fff;color:var(--clay);font-family:var(--fb);font-weight:800;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px">📷 أو ارفع صورتك من جهازك</button>
+       <input type="file" id="suUploadInput" accept="image/*" style="display:none">
+       <div id="suAvGrid"></div>
+-      <div class="lgLbl">الاسم المعروض</div>
+-      <div class="lgField"><input id="suName" type="text" maxlength="14" placeholder="اسمك في اللعبة"><span class="fic">👤</span></div>
+-      <div class="lgLbl">اسم المستخدم</div>
+-      <div class="lgField"><input id="suUser" type="text" maxlength="16" placeholder="username" style="direction:ltr;text-align:left;padding-left:40px"><span class="fic" style="right:14px;left:auto">@</span></div>
+-      <div id="suUserHint">أحرف إنجليزية وأرقام فقط — يظهر لأصدقائك للبحث عنك</div>
+-      <div class="lgLbl">البريد الإلكتروني</div>
+-      <div class="lgField"><input id="suEmail" type="email" placeholder="you@example.com" style="direction:ltr;text-align:left;padding-left:40px"><span class="fic">✉</span></div>
+-      <div class="lgLbl">كلمة المرور</div>
+-      <div class="lgField"><input id="suPass" type="password" placeholder="٦ أحرف على الأقل" style="direction:ltr;text-align:left;padding-left:40px"><span class="fic">🔒</span></div>
+-      <div class="lgLbl">تأكيد كلمة المرور</div>
+-      <div class="lgField"><input id="suPass2" type="password" placeholder="أعد كتابة كلمة المرور" style="direction:ltr;text-align:left;padding-left:40px"><span class="fic">🔒</span></div>
++      </details>
+       <button id="suGo">أنشئ حسابي</button>
+-      <div id="suToLogin">لديك حساب؟ <b>سجّل الدخول</b></div>
++      <button id="suToLogin" type="button">عندك حساب؟ <b>سجّل الدخول</b></button>
+     </div>
+   </div>
+   <!-- إكمال حساب Google (اسم مستخدم + أفاتار) -->
+   <div class="screen hidden" id="gcomplete">
+     <div id="suWrap">
+-      <div class="suTopHead" style="align-items:flex-start"><span style="width:40px"></span><span class="t" style="display:block;line-height:1.15">خطوة أخيرة<small style="display:block;font-family:var(--fb);font-size:12.5px;font-weight:700;color:#8a6a4a">دخلت بحساب Google — كمّل هويتك</small></span></div>
+-      <div class="suLbl2">اختر أفاتارك</div>
++      <div class="suTopHead" style="align-items:flex-start"><span style="width:40px"></span><span class="t" style="display:block;line-height:1.15">كمّل هويتك<small style="display:block;font-family:var(--fb);font-size:12.5px;font-weight:700;color:#8a6a4a">اختر اسمك في المجلس، وابدأ أول جولة</small></span></div>
++      <label class="lgLbl" for="gcName">الاسم المعروض</label>
++      <div class="lgField"><input id="gcName" autocomplete="nickname" type="text" maxlength="14" placeholder="اسمك في اللعبة"><span aria-hidden="true" class="fic">👤</span></div>
++      <label class="lgLbl" for="gcUser">اسم المستخدم</label>
++      <div class="lgField"><input id="gcUser" autocapitalize="none" spellcheck="false" inputmode="text" autocomplete="username" type="text" maxlength="16" placeholder="username" style="direction:ltr;text-align:left;padding-left:40px"><span aria-hidden="true" class="fic" style="right:14px;left:auto">@</span></div>
++      <div id="suUserHint">من 3 إلى 16 حرفًا إنجليزيًا أو رقمًا أو _</div>
++      <details class="uiEntryAvatarPicker">
++        <summary>صورتك في المجلس <span>اختياري</span></summary>
++      <div class="suLbl2">اختر من الصور، أو ارفع صورتك من جهازك</div>
+       <button id="gcUploadBtn" type="button" style="width:100%;padding:11px;border-radius:14px;border:1.5px dashed var(--clay);background:#fff;color:var(--clay);font-family:var(--fb);font-weight:800;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px">📷 أو ارفع صورتك من جهازك</button>
+       <input type="file" id="gcUploadInput" accept="image/*" style="display:none">
+       <div id="gcAvGrid"></div>
+-      <div class="lgLbl">الاسم المعروض</div>
+-      <div class="lgField"><input id="gcName" type="text" maxlength="14" placeholder="اسمك في اللعبة"><span class="fic">👤</span></div>
+-      <div class="lgLbl">اسم المستخدم</div>
+-      <div class="lgField"><input id="gcUser" type="text" maxlength="16" placeholder="username" style="direction:ltr;text-align:left;padding-left:40px"><span class="fic" style="right:14px;left:auto">@</span></div>
+-      <div id="suUserHint">أحرف إنجليزية وأرقام فقط</div>
++      </details>
+       <button id="gcGo">يلا نلعب</button>
+     </div>
+   </div>
+@@ -1162,7 +1192,7 @@
+       <div class="uiAfHeader"><button class="qBtn" id="afBack" aria-label="رجوع">→</button><div><h2>أضف أصدقاءك</h2><p>ابحث عن لاعب وادعه إلى مجلسك</p></div></div>
+       <div class="uiAfSearch">
+         <div style="position:relative;flex:1">
+-          <input id="afSearch" placeholder="ابحث باسم المستخدم @username" style="width:100%;padding:13px 44px 13px 16px;border-radius:999px;border:2px solid var(--clay3);background:#fff;font-family:var(--fb);font-weight:700;font-size:14px;outline:none;text-align:right">
++          <input id="afSearch" placeholder="ابحث بالاسم بالعربي أو الإنجليزي أو @username" style="width:100%;padding:13px 44px 13px 16px;border-radius:999px;border:2px solid var(--clay3);background:#fff;font-family:var(--fb);font-weight:700;font-size:14px;outline:none;text-align:right">
+           <span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--clay);font-size:16px">🔍</span>
+         </div>
+       </div>
+@@ -1185,19 +1215,23 @@
+         <span style="font-family:var(--fh);font-size:25px;color:#ffc6a5;text-shadow:0 2px 0 rgba(0,0,0,.35)">المتجر</span>
+         <span style="margin-right:auto;display:flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:999px;background:#33302c;color:#f6c14d;font-weight:800;font-size:13.5px;flex:none"><i style="width:15px;height:15px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block"></i><span id="shopGold">0</span></span>
+       </div>
+-      <!-- شريط التبويبات محذوف — المتجر يعرض الطاولات فقط، لا حاجة لتبويب بقسم واحد -->
+-      <!-- FIX — بطاقة إعلان المكافأة: ٣٠٠ ذهب مجاناً، تبريد ساعة موثوق سيرفرياً -->
+-      <div style="padding:14px 18px 0">
+-        <button id="adRewardBtn" style="width:100%;padding:14px;border-radius:16px;border:0;background:linear-gradient(135deg,#f6c14d,#c77b1e);color:#3a2308;font-family:var(--fh);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 0 rgba(0,0,0,.25)">
+-          <span id="adRewardBtnTxt">🎬 احصل على 300 ذهبة مجاناً</span>
+-        </button>
++      <div class="uiStoreTabs" role="tablist" aria-label="أقسام المتجر">
++        <button id="uiThemesTab" type="button" role="tab" aria-controls="uiThemesPanel" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="m12 7 3 5-3 5-3-5 3-5Z"/></svg>خلفيات الطاولة</button>
++        <button id="uiGoldTab" type="button" role="tab" aria-controls="uiGoldPanel" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><ellipse cx="12" cy="7" rx="8" ry="4"/><path d="M4 7v5c0 2 4 4 8 4s8-2 8-4V7M4 12v5c0 2 4 4 8 4s8-2 8-4v-5"/></svg>الذهب</button>
+       </div>
+-      <!-- NEW CODE — باقات شراء الذهب (Paymob) — أموال حقيقية، منفصلة تماماً عن متجر الثيمات أسفلها -->
+-      <div style="padding:14px 18px 0">
+-        <div style="font-family:var(--fh);font-size:15px;color:#ffc6a5;margin-bottom:8px">اشترِ ذهباً</div>
+-        <div id="goldPkgList" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
++      <div class="uiStoreScroll">
++        <section id="uiThemesPanel" role="tabpanel" aria-labelledby="uiThemesTab">
++          <div class="uiStoreIntro"><span>على ذوقك</span><h2>كل طاولة… لها جوّها</h2><p>خلفياتك المجانية والمميزة، في مكان واحد.</p></div>
++          <div id="uiShopShowcase"><div id="uiShopScene"></div><div class="uiSceneDetails"><div><h3 id="uiShopSceneName"></h3><p id="uiShopSceneNote"></p></div><button id="uiShopActivate" type="button"></button></div></div>
++          <div class="uiCatalogHeading"><h3>اختر خلفيتك</h3><span>عاينها قبل التفعيل</span></div>
++          <div id="shopList"></div>
++        </section>
++        <section id="uiGoldPanel" class="hidden" role="tabpanel" aria-labelledby="uiGoldTab">
++          <div class="uiStoreIntro"><span>ذهب المجلس</span><h2>اختر زادك للجولة</h2><p>اختر الكمية المناسبة لك. يُحدّث رصيدك بعد تأكيد الدفع.</p></div>
++          <button id="adRewardBtn" class="uiStoreAd" type="button"><span class="uiAdPlay" aria-hidden="true">▷</span><span id="adRewardBtnTxt">احصل على 300 ذهبة مجاناً</span><span aria-hidden="true">←</span></button>
++          <div id="goldPkgList"></div>
++        </section>
+       </div>
+-      <div id="shopList" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 18px 100px;display:grid;grid-template-columns:1fr 1fr;gap:13px;align-content:start"></div>
+     </div>
+   </div>
+   <!-- الصدارة -->
+@@ -1312,9 +1346,11 @@
+           </button>
+ 
+         </div>
++        <button class="hBig" id="hTournament"><span class="cupButtonIcon"><svg viewBox="0 0 64 64" width="42" height="42" fill="none" aria-hidden="true"><path d="M20 10h24v14c0 12-5 18-12 18s-12-6-12-18V10Z" fill="#e6c279" stroke="#a7772e" stroke-width="2"/><path d="M20 15H10v8c0 8 6 13 13 13m21-21h10v8c0 8-6 13-13 13M32 42v10m-12 4h24" stroke="#b68a40" stroke-width="4" stroke-linecap="round"/><path d="m32 17 6 9-6 9-6-9 6-9Z" fill="#28533e"/></svg></span><span class="cupButtonText"><b>بطولة التاسعة</b><small>كل ليلة · ٨ فرق · جوائز للأبطال</small></span><span class="cupButtonTime">٩:٠٠ م</span></button>
+       </div>
+     </div>
+   </div>
++  <div id="cupBackdrop" class="hidden"><section id="cupSheet" role="dialog" aria-modal="true" aria-labelledby="cupTitle"><header><h2 id="cupTitle">بطولة التاسعة</h2><button id="cupRefresh">تحديث</button><button id="cupClose" aria-label="إغلاق">×</button></header><div id="cupBody">جارٍ تحميل البطولة…</div></section></div>
+   <!-- الأصدقاء -->
+   <div class="screen hidden" id="friends">
+     <div id="frWrap" data-navholder>
+@@ -1358,11 +1394,18 @@
+ 
+   <!-- النتائج -->
+   <div class="screen hidden" id="results">
+-    <div id="resCard">
++    <div id="resCard" class="uiResultCard">
++      <span id="lResultKind" class="uiResultKind"></span><div id="lResultArt" class="uiResultArt"></div>
+       <h2 id="resTtl">نهاية الجولة</h2>
+       <div class="sub" id="resSub"></div>
+       <div id="teamLine" class="hidden"></div>
+-      <div id="resRows"></div>
++<div id="lMyStats" class="uiRewardGrid hidden">
++          <div id="lGoldReward" class="uiRewardTile uiRewardGold"><span class="uiRewardIcon" aria-hidden="true">◈</span><span>رصيد الذهب</span><strong id="lMyGoldNum">0</strong><b id="lMyGoldDelta" class="uiRewardDelta"></b><i class="uiRewardSpark" aria-hidden="true">✦</i></div>
++          <div class="uiRewardTile uiRewardXp"><span class="uiRewardIcon" aria-hidden="true">✧</span><span>الخبرة</span><strong id="lMyXpNum">0</strong><b id="lMyXpDelta" class="uiRewardDelta"></b></div>
++          <div class="uiXpProgress"><div><span id="lXpLevel"></span><span>خبرتك للمستوى التالي</span></div><div class="uiXpTrack"><i id="lXpFill"></i></div></div>
++          <p id="lRewardNote" class="uiRewardNote" role="status"></p>
++        </div>
++      <div class="uiResultSectionLabel">حصيلة الطاولة</div><div id="resRows"></div>
+       <div id="resBtns">
+         <button id="againBtn">جولة جديدة</button>
+         <button id="menuBtn">القائمة</button>
+@@ -1410,7 +1453,7 @@
+ // ⚠️ الصق مفاتيح مشروعك هنا (من إعدادات Firebase → تطبيق الويب).
+ // هذه المفاتيح آمنة للنشر في كود الواجهة (مصمّمة لذلك).
+ // رقم إصدار التطبيق — يُحدَّث يدويًا مع كل نسخة تُرفع للمتاجر (مو نفس رقم كاش الـSW)
+-const APP_VERSION='1.0.0';
++const APP_VERSION='1.2.0'; // iOS: matches Ali's current MARKETING_VERSION.
+ const FIREBASE_CONFIG = {
+   apiKey: "AIzaSyCZZrU2tip4efYEfYhUi9F_DNfuRZ22adU",
+   authDomain: "jops-e508d.firebaseapp.com",
+@@ -1509,7 +1552,7 @@
+ const PROFILE_COSMETIC_KEYS=['avatar','eq-theme','eq-back']; // FIX
+ function _buildProfileData(){ // FIX — بناء البيانات مرة واحدة (DRY) — تُستعمل للكتابتين
+   const data={name:localStorage.getItem('wb-name')||'لاعب', updated:Date.now(), email:FB.user.email||''};
+-  data.name_lc=data.name.toLowerCase().trim(); // NEW CODE — أساس بحث الأصدقاء بالاسم (جنب username_lc الموجود)
++  data.name_lc=data.name.normalize('NFKC').toLowerCase().replace(/\s+/g,' ').trim(); // NEW CODE — أساس بحث الأصدقاء بالاسم (جنب username_lc الموجود)
+   const _un=localStorage.getItem('wb-username'); if(_un)data.username_lc=_un.toLowerCase();
+   for(const k of CLOUD_KEYS){
+     const v=localStorage.getItem('wb-'+k);
+@@ -1524,6 +1567,8 @@
+ async function _fbSaveProfileNow(){ // FIX — التنفيذ الفعلي، منفصل عن المؤقت كي يمكن استدعاؤه فورياً (تسجيل الخروج)
+   if(!FB.ready||!FB.user)return;
+   const data=_buildProfileData();
++  // These fields are server-owned under the supplied production Firestore rules.
++  for(const key of ['gold','weekPts','dayPts','monthPts','rank','level','daily-last','daily-streak','lastAdRewardTime','games','wins','best'])delete data[key];
+   const ref=FB.db.collection('players').doc(FB.user.uid);
+   const cosmetic={name:data.name, updated:data.updated}; // FIX
+   for(const k of PROFILE_COSMETIC_KEYS)if(data[k]!==undefined)cosmetic[k]=data[k]; // FIX
+@@ -2634,7 +2679,7 @@
+   G.field=[];
+   G.phase='end';
+   // إحصاءات الملف الشخصي (مرة لكل جولة)
+-  if(!G._scored){G._scored=true;
++  if(!G._scored){G._uiRewardBase=uiRewardSnapshot();G._scored=true;
+     try{
+       const myPts=pilePts(G.players[0]);
+       let won=false, draw=false;
+@@ -2659,8 +2704,6 @@
+           G._consolG=consol; G._rankG=myRank;
+         }
+         if(myPts>ST.n('best'))ST.set('best',myPts);
+-        ST.set('xp',ST.n('xp')+15+(won?25:draw?10:0));
+-        ST.set('level',1+Math.floor(ST.n('xp')/100));
+         // ملاحظة: النقاط التنافسية (rank) لا تُحتسب هنا — تُحسب فقط بنهاية مباراة أونلاين حقيقية (انظر renderOver)
+         G._tierResult={won,draw,win:G_TIER.win,fee:G_TIER.fee,name:G_TIER.name,consol:G._consolG||0,rank:G._rankG||1};
+         G_TIER=null;
+@@ -2719,8 +2762,8 @@
+     const sum=t=>({pts:scored.filter(x=>x.p.team===t).reduce((a,x)=>a+x.pts,0),
+       cards:scored.filter(x=>x.p.team===t).reduce((a,x)=>a+x.cards,0),
+       gold:scored.filter(x=>x.p.team===t).reduce((a,x)=>a+x.gold,0),
+-      names:G.players.filter(p=>p.team===t).map(p=>p.name).join(' و'),
+-      avas:G.players.filter(p=>p.team===t).map(p=>p.ava).join('')});
++      names:G.players.filter(p=>p.team===t).map(p=>esc(p.name)).join(' و'),
++      avas:G.players.filter(p=>p.team===t).map(p=>'<span>'+avatarHTML(p.ava,26)+'</span>').join('')});
+     const A=sum(0),B=sum(1);
+     let order=[[0,A],[1,B]].sort((x,y)=>y[1].pts-x[1].pts||y[1].cards-x[1].cards);
+     order.forEach(([t,d],i)=>{
+@@ -2728,29 +2771,33 @@
+       const mine=t===G.players[0].team;
+       const r=document.createElement('div');
+       r.className='resRow'+(win?' win':'');
+-      r.innerHTML=`<div class="rk">${toH(i+1)}</div><div class="ava">${d.avas}</div>
++      r.innerHTML=`<div class="rk">${toH(i+1)}</div><div class="ava avaDuo">${d.avas}</div>
+         <div class="nm">${d.names}<small>${mine?'فريقك':'فريق الخصوم'}</small></div>
+         <div class="pt">${toH(d.pts)} <span style="font-size:11px;font-family:var(--fb)">نقطة</span></div>
+-        <div class="gold">+${toH(d.gold)} 🪙</div>`;
++        <div class="gold">${toH(d.cards)}<small>ورقة</small></div>`;
+       rows.appendChild(r);
+     });
+   }else for(const s of scored){
+     const r=document.createElement('div');
+     r.className='resRow'+(s.rank===1?' win':'');
+     const showGold = !G._tierResult; // في الساحات: الذهب الفعلي في العنوان، لا نعرض ذهباً وهمياً للصفوف
+-    r.innerHTML=`<div class="rk">${toH(s.rank)}</div><div class="ava">${s.p.ava}</div>
+-      <div class="nm">${s.p.name}${s.p.i===0?' <small>أنت</small>':''}</div>
++    r.innerHTML=`<div class="rk">${toH(s.rank)}</div><div class="ava">${avatarHTML(s.p.ava,34)}</div>
++      <div class="nm">${esc(s.p.name)}${s.p.i===0?' <small>أنت</small>':''}</div>
+       <div class="pt">${toH(s.pts)} <span style="font-size:11px;font-family:var(--fb)">نقطة</span></div>
+-      ${showGold?`<div class="gold">+${toH(s.gold)} 🪙</div>`:`<div class="gold" style="opacity:.55">${s.rank===1?'الفائز 🏆':''}</div>`}`;
++      <div class="gold">${toH(s.cards)}<small>ورقة</small></div>`;
+     rows.appendChild(r);
+   }
++  const totals=[0,1].map(t=>scored.filter(x=>x.p.team===t).reduce((sum,x)=>sum+x.pts,0));
++  const resultDraw=G.opts.mode==='team'&&totals[0]===totals[1];
++  const resultWon=G.opts.mode==='team'?!resultDraw&&totals[G.players[0].team]>totals[1-G.players[0].team]:scored[0].p.i===0;
+   show('results',true);
++  uiPresentLocalResult(resultWon,resultDraw);
+   // احتفال
+-  const winMe = G.opts.mode==='team'
+-    ? sub.includes('فاز فريقك') : scored[0].p.i===0;
++  const winMe=resultWon;
+   if(winMe){SFX.win();confetti()}else SFX.lose();
+ }
+ function confetti(){
++  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+   const cols=['#d67f48','#ccdbb2','#f9f4ed','#b2622d','#8fa073'];
+   for(let i=0;i<44;i++){
+     const c=document.createElement('div');c.className='confetti';
+@@ -2831,14 +2878,39 @@
+   } // FIX
+   return html; // FIX
+ }
++function uiMatchLabels(v){
++  const tiers={beginner:'مبتدئ',amateur:'هاوي',pro:'محترف',elite:'نخبة',legend:'أسطورة'};
++  const raw=String(v.tierName||'').trim(), key=String(v.tierKey||'').replace(/^session-/,'');
++  const fallback=Object.keys(tiers).find(k=>raw===tiers[k]||raw.includes(tiers[k])||raw.toLowerCase().split(/[^a-z-]+/).includes(k)||raw.toLowerCase()==='session-'+k);
++  const level=tiers[key]||tiers[fallback]||'';
++  const friendly=v.isFriendlySession===true||(v.isFriendlySession==null&&v.isFriendly===true);
++  const session=v.isSession||String(v.tierKey||'').startsWith('session-')||raw.includes('جلسة كاملة')||raw.toLowerCase().startsWith('session-');
++  const title=v.local?'تدريب':friendly?'جلسة ودية':session?'جلسة كاملة':'جلسة سريعة';
++  const mode=v.mode==='team'?'جماعي ٢×٢':'فردي';
++  const goal=Number(v.tierGoal);
++  return {title,detail:mode+(level?' · '+level:''),goal:Number.isFinite(goal)&&goal>0?'الهدف '+toH(goal):''};
++}
++function uiRenderMatchHeader(v,online){
++  const labels=uiMatchLabels(v);
++  $(online?'#uiOnlineTitle':'#modeTtl').textContent=labels.title;
++  $(online?'#uiOnlineMode':'#uiLocalMode').textContent=labels.detail;
++  const goal=$(online?'#oHeaderGoal':'#uiLocalGoal');
++  goal.textContent=labels.goal;
++  goal.setAttribute('aria-label',labels.goal?labels.goal+' نقطة للفوز':'');
++  goal.classList.toggle('hidden',!labels.goal);
++}
++function uiPlayerName(v,pid){
++  const name=String(v.names[pid]||'لاعب');
++  return v.autoControlled&&v.autoControlled[pid]?name.replace(/ · تحكم تلقائي$/,''):name;
++}
+ function renderSeatCard(el,opts){
+   const {turn,holderBadgeHtml,avaHtml,nameHtml,handCount,pts,pct,pileTopCard,pileBadgeHtml,onAvaClick}=opts; // NEW CODE — أضفنا onAvaClick اختياري. FIX — أضفنا pct (نسبة التعبئة نحو هدف النقاط، ٠ لو ما فيه هدف)
+   el.classList.toggle('turnGlow',turn);
+   el.innerHTML=`
+     ${turn?'<div class="bubble">دوره</div>':''}${holderBadgeHtml||''}
+-    <div class="avaWrap"><div class="oppHandFan">${oppHandFanHTML(handCount)}</div><div class="ava"${onAvaClick?' style="cursor:pointer"':''}>${avaHtml}</div><div class="handCountBadge">${handCount}</div></div>
++    <div class="avaWrap"><div class="oppHandFan">${oppHandFanHTML(handCount)}</div><div class="ava"${onAvaClick?' style="cursor:pointer"':''}>${avaHtml}</div><div class="handCountBadge">${handCount}</div>${opts.autoControlled?'<span class="uiAutoBadge">تحكم تلقائي</span>':''}</div>
+     <div class="nm">${nameHtml}</div>
+-    <div class="inf"><span class="pts"><i class="ptsFill" style="width:${pct||0}%"></i><b>${pts} نقطة</b></span></div>
++    <div class="inf"><span class="pts" aria-label="${pts} نقطة${opts.teamScore?' للفريق':''}"><i class="ptsFill" style="width:${pct||0}%"></i><b>${pts} <small>${opts.teamScore?'للفريق':'نقطة'}</small></b></span></div>
+     <div class="pileBox"></div>`;
+   el.querySelector('.ava').onclick=onAvaClick||null; // NEW CODE — الفردي لا يمرر هذا المعامل إطلاقاً، فسلوكه يبقى كما هو تماماً
+   const pb=el.querySelector('.pileBox');
+@@ -3096,7 +3168,7 @@
+   renderDeck(); renderBoard();
+   if(!G.waqf)$('#meWaqfBtn').disabled=true;
+   $('#meWaqfBtn').classList.toggle('hidden',G.opts.mode==='solo');
+-  $('#modeTtl').textContent=G.opts.mode==='team'?'جماعي 2×2':'فردي';
++  uiRenderMatchHeader({local:true,mode:G.opts.mode,tierKey:G.opts.tierKey,tierGoal:G.tierGoal},false);
+   // المقاعد 1,2,3 (منطق مشترك مع الأونلاين عبر renderSeatCard)
+   for(let i=1;i<4;i++){
+     const p=G.players[i], el=$('#'+SEAT_IDS[i]), turn=G.turn===i&&G.phase==='turn';
+@@ -3110,7 +3182,7 @@
+       nameHtml:`${p.name}${p.team!=null&&p.team===G.players[0].team?' 🤝':''}`,
+       handCount:toH(p.hand.length),
+       pts:toH(teamPts(p)), // FIX — كان pilePts(p): بالجماعي يعرض الآن مجموع الفريق (يطابق نسبة التعبئة)
+-      pct:goalPct(teamPts(p),G.tierGoal), // NEW CODE
++      pct:goalPct(teamPts(p),G.tierGoal), teamScore:G.opts.mode==='team',
+       pileTopCard:pileTop(p),
+       pileBadgeHtml:(run>1?`<div class="runB">×${toH(run)}</div>`:'')+`<div class="cnt">${toH(p.pile.length)}</div>`
+     });
+@@ -3121,7 +3193,7 @@
+   id.classList.toggle('turnGlow',myTurn);
+   const _av=myAvatar();const _avTxt=AV_PRO.find(a=>a.id===_av)?'🛡️':_av;
+   id.innerHTML=`${myTurn?'<div class="bubble">دورك</div>':''}<div class="nm">${me.name}${me.team!=null?' 🤝':''}</div><div class="ava">${_avTxt}</div>`;
+-  const mp=$('#myPile');mp.innerHTML=`<span class="pts"><i class="ptsFill" style="width:${goalPct(teamPts(me),G.tierGoal)}%"></i><b>${toH(teamPts(me))} نقطة</b></span>`; // FIX — كان pilePts(me) بلا تعبئة
++  const mp=$('#myPile');mp.innerHTML=`<span class="pts"><i class="ptsFill" style="width:${goalPct(teamPts(me),G.tierGoal)}%"></i><b>${toH(teamPts(me))} <small>${G.opts.mode==='team'?'للفريق':'نقطة'}</small></b></span>`; // FIX — كان pilePts(me) بلا تعبئة
+   const mt=pileTop(me);
+   if(mt){const w=document.createElement('div');w.style.position='relative';w.appendChild(cardEl(mt,'sm'));
+     const myRun=topRunLen(me.pile);
+@@ -3242,14 +3314,8 @@
+   const endgameBlocked=st.endgame&&st.onlyBidder!=null&&st.onlyBidder!==0;
+   const can=!st.endgameGrabbed&&st.holder!==0&&haveCard&&!endgameBlocked;
+   $('#waqfBtn').classList.toggle('hidden',!can);
+-  $('#waqfNo').classList.toggle('hidden',can);
+-  if(!can){ // النص يُحدَّث دائماً حسب الحالة
+-    if(st.endgameGrabbed)$('#waqfNo').textContent='خُطفت! جارٍ الانتقال للدور التالي...';
+-    else if(st.holder===0)$('#waqfNo').textContent='الأكلة بيدك — اصمد حتى نهاية العدّ';
+-    else if(endgameBlocked&&haveCard)$('#waqfNo').textContent='الجولة ختامية والدور فاتك — لا يمكنك المزايدة';
+-    else if(st.endgame&&st.onlyBidder===0&&!haveCard)$('#waqfNo').textContent='الجولة ختامية — دورك للإيقاف لكن ما عندك الرقم';
+-    else $('#waqfNo').textContent='الأكلة عند '+G.players[st.holder].name+' — ما عندك ما تزايد به';
+-  }
++  $('#waqfNo').classList.add('hidden');
++  $('#waqfNo').textContent='';
+   if(can){
+     const mkCard=c=>{const ce=cardEl(c,'sm');ce.style.width='38px';ce.style.height='54px';ce.style.boxShadow='0 3px 8px rgba(0,0,0,.5)';return ce};
+     const jokSlot=$('#waqfCardJok'),natSlot=$('#waqfCardNat'),box=$('#waqfBtn');
+@@ -3570,6 +3636,7 @@
+   $('#pageLoader').classList.remove('hidden'); $('#pageLoader').style.opacity='1'; // NEW CODE
+   $('#quitConfirm').classList.add('hidden');
+   $('#specNotice').classList.add('hidden');
++  ONL._specNoticeKey=null;ONL._specDismissedKey=null;
+   ONL.active=false;
+   if(ONL.iv){clearInterval(ONL.iv);ONL.iv=null}
+   if(ONL.ws){try{if(ONL.ws.readyState===1)ONL.ws.send(JSON.stringify({type:'leave'}));}catch(e){} try{ONL.ws.onclose=null;ONL.ws.close()}catch(e){}} // NEW CODE — أضفنا إرسال leave قبل الإغلاق: يفعّل عقوبة السيرفر الفورية بدل انتظار مهلة الحضور
+@@ -3583,12 +3650,13 @@
+   },500); // NEW CODE
+ }
+ function oHandle(msg){
++  if(msg.type==='state'){let note=document.getElementById('cupTableNotice');if(!note){note=document.createElement('div');note.id='cupTableNotice';document.getElementById('onl').appendChild(note);}note.textContent=msg.tournament?.paused?'مقعد شاغر · ننتظر دخول البديل':'';note.classList.toggle('hidden',!msg.tournament?.paused);}
+   if(!ONL._loaderHiddenOnce){ // NEW CODE — أول حالة حقيقية توصل من السيرفر (عبر WebSocket أو الاستطلاع البديل، الدالة مشتركة بينهما) — الاتصال اكتمل فعليًا الآن
+     ONL._loaderHiddenOnce=true; // NEW CODE
+     const pl=$('#pageLoader'); // NEW CODE
+     if(pl){ pl.style.opacity='0'; setTimeout(()=>pl.classList.add('hidden'),260); } // NEW CODE — نفس مدة التلاشي (٢٦٠مل) المستخدمة أصلاً بـshowPageLoader لثبات بصري
+   } // NEW CODE
+-  ONL.status=msg.status;ONL.seats=msg.seats||[];ONL.you=msg.you;ONL.view=msg.view;ONL.result=msg.result;ONL.lobby=msg.lobby||null;ONL.spectators=msg.spectators||0;
++  document.getElementById('onl').dataset.tournament=msg.tournament?'true':'false';ONL.tournament=msg.tournament||null;ONL.status=msg.status;ONL.seats=msg.seats||[];ONL.you=msg.you;ONL.view=msg.view;ONL.result=msg.result;ONL.lobby=msg.lobby||null;ONL.spectators=msg.spectators||0;
+   // FIX — إصلاح جذري: السيرفر يرسل uids كحقل شقيق لـview (server.js: uids:this._safeUidsMap())، لكن هنا كنا
+   // نسند ONL.view=msg.view مباشرة بلا دمج uids فيها إطلاقاً — يعني ONL.view.uids كانت undefined دائماً بكل
+   // الأوضاع (جماعي وودي سواء)، لا علاقة لنوع الجلسة بالمشكلة. هذا كان يعطّل fetchAndShowOtherRanks() وزر
+@@ -3653,6 +3721,7 @@
+   const bub=$('#'+bubbleId);
+   if(bub){
+     if(isText)SFX.tick(); // FIX — صوت نقرة عند ظهور فقاعة نص حر (الاختصارات الجاهزة لها صوتها الصوتي الخاص أصلاً أعلاه)
++    bub.classList.remove('reactBubble');
+     bub.textContent=displayText; bub.classList.remove('hidden');
+     clearTimeout(bub._t); bub._t=setTimeout(()=>bub.classList.add('hidden'),4000); // FIX — 4 ثوانٍ بدل 2.6 كما طُلب
+   }
+@@ -3670,29 +3739,69 @@
+   {id:'wewon',t:'فزنا!',img:'reactions/react-wewon.png'},
+   {id:'thanks',t:'شكراً',img:'reactions/react-thanks.png'},
+ ];
+-const REACT_COST=50; // ثابتة العميل — تطابق الخصم الفعلي بالسيرفر (adjustPlayerGold(...,-50)) لعرض السعر فقط، السيرفر هو المصدر الحقيقي دائماً
++const EXPRESSIONS=[
++  {id:'expr-donkey',t:'غشييم',sprite:0},
++  {id:'expr-cheer',t:'كفو عليك',sprite:1},
++  {id:'expr-angry',t:'قهرتني',sprite:2},
++  {id:'expr-laugh',t:'ههههه',sprite:3},
++  {id:'expr-shock',t:'وش ذا؟',sprite:4},
++  {id:'expr-smart',t:'العبها صح',sprite:5},
++  {id:'expr-clap',t:'يا سلام',sprite:6},
++  {id:'expr-calm',t:'هديها',sprite:7}
++];
++const REACT_COST=50; // عرض فقط؛ الخصم والتحقق من السيرفر
++function expressionArt(r){
++  return `<i class="expressionArt" aria-hidden="true" style="background-position:${(r.sprite%4)*100/3}% ${Math.floor(r.sprite/4)*100}%"></i>`;
++}
+ function openReactionsPanel(){
++  if(document.getElementById('reactBackdrop'))return;
+   const sc=$('#onl');
+-  const wrap=document.createElement('div'); wrap.id='reactBackdrop';
+-  wrap.innerHTML=`<div id="reactSheet">
+-      <h3>التفاعلات</h3>
+-      <div id="reactGrid">${REACTIONS.map(r=>`
+-        <button class="reactBtn" data-id="${r.id}"><img src="${r.img}" alt=""><span>${r.t}</span><b><i></i>${REACT_COST}</b></button>
+-      `).join('')}</div>
+-    </div>`;
++  const wrap=document.createElement('div');wrap.id='reactBackdrop';
++  wrap.innerHTML=`<div id="reactSheet" role="dialog" aria-modal="true" aria-labelledby="expressionTitle" dir="rtl">
++    <header class="expressionHeader"><div><h3 id="expressionTitle">التعبيرات</h3><p>مزح وتشجيع على الطاولة</p></div><button class="expressionClose" aria-label="إغلاق">×</button></header>
++    <div id="reactGrid">${EXPRESSIONS.map(r=>`<button class="reactBtn" data-id="${r.id}" aria-pressed="false">${expressionArt(r)}<span>${r.t}</span></button>`).join('')}</div>
++    <footer class="expressionFooter"><p class="expressionPreview" aria-live="polite">اختر تعبيرك · كل إرسال ٥٠ ذهبًا</p><button class="expressionSend" disabled>إرسال · ٥٠ ذهبًا</button></footer>
++  </div>`;
+   sc.appendChild(wrap);
+-  wrap.onclick=(e)=>{ if(e.target.id==='reactBackdrop')wrap.remove(); };
+-  wrap.querySelectorAll('.reactBtn').forEach(b=>{ b.onclick=()=>{ sendReaction(b.dataset.id); wrap.remove(); }; });
+-}
+-function sendReaction(reactId){
+-  if(!(ONL.active&&ONL.ws&&ONL.ws.readyState===1)){ oToast('التفاعلات متاحة أونلاين فقط'); return; }
+-  oSend({type:'react',reactId});
++  const close=()=>{wrap.remove();document.getElementById('oReactBtn')?.focus();};
++  wrap.querySelector('.expressionClose').onclick=close;
++  wrap.onclick=e=>{if(e.target===wrap)close();};
++  wrap.onkeydown=e=>{
++    if(e.key==='Escape'){e.preventDefault();close();}
++    if(e.key==='Tab'){
++      const list=Array.from(wrap.querySelectorAll('button:not(:disabled)'));
++      const first=list[0],last=list[list.length-1];
++      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
++      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
++    }
++  };
++  let selected=null,targetPid=null;
++  const send=wrap.querySelector('.expressionSend');
++  wrap.querySelectorAll('.reactBtn').forEach(b=>{b.onclick=()=>{
++    selected=EXPRESSIONS.find(r=>r.id===b.dataset.id);
++    wrap.querySelectorAll('.reactBtn').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
++    wrap.querySelector('.expressionPreview').innerHTML=expressionArt(selected)+`<span>${selected.t}</span>`;
++    targetPid=null;send.disabled=true;
++    let targets=wrap.querySelector('.expressionTargets');
++    if(!targets){targets=document.createElement('div');targets.className='expressionTargets';wrap.querySelector('.expressionFooter').before(targets);}
++    targets.innerHTML='<p>لمن ترسل التعبير؟</p>'+ONL.view.seats.filter(pid=>pid!==ONL.you).map(pid=>`<button data-target="${esc(pid)}">${avatarHTML(ONL.view.avatars&&ONL.view.avatars[pid],32)}<span>${esc(uiPlayerName(ONL.view,pid))}</span></button>`).join('');
++    targets.querySelectorAll('button').forEach(btn=>{btn.onclick=()=>{targetPid=btn.dataset.target;targets.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===btn)));send.disabled=false;};});
++  };});
++  send.onclick=()=>{if(!selected||send.disabled)return;send.disabled=true;sendReaction(selected.id,targetPid);close();};
++  wrap.querySelector('.expressionClose').focus();
++}
++function sendReaction(reactId,targetPid){
++  if(!ONL.view||!ONL.view.seats.includes(targetPid)||targetPid===ONL.you)return;
++  if(!EXPRESSIONS.some(r=>r.id===reactId))return;
++  if(!(ONL.active&&ONL.ws&&ONL.ws.readyState===1)){oToast('التعبيرات متاحة أثناء الاتصال بالطاولة');return;}
++  oSend({type:'react',reactId,targetPid});
+ }
+ // استقبال تفاعل — بنفس منطق استقبال الدردشة بالضبط، لكن نعرضه حتى لصاحبه (بانتظار تأكيد السيرفر الفعلي،
+ // بعكس الدردشة المجانية اللي تنعرض محلياً فوراً بلا انتظار — هنا فيه تكلفة ذهب حقيقية، فالعرض دليل النجاح)
+ function oReceiveReact(msg){
+-  const r=REACTIONS.find(x=>x.id===msg.reactId); if(!r)return;
++  const r=EXPRESSIONS.find(x=>x.id===msg.reactId)||REACTIONS.find(x=>x.id===msg.reactId); if(!r)return;
+   const v=ONL.view; if(!v)return;
++  if(msg.targetPid&&Number.isInteger(r.sprite)){receiveTargetExpression(msg,r);return;}
+   const myIdx=v.seats.indexOf(ONL.you)>=0?v.seats.indexOf(ONL.you):0;
+   const seatAt=k=>v.seats[(myIdx+k)%4];
+   let bubbleId=null;
+@@ -3704,10 +3813,46 @@
+   const bub=$('#'+bubbleId);
+   if(bub){
+     bub.classList.add('reactBubble');
+-    bub.innerHTML=`<img src="${r.img}" alt="">${r.t}`;
++    bub.innerHTML=Number.isInteger(r.sprite)?expressionArt(r)+`<span class="expressionCaption">${r.t}</span>`:`<img src="${r.img}" alt="">${r.t}`;
+     bub.classList.remove('hidden');
+     clearTimeout(bub._t); bub._t=setTimeout(()=>{bub.classList.add('hidden');bub.classList.remove('reactBubble');},2600);
+   }
++}
++// Expressions persist through seat redraws, using one bounded expiry per recipient.
++const TARGET_EXPRESSIONS=new Map();
++function expressionAvatar(pid){
++  const v=ONL.view;if(!v)return null;
++  const idx=v.seats.indexOf(pid);if(idx<0)return null;
++  const mine=Math.max(0,v.seats.indexOf(ONL.you));
++  return document.querySelector(['#oIdent .ava','#oSeatR .ava','#oSeat .ava','#oSeatL .ava'][(idx-mine+4)%4]);
++}
++function syncTargetExpressions(){
++  for(const [pid,e] of TARGET_EXPRESSIONS){
++    if(e.room!==ONL.room||Date.now()>=e.until){clearTimeout(e.timer);TARGET_EXPRESSIONS.delete(pid);}
++  }
++  document.querySelectorAll('.targetExpression').forEach(el=>el.remove());
++  document.querySelectorAll('.expressionAvatarActive').forEach(el=>el.classList.remove('expressionAvatarActive'));
++  for(const [pid,e] of TARGET_EXPRESSIONS){
++    const ava=expressionAvatar(pid);if(!ava)continue;
++    ava.classList.add('expressionAvatarActive');
++    const sticker=document.createElement('span');sticker.className='targetExpression';sticker.setAttribute('aria-label',e.r.t);
++    sticker.innerHTML=expressionArt(e.r)+`<span>${e.r.t}</span>`;ava.appendChild(sticker);
++  }
++}
++function receiveTargetExpression(msg,r){
++  if(!ONL.view.seats.includes(msg.targetPid))return;
++  const old=TARGET_EXPRESSIONS.get(msg.targetPid);if(old)clearTimeout(old.timer);
++  const e={r,room:ONL.room,until:Date.now()+20000};
++  TARGET_EXPRESSIONS.set(msg.targetPid,e);
++  e.timer=setTimeout(()=>{if(TARGET_EXPRESSIONS.get(msg.targetPid)===e){TARGET_EXPRESSIONS.delete(msg.targetPid);syncTargetExpressions();}},20000);
++  const from=expressionAvatar(msg.from),to=expressionAvatar(msg.targetPid);
++  if(from&&to&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
++    const a=from.getBoundingClientRect(),b=to.getBoundingClientRect();
++    const fly=document.createElement('span');fly.className='expressionFlight';fly.innerHTML=expressionArt(r);
++    fly.style.left=a.left+'px';fly.style.top=a.top+'px';document.body.appendChild(fly);
++    if(fly.animate){const motion=fly.animate([{transform:'translate(0,0) scale(.7)',opacity:1},{transform:`translate(${b.left-a.left}px,${b.top-a.top}px) scale(1)`,opacity:1}],{duration:650,easing:'ease-in-out'});motion.onfinish=()=>{fly.remove();};motion.oncancel=()=>fly.remove();}else fly.remove();
++  }
++  syncTargetExpressions();
+ }
+ function oNow(){return Date.now()+ONL.offset}
+ function oNameOf(pid){
+@@ -3955,28 +4100,15 @@
+     ONL._holdUntil=0; // خلصت المهلة، ارجع للحالة الحقيقية الحالية
+   }
+   const seated=v.me===ONL.you&&v.seats.includes(ONL.you);
+-  const hasBotSeat=v.seats.some(p=>!v.humans.includes(p)); // NEW CODE — فيه فعليًا مقعد بوت بالطاولة؟ (لا نعد بمقعد لو الطاولة ممتلئة ببشر حقيقيين فقط)
+-  if(!ONL.spectateOnly&&!seated&&ONL.status==='playing'&&hasBotSeat){ // NEW CODE — نيته لعب صريحة، لسّا مو مقعود، الطاولة تلعب، وفيه مقعد بوت فعلي = drop-in معلّق ينتظر دوره
+-    showSpectatorNotice('أنت في وضع المشاهدة الآن، سيتم إجلاسك مكان البوت قريباً...'); // NEW CODE
+-  }else if(!ONL.viaInviteJoin){ // NEW CODE — قُعِد فعلاً، أو مشاهد بنية صريحة، أو الطاولة ممتلئة ببشر حقاً — نخفيها، إلا لو إشعار "الدعوة انتهت" المنفصل بانتظار دوره بالأسفل
+-    $('#specNotice').classList.add('hidden'); // NEW CODE
+-  } // NEW CODE
+-  if(ONL.viaInviteJoin){
+-    ONL.viaInviteJoin=false;
+-    if(!seated)showSpectatorNotice();
+-  }
++  uiRenderSpectatorStatus(v,seated);
++  ONL.viaInviteJoin=false;
+   oSfxFromLog(v.log);
+   { // NEW CODE — كشف الرمي بالميدان من تغيّر الحالة لا من نص السجل (السيرفر قد يستبدل "رمى بالميدان" بـ"كمّل N أوراق" بنفس الطلب فيضيع الحدث)
+     const fc=(v.field||[]).length;
+     if(ONL._prevFieldCount!=null&&fc===ONL._prevFieldCount+1&&!(v.lastSettle&&v.lastSettle.seq!==ONL._prevSettleSeqForThrow))GameSoundManager.playActionSound(); // NEW CODE — نظام الصوت الجديد (الرمي بالأونلاين)
+     ONL._prevFieldCount=fc; ONL._prevSettleSeqForThrow=v.lastSettle?v.lastSettle.seq:null;
+   }
+-  const modeAr=v.mode==='team'?'جماعي':'فردي';
+-  const hasCategory=v.tierName&&v.tierName.includes('—'); // الاسم يتضمّن تصنيف الجلسة أصلاً (جلسة سريعة/جلسة كاملة)
+-  $('#oHeaderTtl').firstChild.textContent=(hasCategory?v.tierName:(v.tierName?`${modeAr} - ${v.tierName}`:`${modeAr} - ودي`))+' ';
+-  const hGoal=$('#oHeaderGoal');
+-  if(v.tierGoal){hGoal.textContent=`🎯 ${toH(v.tierGoal)} نقطة`;hGoal.classList.remove('hidden');}
+-  else hGoal.classList.add('hidden');
++  uiRenderMatchHeader(v,true);
+   const specEl=$('#oSpecCount');
+   if(ONL.spectators>0){ $('#oSpecN').textContent=ONL.spectators; specEl.classList.remove('hidden'); }
+   else specEl.classList.add('hidden');
+@@ -3998,12 +4130,13 @@
+     const isHolder=v.phase==='waqf'&&v.waqf&&v.waqf.holder===pid;
+     const holderVal=isHolder?v.waqf.contested.reduce((s,c)=>s+cardVal(c),0):0;
+     const seatUid=isBot(pid)?null:(v.uids&&v.uids[pid]); // NEW CODE — نحلّه وقت البناء، لا وقت النقر لاحقاً (نفس نمط addFriendBtnHTML الحالي)
+-    const seatName=v.names[pid]||'لاعب', seatAva=v.avatars&&v.avatars[pid]; // NEW CODE
++    const seatName=uiPlayerName(v,pid), seatAva=v.avatars&&v.avatars[pid];
+     const pb=renderSeatCard(el,{
+       turn:hisTurn,
+       holderBadgeHtml:isHolder?`<div class="holderVal">${toH(holderVal)}</div>`:'',
+       avaHtml:avatarHTML(v.avatars&&v.avatars[pid],52), // الإصلاح الجوهري: كانت isBot(pid)?botAvatarFor(pid):... — botAvatarFor دالة منفصلة قديمة تتجاهل v.avatars كلياً (تعتمد فقط على رقم البوت)، فصور البوتات الجديدة من السيرفر ما كانت تظهر إطلاقاً
+-      nameHtml:`${v.names[pid]||'لاعب'}${mate?' <span style="color:var(--peach2)">(شريكك)</span>':''}`,
++      nameHtml:`${esc(seatName)}${mate?' <span style="color:var(--peach2)">(شريكك)</span>':''}`,
++      autoControlled:!!(v.autoControlled&&v.autoControlled[pid]),teamScore:v.mode==='team',
+       handCount:v.handCounts[pid],
+       pts:toH(teamCombinedPts(pid)), // FIX — كان p.points: بالجماعي يعرض الآن مجموع الفريق (يطابق نسبة التعبئة)
+       pct:goalPct(teamCombinedPts(pid),v.tierGoal), // NEW CODE
+@@ -4081,10 +4214,18 @@
+   const bottomPid=seated?me:v.seats[0];
+   const id=$('#oIdent');
+   id.classList.toggle('turnGlow',myTurn);
+-  id.innerHTML=`${myTurn?'<div class="bubble">دورك</div>':''}<div class="nm">${seated?(v.names[me]||'أنت'):(v.names[bottomPid]||'لاعب')}</div><div class="ava">${seated?avatarHTML(myAvatar(),52):avatarHTML(v.avatars&&v.avatars[bottomPid],52)}</div>`;
++  const auto=!!(v.autoControlled&&v.autoControlled[bottomPid]);
++  const resume=seated&&auto&&v.canResumeControl===true;
++  id.innerHTML=`${myTurn?'<div class="bubble">دورك</div>':''}<div class="uiSelfName"><div class="nm">${esc(uiPlayerName(v,bottomPid))}</div>${resume?'<button id="uiResumeControl" type="button" title="إلغاء التحكم التلقائي والعودة للعب اليدوي">أستعيد التحكم</button>':auto?'<span class="uiAutoText">تحكم تلقائي</span>':''}</div><div class="ava">${seated?avatarHTML(myAvatar(),52):avatarHTML(v.avatars&&v.avatars[bottomPid],52)}</div>`;
++  syncTargetExpressions();
++  if(resume)$('#uiResumeControl').onclick=()=>{
++    if(ONL.transport!=='poll'&&(!ONL.ws||ONL.ws.readyState!==1)){oToast('انتظر عودة الاتصال لاستعادة التحكم');return;}
++    oSend({type:'resume-control'});
++    $('#uiResumeControl').textContent='جارٍ الاستعادة…';
++  };
+   const myPile=v.piles[bottomPid]||{points:0,count:0,top:null};
+   const myDisplayPts=v.piles[bottomPid]?teamCombinedPts(bottomPid):0; // FIX — كان myPile.points فقط: بالجماعي يعرض الآن مجموع الفريق
+-  const mp=$('#oMyPile');mp.innerHTML=`<span class="pts"><i class="ptsFill" style="width:${goalPct(myDisplayPts,v.tierGoal)}%"></i><b>${myDisplayPts} نقطة</b></span>`;
++  const mp=$('#oMyPile');mp.innerHTML=`<span class="pts"><i class="ptsFill" style="width:${goalPct(myDisplayPts,v.tierGoal)}%"></i><b>${toH(myDisplayPts)} <small>${v.mode==='team'?'للفريق':'نقطة'}</small></b></span>`;
+   if(myPile.top){const w2=document.createElement('div');w2.style.cssText='display:flex;align-items:center;gap:4px';w2.appendChild(cardEl(myPile.top,'sm'));
+     w2.insertAdjacentHTML('beforeend',`<span class="pileCntX">×${toH(myPile.count)}</span>`);mp.appendChild(w2)}
+   // يدي — تباعد ديناميكي يملأ الشاشة (نفس الفردي)
+@@ -4156,7 +4297,7 @@
+   pb2.style.display=(myTurn&&v.canPass)?'block':'none';
+   pb2.onclick=()=>oAction({t:'pass'});
+   $('#oOver').classList.add('hidden');
+-  if(!seated){hint.innerHTML='أنت تتفرج على الطاولة';tb.disabled=true}
++  if(!seated){hint.innerHTML='';tb.disabled=true}
+   else if(!myTurn){hint.innerHTML=v.phase==='waqf'?'':'دور <b>'+(v.names[v.turn]||'لاعب')+'</b>...';tb.disabled=true}
+   else if(!ONL.sel){
+     hint.innerHTML=v.forced?'<b>الأكل إجباري</b> — كل ورقك ياكل':'اختر ورقة من يدك';
+@@ -4208,18 +4349,7 @@
+     $('#oWaqfCntL').textContent=`×${toH(w.contested.length)}`;
+     // NEW CODE — لا صندوق ولا رسالة تغطي اليد: التوجيه يظهر بشريط التلميح فقط، والورقة الصالحة نفسها تُنقَر أو تُسحب للميدان للمزايدة
+     const canB=seated&&v.canBid;
+-    const haveCard=(v.myHand||[]).some(c=>c.rank===w.rank||c.rank===JOKER);
+-    if(seated){
+-      if(canB)hint.innerHTML='<b>وقّف!</b> — انقر أو اسحب ورقتك المُضاءة للميدان';
+-      else if(w.holder===me)hint.innerHTML='الأكلة بيدك — اصمد حتى نهاية العدّ';
+-      else if(w.endgame&&w.onlyBidder&&w.onlyBidder!==me&&haveCard){
+-        hint.innerHTML='الجولة ختامية والدور فاتك — لا يمكنك المزايدة';
+-        if(ONL._toastedEndgameLock!==w.deadline){ONL._toastedEndgameLock=w.deadline;oToast('⛔ جولة ختامية — دورك فات، ما تقدر توقف هالمرة');}
+-      }
+-      else if(w.endgame&&w.onlyBidder===me&&!haveCard)hint.innerHTML='الجولة ختامية — دورك للإيقاف لكن ما عندك الرقم';
+-      else if(v.mode==='team'&&teamOf(w.holder)===teamOf(me))hint.innerHTML='الأكلة عند شريكك — خلّها له';
+-      else hint.innerHTML='ما عندك الرقم ولا جوكر — تقدر تتفرج بس';
+-    }
++    hint.innerHTML=canB?'<b>وقّف!</b> — انقر أو اسحب ورقتك المُضاءة للميدان':'';
+   }else $('#oWaqf').classList.add('hidden');
+ }
+ function renderLobby(){
+@@ -4301,6 +4431,8 @@
+   $('#lobbyHint').textContent=isCreator
+     ?(lb.mode==='team'?'جماعي: أنت وصديقك الأول شريكان — والبوتات ضدكم':'أرسل الرابط ثم اضغط ابدأ — البوتات تكمّل الناقص')
+     :'بانتظار منشئ الغرفة يبدأ الجولة...';
++  if(ONL.tournament)$('#lobbyStart').classList.add('hidden');
++  if(ONL.tournament)$('#lobbyHint').textContent='مباراة البطولة تبدأ تلقائيًا عند اتصال اللاعبين الأربعة';
+   $('#lobbyStart').onclick=()=>oSend({type:'start'});
+   const pubBtn=$('#pubInviteBtn');
+   pubBtn.onclick=async()=>{
+@@ -4329,7 +4461,6 @@
+   $('#oOver').classList.remove('hidden');
+   const me=ONL.you;
+   const seated=!!(r.scores&&r.scores[me]);
+-  $('#oResTtl').textContent='نهاية الجولة';
+   const competitive=!!(r.tier&&r.tier.fee); // الطور التنافسي: أي طبقة عندها رسوم دخول فعلية
+   // FIX — renderOver() تُستدعى من renderOnl() بلا أي شرط كل ما وصل أي تحديث حالة من السيرفر ولو تافه (نبضة
+   // حضور للاعبين الباقين بالطاولة، إلخ) طالما status="over" لسا قائمة. كل نداء كان يعيد كل شي من الصفر:
+@@ -4337,8 +4468,9 @@
+   // فايرستور من جديد بتوقيت وصول مختلف لكل شارة)، ويكرر صوت الفوز — هذا هو "الترمش والتخبط" اللي وصفته بالضبط.
+   // الحارس يقارن *محتوى* r لا مرجعه: كل رسالة WebSocket تُقرأ بـJSON.parse وتبني كائناً جديداً حتى لو نفس
+   // المحتوى بالحرف، فمقارنة r!==r_قديم بالمرجع فقط كانت ستفشل صامتة (كل رسالة تُحسب "نتيجة جديدة" رغم تطابقها).
+-  const rFingerprint=JSON.stringify(r); // FIX
+-  if(competitive&&seated&&ONL._statsPulledForResult!==rFingerprint){ // FIX
++  const rFingerprint=ONL.room+'|'+me+'|'+JSON.stringify(r);
++  uiBeginOnlineResult(r,seated,rFingerprint);
++  if(seated&&ONL._statsPulledForResult!==rFingerprint){ // Bounded existing refresh, including friendly rewards.
+     ONL._statsPulledForResult=rFingerprint; // FIX
+     pullServerStats(); // FIX
+     setTimeout(pullServerStats,1800); // FIX
+@@ -4359,7 +4491,7 @@
+     const myTeam=r.teams.findIndex(t=>t.includes(me));
+     const wt=r.winnerTeam;
+     $('#oResSub').textContent=!seated?(wt==='draw'?'تعادل الفريقان':'فاز فريق '+(r.teams[wt]||[]).map(p=>r.scores[p].name||'لاعب').join(' و')):
+-      (wt==='draw'?'تعادل الفريقان!':(wt===myTeam?('فريقك فاز — مبروك!'+(!competitive?' +100 🪙 لكل لاعب بفريقك':'')):'فاز فريق الخصوم — عوّضوها')); // FIX — إظهار جائزة الجلسة الخاصة الجماعية
++      (wt==='draw'?'تعادل الفريقان!':(wt===myTeam?'فريقك فاز — مبروك!':'فاز فريق الخصوم — عوّضوها'));
+     const fBanner=$('#oForfeitBanner'); if(fBanner)fBanner.classList.toggle('hidden',!(r.forfeit&&wt===myTeam)); // NEW CODE — الفريق الخاسر أصلاً بلا أحد متصل ليراه، فيكفي شرط الفائز فقط
+     const tOrder=(wt===1)?[1,0]:[0,1]; // الفائز أولاً بالمركز الأول
+     tOrder.forEach((ti,pos)=>{
+@@ -4393,14 +4525,7 @@
+   rows.querySelectorAll('.oAddFriendBtn').forEach(b=>{ b.onclick=()=>sendFriendRequest(b.dataset.uid,b.dataset.name,b); }); // NEW CODE — data-uid بدل data-pid
+   fetchAndShowOtherRanks(); // NEW CODE — يعبّي شارات كل اللاعبين (بما فيهم أنا) بشكل غير متزامن بعد الرسم
+   } // FIX — إغلاق حارس "نتيجة جديدة فعلاً" — إحصاءات الذهب/الرتبة تحتها تكمل تحدّثها الطبيعي (لها حارسها المستقل عبر ONL._statsPulledForResult أعلاه أصلاً)
+-  // NEW CODE — قسم إحصاءات اللاعب المتحركة (ذهب + رتبة) — يحل محل منطق oResRankLine القديم (كان يعتمد على
+-  // G._rankDelta المحسوبة محليًا؛ صارت النقاط تُحسب بالسيرفر حصرياً، فهذا القسم يُعبّى ويتحرك عبر
+-  // animateResultsScreenCounters أدناه، تُستدعى تلقائيًا من pullServerStats فور اكتشاف رقم جديد فعلي)
+-  $('#oMyStats').classList.toggle('hidden',!(competitive&&seated)); // NEW CODE
+-  if(competitive&&seated){ // NEW CODE
+-    $('#oMyGoldNum').textContent=toH(ST.n('gold')); $('#oMyGoldDelta').textContent=''; // NEW CODE
+-    $('#oMyRankNum').textContent=toH(ST.n('rank')); $('#oMyRankDelta').textContent=''; // NEW CODE
+-  } // NEW CODE
++  uiPresentOnlineResult(r,seated);
+   // FIX — سطر واضح: رسوم الدخول والجائزة منفصلين (بدل الاكتفاء بالفارق الصافي فقط بـoMyGoldDelta)
+   const feeWinEl=$('#oFeeWinLine'); // FIX
+   if(competitive&&seated&&r.tier&&r.tier.fee){ // FIX
+@@ -4434,19 +4559,9 @@
+ } // NEW CODE
+ // NEW CODE — يحرّك عدّادي الذهب/الرتبة بشاشة النتيجة أمام عين اللاعب — يُستدعى من pullServerStats فور اكتشاف
+ // رقم جديد فعلي من السيرفر (لا حساب محلي هنا، فقط عرض/حركة لما وصل فعلاً)
+-function animateResultsScreenCounters(oldGold,newGold,oldRank,newRank){ // NEW CODE
+-  if($('#oOver').classList.contains('hidden')||$('#oMyStats').classList.contains('hidden'))return; // NEW CODE — الشاشة مو مفتوحة أو مو جلسة تنافسية، لا داعي
+-  if(newGold!==oldGold){ // NEW CODE
+-    $('#oMyGoldDelta').textContent='('+(newGold>=oldGold?'+':'')+toH(newGold-oldGold)+')'; // NEW CODE
+-    $('#oMyGoldDelta').style.color=newGold>=oldGold?'#5e6b40':'#c0392b'; // NEW CODE
+-    animateRankPoints('oMyGoldNum',oldGold,newGold); // NEW CODE
+-  } // NEW CODE
+-  if(newRank!==oldRank){ // NEW CODE
+-    $('#oMyRankDelta').textContent='('+(newRank>=oldRank?'+':'')+toH(newRank-oldRank)+')'; // NEW CODE
+-    $('#oMyRankDelta').style.color=newRank>=oldRank?'#5e6b40':'#c0392b'; // NEW CODE
+-    animateRankPoints('oMyRankNum',oldRank,newRank); // NEW CODE
+-  } // NEW CODE
+-} // NEW CODE
++function animateResultsScreenCounters(oldGold,newGold,oldRank,newRank){
++  uiResultServerStats(newGold,newRank);
++}
+ function oTick(){ // مزامنة المهل مع الخادم وإرسال الحسم/المهلة تلقائياً
+   if(!ONL.active||!ONL.view||ONL.status!=='playing')return;
+   const v=ONL.view;
+@@ -4525,7 +4640,7 @@
+   const isSeated=ONL.view&&ONL.view.me===ONL.you&&ONL.view.seats.includes(ONL.you);
+   if(ONL.status==='playing'&&isSeated)showQuitConfirm(); else leaveOnline();
+ };
+-$('#oMenu').onclick=leaveOnline;
++$('#oMenu').onclick=()=>{const cup=!!ONL.tournament;leaveOnline();if(cup)cupOpen();};
+ // FIX — معالج زر الإعادة حُذف مع الزر
+ // FIX — كان هنا معالج $('#copyBtn').onclick؛ الزر والعنصر أُزيلا من اللوبي معاً (رابط النسخ غير محتاج)
+ $('#oSnd').onclick=()=>{muted=!muted;uiSoundButtons();if(!muted){ac();SFX.tick()}};
+@@ -4537,6 +4652,9 @@
+ // طاولات: تغيّر تدرّج خلفية الطاولة. ظهر الورق: يغيّر تدرّج ظهر البطاقة.
+ const BGV='?v64'; // FIX — استبدلت صورة ثيم المجلس الشعبي بالصورة المتّفق عليها فعلياً (كانت الموقعة تعرض صورة أقدم من قبل هذا الاتفاق) // FIX — كسر كاش صورة المجلس الشعبي: أُعيدت بدقتها الأصلية بلا تكبير مصطنع (كان يسبب بكسلة/تنعيماً) // FIX — صورة المجلس الشعبي الجديدة (بالنوافذ الظاهرة) // كسر كاش الصور — حدّثه مع كل تغيير لملفات bg
+ const SHOP_THEMES=[
++  {id:'theme-emerald',name:'النادي الزمردي',price:0,bg:'ui-art/room-emerald.svg',preview:'ui-art/room-emerald.svg',table:'ui-art/table-emerald.svg'},
++  {id:'theme-midnight',name:'الليلة الكحلية',price:0,bg:'ui-art/room-midnight.svg',preview:'ui-art/room-midnight.svg',table:'ui-art/table-midnight.svg'},
++  {id:'theme-royal',name:'المجلس الملكي',price:0,bg:'ui-art/room-royal.svg',preview:'ui-art/room-royal.svg',table:'ui-art/table-royal.svg'},
+   {id:'theme-popular', name:'المجلس الشعبي', icon:'🏺', price:10000, grad:'radial-gradient(130% 90% at 50% 30%, #6e3a20 0%, #3a2012 85%)', bg:'ui-art/majlis-popular-realistic.png', preview:'ui-art/majlis-popular-realistic.png', table:'ui-art/table-popular.svg'}, // NEW CODE — لم تعد مجانية، صار للسجاد الفارسي هذا الدور
+   // FIX — حُذفت الديوانية والنفود والواحة والنادي: بقي المجلس الشعبي والسجّاد الفارسي فقط بطلبك
+   {id:'theme-persian',name:'السجّاد الفارسي', icon:'🪆', price:0, grad:'radial-gradient(130% 90% at 50% 30%, #6b2a22 0%, #2a1010 85%)', bg:'bg/majlis-persian.jpg'+BGV, preview:'bg/majlis-persian-preview.jpg'+BGV}, // NEW CODE — صارت الخلفية المجانية الافتراضية الجديدة بدل المجلس الشعبي، بطاولة table-center الافتراضية
+@@ -4545,6 +4663,7 @@
+ // حُذفت مصفوفة SHOP_EFFECTS (كانت هنا) — نظام تأثيرات الإشعارات أُلغي بالكامل
+ function shopOwned(){
+   let o; try{ o=JSON.parse(localStorage.getItem('wb-owned')||'["theme-persian","back-default"]'); }catch(e){ o=['theme-persian','back-default']; }
++  if(!Array.isArray(o))o=['theme-persian','back-default'];
+   // ترحيل: كانت "الديوانية" مجانية وصارت مدفوعة — أي لاعب مفعّل عليها حالياً يحتفظ بملكيتها تلقائياً (لا يُطالَب بالشراء رجعياً لشي كان يملكه فعلياً وهو مجاني)
+   // FIX — ترحيل الديوانية القديم حُذف (الثيم نفسه أُلغي) — التطبيع الدفاعي صار داخل applyTheme
+   // NEW CODE — ترحيل: السجّاد الفارسي صار الخلفية المجانية الجديدة للجميع (حتى اللاعبين الحاليين اللي انحفظت بياناتهم قبل وجوده)
+@@ -4561,43 +4680,8 @@
+ // + الثيمات) عن App Store، لأن آبل تمنع أي دفع خارجي لعناصر داخل التطبيق وتشترط IAP الرسمي. بملف واحد للمنصات كلها يصير
+ // العلم بالمنصة: ظاهر على الويب/أندرويد، مخفي على iOS تلقائياً — بلا أي تعديل يدوي عند كل رفعة.
+ const SHOW_STORE=!(window.Capacitor&&window.Capacitor.getPlatform&&window.Capacitor.getPlatform()==='ios');
+-function openShop(){ if(!SHOW_STORE)return; renderShop(); renderAdRewardBtn(); show('shop'); mountNav('shop','shop'); } // FIX — أضفنا renderAdRewardBtn // NEW CODE — يتجاهل أي استدعاء بالكامل لما SHOW_STORE=false
+-function renderShop(){
+-  $('#shopGold').textContent=ST.n('gold').toLocaleString('en');
+-  renderGoldPackages(); // NEW CODE — باقات الذهب الحقيقية (Paymob)، منفصلة عن حلقة الثيمات أسفلها
+-  const items=SHOP_THEMES;
+-  const kind='theme';
+-  const owned=shopOwned(), eq=shopEquipped(kind);
+-  const list=$('#shopList');list.innerHTML='';
+-  for(const it of items){
+-    const isOwned=owned.includes(it.id)||it.price===0;
+-    const isEq=eq===it.id;
+-    const card=document.createElement('div');
+-    card.dataset.theme=it.id;
+-    card.style.cssText='border-radius:20px;background:#fff;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.25)'+(isEq?';box-shadow:0 0 0 2.5px #d67f48,0 4px 14px rgba(0,0,0,.25)':'');
+-    card.innerHTML=`
+-      <div style="width:100%;height:104px;background:${it.preview?`url('${it.preview}') center/cover no-repeat`:(it.bg?`url('${it.bg}') center/cover no-repeat`:it.grad)};display:flex;align-items:center;justify-content:center;font-size:30px">${(it.preview||it.bg)?'':it.icon}</div>
+-      <div style="padding:10px 12px 12px">
+-      <div style="font-size:13.5px;font-weight:800;color:#201e1d">${it.name}</div>
+-      ${isEq?'<div style="margin-top:8px;height:34px;border-radius:999px;background:#fbe9dc;color:#b2622d;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #d67f48">مُفعّل</div>'
+-        :isOwned?'<button class="shopBtn" style="margin-top:8px;width:100%;height:34px;border:0;border-radius:999px;background:#eee8dc;color:#8b857c;font-weight:800;font-size:13px;cursor:pointer">مِلكك ✓</button>'
+-        :`<button class="shopBtn" style="margin-top:8px;width:100%;height:34px;border:0;border-radius:999px;background:#33302c;color:#f6c14d;font-weight:800;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px"><i style="width:13px;height:13px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block"></i>${toH(it.price)}</button>`}
+-      </div>`;
+-    const btn=card.querySelector('.shopBtn');
+-    if(btn)btn.onclick=()=>{
+-      if(isOwned){ localStorage.setItem('wb-eq-'+kind,it.id); try{fbSaveProfile()}catch(x){} toast2(`فُعّل ${it.name}`); renderShop(); }
+-      else{
+-        if(ST.n('gold')<it.price){toast2('ذهبك لا يكفي');return}
+-        ST.set('gold',ST.n('gold')-it.price);
+-        const o=shopOwned();o.push(it.id);localStorage.setItem('wb-owned',JSON.stringify(o));
+-        localStorage.setItem('wb-eq-'+kind,it.id);try{fbSaveProfile()}catch(x){}
+-        toast2(`اشتريت وفعّلت ${it.name} — خُصم ${toH(it.price)} 🪙`);
+-        renderShop();refreshHome();
+-      }
+-    };
+-    list.appendChild(card);
+-  }
+-}
++function openShop(tab){uiOpenShop(tab);}
++function renderShop(){uiRenderShop();}
+ // ═══ NEW CODE — باقات شراء الذهب (Paymob): عرض فقط هنا (الأسعار الحقيقية والحاسمة تعيش بالسيرفر
+ // حصراً في payments.js — هذا الجدول للعرض المرئي لا أكثر، لا يُستخدم أبداً لحساب أي خصم فعلي) ═══
+ const GOLD_PACKAGES_DISPLAY=[
+@@ -4607,17 +4691,9 @@
+   {key:'tier4',sar:50, label:'6,500 🪙'},
+   {key:'tier5',sar:100,label:'14,000 🪙'},
+ ];
+-function renderGoldPackages(){ // NEW CODE
+-  const wrap=$('#goldPkgList'); if(!wrap)return; wrap.innerHTML=''; // NEW CODE
+-  for(const p of GOLD_PACKAGES_DISPLAY){ // NEW CODE
+-    const card=document.createElement('button'); // NEW CODE
+-    card.style.cssText='border:0;border-radius:16px;background:#fff;padding:12px 8px;text-align:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.2);display:flex;flex-direction:column;gap:4px;align-items:center'; // NEW CODE
+-    card.innerHTML=`<span style="font-size:15px;font-weight:800;color:#201e1d">${p.label}</span><span style="font-size:12px;color:#8b857c;font-weight:800">${p.sar} ﷼</span>`; // NEW CODE
+-    card.onclick=()=>buyGoldPackage(p.key); // NEW CODE
+-    wrap.appendChild(card); // NEW CODE
+-  } // NEW CODE
+-} // NEW CODE
++function renderGoldPackages(){uiRenderGoldPackages();}
+ async function buyGoldPackage(tierKey){ // NEW CODE — يبدأ عملية الدفع الفعلية عبر Paymob
++  if(!SHOW_STORE)return;
+   if(!FB.ready||!FB.user){ toast2('سجّل دخولك بحساب أولاً لشراء الذهب'); return; } // NEW CODE
+   try{ // NEW CODE
+     toast2('جارٍ التحويل لصفحة الدفع...'); // NEW CODE
+@@ -4642,6 +4718,7 @@
+ // تطبيق الطاولة المفعّلة على شاشتي اللعب
+ function applyEquippedTheme(uiThemeOverride){
+   try{
++    uiMigrateThemeChoice();
+     let th=SHOP_THEMES.find(t=>t.id===shopEquipped('theme'));
+     if(!th){ th=SHOP_THEMES.find(t=>t.id==='theme-persian'); try{localStorage.setItem('wb-eq-theme','theme-persian');}catch(e){} } // FIX — أي ثيم محذوف مركَّباً يُثبَّت على الفارسي بالتخزين نفسه
+     if(!th)return;
+@@ -4651,13 +4728,6 @@
+     if(o)o.style.background=bgVal;
+     const tableUrl=th.table||'bg/table-center.png'+(typeof BGV!=='undefined'?BGV:''); // NEW CODE — طاولة الثيم الخاصة، أو الافتراضية
+     document.querySelectorAll('.tableWood').forEach(el=>{el.style.backgroundImage=`url('${tableUrl}')`});
+-    // Device-local visual preference; ownership, shop and server data stay unchanged.
+-    let visual=uiThemeOverride||'emerald';
+-    if(!uiThemeOverride){try{visual=localStorage.getItem('wb-ui-table')||'emerald'}catch(e){}}
+-    if(['emerald','midnight','royal'].includes(visual)){
+-      for(const screen of [g,o])if(screen)screen.style.background=`url('ui-art/room-${visual}.svg') center/cover no-repeat`;
+-      document.querySelectorAll('.tableWood').forEach(el=>{el.style.backgroundImage=`url('ui-art/table-${visual}.svg')`});
+-    }
+   }catch(e){}
+ }
+ /* ================= الصدارة ================= */
+@@ -4908,12 +4978,13 @@
+ function mountNav(screenId,active){
+   const sc=document.getElementById(screenId);if(!sc)return;
+   let bar=sc.querySelector('.navBar');
+-  const holder=sc.querySelector('[data-navholder]')||sc.firstElementChild||sc;
++  const holder=screenId==='home'?sc:(sc.querySelector('[data-navholder]')||sc);
+   if(!bar){
+     const wrap=document.createElement('div');wrap.innerHTML=navHTML(active);
+     bar=wrap.firstElementChild;
+-    (sc.querySelector('[data-navholder]')||sc).appendChild(bar);
+-  }
++    holder.appendChild(bar);
++  }
++  if(bar.parentElement!==holder)holder.appendChild(bar);
+   bar.querySelectorAll('.navBtn').forEach(b=>{
+     b.classList.toggle('on',b.dataset.nav===active);
+       if(b.dataset.nav===active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
+@@ -5073,8 +5144,8 @@
+         refreshRankCard();
+         const newRank=ST.n('rank'), newGold=ST.n('gold'); // NEW CODE — أضفنا newGold
+         if(newRank!==oldRank)showRankChangeToast(oldRank,newRank); // NEW CODE — الرتبة تغيّرت فعليًا (فوز/خسارة/انسحاب، محسوبة بالسيرفر) — نوري اللاعب فورًا بتوست متحرك
+-        animateResultsScreenCounters(oldGold,newGold,oldRank,newRank); // NEW CODE — لو شاشة النتيجة مفتوحة، حرّك عدّاداتها هي كمان
+       }
++      if(d.gold!==undefined&&!(doc.metadata&&doc.metadata.fromCache))animateResultsScreenCounters(oldGold,ST.n('gold'),oldRank,ST.n('rank'));
+     }
+   }catch(e){}
+   _pullingStats=false;
+@@ -5726,22 +5797,84 @@
+   try{ const r=await FB.auth.createUserWithEmailAndPassword(em,pw); window.wbLog&&window.wbLog('  ✅ الحساب أُنشئ! أنتقل للرئيسية'); await afterAuth(r.user,true); }
+   catch(e){ window.wbLog&&window.wbLog('  ❌ فشل الإنشاء: '+(e&&e.code||e.message||e)); toast2(authErr(e)); }
+ }
+-// دخول بـGoogle
+-// NEW CODE — تسجيل الدخول بـApple: يستخدم @capacitor-firebase/authentication المثبَّتة أصلاً (تدعم Apple أصلياً
+-// عبر ASAuthorizationController الحقيقية على iOS — لا علاقة لها بقيد الـWebView اللي منع دخول جوجل الأصلي؛
+-// أبل تشترط هذا المسار الأصلي بالذات لأي تطبيق يعرض خيار دخول اجتماعي). النتيجة تحدّث FB.auth الوِبي مباشرة
+-// (المكوّن يستخدم نفس getAuth() المشترك داخلياً)، فنمرّ afterAuth() بنفس أسلوب مسار جوجل بالضبط — صفر تكرار منطق.
++// Apple: obtain a native credential, then sign in to the web Auth used by the game.
++// https://github.com/capawesome-team/capacitor-firebase/blob/main/packages/authentication/docs/firebase-js-sdk.md
++let _appleSignInBusy=false, _appleHandledUid=null;
+ async function doApple(){
++  if(_appleSignInBusy)return;
++  _appleSignInBusy=true;
++  _appleHandledUid=null;
++  const button=document.getElementById('lgApple');
++  const label=button&&button.querySelector('span');
++  const oldLabel=label&&label.textContent;
++  const oldDisabled=button&&button.disabled;
++  const oldBusy=button&&button.getAttribute('aria-busy');
++  let phase='prepare';
++  if(button){button.disabled=true;button.setAttribute('aria-busy','true');}
++  if(label)label.textContent='جارٍ تسجيل الدخول…';
+   try{
+-    const {FirebaseAuthentication}=Capacitor.Plugins;
+-    if(!FirebaseAuthentication){ toast2('الدخول بـ Apple غير متاح بهذا الإصدار'); return; }
+-    await FirebaseAuthentication.signInWithApple();
+-    if(!FB.auth.currentUser){ toast2('تعذّر إكمال الدخول — حاول مرة أخرى'); return; }
+-    await afterAuth(FB.auth.currentUser);
+-    toast2('تم الدخول بنجاح ✓');
++    const cap=window.Capacitor;
++    const plugin=cap&&cap.Plugins&&cap.Plugins.FirebaseAuthentication;
++    if(!cap||!cap.getPlatform||cap.getPlatform()!=='ios'||!plugin||
++       typeof plugin.signInWithApple!=='function'||
++       (cap.isPluginAvailable&&!cap.isPluginAvailable('FirebaseAuthentication'))){
++      toast2('الدخول بحساب Apple غير متاح في هذا الإصدار؛ حدّث التطبيق');return;
++    }
++    if(!(await ensureFB())){toast2('تعذّر الاتصال بخدمة الدخول؛ تحقق من اتصالك وأعد المحاولة');return;}
++    await FB.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
++    phase='apple';
++    const result=await plugin.signInWithApple({skipNativeAuth:true});
++    const nativeCredential=result&&result.credential;
++    if(!nativeCredential||typeof nativeCredential.idToken!=='string'||!nativeCredential.idToken||
++       typeof nativeCredential.nonce!=='string'||!nativeCredential.nonce){
++      const error=new Error('Incomplete Apple credential');error.code='apple/missing-credential';throw error;
++    }
++    phase='firebase';
++    const credential=new firebase.auth.OAuthProvider('apple.com').credential({
++      idToken:nativeCredential.idToken,rawNonce:nativeCredential.nonce
++    });
++    const signedIn=await FB.auth.signInWithCredential(credential);
++    const user=signedIn.user;
++    // The Auth observer may fire before OR after this promise. This flow owns afterAuth.
++    _appleHandledUid=user.uid;
++    const appleName=result.user&&typeof result.user.displayName==='string'?result.user.displayName.trim():'';
++    if(appleName&&!user.displayName){
++      try{await user.updateProfile({displayName:appleName});}
++      catch(_){console.warn('[Apple sign-in] profile name could not be saved');}
++    }
++    // Apple's relay address is private contact information, not a player nickname.
++    if(!localStorage.getItem('wb-name'))localStorage.setItem('wb-name',user.displayName||appleName||'لاعب');
++    phase='profile';
++    await afterAuth(user);
++    if(FB.auth.currentUser&&FB.auth.currentUser.uid===user.uid)toast2('تم الدخول بنجاح ✓');
+   }catch(e){
+-    if(e&&/cancel/i.test(e.message||e.code||''))return; // المستخدم ألغى بنفسه — بلا رسالة خطأ مزعجة
+-    toast2('تعذّر الدخول بحساب Apple — حاول مرة أخرى');
++    const rawCode=String(e&&e.code||'');
++    const code=/^[a-z0-9/_-]{1,80}$/i.test(rawCode)?rawCode.toLowerCase().replace(/^auth\//,''):'unknown';
++    const message=String(e&&e.message||'');
++    if(phase==='apple'&&(code==='1001'||/cancel|popup-closed-by-user/.test(code)||
++       /cancel|\b1001\b|إلغاء|ألغيت|أُلغي/i.test(message)))return;
++    // Do not log tokens, nonce, email, or raw error objects.
++    console.warn('[Apple sign-in]',{phase,code});
++    const messages={
++      'network-request-failed':'انقطع الاتصال أثناء الدخول؛ تحقق من الشبكة وأعد المحاولة',
++      'account-exists-with-different-credential':'هذا البريد مرتبط بحساب سابق؛ ادخل بالطريقة التي استخدمتها أول مرة',
++      'credential-already-in-use':'حساب Apple مرتبط بحساب موجود؛ ادخل بالطريقة السابقة',
++      'operation-not-allowed':'الدخول بحساب Apple غير متاح حاليًا؛ استخدم طريقة دخول أخرى',
++      'invalid-credential':'انتهت صلاحية محاولة الدخول أو تعذّر التحقق منها؛ حاول مرة أخرى',
++      'missing-or-invalid-nonce':'تعذّر التحقق من محاولة الدخول؛ أعد المحاولة',
++      'apple/missing-credential':'لم تكتمل موافقة Apple؛ أعد المحاولة',
++      'user-disabled':'هذا الحساب موقوف؛ تواصل مع الدعم',
++      'too-many-requests':'محاولات كثيرة؛ انتظر قليلًا ثم أعد المحاولة'
++    };
++    toast2(phase==='profile'?'تم تسجيل الدخول، لكن تعذّر تحميل بيانات اللاعب؛ أعد فتح التطبيق':
++      messages[code]||'تعذّر الدخول بحساب Apple؛ أعد المحاولة أو استخدم طريقة دخول أخرى');
++  }finally{
++    _appleSignInBusy=false;
++    if(button){
++      button.disabled=oldDisabled;
++      if(oldBusy===null)button.removeAttribute('aria-busy');else button.setAttribute('aria-busy',oldBusy);
++    }
++    if(label)label.textContent=oldLabel;
+   }
+ }
+ async function doGoogle(){
+@@ -6063,7 +6196,7 @@
+     ONL.pendingMode=teamPlay?'team':'solo';
+     enterMatchWithInterstitial(ONL.pendingTier.key, teamPlay?'team':'solo'); // الإعلان الخلالي يخص اللعب السريع
+   }else{
+-    newGame({mode:'solo',diff: t.lvMax<=9?'easy':t.lvMax<=16?'med':'hard', name:localStorage.getItem('wb-name')||'أنت', tierGoal:t.goal});
++    newGame({mode:'solo',diff: t.lvMax<=9?'easy':t.lvMax<=16?'med':'hard', name:localStorage.getItem('wb-name')||'أنت', tierGoal:t.goal,tierKey:t.key});
+   }
+ }
+ let G_TIER=null; // الطبقة النشطة للجولة الحالية
+@@ -6076,13 +6209,11 @@
+     if(h.length>20)h=h.slice(-20); // نحتفظ بآخر 20، نعرض آخر 5 بالملف الشخصي
+     localStorage.setItem('wb-history',JSON.stringify(h));
+   },
+-  game(won,myPts){
++  game(won,myPts,rewardGold=true){
+     ST.set('games',ST.n('games')+1);
+     if(won)ST.set('wins',ST.n('wins')+1);
+     if(myPts>ST.n('best'))ST.set('best',myPts);
+-    ST.set('xp',ST.n('xp')+10+(won?15:0));
+-    ST.set('gold',ST.n('gold')+5+(won?25:0));
+-    ST.set('level',1+Math.floor(ST.n('xp')/100));
++    if(rewardGold)ST.set('gold',ST.n('gold')+5+(won?25:0));
+     ST.pushHistory(won);
+   }};
+ 
+@@ -6486,11 +6617,30 @@
+   if(row){ row.style.transition='opacity .35s'; row.style.opacity='0'; setTimeout(()=>row.remove(),360); } // FIX
+   else{ btn.outerHTML=`<button class="invJoinBtn" disabled style="display:block;width:calc(100% - 20px);margin:2px 10px 12px;padding:11px;border-radius:14px;background:rgba(255,255,255,.25);color:rgba(255,255,255,.75);font-family:var(--fh);font-size:16px;border:none;cursor:not-allowed;box-shadow:none">⏱️ دعوة منتهية</button>`; } // FIX — احتياط: لو الحاوية غير موجودة لأي سبب، نعود للسلوك القديم بدل خطأ صامت
+ }
+-function showSpectatorNotice(txt){ // NEW CODE — أضفنا معامل نص اختياري
+-  if(txt)$('#specNoticeTxt').textContent=txt; // NEW CODE — نص مخصّص لو أُرفق، وإلا يبقى النص الافتراضي بالـHTML كما هو
++function uiRenderSpectatorStatus(v,seated){
++  const status=v.viewerStatus||(seated?'seated':'spectator');
++  const key=ONL.room+'|'+status;
++  if(status==='seated'){
++    $('#specNotice').classList.add('hidden');
++    ONL._specNoticeKey=null; ONL._specDismissedKey=null;
++    return;
++  }
++  const messages={
++    absence:['الجولة مستمرة من المدرّج','انتهت مشاركتك بعد غياب ثلاثة أدوار. تابع الجولة الآن؛ يمكنك اللعب مجددًا في الجولة التالية.'],
++    fee:['أنت تشاهد الجولة','لم يكتمل دفع رسوم الدخول؛ الكمبيوتر يكمل هذا المقعد حتى نهاية الجولة.'],
++    waiting:['مكانك ينتظرك في المجلس','أنت تشاهد الآن. سُجّل طلب جلوسك في هذه الجلسة الودية؛ ستنضم عند إتاحة المقعد وانتهاء المزايدة الحالية.'],
++    spectator:['مقعدك في المدرّج','تابع اللعب وشاهد قرارات اللاعبين. أنت تشاهد هذه الجولة دون حجز مقعد.']
++  };
++  const message=messages[status]||messages.spectator;
++  ONL._specNoticeKey=key;
++  if(ONL._specDismissedKey!==key)showSpectatorNotice(message[1],message[0]);
++}
++function showSpectatorNotice(txt,title){
++  $('#uiSpecTitle').textContent=title||'مقعدك في المدرّج';
++  $('#specNoticeTxt').textContent=txt||'الدعوة لم تعد متاحة للجلوس. يمكنك متابعة الجولة كمشاهد.';
+   $('#specNotice').classList.remove('hidden');
+ }
+-$('#specDismissBtn').onclick=()=>$('#specNotice').classList.add('hidden');
++$('#specDismissBtn').onclick=()=>{ONL._specDismissedKey=ONL._specNoticeKey;$('#specNotice').classList.add('hidden');};
+ $('#specLeaveBtn').onclick=()=>{ $('#specNotice').classList.add('hidden'); leaveOnline(); };
+ function joinRoomFromChat(room, expectSeat){
+   if(!room)return;
+@@ -6690,13 +6840,15 @@
+ // تسجيل من لعبت معهم عند بدء أي طاولة أونلاين
+ const _oldHandle=oHandle;
+ oHandle=function(msg){
++  if(msg.status==='playing'&&ONL.status!=='playing'){UI_RESULT.online=null;ONL._lastRenderedOverFingerprint=null;ONL._statsPulledForResult=null;}
+   _oldHandle(msg);
+   if(msg.status==='playing'&&msg.view&&msg.view.humans){
+     ONL._scored=false;
+     for(const p of msg.view.humans)FR.add(p,msg.view.names[p]);
+   }
+-  if(msg.status==='over'&&msg.result&&!ONL._scored){
++  if(msg.status==='over'&&msg.result&&!ONL._scored&&msg.result.scores&&msg.result.scores[ONL.you]){
+     ONL._scored=true;
++    if(msg.tournament){refreshHome();return;}
+     try{
+       const r=msg.result, me=ONL.you;
+       const myPts=(r.scores&&r.scores[me])?r.scores[me].points:0;
+@@ -6709,14 +6861,13 @@
+         // (_processTierRankPoints) — إبقاؤها هنا كانت تتعارض فعلياً: الحفظ المحلي المؤجَّل (fbSaveProfile)
+         // يكتب فوق القيمة الذرية الصحيحة بقيمة محلية قد تكون قديمة، وهذا بالضبط كان يسبب "لاعب متصدر
+         // فعلياً بلا أي إحصائيات ظاهرة" حين يفشل الحفظ المحلي لأي سبب بينما نقاط الصدارة تبقى صحيحة سيرفرياً
+-        ST.set('xp',ST.n('xp')+15+(won?25:0));
+-        ST.set('level',1+Math.floor(ST.n('xp')/100));
+         ST.pushHistory(won);
+         // NEW CODE — نقاط الرتبة صارت تُحسب وتُطبَّق بالسيرفر حصرياً (_processTierRankPoints) — التوست يظهر تلقائيًا
+         // فور ما refreshHome/pullServerStats تكتشف الرقم الجديد بالأسفل، بلا أي حساب محلي هنا إطلاقًا
+         G._tierResult={won,win:G_TIER.win,fee:G_TIER.fee,name:G_TIER.name};
+         G_TIER=null;
+-      }else{ ST.game(won,myPts); }
++      }else{ ST.game(won,myPts,false); }
++      uiResultLocalXp();
+       refreshHome(); // يسحب الذهب الفعلي المحدَّث من السيرفر تلقائيًا (pullServerStats)
+     }catch(e){}
+   }
+@@ -7027,7 +7178,7 @@
+   if(!q){el.innerHTML='<div style="text-align:center;color:var(--mut);font-weight:700;font-size:13px;padding:24px 14px">ابحث بالاسم أو اسم المستخدم (مثل @'+(localStorage.getItem('wb-username')||'username')+') لإضافة صديق</div>';return}
+   // FIX — بحث بالاسم واسم المستخدم معاً (كان يوزرنيم فقط؛ أي بحث بالاسم كان يُرفض فوراً برسالة خطأ بلا أي محاولة)
+   const uname=q.replace(/^@/,'').trim().toLowerCase();
+-  const nameQ=q.toLowerCase();
++  const nameQ=q.normalize('NFKC').toLowerCase().replace(/\s+/g,' ').trim();
+   const wantUsername=/^[a-z0-9_]{3,16}$/.test(uname);
+   const wantName=nameQ.length>=2;
+   if(!wantUsername&&!wantName){
+@@ -7038,13 +7189,27 @@
+   (async()=>{
+     try{
+       await ensureFB();
+-      const tasks=[]; // NEW CODE — استعلامان بالتوازي: يوزرنيم (تطابق تام) واسم (تطابق بادئة)، حسب صلاحية كل صيغة بالنص المكتوب
+-      if(wantUsername)tasks.push(FB.db.collection('players').where('username_lc','==',uname).limit(5).get());
+-      if(wantName)tasks.push(FB.db.collection('players').where('name_lc','>=',nameQ).where('name_lc','<=',nameQ+'\uf8ff').limit(5).get());
+-      const snaps=await Promise.all(tasks);
++      const tasks=[];
++      const players=FB.db.collection('players');
++      if(wantUsername)tasks.push(players.where('username_lc','==',uname).limit(10).get());
++      if(wantName){
++        tasks.push(players.where('name_lc','>=',nameQ).where('name_lc','<=',nameQ+'\uf8ff').limit(15).get());
++        // Legacy accounts may not have name_lc. Query indexed display names as well.
++        const variants=new Set([q,nameQ,nameQ.replace(/\b[a-z]/g,c=>c.toUpperCase()),nameQ.toUpperCase()]);
++        for(const name of variants)tasks.push(players.where('name','>=',name).where('name','<=',name+'\uf8ff').limit(15).get());
++      }
++      const results=await Promise.allSettled(tasks);
+       if(requestId!==AF.searchId)return;
++      const successful=results.filter(r=>r.status==='fulfilled');
++      if(!successful.length)throw new Error('Search unavailable');
+       const seen=new Set(); const docs=[];
+-      for(const snap of snaps)snap.forEach(doc=>{ if(!seen.has(doc.id)){seen.add(doc.id);docs.push(doc);} }); // NEW CODE — دمج نتيجتي البحث بلا تكرار لنفس اللاعب لو طلع بكلا الاستعلامين
++      for(const {value:snap} of successful)snap.forEach(doc=>{
++        if(!seen.has(doc.id)){seen.add(doc.id);docs.push(doc);}
++      });
++      docs.sort((a,b)=>{
++        const exact=d=>[d.data().name,d.data().name_lc,d.data().username_lc].some(n=>String(n||'').toLowerCase()===nameQ);
++        return Number(exact(b))-Number(exact(a));
++      });
+       el.innerHTML='';
+       if(!docs.length){ el.innerHTML='<div style="text-align:center;color:var(--mut);font-weight:700;font-size:13px;padding:24px 14px">ما فيه نتائج مطابقة</div>'; return; }
+       docs.forEach(doc=>{
+@@ -7073,7 +7238,13 @@
+   })();
+ }
+ $('#afBack').onclick=()=>openFriends();
+-$('#afSearch').addEventListener('input',()=>renderAfResults($('#afSearch').value));
++let afSearchTimer;
++$('#afSearch').addEventListener('input',()=>{
++  clearTimeout(afSearchTimer); AF.searchId++;
++  const q=$('#afSearch').value;
++  if(!q.trim()){renderAfResults('');return;}
++  afSearchTimer=setTimeout(()=>renderAfResults(q),280);
++});
+ document.querySelectorAll('.afTab').forEach(t=>t.onclick=()=>{
+   AF.tab=t.dataset.t;
+   document.querySelectorAll('.afTab').forEach(x=>{const on=x===t;x.classList.toggle('on',on);
+@@ -7084,7 +7255,7 @@
+ $('#hProfBtn').onclick=()=>openProfile();
+ // NEW CODE — حذفنا $('#hChat').onclick — الزر نفسه اتحذف من الترويسة العلوية، الدردشة صارت بالشريط السفلي فقط
+ $('#hDaily').onclick=()=>{SFX.tick();showRewardChoice()};
+-$('#hGoldBtn').onclick=()=>{SFX.tick();openShop()};
++$('#hGoldBtn').onclick=()=>{SFX.tick();openShop('gold')};
+ if(!SHOW_STORE){ const plus=document.querySelector('#hGoldBtn b'); if(plus)plus.style.display='none'; } // NEW CODE — يخفي إشارة "+" (تلمّح لعملية شراء) طالما المتجر مقفل — لا يترك زراً يبدو تفاعلياً بلا وظيفة
+ $('#setupBack').onclick=()=>goHome();
+ 
+@@ -7212,9 +7383,11 @@
+     if(user){
+       const gp=document.getElementById('gloginPrompt'); if(gp)gp.remove(); // FIX — دخل فعلاً: أزل شاشة الربط تحت شاشة "✓ تم"
+       if(GLOGIN){ await gloginFinish(user); return; } // NEW CODE — مسجّل أصلاً بالمتصفح: سلّم الهوية فوراً بلا أي دخول جديد
++      if(_appleSignInBusy||_appleHandledUid===user.uid)return; // Apple already owns this profile load.
+       if(_redirectHandled)return; // already handled directly above — تجنّب التكرار
+       await afterAuth(user);
+     }else{
++      _appleHandledUid=null;
+       if(GLOGIN){ if(_redirectChecked)showGloginPrompt(); return; } // FIX — بوضع الربط: شاشة الربط فقط (بعد حسم العودة)، لا ترحيب عادي ولا أي إطلاق تلقائي
+       // غير مسجّل: أظهر شاشة الترحيب مع زر الدخول
+       const lb=$('#wLogin'), ld=$('#wLoading');
+@@ -7249,11 +7422,12 @@
+ <script>
+ if('serviceWorker' in navigator&&location.protocol==='https:'){
+   navigator.serviceWorker.register('sw.js').catch(()=>{});
+-  fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
+-    const m=t.match(/waggif-v(\d+)/); const bt=document.getElementById('buildTag');
+-    if(m&&bt)bt.textContent='build v'+m[1];
+-  }).catch(()=>{});
+-}
++}
++// Capacitor iOS uses a local scheme; showing the bundled build does not require a service worker.
++fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
++  const m=t.match(/waggif-v(\d+)/); const bt=document.getElementById('buildTag');
++  if(m&&bt)bt.textContent='build v'+m[1];
++}).catch(()=>{});
+ </script>
+ <!-- ============ تكامل AdMob الفعلي — النسخة الصحيحة المؤكَّدة من فحص ملف plugin.js الفعلي ============ -->
+ <!-- FIX — المحاولة الأولى (استيراد ES module) لم تعمل: هذا المشروع بلا أداة تجميع، فـimport يفشل صامتاً حتى
+@@ -7340,6 +7514,6 @@
+      يدوياً — مهم: غيّر اسمه لـ"firebase-auth-plugin.js" وقت النسخ (لا تسمّه plugin.js زي ما هو، لأن AdMob
+      أيضاً عنده ملف بنفس الاسم بالضبط بمجلده — لو الاثنين اتسمّوا plugin.js بنفس مجلد www، الثاني يمحو الأول). -->
+ <script src="firebase-auth-plugin.js"></script>
++<script src="ui-tournament.js"></script>
+ </body>
+ </html>
+-
+--- a/www/sw.js
++++ b/www/sw.js
+@@ -1,5 +1,5 @@
+-const C='waggif-v315-quick2';
+-const SHELL=['ui-art/room-popular.svg','ui-art/table-popular.svg','ui-art/popular-preview.svg','ui-art/rank-0.svg','ui-art/rank-1.svg','ui-art/rank-2.svg','ui-art/rank-3.svg','ui-art/rank-4.svg','ui-art/rank-5.svg','ui-art/rank-6.svg','ui-art/rank-7.svg','ui-art/rank-banner-0.svg','ui-art/rank-banner-1.svg','ui-art/rank-banner-2.svg','ui-art/rank-banner-3.svg','ui-art/rank-banner-4.svg','ui-art/rank-banner-5.svg','ui-art/rank-banner-6.svg','ui-art/rank-banner-7.svg','ui-art/room-emerald.svg','ui-art/room-midnight.svg','ui-art/room-royal.svg','ui-art/table-emerald.svg','ui-art/table-midnight.svg','ui-art/table-royal.svg','ui-art/tier-amateur.svg','ui-art/tier-beginner.svg','ui-art/tier-elite.svg','ui-art/tier-legend.svg','ui-art/tier-pro.svg','./','ui-polish.css','ui-polish.js','index.html','manifest.json','court_J.png','court_Q.png','court_K.png','court_JOKER.png','icon192.png','icon512.png','cards/10C.png','cards/10D.png','cards/10H.png','cards/10S.png','cards/2C.png','cards/2D.png','cards/2H.png','cards/2S.png','cards/3C.png','cards/3D.png','cards/3H.png','cards/3S.png','cards/4C.png','cards/4D.png','cards/4H.png','cards/4S.png','cards/5C.png','cards/5D.png','cards/5H.png','cards/5S.png','cards/6C.png','cards/6D.png','cards/6H.png','cards/6S.png','cards/7C.png','cards/7D.png','cards/7H.png','cards/7S.png','cards/8C.png','cards/8D.png','cards/8H.png','cards/8S.png','cards/9C.png','cards/9D.png','cards/9H.png','cards/9S.png','cards/AC.png','cards/AD.png','cards/AH.png','cards/AS.png','cards/JC.png','cards/JD.png','cards/JH.png','cards/JS.png','cards/KC.png','cards/KD.png','cards/KH.png','cards/KS.png','cards/QC.png','cards/QD.png','cards/QH.png','cards/QS.png','bg/majlis-default.jpg','bg/majlis-royal.jpg','bg/majlis-desert.jpg','bg/majlis-oasis.jpg','bg/majlis-club.jpg','bg/majlis-diwaniya.jpg','bg/majlis-default-preview.jpg','bg/majlis-royal-preview.jpg','bg/majlis-desert-preview.jpg','bg/majlis-oasis-preview.jpg','bg/majlis-club-preview.jpg','bg/majlis-diwaniya-preview.jpg','ranks/tier0.jpg','ranks/tier1.jpg','ranks/tier2.jpg','ranks/tier3.jpg','ranks/tier4.jpg','ranks/tier5.jpg','ranks/tier6.jpg','ranks/tier7.jpg','tiers/beginner.jpg','tiers/amateur.jpg','tiers/pro.jpg','tiers/elite.jpg','tiers/legend.jpg','sfx/dahek.wav','sfx/janb-warak.wav','sfx/joker.wav','sfx/ma-takhoza.wav','sfx/salam.wav','sfx/sar3.wav','sfx/waqf-taunt.wav','sfx/alaykum-salam.wav','sfx/bayyad-el-thib.wav','sfx/atahadak-takhoz-ha.wav','sfx/sahsah-yakhoy.wav'];
++const C='waggif-v325';
++const SHELL=['ui-tournament.js','reactions/expressions-v321.png','ui-art/room-popular.svg','ui-art/table-popular.svg','ui-art/popular-preview.svg','ui-art/rank-0.svg','ui-art/rank-1.svg','ui-art/rank-2.svg','ui-art/rank-3.svg','ui-art/rank-4.svg','ui-art/rank-5.svg','ui-art/rank-6.svg','ui-art/rank-7.svg','ui-art/rank-banner-0.svg','ui-art/rank-banner-1.svg','ui-art/rank-banner-2.svg','ui-art/rank-banner-3.svg','ui-art/rank-banner-4.svg','ui-art/rank-banner-5.svg','ui-art/rank-banner-6.svg','ui-art/rank-banner-7.svg','ui-art/room-emerald.svg','ui-art/room-midnight.svg','ui-art/room-royal.svg','ui-art/table-emerald.svg','ui-art/table-midnight.svg','ui-art/table-royal.svg','ui-art/tier-amateur.svg','ui-art/tier-beginner.svg','ui-art/tier-elite.svg','ui-art/tier-legend.svg','ui-art/tier-pro.svg','./','ui-polish.css','ui-polish.js','ui-results-store.js','index.html','manifest.json','court_J.png','court_Q.png','court_K.png','court_JOKER.png','icon192.png','icon512.png','cards/10C.png','cards/10D.png','cards/10H.png','cards/10S.png','cards/2C.png','cards/2D.png','cards/2H.png','cards/2S.png','cards/3C.png','cards/3D.png','cards/3H.png','cards/3S.png','cards/4C.png','cards/4D.png','cards/4H.png','cards/4S.png','cards/5C.png','cards/5D.png','cards/5H.png','cards/5S.png','cards/6C.png','cards/6D.png','cards/6H.png','cards/6S.png','cards/7C.png','cards/7D.png','cards/7H.png','cards/7S.png','cards/8C.png','cards/8D.png','cards/8H.png','cards/8S.png','cards/9C.png','cards/9D.png','cards/9H.png','cards/9S.png','cards/AC.png','cards/AD.png','cards/AH.png','cards/AS.png','cards/JC.png','cards/JD.png','cards/JH.png','cards/JS.png','cards/KC.png','cards/KD.png','cards/KH.png','cards/KS.png','cards/QC.png','cards/QD.png','cards/QH.png','cards/QS.png','bg/majlis-default.jpg','bg/majlis-royal.jpg','bg/majlis-desert.jpg','bg/majlis-oasis.jpg','bg/majlis-club.jpg','bg/majlis-diwaniya.jpg','bg/majlis-default-preview.jpg','bg/majlis-royal-preview.jpg','bg/majlis-desert-preview.jpg','bg/majlis-oasis-preview.jpg','bg/majlis-club-preview.jpg','bg/majlis-diwaniya-preview.jpg','ranks/tier0.jpg','ranks/tier1.jpg','ranks/tier2.jpg','ranks/tier3.jpg','ranks/tier4.jpg','ranks/tier5.jpg','ranks/tier6.jpg','ranks/tier7.jpg','tiers/beginner.jpg','tiers/amateur.jpg','tiers/pro.jpg','tiers/elite.jpg','tiers/legend.jpg','sfx/dahek.wav','sfx/janb-warak.wav','sfx/joker.wav','sfx/ma-takhoza.wav','sfx/salam.wav','sfx/sar3.wav','sfx/waqf-taunt.wav','sfx/alaykum-salam.wav','sfx/bayyad-el-thib.wav','sfx/atahadak-takhoz-ha.wav','sfx/sahsah-yakhoy.wav'];
+ self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()))});
+ self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
+ self.addEventListener('message',e=>{ if(e.data==='skipWaiting')self.skipWaiting(); });
+@@ -22,5 +22,3 @@
+     return res;
+   }).catch(()=>caches.match('index.html'))));
+ });
+-
+-
+--- a/www/ui-polish.css
++++ b/www/ui-polish.css
+@@ -591,4 +591,336 @@
+   #match #mTierBadge{padding:3px 8px!important}
+ }
+ 
++/* ENTRY DESIGN — welcome, loading and account screens only. */
++#welcome,#login,#pageLoader{background-color:var(--ui-green);background-image:radial-gradient(ellipse at 50% 24%,#335b444d,transparent 65%),linear-gradient(145deg,#143e30,#0a231c);color:var(--ui-paper);isolation:isolate}
++#welcome::before,#login::before,#pageLoader::before{content:'';position:absolute;inset:12px;border:1px solid var(--ui-border);border-radius:28px;pointer-events:none;z-index:-1}
++#welcome::after,#pageLoader::after{content:'';position:absolute;width:360px;height:360px;max-width:90%;left:50%;top:15%;transform:translateX(-50%) rotate(45deg);border:1px solid #eac77f10;border-radius:46px;pointer-events:none;z-index:-1}
++#welcome #wWrap{padding-top:var(--ui-safe-top);padding-bottom:calc(18px + var(--ui-safe-bottom));overflow-y:auto;overscroll-behavior:contain}
++#welcome #wWrap>*{flex-shrink:0}
++#welcome .saduSvg{height:14px;margin-top:12px;opacity:.5}
++#welcome #wMid{flex:1 0 auto;min-height:360px;padding:30px 22px 18px;justify-content:center}
++.uiEntryEyebrow{font-family:var(--fb);font-size:11px;font-weight:600;line-height:1.8;letter-spacing:.18em;color:var(--ui-gold);text-align:center}
++#welcome #wCards{width:280px;max-width:100%;height:205px;margin:20px 0 16px;flex:none;isolation:isolate}
++#welcome #wCards::before{content:'';position:absolute;inset:0;border:1px solid #eac77f24;border-radius:50%;background:radial-gradient(ellipse,#eac77f15,transparent 68%);filter:none;transform:none;z-index:-1}
++#welcome #wCards::after{content:'';position:absolute;inset:-12px 18px;border:1px dashed #eac77f1a;border-radius:50%;z-index:-1}
++#welcome #wCards img{position:absolute;left:calc(50% - 53px);right:auto;top:22px;width:106px;height:154px;object-fit:contain;padding:5px;border:1px solid #e5cf9b;border-radius:11px;background:var(--ui-paper);box-shadow:0 13px 25px #0005;transform-origin:50% 85%;transform:translate(var(--entry-x),var(--entry-y)) rotate(var(--entry-angle));animation:uiEntryCards 5.4s ease-in-out infinite;animation-delay:var(--entry-delay)}
++#welcome #wCards img:nth-child(1){--entry-x:-73px;--entry-y:19px;--entry-angle:-24deg;--entry-delay:-1.1s;z-index:1}
++#welcome #wCards img:nth-child(2){--entry-x:-27px;--entry-y:-4px;--entry-angle:-9deg;--entry-delay:-.5s;z-index:3}
++#welcome #wCards img:nth-child(3){--entry-x:27px;--entry-y:-4px;--entry-angle:9deg;--entry-delay:-1.8s;z-index:2}
++#welcome #wCards img:nth-child(4){--entry-x:73px;--entry-y:19px;--entry-angle:24deg;--entry-delay:-2.6s;z-index:1}
++#welcome #wTitle{font-family:var(--fh);font-size:clamp(60px,18vw,78px);font-weight:400;line-height:1.3;color:var(--ui-gold-bright);text-shadow:0 3px 0 #70593655,0 10px 32px #0004;animation:none;padding-inline:8px}
++#welcome #wSub{font-family:var(--fb);font-size:16px;font-weight:500;line-height:1.8;color:var(--ui-muted);margin-top:0;animation:none;max-width:100%;text-align:center}
++#welcome #wBtns{padding:16px 28px 0;gap:12px;animation:none}
++#welcome #wLogin{height:auto;min-height:56px;padding:10px 20px;border:1px solid #f4dcab;border-radius:17px;background:linear-gradient(135deg,var(--ui-gold-bright),var(--ui-gold));color:var(--ui-green);font-family:var(--fb);font-size:18px;font-weight:800;line-height:1.8;box-shadow:0 5px 0 #846a3d,0 10px 24px #0003;animation:none}
++#welcome #wLogin:active{transform:translateY(3px);box-shadow:0 2px 0 #846a3d}
++#welcome #wLoading{flex-direction:column;gap:10px;padding:5px 0;min-height:58px;font-size:14px;font-weight:600;line-height:1.8;color:var(--ui-gold-bright)}
++#welcome #wLoading .wSpinner{display:none}
++.uiEntryRail{display:block;position:relative;width:100%;height:4px;background:#eac77f1a;border-radius:9px;overflow:hidden;isolation:isolate}
++.uiEntryRail::after{content:'';position:absolute;inset:0 auto 0 0;width:38%;background:linear-gradient(90deg,transparent,var(--ui-gold-bright),var(--ui-gold));border-radius:inherit;animation:uiEntryLoading 1.8s ease-in-out infinite}
++.uiEntryTips{flex:none;width:calc(100% - 56px);max-width:374px;margin:0 auto;padding:14px 16px;text-align:center;border:1px solid var(--ui-border);border-radius:18px;background:#eac77f05}
++.uiEntryTipsTitle{display:block;font-family:var(--fb);font-size:11px;line-height:1.8;font-weight:700;color:var(--ui-gold);margin-bottom:3px}
++.uiEntryTipsText{display:grid;align-items:center;font-family:var(--fb);font-size:13px;line-height:1.9;font-weight:500;color:var(--ui-muted)}
++.uiEntryTipsText>span{grid-area:1/1;opacity:0;animation:uiEntryTip 18s linear infinite}
++.uiEntryTipsText>span:nth-child(2){animation-delay:6s}
++.uiEntryTipsText>span:nth-child(3){animation-delay:12s}
++.uiEntrySr{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important;border:0!important}
++#welcome #wVer{padding:18px 12px 4px;color:var(--ui-muted);opacity:.7;font-size:10px;line-height:1.8;animation:none}
++#welcome #buildTag{bottom:var(--ui-safe-bottom)!important}
++#pageLoader{padding:calc(28px + var(--ui-safe-top)) 28px calc(28px + var(--ui-safe-bottom));gap:18px;overflow-y:auto}
++#pageLoader>*{flex-shrink:0}
++#pageLoader .uiEntryBrand{font-family:var(--fh);font-size:42px;line-height:1.5;font-weight:400;color:var(--ui-gold-bright);margin-bottom:10px}
++#pageLoader #plCards{width:220px;max-width:100%;height:150px;margin:0}
++#pageLoader #plCards img{width:76px;height:110px;object-fit:contain;padding:4px;border:1px solid var(--ui-gold);border-radius:9px;background:var(--ui-paper);box-shadow:0 9px 20px #0004;animation:uiEntryLoaderCard 3s ease-in-out infinite}
++#pageLoader #plCards img:nth-child(1){left:25px;right:auto;top:24px;transform:rotate(-19deg);animation-delay:-.4s}
++#pageLoader #plCards img:nth-child(2){left:72px;right:auto;top:8px;transform:none;z-index:2;animation-delay:-1.2s}
++#pageLoader #plCards img:nth-child(3){left:119px;right:auto;top:24px;transform:rotate(19deg);animation-delay:-2s}
++#pageLoader #pageLoaderTxt{font-family:var(--fb);font-size:17px;font-weight:700;line-height:1.8;max-width:340px;text-align:center;color:var(--ui-gold-bright);overflow-wrap:anywhere}
++#pageLoader>.uiEntryRail{max-width:260px;margin-bottom:12px}
++#pageLoader>.uiEntryTips{width:100%;max-width:340px}
++/* Let every field keep its height; the account page itself scrolls. */
++#login #lgWrap{overscroll-behavior:contain;scroll-padding-block:20px}
++#login #lgWrap>*,#login #lgFields>*,#signup #suWrap>*,#gcomplete #suWrap>*{flex-shrink:0;min-width:0}
++#login .saduSvg{height:12px;position:absolute;top:0;opacity:.35!important;pointer-events:none}
++#login #lgTopRow{flex-direction:row;align-items:center;justify-content:space-between;padding-inline:24px}
++.uiEntryWordmark{font-family:var(--fh);font-size:24px;line-height:1.7;color:var(--ui-gold);font-weight:400}
++.uiEntryWordmark i{font-family:serif;font-style:normal;font-size:16px;margin-inline-start:6px}
++#login #lgBack{width:44px;height:44px;border:1px solid var(--ui-border);border-radius:14px;background:#ffffff05;color:var(--ui-gold-bright)}
++#login #lgBack svg{transform:rotate(180deg)}
++#login #lgHead{padding:26px 24px 0}
++#login #lgHead .t{font-family:var(--fh);font-size:36px;font-weight:400;line-height:1.55;color:var(--ui-paper)}
++#login #lgHead .sub{font-size:14px;font-weight:500;line-height:1.9;color:var(--ui-muted);margin-top:0}
++#login #lgFields{padding:25px 24px 0;gap:14px}
++#login .lgLbl,#signup .lgLbl,#gcomplete .lgLbl{display:block;font-family:var(--fb);font-size:14px;font-weight:700;line-height:1.8;margin:0 2px 6px}
++#login .lgLbl{color:var(--ui-muted)}
++#login .lgField,#signup .lgField,#gcomplete .lgField{min-width:0;width:100%;flex:none}
++#login .lgField input,#signup .lgField input,#gcomplete .lgField input{display:block;min-width:0;width:100%;height:auto;min-height:54px;padding:11px 44px!important;border:1px solid var(--ui-paper-line);border-radius:14px;background:var(--ui-paper);font-family:var(--fb);font-size:16px;font-weight:500;line-height:1.8;color:var(--ui-text);box-shadow:none;scroll-margin-block:24px}
++#login .lgField input::placeholder,#signup .lgField input::placeholder,#gcomplete .lgField input::placeholder{color:var(--ui-secondary);opacity:.9}
++#login .lgField input:focus,#signup .lgField input:focus,#gcomplete .lgField input:focus{border-color:var(--ui-gold);box-shadow:0 0 0 3px #eac77f30}
++#login .lgField .fic,#signup .lgField .fic,#gcomplete .lgField .fic{left:auto!important;right:15px!important;line-height:1;pointer-events:none;color:var(--ui-secondary);font-size:15px}
++#login #lgEmail,#signup #suEmail,#signup #suUser,#gcomplete #gcUser{direction:ltr;text-align:left}
++#signup #suName,#gcomplete #gcName,#signup #suPass,#signup #suPass2{direction:rtl!important;text-align:right!important}
++#login #lgForgot{align-self:flex-start;min-height:44px;padding:9px 2px;margin:-4px 0 0;border:0;background:none;color:var(--ui-gold);font-family:var(--fb);font-size:13px;font-weight:600;line-height:1.8;text-align:right}
++#login #lgGo,#signup #suGo,#gcomplete #gcGo{height:auto;min-height:56px;padding:10px 18px;font-family:var(--fb);font-size:17px;font-weight:800;line-height:1.8;background:linear-gradient(135deg,var(--ui-gold-bright),var(--ui-gold))!important;color:var(--ui-green)!important;border:1px solid #f4dcab;box-shadow:0 4px 0 #846a3d!important;border-radius:16px!important}
++#login .lgOr{margin:4px 0;color:var(--ui-muted);font-size:12px;font-weight:500;line-height:1.8}
++#login .lgOr::before,#login .lgOr::after{background:var(--ui-border)}
++#login .lgSoc{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
++#login .lgSoc button{height:auto;min-height:52px;padding:10px 14px;border:1px solid #e9e4d5;border-radius:14px;background:var(--ui-paper);font-family:var(--fb);font-size:14px;font-weight:700;line-height:1.8;gap:10px;box-shadow:none;white-space:normal}
++#login .lgSoc svg{flex:none;width:19px;height:19px}
++#login #lgBottom{padding:22px 24px calc(26px + var(--ui-safe-bottom));margin-top:auto}
++#login #lgSignupLink{display:inline-block;min-height:44px;padding:9px 4px;border:0;background:none;color:var(--ui-gold-bright);font-family:var(--fb);font-size:14px;font-weight:600;line-height:1.8}
++#login #lgTerms{max-width:310px;margin:12px auto 0;font-size:11px;font-weight:400;line-height:1.9;color:var(--ui-muted)}
++#signup,#gcomplete{background:var(--ui-paper);color:var(--ui-text)}
++#signup #suWrap,#gcomplete #suWrap{padding-inline:24px;overscroll-behavior:contain;scroll-padding-block:20px}
++#signup .suTopHead,#gcomplete .suTopHead{align-items:flex-start;gap:14px;padding:0 0 20px;margin-bottom:22px;border-bottom:1px solid var(--ui-paper-line)}
++#signup .suTopHead .qBtn{width:44px;height:44px;border:1px solid var(--ui-paper-line);border-radius:14px;background:#eeeede;color:var(--ui-text);margin-top:5px}
++#signup .suTopHead .t,#gcomplete .suTopHead .t{display:block;min-width:0;font-family:var(--fh);font-size:31px;line-height:1.5!important;font-weight:400;color:var(--ui-text)}
++#signup .suTopHead small,#gcomplete .suTopHead small{display:block;font-family:var(--fb)!important;font-size:13px!important;font-weight:500!important;line-height:1.9;color:var(--ui-secondary)!important;margin-top:2px}
++#gcomplete .suTopHead>span:first-child:not(.t){display:none}
++#signup .lgLbl,#gcomplete .lgLbl{color:var(--ui-text);margin-top:0}
++#signup .lgField,#gcomplete .lgField{margin-bottom:16px}
++#signup #suUserHint,#gcomplete #suUserHint{font-size:11px;font-weight:500;line-height:1.9;color:var(--ui-secondary);margin:-8px 2px 17px;overflow-wrap:anywhere}
++.uiEntryAvatarPicker{display:block;border:1px solid var(--ui-paper-line);border-radius:16px;background:#ffffff80;margin:4px 0 16px;overflow:hidden}
++.uiEntryAvatarPicker>summary{padding:14px 16px;cursor:pointer;font-family:var(--fb);font-size:14px;font-weight:700;line-height:1.9;color:var(--ui-text);min-height:54px}
++.uiEntryAvatarPicker>summary::marker{color:var(--ui-secondary)}
++.uiEntryAvatarPicker>summary>span{font-size:11px;font-weight:500;color:var(--ui-secondary);margin-inline-start:8px}
++.uiEntryAvatarPicker[open]>summary{border-bottom:1px solid var(--ui-paper-line);margin-bottom:12px}
++#signup .uiEntryAvatarPicker .suLbl2,#gcomplete .uiEntryAvatarPicker .suLbl2{color:var(--ui-secondary);font-size:12px;line-height:1.8;margin:0 16px 12px;font-weight:500}
++#signup #suUploadBtn,#gcomplete #gcUploadBtn{width:calc(100% - 32px)!important;margin:0 16px 14px!important;padding:11px 10px!important;min-height:46px;font-size:12px!important;line-height:1.9;border-color:var(--ui-paper-line)!important;color:var(--ui-text)!important;background:var(--ui-paper)!important;white-space:normal}
++#signup #suAvGrid,#gcomplete #gcAvGrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;padding:5px 17px 17px;margin:0;max-height:250px;overflow-y:auto;overscroll-behavior:contain}
++#signup .suAv,#gcomplete .suAv{min-width:0;width:100%;max-width:62px;justify-self:center;background:var(--ui-paper-line);border:2px solid transparent}
++#signup .suAv img,#gcomplete .suAv img{width:100%!important;height:100%!important;object-fit:cover}
++#signup .suAv.sel,#gcomplete .suAv.sel{box-shadow:0 0 0 2px var(--ui-gold);border-color:var(--ui-green);transform:none}
++#signup #suGo,#gcomplete #gcGo{margin-top:4px}
++#signup #suToLogin{min-height:44px;margin-top:18px;padding:8px 4px;background:none;border:0;color:var(--ui-secondary);font-family:var(--fb);font-size:14px;font-weight:500;line-height:1.9;text-align:center}
++#signup #suToLogin b{color:var(--ui-text);font-weight:700}
++#welcome button:focus-visible,#login button:focus-visible,#signup button:focus-visible,#gcomplete button:focus-visible,.uiEntryAvatarPicker>summary:focus-visible{outline:3px solid var(--ui-gold);outline-offset:4px}
++@keyframes uiEntryCards{0%,100%{transform:translate(var(--entry-x),var(--entry-y)) rotate(var(--entry-angle))}50%{transform:translate(var(--entry-x),calc(var(--entry-y) - 7px)) rotate(var(--entry-angle))}}
++@keyframes uiEntryLoaderCard{0%,100%{translate:0 0}50%{translate:0 -8px}}
++@keyframes uiEntryLoading{0%{left:-38%}100%{left:100%}}
++@keyframes uiEntryTip{0%,28%{opacity:1}32%,96%{opacity:0}100%{opacity:1}}
++@media(max-height:700px){#welcome #wMid{min-height:270px;padding-top:15px;padding-bottom:12px}#welcome #wCards{height:162px;margin:12px 0 8px}#welcome #wCards img{width:88px;height:128px;left:calc(50% - 44px);top:7px}#welcome #wTitle{font-size:58px}#welcome .uiEntryTips{padding:10px 14px}#welcome #wVer{padding-top:13px}#login #lgHead{padding-top:14px}#login #lgFields{padding-top:16px}#pageLoader{gap:12px}#pageLoader .uiEntryBrand{font-size:34px;margin:0}}
++@media(max-height:600px){#welcome #wMid{min-height:240px;padding-block:8px}#welcome #wCards{height:140px;margin:8px 0 4px}#welcome #wCards img{width:82px;height:120px;left:calc(50% - 41px);top:4px}#welcome #wTitle{font-size:50px}#welcome #wSub{font-size:14px}#welcome .uiEntryTips{padding-block:9px}#welcome .uiEntryTipsText{font-size:12px}#welcome #wBtns{padding-top:13px}#welcome #wVer{padding-top:11px}}
++@media(max-width:350px){#welcome #wBtns{padding-inline:20px}.uiEntryTips{width:calc(100% - 40px)}#welcome #wMid{padding-inline:14px}#welcome #wCards{width:254px}#login #lgTopRow,#login #lgFields,#login #lgBottom,#signup #suWrap,#gcomplete #suWrap{padding-inline:18px}#login #lgHead .t{font-size:32px}#signup .suTopHead .t,#gcomplete .suTopHead .t{font-size:28px}}
++@media(max-height:520px){#welcome #wMid{min-height:240px}#welcome .uiEntryEyebrow{display:none}#pageLoader{justify-content:flex-start}#pageLoader #plCards{height:128px}}
++@media(prefers-reduced-motion:reduce){#welcome #wCards img,#pageLoader #plCards img,.uiEntryRail::after,.uiEntryTipsText>span{animation:none!important}.uiEntryRail::after{left:31%}.uiEntryTipsText>span{opacity:0}.uiEntryTipsText>span:first-child{opacity:1}#welcome button,#login button,#signup button,#gcomplete button{transition:none!important}}
+ 
++/* v317 — table identity, control recovery and spectator status. */
++#game #topbar,#onl #topbar{gap:6px;isolation:isolate}
++#game #topbar .uiMatchHeader,#onl #oHeaderTtl{display:flex;flex:1;min-width:0;align-items:center;justify-content:center;gap:7px;margin:0;line-height:1.25;font-family:var(--fb);white-space:normal;color:var(--ui-gold-bright)}
++.uiMatchWords{display:flex;flex-direction:column;gap:3px;min-width:0;text-align:right}
++.uiMatchTitleLine{display:flex;align-items:center;gap:5px;min-width:0}
++#uiOnlineTitle,#game #modeTtl{font-family:var(--fb);font-size:13px;font-weight:900;color:var(--ui-gold-bright);white-space:nowrap;line-height:1.3}
++.uiMatchDetail{font-size:10px;font-weight:700;color:var(--ui-muted);white-space:nowrap;line-height:1.4}
++#game .uiMatchGoal,#onl .uiMatchGoal{flex:none;display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:4px 7px;border:1px solid var(--ui-border);border-radius:10px;background:var(--ui-panel);color:var(--ui-gold-bright);font-family:var(--fb);font-size:11px;font-weight:900;font-variant-numeric:tabular-nums;white-space:nowrap;box-shadow:inset 0 1px 0 var(--ui-border)}
++#oHeaderTtl #connDot{flex:none;margin:0;width:6px;height:6px}
++#oSpecCount{flex:none;font-size:9px;color:var(--ui-muted);white-space:nowrap;line-height:1}
++#game #topbar>button,#onl #topbar>button{flex:none;min-width:36px;min-height:40px;padding-inline:7px;border-radius:12px;text-decoration:none}
++#game .seat .pts,#onl .seat .pts,#myPile .pts,#oMyPile .pts{border:1px solid var(--ui-border);border-radius:9px;padding:3px 6px;font-family:var(--fb);font-size:12px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1.2;color:var(--ui-gold-bright)}
++#game .pts b,#onl .pts b{display:inline-flex;align-items:baseline;gap:3px;white-space:nowrap}
++#game .pts small,#onl .pts small{font-family:var(--fb);font-size:8px;font-weight:700;color:var(--ui-muted)}
++.uiAutoBadge{position:absolute;z-index:4;bottom:-2px;left:50%;transform:translateX(-50%);padding:2px 5px;border:1px solid var(--ui-border);border-radius:6px;background:var(--ui-green);color:var(--ui-gold-bright);font-family:var(--fb);font-size:8px;font-weight:800;line-height:1.3;white-space:nowrap;pointer-events:none}
++.uiSelfName{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;max-width:115px}
++#uiResumeControl{min-height:32px;padding:4px 8px;border:1px solid var(--ui-gold);border-radius:9px;background:var(--ui-gold);color:var(--ui-green);font-family:var(--fb);font-size:10px;font-weight:900;line-height:1.2;white-space:nowrap;cursor:pointer}
++.uiAutoText{font-size:9px;font-weight:800;color:var(--ui-gold)}
++#specNotice.uiSpectatorNotice{position:fixed;top:calc(12px + var(--ui-safe-top));left:12px;right:12px;z-index:500;display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;max-width:406px;max-height:calc(100dvh - 24px - var(--ui-safe-top) - var(--ui-safe-bottom));overflow:auto;margin-inline:auto;padding:18px;border:1px solid var(--ui-border);border-radius:22px;background:var(--ui-green);color:var(--ui-gold-bright);box-shadow:0 18px 48px #0008;font-family:var(--fb);text-align:right;direction:rtl}
++.uiNoticeEmblem{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border:1px solid var(--ui-border);border-radius:13px;background:var(--ui-panel);color:var(--ui-gold)}
++.uiNoticeEmblem svg{width:24px;height:24px}
++#uiSpecTitle{display:block;font-size:16px;font-weight:900;line-height:1.6}
++#specNoticeTxt{margin:6px 0 0;font-size:12px;font-weight:600;line-height:1.9;color:var(--ui-muted);overflow-wrap:anywhere}
++.uiNoticeActions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
++.uiNoticeActions button{flex:1;min-height:44px;min-width:110px;padding:8px 10px;border:1px solid var(--ui-border);border-radius:12px;font-family:var(--fb);font-size:12px;font-weight:800;line-height:1.5;cursor:pointer}
++#specDismissBtn{background:var(--ui-gold);color:var(--ui-green)}
++#specLeaveBtn{background:var(--ui-panel);color:var(--ui-muted)}
++@media(max-width:360px){
++ #game #topbar .uiMatchHeader,#onl #oHeaderTtl{gap:4px}
++ #uiOnlineTitle,#game #modeTtl{font-size:12px}
++ .uiMatchDetail{font-size:9px}
++ #game .uiMatchGoal,#onl .uiMatchGoal{padding-inline:5px;font-size:10px}
++ #game #topbar>button,#onl #topbar>button{min-width:32px;padding-inline:5px}
++}
++
++/* v318 — merged top-seat layout; card count stays within the pile column. */
++#seatT,#oSeat{display:grid!important;grid-template-columns:54px 56px minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px!important;row-gap:3px!important;width:278px!important;max-width:calc(100% - 28px)!important;min-height:82px;padding:10px 12px!important;border-radius:18px!important;align-items:center;background:var(--ui-panel);border:1px solid var(--ui-border);box-shadow:0 5px 16px #0003;direction:rtl}
++#seatT .pileBox,#oSeat .pileBox{grid-column:1;grid-row:1 / 3;display:grid;grid-template-columns:44px;grid-template-rows:62px auto;justify-content:center;justify-items:center;align-items:center;row-gap:3px;min-width:0;width:54px;max-width:100%;margin:0;justify-self:center}
++#seatT .pileBox>.card,#oSeat .pileBox>.card{grid-column:1;grid-row:1;margin:0;max-width:100%}
++#seatT .pileBox>.pileCntX,#oSeat .pileBox>.pileCntX,#seatT .pileBox>.cnt,#oSeat .pileBox>.cnt{grid-column:1;grid-row:2;position:static;inset:auto;transform:none;justify-self:center;max-width:100%;min-width:0;margin:0;padding:1px 4px;border:1px solid var(--ui-border);border-radius:6px;background:var(--ui-green);color:var(--ui-gold-bright);font-family:var(--fb);font-size:11px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.3;white-space:nowrap;direction:ltr;unicode-bidi:isolate;text-shadow:none}
++#seatT .pileBox>.runB,#oSeat .pileBox>.runB{grid-column:1;grid-row:1;position:relative;inset:auto;transform:none;align-self:start;justify-self:start;max-width:100%;margin:0;direction:ltr;unicode-bidi:isolate;white-space:nowrap;z-index:3}
++#seatT .avaWrap,#oSeat .avaWrap{grid-column:2;grid-row:1 / 3;justify-self:center}
++#seatT .nm,#oSeat .nm{grid-column:3;grid-row:1;max-width:100%!important;min-width:0;font-family:var(--fb);font-size:12px!important;font-weight:800;text-align:right;white-space:normal;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.5;color:var(--ui-gold-bright)}
++#seatT .inf,#oSeat .inf{grid-column:3;grid-row:2;justify-self:start;max-width:100%}
++#seatT .pts,#oSeat .pts{font-size:10px;white-space:nowrap;border:1px solid var(--ui-border);border-radius:7px;background:var(--ui-green);color:var(--ui-gold);padding:3px 7px}
++#seatT .pileBox>div:not(.card):not(.runB):not(.cnt),#oSeat .pileBox>div:not(.card):not(.runB):not(.cnt){grid-column:1;grid-row:1 / 3;align-self:center;font-size:9px!important;line-height:1.6;text-align:center;color:var(--ui-muted)!important}
++#seatT .oppHandFan,#oSeat .oppHandFan{opacity:.85}
++.seat .team{font-size:9px;color:var(--ui-gold);background:var(--ui-green);padding:1px 5px}
++@media(max-width:360px){#seatT,#oSeat{width:258px!important;column-gap:7px!important;padding-inline:9px!important}}
++/* v320 — Majabeed results and unified store. */
++:root{--ui-result-paper:#fcf6e9;--ui-result-ink:#213d30;--ui-result-soft:#e9e5d5;--ui-result-muted:#7b806d;--ui-result-positive:#427858;--ui-result-negative:#aa5845}
++#results,#oOver{background:radial-gradient(ellipse at 50% 12%,#345a3b 0,#123629 45%,#071e17 100%);padding:calc(12px + var(--ui-safe-top)) 14px calc(12px + var(--ui-safe-bottom));isolation:isolate}
++#results::before,#oOver::before{content:"";position:absolute;inset:16px;border:1px solid var(--ui-border);border-radius:32px;pointer-events:none;z-index:-1}
++#results>#resCard,#oOver>#resCard{position:relative;width:100%;max-width:450px!important;max-height:100%;padding:22px 18px 16px!important;background:var(--ui-result-paper)!important;border:1px solid var(--ui-gold);border-radius:28px!important;color:var(--ui-result-ink);box-shadow:0 18px 70px #0006;text-align:center;overflow-y:auto;scrollbar-width:thin;overscroll-behavior:contain}
++.uiResultKind{display:inline-flex;align-items:center;justify-content:center;min-height:28px;padding:4px 12px;border:1px solid #d6cbb0;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.15px;color:var(--ui-result-muted)}
++.uiResultArt{width:150px;height:108px;margin:4px auto 0;color:#ad8644}
++.uiResultArt svg{width:100%;height:100%;display:block}
++[data-outcome="win"] .uiResultArt{animation:uiSealArrive .6s var(--ui-ease) both}
++[data-outcome="loss"] .uiResultArt{color:#88977c}
++#resCard #resTtl,#resCard #oResTtl{font-family:var(--fh);font-size:clamp(25px,7vw,34px)!important;line-height:1.5;color:var(--ui-result-ink)!important;margin:0 0 2px;overflow-wrap:anywhere}
++#resCard #resSub,#resCard #oResSub{font-family:var(--fb);font-size:12px!important;font-weight:600!important;line-height:1.7;color:var(--ui-result-muted)!important;margin:0 auto 15px!important;max-width:340px}
++#teamLine{font-family:var(--fh);font-size:15px;margin:0 0 12px;color:var(--ui-result-ink);background:#f1eadc;border-radius:12px;padding:7px 10px}
++#oForfeitBanner{font-family:var(--fb)!important;font-size:12px!important;line-height:1.6!important;padding:9px 12px!important;background:#eee0b8!important;box-shadow:none!important;color:#735b30!important;border:1px solid #d8c189}
++.uiRewardGrid{display:grid!important;grid-template-columns:1fr 1fr;gap:9px;margin:0 0 15px;text-align:center}
++.uiRewardGrid.hidden{display:none!important}
++.uiRewardTile{position:relative;display:grid;grid-template-columns:1fr auto;align-items:center;gap:1px 6px;min-width:0;min-height:103px;padding:12px 14px;border:1px solid #dbc895;border-radius:17px;background:linear-gradient(130deg,#f9e7b1,#f4edd6);overflow:hidden;text-align:start}
++.uiRewardTile>span:not(.uiRewardIcon){grid-column:1;font-size:11px;font-weight:800;color:#857143}
++.uiRewardIcon{grid-column:2;grid-row:1/4;display:grid;place-items:center;width:35px;height:35px;border:1px solid #b7954f;border-radius:50%;background:linear-gradient(135deg,#fff4c1,#e4b858);box-shadow:inset 0 0 0 3px #f5d991;color:#9d742f;font-size:23px}
++.uiRewardTile>strong{grid-column:1;font-size:24px;font-family:var(--fh);line-height:1.25;font-variant-numeric:tabular-nums;direction:ltr;text-align:start;unicode-bidi:plaintext;color:#5f4b25;overflow-wrap:anywhere}
++.uiRewardIcon>.uiGoldArt{width:43px;height:41px;max-width:none;flex:none}
++.uiRewardDelta{grid-column:1;justify-self:start;min-width:28px;border-radius:6px;padding:2px 5px;font-size:12px;background:#ffffff70;color:var(--ui-result-positive);direction:ltr;unicode-bidi:isolate}
++.uiRewardDelta.is-negative,#oMyRankDelta.is-negative{color:var(--ui-result-negative)}
++.uiRewardXp{background:linear-gradient(135deg,#dfebdc,#e9eddf);border-color:#c2d0b8}
++.uiRewardXp>.uiRewardIcon{border-color:#89a486;background:linear-gradient(135deg,#edf5df,#b4cdb0);box-shadow:inset 0 0 0 3px #dbe6ce;color:#5c795a}
++.uiRewardXp>strong{color:#35513d}.uiRewardXp>span:not(.uiRewardIcon){color:#61785c}
++.uiXpProgress{grid-column:1/-1;text-align:start;padding:3px 2px 1px}
++.uiXpProgress>div:first-child{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:10px;color:var(--ui-result-muted);margin-bottom:7px}
++.uiXpProgress>div:first-child span:first-child{font-weight:800;color:var(--ui-result-ink)}
++.uiXpTrack{height:6px;background:#dce1cf;border-radius:99px;overflow:hidden;direction:rtl}
++.uiXpTrack>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#93b278,#416e52);border-radius:inherit;transition:width .85s var(--ui-ease)}
++.uiRankReward{grid-column:1/-1;display:flex;justify-content:center;align-items:center;gap:10px;padding-top:3px;color:var(--ui-result-muted);font-size:11px}
++.uiRankReward strong{font-family:var(--fh);font-size:16px;color:var(--ui-result-ink)}
++.uiRankReward b{font-size:11px;color:var(--ui-result-positive);direction:ltr}
++.uiRankReward.hidden{display:none!important}
++.uiRewardNote{grid-column:1/-1;margin:0;font-size:10px;color:var(--ui-result-muted);line-height:1.5}
++.uiRewardSpark{position:absolute;font-size:17px;color:#b59048;opacity:0;inset-inline-end:22px;bottom:15px;pointer-events:none}
++.is-gaining .uiRewardSpark{animation:uiRewardLift .9s var(--ui-ease)}
++.is-gaining>.uiRewardIcon{animation:uiCoinReceive .7s var(--ui-ease)}
++.uiResultSectionLabel{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:800;color:var(--ui-result-muted);margin:12px 0 9px}
++.uiResultSectionLabel::after{content:"";height:1px;background:#ded8c5;flex:1}
++#resRows,#oResRows{display:grid;gap:7px;margin:0 0 12px}
++#resRows>.resRow,#oResRows>.resRow{display:grid;grid-template-columns:18px 42px minmax(0,1fr) auto auto;gap:7px;align-items:center;margin:0;min-height:65px;padding:10px 9px;border:1px solid #dfddcd;border-radius:14px;background:#f3f0e5;box-shadow:none;color:var(--ui-result-ink)}
++#resRows>.resRow.win,#oResRows>.resRow.win{background:#e7ebda;border-color:#c0c9a7;box-shadow:inset -3px 0 #849761}
++.uiResultCard .resRow .rk{font-family:var(--fh);font-size:15px;color:#8c927b;text-align:center;width:auto;height:auto;background:none}
++.uiResultCard .resRow .ava{width:38px;height:38px;font-size:24px;display:flex;align-items:center;justify-content:center;background:#e0dfcf;border:1px solid #d3cba9;border-radius:50%;overflow:hidden}
++.uiResultCard .resRow .avaDuo{width:42px;height:auto;min-height:47px;background:none;border:0;overflow:visible;flex-direction:column;gap:0}
++.uiResultCard .avaDuo>span{display:block;width:27px;height:27px;border:1px solid #d1bd89;border-radius:50%;overflow:hidden;background:var(--ui-result-paper)}
++.uiResultCard .avaDuo>span+span{margin-top:-7px;margin-inline-start:15px}
++.uiResultCard .resRow .nm{text-align:start;font-size:11px;font-weight:800;line-height:1.7;min-width:0;overflow-wrap:anywhere;color:var(--ui-result-ink)}
++.uiResultCard .resRow .nm small{font-size:10px;color:var(--ui-result-muted)!important;display:block;font-weight:500}
++.uiResultCard .resRow .pt{font-family:var(--fh);font-size:22px;display:flex;flex-direction:column;gap:1px;align-items:center;line-height:1.2;color:var(--ui-result-ink);min-width:35px}
++.uiResultCard .resRow .pt>span{font-size:9px!important;font-weight:600;color:var(--ui-result-muted)}
++.uiResultCard .resRow .gold{font-size:10px;color:var(--ui-result-muted);text-align:center;white-space:normal;min-width:25px;max-width:43px}
++.uiResultCard .resRow .gold small{display:block;font-size:9px}
++#oFeeWinLine{font-size:11px!important;margin:0 0 12px!important;line-height:1.6;flex-wrap:wrap;gap:6px 14px!important}
++.uiResultCard .oAddFriendBtn{width:23px!important;height:23px!important;font-size:12px!important;background:#d9e2cb!important;color:#547146!important;box-shadow:none;min-height:23px!important}
++#oMenu,#againBtn,#menuBtn{min-height:47px;font-family:var(--fh)!important;font-size:16px!important;border-radius:14px!important;border:1px solid #234b37!important;padding:10px 14px!important;background:linear-gradient(140deg,#365b3f,#173f30)!important;color:#fff3d4!important;box-shadow:0 3px 0 #0a2c1e;cursor:pointer}
++#menuBtn{background:var(--ui-result-paper)!important;color:var(--ui-result-ink)!important;border-color:#c9cdb7!important;box-shadow:none}
++#resBtns{gap:9px;padding-top:3px;margin:0;display:flex}#resBtns>button{flex:1}
++.uiResultCard>div:last-child:has(#oMenu),#resBtns{position:sticky;bottom:-16px;margin-bottom:-1px;background:var(--ui-result-paper);padding-bottom:3px;z-index:2}
++
++/* Store: a fixed header and tabs, one scrolling content area above navigation. */
++#shop>[data-navholder]{background:radial-gradient(ellipse at 45% 0,#325c43,#0c2b21 70%)!important;overflow:hidden}
++#shop>[data-navholder]>div:first-child{flex-shrink:0;padding-bottom:4px}
++#shop>[data-navholder]>div:first-child>span:first-of-type{font-size:24px!important;color:var(--ui-gold-bright)!important;text-shadow:none!important}
++#shopGold{font-variant-numeric:tabular-nums}
++.uiStoreTabs{display:grid;grid-template-columns:1fr 1fr;margin:17px 18px 0;padding:4px;gap:4px;border:1px solid var(--ui-border);border-radius:16px;background:#091e1870;flex-shrink:0}
++.uiStoreTabs>button{display:flex;align-items:center;justify-content:center;gap:9px;border:0;border-radius:12px;padding:10px 7px;min-height:45px;color:var(--ui-muted);background:none;font-size:13px;font-weight:800;cursor:pointer}
++.uiStoreTabs>button.active{background:linear-gradient(120deg,#f2d496,#dfb875);color:#26412e;box-shadow:0 2px 7px #0002}
++.uiStoreTabs svg{width:22px;height:22px;flex:none}
++.uiStoreScroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:18px 18px calc(104px + var(--ui-safe-bottom));-webkit-overflow-scrolling:touch;scrollbar-width:thin}
++.uiStoreIntro{text-align:start;margin:1px 0 18px}
++.uiStoreIntro>span{font-size:10px;color:var(--ui-gold);font-weight:800}
++.uiStoreIntro h2{font-family:var(--fh);font-size:25px;line-height:1.5;margin:4px 0;color:#fff2d6}
++.uiStoreIntro p{font-size:12px;line-height:1.7;margin:2px 0 0;color:var(--ui-muted)}
++#uiShopShowcase{border:1px solid #bf9d61;border-radius:22px;overflow:hidden;background:var(--ui-result-paper);box-shadow:0 12px 24px #0003}
++#uiShopScene{position:relative;aspect-ratio:1.75;background-size:cover;background-position:center 40%;isolation:isolate;overflow:hidden}
++.uiPreviewTable{position:absolute;width:65%;height:82%;object-fit:contain;inset:12% 17.5% 0;filter:drop-shadow(0 9px 6px #0006)}
++.uiPreviewCards{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;padding-top:22px;pointer-events:none}
++.uiPreviewCards>i{display:grid;place-items:center;width:33px;height:47px;border:1px solid #dccca8;border-radius:5px;background:#fff3d9;color:#294537;font:25px Georgia;box-shadow:0 3px 7px #0004;font-style:normal}
++.uiPreviewCards>i:first-child{transform:rotate(-17deg) translate(3px,3px);color:#ab6348}.uiPreviewCards>i:last-child{transform:rotate(17deg) translate(-3px,3px);color:#ab6348}
++.uiSceneBadge{position:absolute;top:12px;inset-inline-start:12px;padding:5px 9px;border:1px solid #eac77f50;border-radius:7px;background:#0d271cba;color:#ffefd0;font-size:9px;font-weight:800}
++.uiSceneDetails{padding:14px 15px 15px;display:grid;gap:12px}
++.uiSceneDetails h3{font-family:var(--fh);font-size:20px;color:var(--ui-result-ink);margin:0;line-height:1.4}
++.uiSceneDetails p{font-size:10px;color:var(--ui-result-muted);margin:4px 0 0;line-height:1.5}
++#uiShopActivate{min-height:42px;padding:9px 12px;border-radius:11px;border:1px solid #244531;background:linear-gradient(125deg,#365b40,#1c402f);color:#fff1d1;font-size:13px;font-weight:800;cursor:pointer}
++#uiShopActivate:disabled{background:#e2e6d6;border-color:#ced4ba;color:#6d7d62;cursor:default}
++.uiCatalogHeading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:25px 0 12px;color:var(--ui-gold-bright)}
++.uiCatalogHeading h3{font-family:var(--fh);font-size:17px;margin:0}.uiCatalogHeading span{font-size:10px;color:var(--ui-muted)}
++#shopList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:0;overflow:visible}
++#shopList>.uiCatalogCard{padding:0 0 12px!important;display:flex;flex-direction:column;text-align:start;min-width:0;overflow:hidden;background:#183e30;border:1px solid #6c80684d;border-radius:16px!important;box-shadow:none;cursor:pointer;color:var(--ui-gold-bright);min-height:0}
++#shopList>.uiCatalogCard[aria-pressed="true"]{border-color:var(--ui-gold);box-shadow:0 0 0 1px var(--ui-gold)}
++.uiCatalogImage{position:relative;width:100%;height:106px;background-size:cover;background-position:center;display:block}
++.uiCatalogStatus{position:absolute;top:8px;inset-inline-start:8px;padding:3px 7px;background:#0b251acf;border:1px solid #eac77f44;color:#f7e5bb;border-radius:6px;font-size:9px}
++.uiCatalogName{font-size:12px;font-weight:800;line-height:1.5;padding:10px 10px 1px;overflow-wrap:anywhere}
++.uiCatalogCard>small{font-size:10px;color:var(--ui-muted);padding:3px 10px 0}
++.uiStoreAd{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:13px 14px;border:1px solid #c2ac6d70;border-radius:16px;background:#c8b67818;color:var(--ui-gold-bright);text-align:start;font-size:12px;font-weight:800;margin:0 0 18px;cursor:pointer}
++.uiAdPlay{flex:none;display:grid;place-items:center;width:33px;height:33px;background:#ddbc7240;border-radius:10px;font-size:24px}.uiStoreAd>span:last-child{font-size:20px}
++#goldPkgList{display:grid;grid-template-columns:1fr 1fr;gap:12px}
++.uiGoldPackage{display:flex;flex-direction:column;align-items:center;gap:3px;border:1px solid #d8bd81;border-radius:20px;background:radial-gradient(ellipse at 50% 30%,#fff9e8,#ede2c9);padding:8px 10px 12px;min-width:0;color:#614d2e;cursor:pointer;box-shadow:0 5px 15px #0002;overflow:hidden}
++.uiGoldArt{display:block;width:126px;max-width:100%;height:102px}
++.uiGoldPackageName{font-size:10px;font-weight:700;color:#897753}.uiGoldPackage strong{font-family:var(--fh);font-size:25px;line-height:1.5;font-variant-numeric:tabular-nums;white-space:nowrap;color:#3a4530}.uiGoldPackage strong small{font-family:var(--fb);font-size:10px;font-weight:600}
++.uiGoldPackagePrice{display:block;width:100%;text-align:center;padding:7px 9px;margin-top:6px;border-radius:10px;background:#244835;color:#fff0c9;font-size:12px;font-weight:800}
++.uiGoldPackage:last-child{grid-column:1/-1;display:grid;grid-template-columns:116px 1fr;text-align:start;padding:12px 15px;gap:2px 15px}
++.uiGoldPackage:last-child>.uiGoldArt{grid-row:1/4;grid-column:1;height:111px}.uiGoldPackage:last-child>.uiGoldPackageName,.uiGoldPackage:last-child>strong,.uiGoldPackage:last-child>.uiGoldPackagePrice{grid-column:2}
++.uiGoldPackage:hover,.uiCatalogCard:hover{filter:brightness(1.04)}
++@keyframes uiSealArrive{from{opacity:0;transform:translateY(7px) scale(.93)}to{opacity:1;transform:translateY(0) scale(1)}}
++@keyframes uiRewardLift{0%{opacity:0;transform:translate(0,8px) scale(.7)}30%{opacity:1}100%{opacity:0;transform:translate(-12px,-46px) scale(1.2)}}
++@keyframes uiCoinReceive{35%{transform:translateY(-5px) rotate(-12deg) scale(1.1)}100%{transform:none}}
++@media(max-width:350px){#results>#resCard,#oOver>#resCard{padding:16px 12px 12px!important}.uiRewardTile{padding:10px;gap:2px;min-height:94px}.uiRewardIcon{width:28px;height:28px;font-size:20px}.uiRewardTile>strong{font-size:21px}.uiResultCard .resRow .pt{font-size:19px}#resRows>.resRow,#oResRows>.resRow{grid-template-columns:14px 33px minmax(0,1fr) auto auto;gap:5px;padding:9px 6px}.uiResultCard .resRow .avaDuo{width:33px}.uiStoreScroll{padding-inline:13px}.uiStoreTabs{margin-inline:13px}.uiCatalogImage{height:92px}.uiCatalogName{font-size:11px}.uiStoreIntro h2{font-size:23px}.uiGoldPackage strong{font-size:22px}.uiStoreTabs>button{font-size:12px}}
++@media(max-height:720px){.uiResultArt{height:76px;width:116px;margin-top:0}#results>#resCard,#oOver>#resCard{padding-top:14px!important}.uiResultKind{min-height:23px;font-size:10px}#resCard #resTtl,#resCard #oResTtl{font-size:26px!important}.uiRewardTile{min-height:88px;padding-block:9px}.uiRewardGrid{margin-bottom:9px;gap:7px}#resCard #resSub,#resCard #oResSub{margin-bottom:10px!important}.uiResultCard .resRow{min-height:57px!important}}
++@media(prefers-reduced-motion:reduce){.uiResultArt,.uiRewardSpark,.uiRewardIcon{animation:none!important}.uiXpTrack>i{transition:none!important}}
++
++/* v321 — التعبيرات المصورة؛ نفس قناة الإرسال وتكلفتها الحالية */
++#reactSheet{background:linear-gradient(150deg,#f9f0dd,#eee0c5);color:#234b3b;box-shadow:0 -12px 45px #061a1766;max-height:88%;overscroll-behavior:contain}
++#reactSheet .expressionHeader{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
++#reactSheet h3{margin:0;font-size:22px;color:#234b3b}
++.expressionHeader p{margin:3px 0 0;font-size:12px;color:#6a705c}
++.expressionClose{width:40px;height:40px;border:1px solid #b2a680;border-radius:50%;background:transparent;color:#234b3b;font-size:26px;flex-shrink:0}
++#reactGrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
++#reactGrid .reactBtn{min-width:0;padding:5px 2px 8px;border:1px solid #c6b792;background:#ffffff66;border-radius:16px;box-shadow:none;color:#294b3a}
++#reactGrid .reactBtn[aria-pressed="true"]{background:#deebd6;border-color:#315e43;box-shadow:inset 0 0 0 2px #315e43}
++.expressionArt{display:block;width:100%;aspect-ratio:1;background-image:url('reactions/expressions-v321.png');background-size:400% 200%;background-repeat:no-repeat;font-style:normal}
++#reactGrid .reactBtn span{display:block;font-size:clamp(11px,3.2vw,14px);line-height:1.5;white-space:normal;font-weight:900}
++.expressionFooter{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;padding-top:10px;border-top:1px solid #c5b68e}
++.expressionPreview{display:flex;align-items:center;gap:5px;min-width:0;margin:0;font-size:12px;line-height:1.5}
++.expressionPreview .expressionArt{width:44px;flex-shrink:0}
++.expressionSend{flex-shrink:0;border:0;border-radius:14px;padding:12px;background:#28573f;color:#fff4d8;font:inherit;font-size:13px;font-weight:900}
++.expressionSend:disabled{opacity:.45}
++#reactSheet button:focus-visible{outline:3px solid #bd762c;outline-offset:2px}
++.reactBubble:has(.expressionArt){background:transparent!important;border:0!important;padding:0!important;box-shadow:none!important;pointer-events:none;min-width:82px;max-width:100px;white-space:normal}
++.reactBubble .expressionArt{width:82px;margin:auto}
++.reactBubble .expressionCaption{display:block;width:max-content;max-width:100%;margin:-5px auto 0;padding:2px 8px;border:1px solid #c8ad6e;border-radius:9px;background:#fff1d6;color:#294332;font-size:13px;font-weight:900;line-height:1.4;box-shadow:0 3px 8px #0003}
++@media(max-height:550px){#reactGrid{grid-template-columns:repeat(8,minmax(0,1fr))}#reactSheet{max-height:94%}.expressionHeader p{display:none}#reactGrid .reactBtn span{font-size:11px}}
++/* v322: recipient selection and temporary avatar expressions */
++.expressionTargets{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
++.expressionTargets p{width:100%;margin:0;font-weight:800;font-size:13px}
++.expressionTargets button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;border:1px solid #b7ad8c;border-radius:12px;padding:7px;background:#fff7e5;color:#264b3a;font:inherit;font-size:12px}
++.expressionTargets button span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
++.expressionTargets button[aria-pressed=true]{outline:2px solid #28573f;background:#deebd6}
++.expressionAvatarActive{position:relative!important;overflow:visible!important}
++.expressionAvatarActive>*:not(.targetExpression){visibility:hidden!important}
++.targetExpression{position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;pointer-events:none}
++.targetExpression .expressionArt{width:100%;flex-shrink:0}
++.targetExpression>span{margin-top:-4px;white-space:nowrap;font-size:10px;line-height:16px;padding:0 4px;border-radius:6px;background:#fff1d6;color:#294332;font-weight:900}
++.expressionFlight{position:fixed;width:56px;height:56px;z-index:10000;pointer-events:none}
++.uiRewardXp,.uiXpProgress{display:none!important}
++#oOver[data-kind=friendly] #oMyStats{display:none!important}
++/* v323 daily tournament, beneath rank and group buttons */
++/* v325: horizontal card; navigation is outside the home scroll container. */
++#home>.navBar{position:absolute;bottom:0;inset-inline:0;z-index:40}
++#home .homeWrap{bottom:calc(78px + var(--ui-safe-bottom));padding-bottom:12px;scroll-padding-bottom:24px}
++#hTournament{display:flex;flex-direction:row;flex:0 0 auto;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:80px;margin:0;padding:14px 16px;border:1px solid var(--ui-gold);background:linear-gradient(120deg,#214b3c,#12392f);color:#f7e5b4;text-align:right;border-radius:18px;box-shadow:0 4px 0 #091e16}
++#hTournament .cupButtonIcon{display:flex;align-items:center;justify-content:center;flex:0 0 42px}
++#hTournament .cupButtonIcon svg{display:block;width:42px;height:42px}
++#hTournament .cupButtonText{flex:1;min-width:0;line-height:1.5}
++#hTournament b{display:block;font-size:20px;line-height:1.5}
++#hTournament small{display:block;font-size:12px;color:#d4dbc2;white-space:normal}
++#hTournament .cupButtonTime{flex:none;font-size:12px;white-space:nowrap;background:#0b221b88;border-radius:10px;padding:6px 8px}
++@media(max-width:360px){#hTournament{padding:12px;gap:8px}#hTournament b{font-size:18px}#hTournament .cupButtonTime{font-size:11px;padding:5px}}
++#cupBackdrop{position:fixed;inset:0;z-index:1500;background:#061c17d9;display:flex;align-items:center;justify-content:center;padding:12px}
++#cupSheet{width:min(100%,560px);max-height:92dvh;overflow:auto;background:#f6edda;border-radius:24px;color:#284b3a;padding:18px;direction:rtl;overscroll-behavior:contain}
++#cupSheet header{display:flex;align-items:center;gap:10px}#cupSheet header h2{flex:1;margin:0;font-size:21px}#cupSheet button{border:1px solid #b4ab87;border-radius:12px;padding:10px;background:#254f3d;color:#fff0d2;font:inherit;font-size:13px;cursor:pointer}#cupBody>button{width:100%;margin:10px 0}
++.cupHero{text-align:center;padding:14px 0}.cupHero h2{margin:4px 0;font-size:28px}.cupHero p,.cupHero>span{font-size:12px}.cupTrophy{display:block;font-size:56px!important;color:#a67626}
++.cupPrizes{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cupPrizes>div{background:#e7d5aa;border:1px solid #c4a365;border-radius:16px;padding:12px;text-align:center}.cupPrizes b{display:block;font-size:26px}.cupPrizes small{font-size:11px}.cupFee{text-align:center;font-size:12px}
++.cupTeams{display:grid;grid-template-columns:1fr 1fr;gap:8px}.cupTeams article{padding:10px;border:1px solid #d1c3a3;border-radius:12px;min-width:0}.cupTeams span,.cupTeams small{display:block;font-size:12px;overflow-wrap:anywhere}.cupTeams small{color:#68745d}
++.cupMine,.cupTomorrow{padding:14px;border:1px solid #b7a675;border-radius:16px;background:#e6ead7;margin:14px 0}.cupSignup{display:grid;grid-template-columns:1fr;gap:8px;margin:14px 0}.cupSignup input{width:100%;box-sizing:border-box;border-radius:10px;border:1px solid #baad8b;padding:12px;font:inherit;background:#fff9ed;color:#284b3a}.cupNote{font-size:12px;line-height:1.9;color:#66705c}.cupMatch{display:flex;flex-direction:column;gap:4px;border-bottom:1px solid #d0c3a6;padding:10px}.cupMatch small{font-size:11px}.cupMatch b{font-size:13px}
++#cupTableNotice{position:absolute;top:45%;inset-inline:15%;padding:15px;border:1px solid #d7b36b;border-radius:15px;background:#163e35;color:#fff1c7;text-align:center;z-index:80;pointer-events:none}
++
++#onl[data-tournament="true"] #pubInviteBtn,#onl[data-tournament="true"] #lobbyStart{display:none!important}
+--- a/www/ui-polish.js
++++ b/www/ui-polish.js
+@@ -29,7 +29,7 @@
+     const old=button.querySelector('svg');if(old)old.outerHTML=icon(name);
+   }
+   for(const [id,label] of [['hProfBtn','ملفي الشخصي'],['hGoldBtn','رصيد الذهب والمتجر'],['sndBtn','الصوت'],['boardBtn','نتائج الطاولة'],['oBoardBtn','نتائج الطاولة']]){
+-    const el=document.getElementById(id);if(el)el.setAttribute('aria-label',label);
++    const el=document.getElementById(id);if(el)el.setAttribute('aria-label',id==='hGoldBtn'&&!SHOW_STORE?'رصيد الذهب':label);
+   }
+   if(typeof uiSoundButtons==='function')uiSoundButtons();
+   for(const [id,name,label] of [
+@@ -67,32 +67,12 @@
+     },{passive:true});
+   }
+   const profileExit=document.getElementById('pfOut');
+-  if(profileExit){
+-    const themes=[['emerald','النادي الزمردي'],['midnight','الليلة الكحلية'],['royal','المجلس الملكي'],['original','خلفية المتجر المفعّلة']];
+-    const button=document.createElement('button');button.id='uiAppearanceBtn';
+-    button.type='button';button.innerHTML=icon('cards')+'<span>مظهر الطاولة</span>';
+-    profileExit.before(button);
+-    const sheet=document.createElement('div');sheet.id='uiAppearance';sheet.className='hidden';
+-    sheet.innerHTML='<div class="uiAppearanceCard" role="dialog" aria-modal="true" aria-labelledby="uiAppearanceTitle"><div class="uiAppearanceHead"><h2 id="uiAppearanceTitle">مظهر الطاولة</h2><button type="button" class="qBtn" aria-label="إغلاق">'+icon('close')+'</button></div><p>اختر خلفيتك المفضلة على هذا الجهاز</p><div class="uiThemeGrid">'+themes.map(([id,label])=>'<button type="button" class="uiThemeChoice" data-theme="'+id+'" aria-pressed="false"><span class="uiThemePreview"'+(id==='original'?'':' style="background-image:url(ui-art/room-'+id+'.svg)"')+'>'+(id==='original'?icon('gift'):'<img src="ui-art/table-'+id+'.svg" alt="">')+'</span><span>'+label+'</span><small class="uiThemeState"></small></button>').join('')+'</div></div>';
+-    (document.getElementById('frame')||document.body).appendChild(sheet);
+-    let selected='emerald';try{selected=localStorage.getItem('wb-ui-table')||selected}catch(_){}
+-    const choices=[...sheet.querySelectorAll('[data-theme]')];
+-    const refresh=()=>choices.forEach(el=>{const active=el.dataset.theme===selected;el.setAttribute('aria-pressed',String(active));el.querySelector('.uiThemeState').textContent=active?'مفعّلة':'اختيار';});
+-    const close=()=>{sheet.classList.add('hidden');button.focus();};
+-    button.onclick=()=>{refresh();sheet.classList.remove('hidden');sheet.querySelector('.qBtn').focus();};
+-    sheet.querySelector('.qBtn').onclick=close;
+-    sheet.addEventListener('click',event=>{if(event.target===sheet)close();});
+-    sheet.addEventListener('keydown',event=>{
+-      if(event.key==='Escape'){event.preventDefault();close();}
+-      if(event.key==='Tab'){
+-        const first=sheet.querySelector('.qBtn'),last=choices[choices.length-1];
+-        if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+-        else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+-      }
+-    });
+-    choices.forEach(el=>{el.onclick=()=>{selected=el.dataset.theme;try{localStorage.setItem('wb-ui-table',selected)}catch(_){}if(typeof applyEquippedTheme==='function')applyEquippedTheme(selected);refresh();};});
+-    if(typeof applyEquippedTheme==='function')applyEquippedTheme();
++  if(profileExit&&SHOW_STORE){
++    const button=document.createElement('button');button.id='uiAppearanceBtn';button.type='button';
++    button.innerHTML=icon('cards')+'<span>خلفياتي في المتجر</span>';
++    button.onclick=()=>openShop('themes');profileExit.before(button);
+   }
++  if(typeof applyEquippedTheme==='function')applyEquippedTheme();
+   const toast=document.querySelector('#toastG span');if(toast){toast.setAttribute('role','status');toast.setAttribute('aria-live','polite');}
+   // Keyboard activation mirrors the existing click handler, including its guards.
+   document.addEventListener('keydown',event=>{
+@@ -102,4 +82,3 @@
+     event.preventDefault();card.click();
+   });
+ })();
+-

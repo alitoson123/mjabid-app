@@ -1,0 +1,50 @@
+Pinned comparison: alitoson123/mjabid-app @ caae6e78a371cf760597d17a6923c50c00076a85
+Eight update files; SHA-256 checked against final delivery.
+JavaScript syntax: pass. Precache entries: 132 present in repository plus overlay.
+Local script and CSS references: present in repository plus overlay.
+Original literal safe-area calc lines retained.
+Native build, real Apple authorization, device layout and TestFlight: NOT TESTED.
+GitHub/Cloudflare/TestFlight publication: NOT PERFORMED.
+
+✔ reproduces the old bug: native success never signs into the game (2.324057ms)
+✔ new Apple account signs into web Auth using the exact ID token and raw nonce (1.265054ms)
+✔ late Auth callback does not load a profile twice (0.643919ms)
+✔ sign-out clears the Apple callback guard; ordinary restored sessions still load (0.706784ms)
+✔ repeated taps while Apple is pending start only one authorization (0.756959ms)
+✔ cancellation is quiet and a subsequent attempt works: 1001 request failed (1.193005ms)
+✔ cancellation is quiet and a subsequent attempt works: cancelled-popup-request request failed (4.467473ms)
+✔ cancellation is quiet and a subsequent attempt works:  The operation was canceled. (0.766133ms)
+✔ cancellation is quiet and a subsequent attempt works:  com.apple.AuthenticationServices.AuthorizationError error 1001. (0.780134ms)
+✔ cancellation is quiet and a subsequent attempt works:  تم إلغاء العملية (0.921266ms)
+✔ incomplete Apple credentials cannot create a game session: null (0.776429ms)
+✔ incomplete Apple credentials cannot create a game session: {} (0.586623ms)
+✔ incomplete Apple credentials cannot create a game session: {"credential":{"idToken":"token"}} (0.632772ms)
+✔ incomplete Apple credentials cannot create a game session: {"credential":{"nonce":"nonce"}} (0.599222ms)
+✔ incomplete Apple credentials cannot create a game session: {"credential":{"idToken":"token","nonce":""}} (0.571751ms)
+✔ unavailable platform or Firebase stops before Apple: {"ready":false} (0.463167ms)
+✔ unavailable platform or Firebase stops before Apple: {"missingPlugin":true} (0.60141ms)
+✔ unavailable platform or Firebase stops before Apple: {"unavailable":true} (0.858011ms)
+✔ unavailable platform or Firebase stops before Apple: {"platform":"android"} (0.456317ms)
+✔ unavailable platform or Firebase stops before Apple: {"platform":"web"} (0.487484ms)
+✔ Firebase failure never enters the game: auth/network-request-failed (1.389541ms)
+✔ Firebase failure never enters the game: auth/account-exists-with-different-credential (0.90704ms)
+✔ Firebase failure never enters the game: auth/operation-not-allowed (0.59808ms)
+✔ Firebase failure never enters the game: auth/user-disabled (0.998783ms)
+✔ Firebase failure never enters the game: auth/invalid-credential (0.509176ms)
+✔ returning account without an Apple name keeps its saved nickname (0.774135ms)
+✔ hide-my-email does not expose the relay address as a nickname (0.700684ms)
+✔ optional name-save failure still completes sign-in once (0.559772ms)
+✔ a banned profile is signed out without a misleading success toast (0.557278ms)
+✔ profile loading error is distinct from credential failure (0.680544ms)
+✔ a failure to persist the session does not consume an Apple authorization (0.493292ms)
+✔ all inline JavaScript and service-worker syntax are valid (5.873098ms)
+✔ iOS Apple provider is enabled and unrelated native configuration is preserved (0.853845ms)
+✔ iOS build label reads bundled version without service worker support (11.299244ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 139.761712

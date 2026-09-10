@@ -1,0 +1,56 @@
+{
+  "repository": "alitoson123/mjabid-app",
+  "base_commit": "caae6e78a371cf760597d17a6923c50c00076a85",
+  "web_build": "v325",
+  "marketing_version": "1.2.0",
+  "files": [
+    {
+      "path": "capacitor.config.json",
+      "status": "modified",
+      "base_git_blob": "90d371a710f87dfdbf5f4bff26e8665737176c34",
+      "sha256": "1a095761abae3c5a63830fc52febd7925efef4bfd2360122b5ccbbc586db342a"
+    },
+    {
+      "path": "www/index.html",
+      "status": "modified",
+      "base_git_blob": "2cd9daf79487ab8615ff87039cc62ff6949cafdd",
+      "sha256": "de221de733b08c92326527552210adeb8a8ebcbe1de82bc52c067bd99193e53a"
+    },
+    {
+      "path": "www/reactions/expressions-v321.png",
+      "status": "added",
+      "base_git_blob": null,
+      "sha256": "b31b2d53548d3d2e6539fdf0870217f4c0c99ca7c0fc1bad4b1eb14fa3c24351"
+    },
+    {
+      "path": "www/sw.js",
+      "status": "modified",
+      "base_git_blob": "3057f5464e0d8a94b4dd41c21c5b1c30b079ad86",
+      "sha256": "e6a20a3b212d0b90997119a9b0f9e837cbb49861fcf86632726aad4f2d293f4c"
+    },
+    {
+      "path": "www/ui-polish.css",
+      "status": "modified",
+      "base_git_blob": "95c55aa6d6a30939a18c19eb83bd88af385ea141",
+      "sha256": "cb59d74b5d67f285a9d65fecc1088d2e11913621a2e7bad4c0b097ddf04f6c32"
+    },
+    {
+      "path": "www/ui-polish.js",
+      "status": "modified",
+      "base_git_blob": "14889f6832db50f96ec986a6c5986363d4b3d041",
+      "sha256": "46513544621f8c952334bf0375c24ac5d866b1ec351055d33e3a7a41f7eb57de"
+    },
+    {
+      "path": "www/ui-results-store.js",
+      "status": "added",
+      "base_git_blob": null,
+      "sha256": "ac780d5a82846f587dce3df6b69f8decf67601fdb3ea38f273dfb019012c3d44"
+    },
+    {
+      "path": "www/ui-tournament.js",
+      "status": "added",
+      "base_git_blob": null,
+      "sha256": "9c906f3ed241865c7b2037d674a9fe0af0ddef5274e7f86b887dd4073a74d271"
+    }
+  ]
+}

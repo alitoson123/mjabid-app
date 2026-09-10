@@ -696,16 +696,19 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <link rel="stylesheet" href="ui-polish.css">
+<script defer src="ui-results-store.js"></script>
 <script defer src="ui-polish.js"></script>
 </head>
 <body>
 <div id="frame">
   <div id="toastG"><span id="toastGTxt"></span></div>
-  <div id="specNotice" class="hidden" style="position:fixed;top:14px;left:12px;right:12px;z-index:500;background:#33302c;color:#fff;border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.35)">
-    <span style="font-size:20px;flex:none">👀</span>
-    <span id="specNoticeTxt" style="flex:1;font-size:12.5px;font-weight:700;line-height:1.5">الدعوة انتهت — الجولة بدأت وامتلأت المقاعد. أنت تشاهد الآن كمشاهد.</span>
-    <button id="specLeaveBtn" style="background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:999px;padding:7px 14px;font-family:var(--fb);font-weight:800;font-size:12px;cursor:pointer;flex:none">رجوع</button>
-    <button id="specDismissBtn" style="background:none;border:none;color:#fff;font-size:16px;cursor:pointer;flex:none">✕</button>
+  <div id="specNotice" class="hidden uiSpectatorNotice" role="status" aria-live="polite" aria-atomic="true">
+    <span class="uiNoticeEmblem" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></span>
+    <div class="uiNoticeCopy"><strong id="uiSpecTitle">مقعدك في المدرّج</strong><p id="specNoticeTxt">أنت تشاهد الجولة الحالية.</p></div>
+    <div class="uiNoticeActions">
+      <button id="specDismissBtn" type="button">متابعة المشاهدة</button>
+      <button id="specLeaveBtn" type="button">مغادرة الطاولة</button>
+    </div>
   </div>
   <!-- NEW CODE — توست تغيّر نقاط الرتبة (فوز/خسارة/انسحاب من جلسة تنافسية) -->
   <div id="rankToast" class="hidden" style="position:fixed;top:70px;left:16px;right:16px;z-index:400;background:#fff;border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:360px;margin:0 auto">
@@ -780,12 +783,23 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
     </div>
   </div>
   <div id="pageLoader" class="hidden">
-    <div id="plCards">
+    <div class="uiEntryBrand" aria-hidden="true">مجابيد</div>
+    <div id="plCards" aria-hidden="true">
       <img src="cards/KH.png" alt="">
       <img src="cards/AS.png" alt="">
       <img src="cards/QD.png" alt="">
     </div>
-    <div id="pageLoaderTxt">فتح...</div>
+    <div id="pageLoaderTxt" role="status" aria-live="polite">نجهّز جلستك…</div>
+    <span class="uiEntryRail" aria-hidden="true"></span>
+    <div class="uiEntryTips">
+        <span class="uiEntryTipsTitle" aria-hidden="true">من سوالف المجلس</span>
+        <div class="uiEntryTipsText" aria-hidden="true">
+          <span>راقب الميدان قبل ما تختار ورقتك.</span>
+          <span>العب بهدوء؛ كل ورقة ممكن تغيّر الجولة.</span>
+          <span>تقدر تغيّر اسمك وصورتك من ملفك الشخصي.</span>
+        </div>
+        <span class="uiEntrySr">نصيحة: راقب الميدان قبل ما تختار ورقتك.</span>
+      </div>
   </div>
 
   <!-- الإعداد -->
@@ -810,7 +824,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
     <span id="gameBumpR"></span><span id="gameBumpL"></span>
     <div id="topbar">
       <button id="exitBtn">خروج ✕</button>
-      <div class="meta"><div class="ttl" id="modeTtl">فردي</div></div>
+      <div class="meta uiMatchHeader"><div class="uiMatchWords"><div class="ttl" id="modeTtl">تدريب</div><span id="uiLocalMode" class="uiMatchDetail">فردي</span></div><span id="uiLocalGoal" class="uiMatchGoal hidden"></span></div>
       <button id="sndBtn" title="الصوت">🔊</button>
       <button id="boardBtn" title="الصدارة"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 01-10 0z"></path></svg></button>
     </div>
@@ -885,8 +899,10 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
     </div>
     <div id="topbar" style="position:relative;z-index:35">
       <button class="exitLike" id="oExit" style="background:none;color:var(--sageL);font-size:12px;font-weight:700;text-decoration:underline;border:none;cursor:pointer">خروج</button>
-      <div class="ttl" id="oHeaderTtl" style="font-family:var(--fh);font-size:19px;color:var(--mint);display:flex;align-items:center;gap:8px;flex-wrap:wrap">مبارزة أونلاين <span id="oHeaderGoal" class="hidden" style="font-family:var(--fb);font-size:12.5px;font-weight:800;color:#1c1a19;background:#f6c14d;border-radius:999px;padding:3px 11px;box-shadow:0 0 0 2px rgba(255,255,255,.25),0 2px 5px rgba(0,0,0,.35);white-space:nowrap"></span><span id="connDot"></span></div>
-      <span id="oSpecCount" class="hidden" style="background:rgba(240,250,225,.12);color:var(--mint);border-radius:99px;padding:4px 9px;font-size:11.5px;font-weight:800;display:flex;align-items:center;gap:4px">👁️ <span id="oSpecN">0</span></span>
+      <div class="ttl uiMatchHeader" id="oHeaderTtl">
+        <div class="uiMatchWords"><div class="uiMatchTitleLine"><span id="uiOnlineTitle">جلسة سريعة</span><span id="connDot"></span><span id="oSpecCount" class="hidden" aria-label="عدد المشاهدين">◉ <span id="oSpecN">0</span></span></div><span id="uiOnlineMode" class="uiMatchDetail">جماعي ٢×٢</span></div>
+        <span id="oHeaderGoal" class="hidden uiMatchGoal"></span>
+      </div>
       <button id="oSnd" style="background:rgba(240,250,225,.12);color:var(--mint);border-radius:99px;padding:4px 10px;font-size:13px;border:none;cursor:pointer">🔊</button>
     </div>
     <div id="oTimerTop"><div class="fill"></div></div>
@@ -948,7 +964,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
           </span>
           <button class="abtn" id="oThrow">رمي</button>
           <button class="abtn" id="oPass" style="display:none">تجاوز</button>
-          <button id="oReactBtn">التفاعلات</button>
+          <button id="oReactBtn">التعبيرات</button>
         </div>
       </div>
     </div>
@@ -978,29 +994,23 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
     </div>
     <div id="oWaqf" class="hidden"></div>
     <div id="oOver" class="hidden">
-      <div id="resCard" style="width:100%;max-width:340px;background:var(--sand);border-radius:24px;padding:22px 20px;text-align:center">
+      <div id="resCard" class="uiResultCard" style="width:100%;max-width:340px;background:var(--sand);border-radius:24px;padding:22px 20px;text-align:center">
+        <span id="oResultKind" class="uiResultKind"></span><div id="oResultArt" class="uiResultArt"></div>
         <h2 id="oResTtl" style="font-family:var(--fh);font-size:30px;color:var(--clay)"></h2>
         <div id="oResSub" style="font-size:14px;font-weight:700;color:var(--mut);margin-bottom:14px"></div>
         <div id="oForfeitBanner" class="hidden" style="margin:0 0 14px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,#f6c14d,#e3a93c);color:#5c3a0a;font-family:var(--fh);font-size:15px;font-weight:800;box-shadow:0 3px 0 #a97a1f">🏆 انسحب الخصم! فوز مستحق لفريقك</div>
-        <!-- NEW CODE — إحصاءات اللاعب المتحركة (ذهب + نقاط رتبة) لجلسة تنافسية فقط -->
-        <div id="oMyStats" class="hidden" style="display:flex;justify-content:center;gap:18px;margin-bottom:14px">
-          <div style="display:flex;align-items:center;gap:4px">
-            <i style="width:14px;height:14px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block"></i>
-            <span id="oMyGoldNum" style="font-family:var(--fh);font-size:16px;color:var(--ink)">0</span>
-            <span id="oMyGoldDelta" style="font-size:11px;font-weight:800"></span>
-          </div>
-          <div style="display:flex;align-items:center;gap:4px">
-            <span id="oMyRankNum" style="font-family:var(--fh);font-size:16px;color:var(--ink)">0</span>
-            <span id="oMyRankDelta" style="font-size:11px;font-weight:800"></span>
-            <span style="font-size:10px;color:var(--mut);font-weight:800">رتبة</span>
-          </div>
+        <div id="oMyStats" class="uiRewardGrid hidden">
+          <div id="oGoldReward" class="uiRewardTile uiRewardGold"><span class="uiRewardIcon" aria-hidden="true">◈</span><span>رصيد الذهب</span><strong id="oMyGoldNum">0</strong><b id="oMyGoldDelta" class="uiRewardDelta"></b><i class="uiRewardSpark" aria-hidden="true">✦</i></div>
+          <div class="uiRewardTile uiRewardXp"><span class="uiRewardIcon" aria-hidden="true">✧</span><span>الخبرة</span><strong id="oMyXpNum">0</strong><b id="oMyXpDelta" class="uiRewardDelta"></b></div>
+          <div class="uiXpProgress"><div><span id="oXpLevel"></span><span>خبرتك للمستوى التالي</span></div><div class="uiXpTrack"><i id="oXpFill"></i></div></div>
+          <div id="oRankReward" class="uiRankReward"><span>النقاط التنافسية</span><strong id="oMyRankNum">0</strong><b id="oMyRankDelta"></b></div><p id="oRewardNote" class="uiRewardNote" role="status"></p>
         </div>
         <!-- FIX — سطر واضح: رسوم الدخول والجائزة منفصلين، لا الفارق الصافي فقط -->
         <div id="oFeeWinLine" class="hidden" style="font-size:12.5px;font-weight:700;color:var(--mut);margin-bottom:14px;display:flex;justify-content:center;gap:14px"></div>
-        <div id="oResRows"></div>
+        <div class="uiResultSectionLabel">حصيلة الطاولة</div><div id="oResRows"></div>
         <div style="display:flex;gap:10px;margin-top:8px">
           <!-- FIX — حُذف زر "العب مرة أخرى" بالكامل بطلبك (إلغاء إعادة اللعبة) -->
-          <button id="oMenu" style="flex:1;padding:14px;border-radius:16px;font-family:var(--fh);font-size:19px;background:var(--sand2);color:var(--ink2);border:2px solid var(--line);cursor:pointer">القائمة</button>
+          <button id="oMenu" style="flex:1;padding:14px;border-radius:16px;font-family:var(--fh);font-size:19px;background:var(--sand2);color:var(--ink2);border:2px solid var(--line);cursor:pointer">العودة للمجلس</button>
         </div>
       </div>
     </div>
@@ -1012,18 +1022,32 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
     <div id="wWrap">
       <svg class="saduSvg" width="100%" height="46" viewBox="0 0 390 46" preserveAspectRatio="none"><defs><pattern id="sdWelcome" width="32" height="46" patternUnits="userSpaceOnUse"><rect width="32" height="46" fill="#273322"></rect><path d="M16 6l11 17-11 17L5 23z" fill="none" stroke="#d67f48" stroke-width="2.5"></path><path d="M16 16l6 7-6 7-6-7z" fill="#8fa073"></path></pattern></defs><rect width="390" height="46" fill="url(#sdWelcome)"></rect></svg>
       <div id="wMid">
-        <div id="wCards">
+        <div class="uiEntryEyebrow" lang="en" dir="ltr">MAJABEED · CARD CLUB</div>
+        <div id="wCards" aria-hidden="true">
           <img src="court_K.png" alt="">
           <img src="court_Q.png" alt="">
           <img src="court_J.png" alt="">
           <img src="court_JOKER.png" alt="">
         </div>
         <div id="wTitle">مجابيد</div>
-        <div id="wSub">ورق المجالس... كِل ولا تنكِل</div>
+        <div id="wSub">ورق المجالس… كِل ولا تنكِل</div>
+      </div>
+      <div class="uiEntryTips">
+        <span class="uiEntryTipsTitle" aria-hidden="true">من سوالف المجلس</span>
+        <div class="uiEntryTipsText" aria-hidden="true">
+          <span>راقب الميدان قبل ما تختار ورقتك.</span>
+          <span>العب بهدوء؛ كل ورقة ممكن تغيّر الجولة.</span>
+          <span>تقدر تغيّر اسمك وصورتك من ملفك الشخصي.</span>
+        </div>
+        <span class="uiEntrySr">نصيحة: راقب الميدان قبل ما تختار ورقتك.</span>
       </div>
       <div id="wBtns">
         <button id="wLogin" style="display:none">تسجيل الدخول</button>
-        <div id="wLoading"><span class="wSpinner"></span></div>
+        <div id="wLoading" role="status" aria-live="polite">
+          <span class="wSpinner" aria-hidden="true"></span>
+          <span>نجهّز جلستك…</span>
+          <span class="uiEntryRail" aria-hidden="true"></span>
+        </div>
       </div>
       <div id="wVer">النسخة 1.0 — بيتا</div>
       <div id="buildTag" style="position:absolute;bottom:4px;left:8px;font-size:9px;color:rgba(184,157,120,.55);font-weight:700"></div>
@@ -1033,19 +1057,19 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
   <div class="screen hidden" id="login">
     <div id="lgWrap">
       <svg class="saduSvg" width="100%" height="40" viewBox="0 0 390 40" preserveAspectRatio="none" style="opacity:.55"><defs><pattern id="sdLogin" width="30" height="40" patternUnits="userSpaceOnUse"><path d="M15 5l10 15-10 15L5 20z" fill="none" stroke="#d67f48" stroke-width="2.5"></path><path d="M15 14l5 6-5 6-5-6z" fill="#8fa073"></path></pattern></defs><rect width="390" height="40" fill="url(#sdLogin)"></rect></svg>
-      <div id="lgTopRow"><button id="lgBack" class="qBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button></div>
-      <div id="lgHead"><span class="t">أهلاً من جديد</span><span class="sub">ادخل وكمّل جولاتك</span></div>
+      <div id="lgTopRow"><button id="lgBack" class="qBtn" type="button" aria-label="العودة للبداية"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span class="uiEntryWordmark" aria-hidden="true">مجابيد <i>♠</i></span></div>
+      <div id="lgHead"><span class="t">أهلاً من جديد</span><span class="sub">سجّل دخولك، وكمّل جولاتك مع الربع</span></div>
       <div id="lgAva"></div>
       <div id="lgFields">
         <div>
-          <div class="lgLbl">البريد الإلكتروني</div>
-          <div class="lgField"><input id="lgEmail" type="email" placeholder="you@example.com"><span class="fic">✉</span></div>
+          <label class="lgLbl" for="lgEmail">البريد الإلكتروني</label>
+          <div class="lgField"><input id="lgEmail" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" placeholder="you@example.com"><span class="fic" aria-hidden="true">✉</span></div>
         </div>
         <div>
-          <div class="lgLbl">كلمة المرور</div>
-          <div class="lgField"><input id="lgPass" type="password" placeholder="••••••••"><span class="fic">🔒</span></div>
+          <label class="lgLbl" for="lgPass">كلمة المرور</label>
+          <div class="lgField"><input id="lgPass" type="password" autocomplete="current-password" placeholder="••••••••"><span class="fic" aria-hidden="true">🔒</span></div>
         </div>
-        <div id="lgForgot">نسيت كلمة المرور؟ استعادة</div>
+        <button id="lgForgot" type="button">نسيت كلمة المرور؟</button>
         <button id="lgGo">دخول</button>
         <div class="lgOr">أو</div>
         <div class="lgSoc">
@@ -1056,7 +1080,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
         <button id="lgNew">إنشاء حساب جديد</button>
       </div>
       <div id="lgBottom">
-        <span id="lgSignupLink">ما عندك حساب؟ سجّل الآن</span>
+        <button id="lgSignupLink" type="button">جديد في المجلس؟ أنشئ حسابك</button>
         <div id="lgTerms">بدخولك أنت توافق على <a href="https://mjabid.com/terms.html" target="_blank" style="color:inherit;text-decoration:underline">شروط الاستخدام</a> و<a href="https://mjabid.com/privacy.html" target="_blank" style="color:inherit;text-decoration:underline">سياسة الخصوصية</a></div>
       </div>
     </div>
@@ -1064,39 +1088,45 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
   <!-- إنشاء حساب جديد (هوية اللاعب) -->
   <div class="screen hidden" id="signup">
     <div id="suWrap">
-      <div class="suTopHead"><button class="qBtn" id="suBack"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></button><span class="t">سوّ هويتك</span></div>
-      <div class="suLbl2">اختر أفاتارك</div>
+      <div class="suTopHead"><button class="qBtn" id="suBack" type="button" aria-label="العودة لتسجيل الدخول"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></button><span class="t">حساب جديد<small>حيّاك في المجلس، خلّنا نتعرّف عليك</small></span></div>
+      <label class="lgLbl" for="suName">الاسم المعروض</label>
+      <div class="lgField"><input id="suName" autocomplete="nickname" type="text" maxlength="14" placeholder="اسمك في اللعبة"><span aria-hidden="true" class="fic">👤</span></div>
+      <label class="lgLbl" for="suUser">اسم المستخدم</label>
+      <div class="lgField"><input id="suUser" autocapitalize="none" spellcheck="false" inputmode="text" autocomplete="username" type="text" maxlength="16" placeholder="username" style="direction:ltr;text-align:left;padding-left:40px"><span aria-hidden="true" class="fic" style="right:14px;left:auto">@</span></div>
+      <div id="suUserHint">من 3 إلى 16 حرفًا إنجليزيًا أو رقمًا أو _، ليجدك أصدقاؤك</div>
+      <label class="lgLbl" for="suEmail">البريد الإلكتروني</label>
+      <div class="lgField"><input id="suEmail" autocapitalize="none" spellcheck="false" inputmode="email" autocomplete="email" type="email" placeholder="you@example.com" style="direction:ltr;text-align:left;padding-left:40px"><span aria-hidden="true" class="fic">✉</span></div>
+      <label class="lgLbl" for="suPass">كلمة المرور</label>
+      <div class="lgField"><input id="suPass" autocomplete="new-password" type="password" placeholder="٦ أحرف على الأقل" style="direction:ltr;text-align:left;padding-left:40px"><span aria-hidden="true" class="fic">🔒</span></div>
+      <label class="lgLbl" for="suPass2">تأكيد كلمة المرور</label>
+      <div class="lgField"><input id="suPass2" autocomplete="new-password" type="password" placeholder="أعد كتابة كلمة المرور" style="direction:ltr;text-align:left;padding-left:40px"><span aria-hidden="true" class="fic">🔒</span></div>
+      <details class="uiEntryAvatarPicker">
+        <summary>صورتك في المجلس <span>اختياري</span></summary>
+      <div class="suLbl2">اختر من الصور، أو ارفع صورتك من جهازك</div>
       <button id="suUploadBtn" type="button" style="width:100%;padding:11px;border-radius:14px;border:1.5px dashed var(--clay);background:#fff;color:var(--clay);font-family:var(--fb);font-weight:800;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px">📷 أو ارفع صورتك من جهازك</button>
       <input type="file" id="suUploadInput" accept="image/*" style="display:none">
       <div id="suAvGrid"></div>
-      <div class="lgLbl">الاسم المعروض</div>
-      <div class="lgField"><input id="suName" type="text" maxlength="14" placeholder="اسمك في اللعبة"><span class="fic">👤</span></div>
-      <div class="lgLbl">اسم المستخدم</div>
-      <div class="lgField"><input id="suUser" type="text" maxlength="16" placeholder="username" style="direction:ltr;text-align:left;padding-left:40px"><span class="fic" style="right:14px;left:auto">@</span></div>
-      <div id="suUserHint">أحرف إنجليزية وأرقام فقط — يظهر لأصدقائك للبحث عنك</div>
-      <div class="lgLbl">البريد الإلكتروني</div>
-      <div class="lgField"><input id="suEmail" type="email" placeholder="you@example.com" style="direction:ltr;text-align:left;padding-left:40px"><span class="fic">✉</span></div>
-      <div class="lgLbl">كلمة المرور</div>
-      <div class="lgField"><input id="suPass" type="password" placeholder="٦ أحرف على الأقل" style="direction:ltr;text-align:left;padding-left:40px"><span class="fic">🔒</span></div>
-      <div class="lgLbl">تأكيد كلمة المرور</div>
-      <div class="lgField"><input id="suPass2" type="password" placeholder="أعد كتابة كلمة المرور" style="direction:ltr;text-align:left;padding-left:40px"><span class="fic">🔒</span></div>
+      </details>
       <button id="suGo">أنشئ حسابي</button>
-      <div id="suToLogin">لديك حساب؟ <b>سجّل الدخول</b></div>
+      <button id="suToLogin" type="button">عندك حساب؟ <b>سجّل الدخول</b></button>
     </div>
   </div>
   <!-- إكمال حساب Google (اسم مستخدم + أفاتار) -->
   <div class="screen hidden" id="gcomplete">
     <div id="suWrap">
-      <div class="suTopHead" style="align-items:flex-start"><span style="width:40px"></span><span class="t" style="display:block;line-height:1.15">خطوة أخيرة<small style="display:block;font-family:var(--fb);font-size:12.5px;font-weight:700;color:#8a6a4a">دخلت بحساب Google — كمّل هويتك</small></span></div>
-      <div class="suLbl2">اختر أفاتارك</div>
+      <div class="suTopHead" style="align-items:flex-start"><span style="width:40px"></span><span class="t" style="display:block;line-height:1.15">كمّل هويتك<small style="display:block;font-family:var(--fb);font-size:12.5px;font-weight:700;color:#8a6a4a">اختر اسمك في المجلس، وابدأ أول جولة</small></span></div>
+      <label class="lgLbl" for="gcName">الاسم المعروض</label>
+      <div class="lgField"><input id="gcName" autocomplete="nickname" type="text" maxlength="14" placeholder="اسمك في اللعبة"><span aria-hidden="true" class="fic">👤</span></div>
+      <label class="lgLbl" for="gcUser">اسم المستخدم</label>
+      <div class="lgField"><input id="gcUser" autocapitalize="none" spellcheck="false" inputmode="text" autocomplete="username" type="text" maxlength="16" placeholder="username" style="direction:ltr;text-align:left;padding-left:40px"><span aria-hidden="true" class="fic" style="right:14px;left:auto">@</span></div>
+      <div id="suUserHint">من 3 إلى 16 حرفًا إنجليزيًا أو رقمًا أو _</div>
+      <details class="uiEntryAvatarPicker">
+        <summary>صورتك في المجلس <span>اختياري</span></summary>
+      <div class="suLbl2">اختر من الصور، أو ارفع صورتك من جهازك</div>
       <button id="gcUploadBtn" type="button" style="width:100%;padding:11px;border-radius:14px;border:1.5px dashed var(--clay);background:#fff;color:var(--clay);font-family:var(--fb);font-weight:800;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px">📷 أو ارفع صورتك من جهازك</button>
       <input type="file" id="gcUploadInput" accept="image/*" style="display:none">
       <div id="gcAvGrid"></div>
-      <div class="lgLbl">الاسم المعروض</div>
-      <div class="lgField"><input id="gcName" type="text" maxlength="14" placeholder="اسمك في اللعبة"><span class="fic">👤</span></div>
-      <div class="lgLbl">اسم المستخدم</div>
-      <div class="lgField"><input id="gcUser" type="text" maxlength="16" placeholder="username" style="direction:ltr;text-align:left;padding-left:40px"><span class="fic" style="right:14px;left:auto">@</span></div>
-      <div id="suUserHint">أحرف إنجليزية وأرقام فقط</div>
+      </details>
       <button id="gcGo">يلا نلعب</button>
     </div>
   </div>
@@ -1162,7 +1192,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
       <div class="uiAfHeader"><button class="qBtn" id="afBack" aria-label="رجوع">→</button><div><h2>أضف أصدقاءك</h2><p>ابحث عن لاعب وادعه إلى مجلسك</p></div></div>
       <div class="uiAfSearch">
         <div style="position:relative;flex:1">
-          <input id="afSearch" placeholder="ابحث باسم المستخدم @username" style="width:100%;padding:13px 44px 13px 16px;border-radius:999px;border:2px solid var(--clay3);background:#fff;font-family:var(--fb);font-weight:700;font-size:14px;outline:none;text-align:right">
+          <input id="afSearch" placeholder="ابحث بالاسم بالعربي أو الإنجليزي أو @username" style="width:100%;padding:13px 44px 13px 16px;border-radius:999px;border:2px solid var(--clay3);background:#fff;font-family:var(--fb);font-weight:700;font-size:14px;outline:none;text-align:right">
           <span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--clay);font-size:16px">🔍</span>
         </div>
       </div>
@@ -1185,19 +1215,23 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
         <span style="font-family:var(--fh);font-size:25px;color:#ffc6a5;text-shadow:0 2px 0 rgba(0,0,0,.35)">المتجر</span>
         <span style="margin-right:auto;display:flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:999px;background:#33302c;color:#f6c14d;font-weight:800;font-size:13.5px;flex:none"><i style="width:15px;height:15px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block"></i><span id="shopGold">0</span></span>
       </div>
-      <!-- شريط التبويبات محذوف — المتجر يعرض الطاولات فقط، لا حاجة لتبويب بقسم واحد -->
-      <!-- FIX — بطاقة إعلان المكافأة: ٣٠٠ ذهب مجاناً، تبريد ساعة موثوق سيرفرياً -->
-      <div style="padding:14px 18px 0">
-        <button id="adRewardBtn" style="width:100%;padding:14px;border-radius:16px;border:0;background:linear-gradient(135deg,#f6c14d,#c77b1e);color:#3a2308;font-family:var(--fh);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 0 rgba(0,0,0,.25)">
-          <span id="adRewardBtnTxt">🎬 احصل على 300 ذهبة مجاناً</span>
-        </button>
+      <div class="uiStoreTabs" role="tablist" aria-label="أقسام المتجر">
+        <button id="uiThemesTab" type="button" role="tab" aria-controls="uiThemesPanel" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="m12 7 3 5-3 5-3-5 3-5Z"/></svg>خلفيات الطاولة</button>
+        <button id="uiGoldTab" type="button" role="tab" aria-controls="uiGoldPanel" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><ellipse cx="12" cy="7" rx="8" ry="4"/><path d="M4 7v5c0 2 4 4 8 4s8-2 8-4V7M4 12v5c0 2 4 4 8 4s8-2 8-4v-5"/></svg>الذهب</button>
       </div>
-      <!-- NEW CODE — باقات شراء الذهب (Paymob) — أموال حقيقية، منفصلة تماماً عن متجر الثيمات أسفلها -->
-      <div style="padding:14px 18px 0">
-        <div style="font-family:var(--fh);font-size:15px;color:#ffc6a5;margin-bottom:8px">اشترِ ذهباً</div>
-        <div id="goldPkgList" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
+      <div class="uiStoreScroll">
+        <section id="uiThemesPanel" role="tabpanel" aria-labelledby="uiThemesTab">
+          <div class="uiStoreIntro"><span>على ذوقك</span><h2>كل طاولة… لها جوّها</h2><p>خلفياتك المجانية والمميزة، في مكان واحد.</p></div>
+          <div id="uiShopShowcase"><div id="uiShopScene"></div><div class="uiSceneDetails"><div><h3 id="uiShopSceneName"></h3><p id="uiShopSceneNote"></p></div><button id="uiShopActivate" type="button"></button></div></div>
+          <div class="uiCatalogHeading"><h3>اختر خلفيتك</h3><span>عاينها قبل التفعيل</span></div>
+          <div id="shopList"></div>
+        </section>
+        <section id="uiGoldPanel" class="hidden" role="tabpanel" aria-labelledby="uiGoldTab">
+          <div class="uiStoreIntro"><span>ذهب المجلس</span><h2>اختر زادك للجولة</h2><p>اختر الكمية المناسبة لك. يُحدّث رصيدك بعد تأكيد الدفع.</p></div>
+          <button id="adRewardBtn" class="uiStoreAd" type="button"><span class="uiAdPlay" aria-hidden="true">▷</span><span id="adRewardBtnTxt">احصل على 300 ذهبة مجاناً</span><span aria-hidden="true">←</span></button>
+          <div id="goldPkgList"></div>
+        </section>
       </div>
-      <div id="shopList" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 18px 100px;display:grid;grid-template-columns:1fr 1fr;gap:13px;align-content:start"></div>
     </div>
   </div>
   <!-- الصدارة -->
@@ -1312,9 +1346,11 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
           </button>
 
         </div>
+        <button class="hBig" id="hTournament"><span class="cupButtonIcon"><svg viewBox="0 0 64 64" width="42" height="42" fill="none" aria-hidden="true"><path d="M20 10h24v14c0 12-5 18-12 18s-12-6-12-18V10Z" fill="#e6c279" stroke="#a7772e" stroke-width="2"/><path d="M20 15H10v8c0 8 6 13 13 13m21-21h10v8c0 8-6 13-13 13M32 42v10m-12 4h24" stroke="#b68a40" stroke-width="4" stroke-linecap="round"/><path d="m32 17 6 9-6 9-6-9 6-9Z" fill="#28533e"/></svg></span><span class="cupButtonText"><b>بطولة التاسعة</b><small>كل ليلة · ٨ فرق · جوائز للأبطال</small></span><span class="cupButtonTime">٩:٠٠ م</span></button>
       </div>
     </div>
   </div>
+  <div id="cupBackdrop" class="hidden"><section id="cupSheet" role="dialog" aria-modal="true" aria-labelledby="cupTitle"><header><h2 id="cupTitle">بطولة التاسعة</h2><button id="cupRefresh">تحديث</button><button id="cupClose" aria-label="إغلاق">×</button></header><div id="cupBody">جارٍ تحميل البطولة…</div></section></div>
   <!-- الأصدقاء -->
   <div class="screen hidden" id="friends">
     <div id="frWrap" data-navholder>
@@ -1358,11 +1394,18 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 
   <!-- النتائج -->
   <div class="screen hidden" id="results">
-    <div id="resCard">
+    <div id="resCard" class="uiResultCard">
+      <span id="lResultKind" class="uiResultKind"></span><div id="lResultArt" class="uiResultArt"></div>
       <h2 id="resTtl">نهاية الجولة</h2>
       <div class="sub" id="resSub"></div>
       <div id="teamLine" class="hidden"></div>
-      <div id="resRows"></div>
+<div id="lMyStats" class="uiRewardGrid hidden">
+          <div id="lGoldReward" class="uiRewardTile uiRewardGold"><span class="uiRewardIcon" aria-hidden="true">◈</span><span>رصيد الذهب</span><strong id="lMyGoldNum">0</strong><b id="lMyGoldDelta" class="uiRewardDelta"></b><i class="uiRewardSpark" aria-hidden="true">✦</i></div>
+          <div class="uiRewardTile uiRewardXp"><span class="uiRewardIcon" aria-hidden="true">✧</span><span>الخبرة</span><strong id="lMyXpNum">0</strong><b id="lMyXpDelta" class="uiRewardDelta"></b></div>
+          <div class="uiXpProgress"><div><span id="lXpLevel"></span><span>خبرتك للمستوى التالي</span></div><div class="uiXpTrack"><i id="lXpFill"></i></div></div>
+          <p id="lRewardNote" class="uiRewardNote" role="status"></p>
+        </div>
+      <div class="uiResultSectionLabel">حصيلة الطاولة</div><div id="resRows"></div>
       <div id="resBtns">
         <button id="againBtn">جولة جديدة</button>
         <button id="menuBtn">القائمة</button>
@@ -1410,7 +1453,7 @@ const $=s=>document.querySelector(s);
 // ⚠️ الصق مفاتيح مشروعك هنا (من إعدادات Firebase → تطبيق الويب).
 // هذه المفاتيح آمنة للنشر في كود الواجهة (مصمّمة لذلك).
 // رقم إصدار التطبيق — يُحدَّث يدويًا مع كل نسخة تُرفع للمتاجر (مو نفس رقم كاش الـSW)
-const APP_VERSION='1.0.0';
+const APP_VERSION='1.2.0'; // iOS: matches Ali's current MARKETING_VERSION.
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCZZrU2tip4efYEfYhUi9F_DNfuRZ22adU",
   authDomain: "jops-e508d.firebaseapp.com",
@@ -1509,7 +1552,7 @@ let _fbSaveTimer=null;
 const PROFILE_COSMETIC_KEYS=['avatar','eq-theme','eq-back']; // FIX
 function _buildProfileData(){ // FIX — بناء البيانات مرة واحدة (DRY) — تُستعمل للكتابتين
   const data={name:localStorage.getItem('wb-name')||'لاعب', updated:Date.now(), email:FB.user.email||''};
-  data.name_lc=data.name.toLowerCase().trim(); // NEW CODE — أساس بحث الأصدقاء بالاسم (جنب username_lc الموجود)
+  data.name_lc=data.name.normalize('NFKC').toLowerCase().replace(/\s+/g,' ').trim(); // NEW CODE — أساس بحث الأصدقاء بالاسم (جنب username_lc الموجود)
   const _un=localStorage.getItem('wb-username'); if(_un)data.username_lc=_un.toLowerCase();
   for(const k of CLOUD_KEYS){
     const v=localStorage.getItem('wb-'+k);
@@ -1524,6 +1567,8 @@ function _buildProfileData(){ // FIX — بناء البيانات مرة واح
 async function _fbSaveProfileNow(){ // FIX — التنفيذ الفعلي، منفصل عن المؤقت كي يمكن استدعاؤه فورياً (تسجيل الخروج)
   if(!FB.ready||!FB.user)return;
   const data=_buildProfileData();
+  // These fields are server-owned under the supplied production Firestore rules.
+  for(const key of ['gold','weekPts','dayPts','monthPts','rank','level','daily-last','daily-streak','lastAdRewardTime','games','wins','best'])delete data[key];
   const ref=FB.db.collection('players').doc(FB.user.uid);
   const cosmetic={name:data.name, updated:data.updated}; // FIX
   for(const k of PROFILE_COSMETIC_KEYS)if(data[k]!==undefined)cosmetic[k]=data[k]; // FIX
@@ -2634,7 +2679,7 @@ function endRound(){
   G.field=[];
   G.phase='end';
   // إحصاءات الملف الشخصي (مرة لكل جولة)
-  if(!G._scored){G._scored=true;
+  if(!G._scored){G._uiRewardBase=uiRewardSnapshot();G._scored=true;
     try{
       const myPts=pilePts(G.players[0]);
       let won=false, draw=false;
@@ -2659,8 +2704,6 @@ function endRound(){
           G._consolG=consol; G._rankG=myRank;
         }
         if(myPts>ST.n('best'))ST.set('best',myPts);
-        ST.set('xp',ST.n('xp')+15+(won?25:draw?10:0));
-        ST.set('level',1+Math.floor(ST.n('xp')/100));
         // ملاحظة: النقاط التنافسية (rank) لا تُحتسب هنا — تُحسب فقط بنهاية مباراة أونلاين حقيقية (انظر renderOver)
         G._tierResult={won,draw,win:G_TIER.win,fee:G_TIER.fee,name:G_TIER.name,consol:G._consolG||0,rank:G._rankG||1};
         G_TIER=null;
@@ -2719,8 +2762,8 @@ function endRound(){
     const sum=t=>({pts:scored.filter(x=>x.p.team===t).reduce((a,x)=>a+x.pts,0),
       cards:scored.filter(x=>x.p.team===t).reduce((a,x)=>a+x.cards,0),
       gold:scored.filter(x=>x.p.team===t).reduce((a,x)=>a+x.gold,0),
-      names:G.players.filter(p=>p.team===t).map(p=>p.name).join(' و'),
-      avas:G.players.filter(p=>p.team===t).map(p=>p.ava).join('')});
+      names:G.players.filter(p=>p.team===t).map(p=>esc(p.name)).join(' و'),
+      avas:G.players.filter(p=>p.team===t).map(p=>'<span>'+avatarHTML(p.ava,26)+'</span>').join('')});
     const A=sum(0),B=sum(1);
     let order=[[0,A],[1,B]].sort((x,y)=>y[1].pts-x[1].pts||y[1].cards-x[1].cards);
     order.forEach(([t,d],i)=>{
@@ -2728,29 +2771,33 @@ function endRound(){
       const mine=t===G.players[0].team;
       const r=document.createElement('div');
       r.className='resRow'+(win?' win':'');
-      r.innerHTML=`<div class="rk">${toH(i+1)}</div><div class="ava">${d.avas}</div>
+      r.innerHTML=`<div class="rk">${toH(i+1)}</div><div class="ava avaDuo">${d.avas}</div>
         <div class="nm">${d.names}<small>${mine?'فريقك':'فريق الخصوم'}</small></div>
         <div class="pt">${toH(d.pts)} <span style="font-size:11px;font-family:var(--fb)">نقطة</span></div>
-        <div class="gold">+${toH(d.gold)} 🪙</div>`;
+        <div class="gold">${toH(d.cards)}<small>ورقة</small></div>`;
       rows.appendChild(r);
     });
   }else for(const s of scored){
     const r=document.createElement('div');
     r.className='resRow'+(s.rank===1?' win':'');
     const showGold = !G._tierResult; // في الساحات: الذهب الفعلي في العنوان، لا نعرض ذهباً وهمياً للصفوف
-    r.innerHTML=`<div class="rk">${toH(s.rank)}</div><div class="ava">${s.p.ava}</div>
-      <div class="nm">${s.p.name}${s.p.i===0?' <small>أنت</small>':''}</div>
+    r.innerHTML=`<div class="rk">${toH(s.rank)}</div><div class="ava">${avatarHTML(s.p.ava,34)}</div>
+      <div class="nm">${esc(s.p.name)}${s.p.i===0?' <small>أنت</small>':''}</div>
       <div class="pt">${toH(s.pts)} <span style="font-size:11px;font-family:var(--fb)">نقطة</span></div>
-      ${showGold?`<div class="gold">+${toH(s.gold)} 🪙</div>`:`<div class="gold" style="opacity:.55">${s.rank===1?'الفائز 🏆':''}</div>`}`;
+      <div class="gold">${toH(s.cards)}<small>ورقة</small></div>`;
     rows.appendChild(r);
   }
+  const totals=[0,1].map(t=>scored.filter(x=>x.p.team===t).reduce((sum,x)=>sum+x.pts,0));
+  const resultDraw=G.opts.mode==='team'&&totals[0]===totals[1];
+  const resultWon=G.opts.mode==='team'?!resultDraw&&totals[G.players[0].team]>totals[1-G.players[0].team]:scored[0].p.i===0;
   show('results',true);
+  uiPresentLocalResult(resultWon,resultDraw);
   // احتفال
-  const winMe = G.opts.mode==='team'
-    ? sub.includes('فاز فريقك') : scored[0].p.i===0;
+  const winMe=resultWon;
   if(winMe){SFX.win();confetti()}else SFX.lose();
 }
 function confetti(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   const cols=['#d67f48','#ccdbb2','#f9f4ed','#b2622d','#8fa073'];
   for(let i=0;i<44;i++){
     const c=document.createElement('div');c.className='confetti';
@@ -2831,14 +2878,39 @@ function oppHandFanHTML(handCount){ // FIX
   } // FIX
   return html; // FIX
 }
+function uiMatchLabels(v){
+  const tiers={beginner:'مبتدئ',amateur:'هاوي',pro:'محترف',elite:'نخبة',legend:'أسطورة'};
+  const raw=String(v.tierName||'').trim(), key=String(v.tierKey||'').replace(/^session-/,'');
+  const fallback=Object.keys(tiers).find(k=>raw===tiers[k]||raw.includes(tiers[k])||raw.toLowerCase().split(/[^a-z-]+/).includes(k)||raw.toLowerCase()==='session-'+k);
+  const level=tiers[key]||tiers[fallback]||'';
+  const friendly=v.isFriendlySession===true||(v.isFriendlySession==null&&v.isFriendly===true);
+  const session=v.isSession||String(v.tierKey||'').startsWith('session-')||raw.includes('جلسة كاملة')||raw.toLowerCase().startsWith('session-');
+  const title=v.local?'تدريب':friendly?'جلسة ودية':session?'جلسة كاملة':'جلسة سريعة';
+  const mode=v.mode==='team'?'جماعي ٢×٢':'فردي';
+  const goal=Number(v.tierGoal);
+  return {title,detail:mode+(level?' · '+level:''),goal:Number.isFinite(goal)&&goal>0?'الهدف '+toH(goal):''};
+}
+function uiRenderMatchHeader(v,online){
+  const labels=uiMatchLabels(v);
+  $(online?'#uiOnlineTitle':'#modeTtl').textContent=labels.title;
+  $(online?'#uiOnlineMode':'#uiLocalMode').textContent=labels.detail;
+  const goal=$(online?'#oHeaderGoal':'#uiLocalGoal');
+  goal.textContent=labels.goal;
+  goal.setAttribute('aria-label',labels.goal?labels.goal+' نقطة للفوز':'');
+  goal.classList.toggle('hidden',!labels.goal);
+}
+function uiPlayerName(v,pid){
+  const name=String(v.names[pid]||'لاعب');
+  return v.autoControlled&&v.autoControlled[pid]?name.replace(/ · تحكم تلقائي$/,''):name;
+}
 function renderSeatCard(el,opts){
   const {turn,holderBadgeHtml,avaHtml,nameHtml,handCount,pts,pct,pileTopCard,pileBadgeHtml,onAvaClick}=opts; // NEW CODE — أضفنا onAvaClick اختياري. FIX — أضفنا pct (نسبة التعبئة نحو هدف النقاط، ٠ لو ما فيه هدف)
   el.classList.toggle('turnGlow',turn);
   el.innerHTML=`
     ${turn?'<div class="bubble">دوره</div>':''}${holderBadgeHtml||''}
-    <div class="avaWrap"><div class="oppHandFan">${oppHandFanHTML(handCount)}</div><div class="ava"${onAvaClick?' style="cursor:pointer"':''}>${avaHtml}</div><div class="handCountBadge">${handCount}</div></div>
+    <div class="avaWrap"><div class="oppHandFan">${oppHandFanHTML(handCount)}</div><div class="ava"${onAvaClick?' style="cursor:pointer"':''}>${avaHtml}</div><div class="handCountBadge">${handCount}</div>${opts.autoControlled?'<span class="uiAutoBadge">تحكم تلقائي</span>':''}</div>
     <div class="nm">${nameHtml}</div>
-    <div class="inf"><span class="pts"><i class="ptsFill" style="width:${pct||0}%"></i><b>${pts} نقطة</b></span></div>
+    <div class="inf"><span class="pts" aria-label="${pts} نقطة${opts.teamScore?' للفريق':''}"><i class="ptsFill" style="width:${pct||0}%"></i><b>${pts} <small>${opts.teamScore?'للفريق':'نقطة'}</small></b></span></div>
     <div class="pileBox"></div>`;
   el.querySelector('.ava').onclick=onAvaClick||null; // NEW CODE — الفردي لا يمرر هذا المعامل إطلاقاً، فسلوكه يبقى كما هو تماماً
   const pb=el.querySelector('.pileBox');
@@ -3096,7 +3168,7 @@ function render(){
   renderDeck(); renderBoard();
   if(!G.waqf)$('#meWaqfBtn').disabled=true;
   $('#meWaqfBtn').classList.toggle('hidden',G.opts.mode==='solo');
-  $('#modeTtl').textContent=G.opts.mode==='team'?'جماعي 2×2':'فردي';
+  uiRenderMatchHeader({local:true,mode:G.opts.mode,tierKey:G.opts.tierKey,tierGoal:G.tierGoal},false);
   // المقاعد 1,2,3 (منطق مشترك مع الأونلاين عبر renderSeatCard)
   for(let i=1;i<4;i++){
     const p=G.players[i], el=$('#'+SEAT_IDS[i]), turn=G.turn===i&&G.phase==='turn';
@@ -3110,7 +3182,7 @@ function render(){
       nameHtml:`${p.name}${p.team!=null&&p.team===G.players[0].team?' 🤝':''}`,
       handCount:toH(p.hand.length),
       pts:toH(teamPts(p)), // FIX — كان pilePts(p): بالجماعي يعرض الآن مجموع الفريق (يطابق نسبة التعبئة)
-      pct:goalPct(teamPts(p),G.tierGoal), // NEW CODE
+      pct:goalPct(teamPts(p),G.tierGoal), teamScore:G.opts.mode==='team',
       pileTopCard:pileTop(p),
       pileBadgeHtml:(run>1?`<div class="runB">×${toH(run)}</div>`:'')+`<div class="cnt">${toH(p.pile.length)}</div>`
     });
@@ -3121,7 +3193,7 @@ function render(){
   id.classList.toggle('turnGlow',myTurn);
   const _av=myAvatar();const _avTxt=AV_PRO.find(a=>a.id===_av)?'🛡️':_av;
   id.innerHTML=`${myTurn?'<div class="bubble">دورك</div>':''}<div class="nm">${me.name}${me.team!=null?' 🤝':''}</div><div class="ava">${_avTxt}</div>`;
-  const mp=$('#myPile');mp.innerHTML=`<span class="pts"><i class="ptsFill" style="width:${goalPct(teamPts(me),G.tierGoal)}%"></i><b>${toH(teamPts(me))} نقطة</b></span>`; // FIX — كان pilePts(me) بلا تعبئة
+  const mp=$('#myPile');mp.innerHTML=`<span class="pts"><i class="ptsFill" style="width:${goalPct(teamPts(me),G.tierGoal)}%"></i><b>${toH(teamPts(me))} <small>${G.opts.mode==='team'?'للفريق':'نقطة'}</small></b></span>`; // FIX — كان pilePts(me) بلا تعبئة
   const mt=pileTop(me);
   if(mt){const w=document.createElement('div');w.style.position='relative';w.appendChild(cardEl(mt,'sm'));
     const myRun=topRunLen(me.pile);
@@ -3242,14 +3314,8 @@ function renderWaqf(){
   const endgameBlocked=st.endgame&&st.onlyBidder!=null&&st.onlyBidder!==0;
   const can=!st.endgameGrabbed&&st.holder!==0&&haveCard&&!endgameBlocked;
   $('#waqfBtn').classList.toggle('hidden',!can);
-  $('#waqfNo').classList.toggle('hidden',can);
-  if(!can){ // النص يُحدَّث دائماً حسب الحالة
-    if(st.endgameGrabbed)$('#waqfNo').textContent='خُطفت! جارٍ الانتقال للدور التالي...';
-    else if(st.holder===0)$('#waqfNo').textContent='الأكلة بيدك — اصمد حتى نهاية العدّ';
-    else if(endgameBlocked&&haveCard)$('#waqfNo').textContent='الجولة ختامية والدور فاتك — لا يمكنك المزايدة';
-    else if(st.endgame&&st.onlyBidder===0&&!haveCard)$('#waqfNo').textContent='الجولة ختامية — دورك للإيقاف لكن ما عندك الرقم';
-    else $('#waqfNo').textContent='الأكلة عند '+G.players[st.holder].name+' — ما عندك ما تزايد به';
-  }
+  $('#waqfNo').classList.add('hidden');
+  $('#waqfNo').textContent='';
   if(can){
     const mkCard=c=>{const ce=cardEl(c,'sm');ce.style.width='38px';ce.style.height='54px';ce.style.boxShadow='0 3px 8px rgba(0,0,0,.5)';return ce};
     const jokSlot=$('#waqfCardJok'),natSlot=$('#waqfCardNat'),box=$('#waqfBtn');
@@ -3570,6 +3636,7 @@ function leaveOnline(){
   $('#pageLoader').classList.remove('hidden'); $('#pageLoader').style.opacity='1'; // NEW CODE
   $('#quitConfirm').classList.add('hidden');
   $('#specNotice').classList.add('hidden');
+  ONL._specNoticeKey=null;ONL._specDismissedKey=null;
   ONL.active=false;
   if(ONL.iv){clearInterval(ONL.iv);ONL.iv=null}
   if(ONL.ws){try{if(ONL.ws.readyState===1)ONL.ws.send(JSON.stringify({type:'leave'}));}catch(e){} try{ONL.ws.onclose=null;ONL.ws.close()}catch(e){}} // NEW CODE — أضفنا إرسال leave قبل الإغلاق: يفعّل عقوبة السيرفر الفورية بدل انتظار مهلة الحضور
@@ -3583,12 +3650,13 @@ function leaveOnline(){
   },500); // NEW CODE
 }
 function oHandle(msg){
+  if(msg.type==='state'){let note=document.getElementById('cupTableNotice');if(!note){note=document.createElement('div');note.id='cupTableNotice';document.getElementById('onl').appendChild(note);}note.textContent=msg.tournament?.paused?'مقعد شاغر · ننتظر دخول البديل':'';note.classList.toggle('hidden',!msg.tournament?.paused);}
   if(!ONL._loaderHiddenOnce){ // NEW CODE — أول حالة حقيقية توصل من السيرفر (عبر WebSocket أو الاستطلاع البديل، الدالة مشتركة بينهما) — الاتصال اكتمل فعليًا الآن
     ONL._loaderHiddenOnce=true; // NEW CODE
     const pl=$('#pageLoader'); // NEW CODE
     if(pl){ pl.style.opacity='0'; setTimeout(()=>pl.classList.add('hidden'),260); } // NEW CODE — نفس مدة التلاشي (٢٦٠مل) المستخدمة أصلاً بـshowPageLoader لثبات بصري
   } // NEW CODE
-  ONL.status=msg.status;ONL.seats=msg.seats||[];ONL.you=msg.you;ONL.view=msg.view;ONL.result=msg.result;ONL.lobby=msg.lobby||null;ONL.spectators=msg.spectators||0;
+  document.getElementById('onl').dataset.tournament=msg.tournament?'true':'false';ONL.tournament=msg.tournament||null;ONL.status=msg.status;ONL.seats=msg.seats||[];ONL.you=msg.you;ONL.view=msg.view;ONL.result=msg.result;ONL.lobby=msg.lobby||null;ONL.spectators=msg.spectators||0;
   // FIX — إصلاح جذري: السيرفر يرسل uids كحقل شقيق لـview (server.js: uids:this._safeUidsMap())، لكن هنا كنا
   // نسند ONL.view=msg.view مباشرة بلا دمج uids فيها إطلاقاً — يعني ONL.view.uids كانت undefined دائماً بكل
   // الأوضاع (جماعي وودي سواء)، لا علاقة لنوع الجلسة بالمشكلة. هذا كان يعطّل fetchAndShowOtherRanks() وزر
@@ -3653,6 +3721,7 @@ function oReceiveChat(msg){
   const bub=$('#'+bubbleId);
   if(bub){
     if(isText)SFX.tick(); // FIX — صوت نقرة عند ظهور فقاعة نص حر (الاختصارات الجاهزة لها صوتها الصوتي الخاص أصلاً أعلاه)
+    bub.classList.remove('reactBubble');
     bub.textContent=displayText; bub.classList.remove('hidden');
     clearTimeout(bub._t); bub._t=setTimeout(()=>bub.classList.add('hidden'),4000); // FIX — 4 ثوانٍ بدل 2.6 كما طُلب
   }
@@ -3670,29 +3739,69 @@ const REACTIONS=[
   {id:'wewon',t:'فزنا!',img:'reactions/react-wewon.png'},
   {id:'thanks',t:'شكراً',img:'reactions/react-thanks.png'},
 ];
-const REACT_COST=50; // ثابتة العميل — تطابق الخصم الفعلي بالسيرفر (adjustPlayerGold(...,-50)) لعرض السعر فقط، السيرفر هو المصدر الحقيقي دائماً
-function openReactionsPanel(){
-  const sc=$('#onl');
-  const wrap=document.createElement('div'); wrap.id='reactBackdrop';
-  wrap.innerHTML=`<div id="reactSheet">
-      <h3>التفاعلات</h3>
-      <div id="reactGrid">${REACTIONS.map(r=>`
-        <button class="reactBtn" data-id="${r.id}"><img src="${r.img}" alt=""><span>${r.t}</span><b><i></i>${REACT_COST}</b></button>
-      `).join('')}</div>
-    </div>`;
-  sc.appendChild(wrap);
-  wrap.onclick=(e)=>{ if(e.target.id==='reactBackdrop')wrap.remove(); };
-  wrap.querySelectorAll('.reactBtn').forEach(b=>{ b.onclick=()=>{ sendReaction(b.dataset.id); wrap.remove(); }; });
+const EXPRESSIONS=[
+  {id:'expr-donkey',t:'غشييم',sprite:0},
+  {id:'expr-cheer',t:'كفو عليك',sprite:1},
+  {id:'expr-angry',t:'قهرتني',sprite:2},
+  {id:'expr-laugh',t:'ههههه',sprite:3},
+  {id:'expr-shock',t:'وش ذا؟',sprite:4},
+  {id:'expr-smart',t:'العبها صح',sprite:5},
+  {id:'expr-clap',t:'يا سلام',sprite:6},
+  {id:'expr-calm',t:'هديها',sprite:7}
+];
+const REACT_COST=50; // عرض فقط؛ الخصم والتحقق من السيرفر
+function expressionArt(r){
+  return `<i class="expressionArt" aria-hidden="true" style="background-position:${(r.sprite%4)*100/3}% ${Math.floor(r.sprite/4)*100}%"></i>`;
 }
-function sendReaction(reactId){
-  if(!(ONL.active&&ONL.ws&&ONL.ws.readyState===1)){ oToast('التفاعلات متاحة أونلاين فقط'); return; }
-  oSend({type:'react',reactId});
+function openReactionsPanel(){
+  if(document.getElementById('reactBackdrop'))return;
+  const sc=$('#onl');
+  const wrap=document.createElement('div');wrap.id='reactBackdrop';
+  wrap.innerHTML=`<div id="reactSheet" role="dialog" aria-modal="true" aria-labelledby="expressionTitle" dir="rtl">
+    <header class="expressionHeader"><div><h3 id="expressionTitle">التعبيرات</h3><p>مزح وتشجيع على الطاولة</p></div><button class="expressionClose" aria-label="إغلاق">×</button></header>
+    <div id="reactGrid">${EXPRESSIONS.map(r=>`<button class="reactBtn" data-id="${r.id}" aria-pressed="false">${expressionArt(r)}<span>${r.t}</span></button>`).join('')}</div>
+    <footer class="expressionFooter"><p class="expressionPreview" aria-live="polite">اختر تعبيرك · كل إرسال ٥٠ ذهبًا</p><button class="expressionSend" disabled>إرسال · ٥٠ ذهبًا</button></footer>
+  </div>`;
+  sc.appendChild(wrap);
+  const close=()=>{wrap.remove();document.getElementById('oReactBtn')?.focus();};
+  wrap.querySelector('.expressionClose').onclick=close;
+  wrap.onclick=e=>{if(e.target===wrap)close();};
+  wrap.onkeydown=e=>{
+    if(e.key==='Escape'){e.preventDefault();close();}
+    if(e.key==='Tab'){
+      const list=Array.from(wrap.querySelectorAll('button:not(:disabled)'));
+      const first=list[0],last=list[list.length-1];
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+    }
+  };
+  let selected=null,targetPid=null;
+  const send=wrap.querySelector('.expressionSend');
+  wrap.querySelectorAll('.reactBtn').forEach(b=>{b.onclick=()=>{
+    selected=EXPRESSIONS.find(r=>r.id===b.dataset.id);
+    wrap.querySelectorAll('.reactBtn').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    wrap.querySelector('.expressionPreview').innerHTML=expressionArt(selected)+`<span>${selected.t}</span>`;
+    targetPid=null;send.disabled=true;
+    let targets=wrap.querySelector('.expressionTargets');
+    if(!targets){targets=document.createElement('div');targets.className='expressionTargets';wrap.querySelector('.expressionFooter').before(targets);}
+    targets.innerHTML='<p>لمن ترسل التعبير؟</p>'+ONL.view.seats.filter(pid=>pid!==ONL.you).map(pid=>`<button data-target="${esc(pid)}">${avatarHTML(ONL.view.avatars&&ONL.view.avatars[pid],32)}<span>${esc(uiPlayerName(ONL.view,pid))}</span></button>`).join('');
+    targets.querySelectorAll('button').forEach(btn=>{btn.onclick=()=>{targetPid=btn.dataset.target;targets.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===btn)));send.disabled=false;};});
+  };});
+  send.onclick=()=>{if(!selected||send.disabled)return;send.disabled=true;sendReaction(selected.id,targetPid);close();};
+  wrap.querySelector('.expressionClose').focus();
+}
+function sendReaction(reactId,targetPid){
+  if(!ONL.view||!ONL.view.seats.includes(targetPid)||targetPid===ONL.you)return;
+  if(!EXPRESSIONS.some(r=>r.id===reactId))return;
+  if(!(ONL.active&&ONL.ws&&ONL.ws.readyState===1)){oToast('التعبيرات متاحة أثناء الاتصال بالطاولة');return;}
+  oSend({type:'react',reactId,targetPid});
 }
 // استقبال تفاعل — بنفس منطق استقبال الدردشة بالضبط، لكن نعرضه حتى لصاحبه (بانتظار تأكيد السيرفر الفعلي،
 // بعكس الدردشة المجانية اللي تنعرض محلياً فوراً بلا انتظار — هنا فيه تكلفة ذهب حقيقية، فالعرض دليل النجاح)
 function oReceiveReact(msg){
-  const r=REACTIONS.find(x=>x.id===msg.reactId); if(!r)return;
+  const r=EXPRESSIONS.find(x=>x.id===msg.reactId)||REACTIONS.find(x=>x.id===msg.reactId); if(!r)return;
   const v=ONL.view; if(!v)return;
+  if(msg.targetPid&&Number.isInteger(r.sprite)){receiveTargetExpression(msg,r);return;}
   const myIdx=v.seats.indexOf(ONL.you)>=0?v.seats.indexOf(ONL.you):0;
   const seatAt=k=>v.seats[(myIdx+k)%4];
   let bubbleId=null;
@@ -3704,10 +3813,46 @@ function oReceiveReact(msg){
   const bub=$('#'+bubbleId);
   if(bub){
     bub.classList.add('reactBubble');
-    bub.innerHTML=`<img src="${r.img}" alt="">${r.t}`;
+    bub.innerHTML=Number.isInteger(r.sprite)?expressionArt(r)+`<span class="expressionCaption">${r.t}</span>`:`<img src="${r.img}" alt="">${r.t}`;
     bub.classList.remove('hidden');
     clearTimeout(bub._t); bub._t=setTimeout(()=>{bub.classList.add('hidden');bub.classList.remove('reactBubble');},2600);
   }
+}
+// Expressions persist through seat redraws, using one bounded expiry per recipient.
+const TARGET_EXPRESSIONS=new Map();
+function expressionAvatar(pid){
+  const v=ONL.view;if(!v)return null;
+  const idx=v.seats.indexOf(pid);if(idx<0)return null;
+  const mine=Math.max(0,v.seats.indexOf(ONL.you));
+  return document.querySelector(['#oIdent .ava','#oSeatR .ava','#oSeat .ava','#oSeatL .ava'][(idx-mine+4)%4]);
+}
+function syncTargetExpressions(){
+  for(const [pid,e] of TARGET_EXPRESSIONS){
+    if(e.room!==ONL.room||Date.now()>=e.until){clearTimeout(e.timer);TARGET_EXPRESSIONS.delete(pid);}
+  }
+  document.querySelectorAll('.targetExpression').forEach(el=>el.remove());
+  document.querySelectorAll('.expressionAvatarActive').forEach(el=>el.classList.remove('expressionAvatarActive'));
+  for(const [pid,e] of TARGET_EXPRESSIONS){
+    const ava=expressionAvatar(pid);if(!ava)continue;
+    ava.classList.add('expressionAvatarActive');
+    const sticker=document.createElement('span');sticker.className='targetExpression';sticker.setAttribute('aria-label',e.r.t);
+    sticker.innerHTML=expressionArt(e.r)+`<span>${e.r.t}</span>`;ava.appendChild(sticker);
+  }
+}
+function receiveTargetExpression(msg,r){
+  if(!ONL.view.seats.includes(msg.targetPid))return;
+  const old=TARGET_EXPRESSIONS.get(msg.targetPid);if(old)clearTimeout(old.timer);
+  const e={r,room:ONL.room,until:Date.now()+20000};
+  TARGET_EXPRESSIONS.set(msg.targetPid,e);
+  e.timer=setTimeout(()=>{if(TARGET_EXPRESSIONS.get(msg.targetPid)===e){TARGET_EXPRESSIONS.delete(msg.targetPid);syncTargetExpressions();}},20000);
+  const from=expressionAvatar(msg.from),to=expressionAvatar(msg.targetPid);
+  if(from&&to&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    const a=from.getBoundingClientRect(),b=to.getBoundingClientRect();
+    const fly=document.createElement('span');fly.className='expressionFlight';fly.innerHTML=expressionArt(r);
+    fly.style.left=a.left+'px';fly.style.top=a.top+'px';document.body.appendChild(fly);
+    if(fly.animate){const motion=fly.animate([{transform:'translate(0,0) scale(.7)',opacity:1},{transform:`translate(${b.left-a.left}px,${b.top-a.top}px) scale(1)`,opacity:1}],{duration:650,easing:'ease-in-out'});motion.onfinish=()=>{fly.remove();};motion.oncancel=()=>fly.remove();}else fly.remove();
+  }
+  syncTargetExpressions();
 }
 function oNow(){return Date.now()+ONL.offset}
 function oNameOf(pid){
@@ -3955,28 +4100,15 @@ function renderOnl(){
     ONL._holdUntil=0; // خلصت المهلة، ارجع للحالة الحقيقية الحالية
   }
   const seated=v.me===ONL.you&&v.seats.includes(ONL.you);
-  const hasBotSeat=v.seats.some(p=>!v.humans.includes(p)); // NEW CODE — فيه فعليًا مقعد بوت بالطاولة؟ (لا نعد بمقعد لو الطاولة ممتلئة ببشر حقيقيين فقط)
-  if(!ONL.spectateOnly&&!seated&&ONL.status==='playing'&&hasBotSeat){ // NEW CODE — نيته لعب صريحة، لسّا مو مقعود، الطاولة تلعب، وفيه مقعد بوت فعلي = drop-in معلّق ينتظر دوره
-    showSpectatorNotice('أنت في وضع المشاهدة الآن، سيتم إجلاسك مكان البوت قريباً...'); // NEW CODE
-  }else if(!ONL.viaInviteJoin){ // NEW CODE — قُعِد فعلاً، أو مشاهد بنية صريحة، أو الطاولة ممتلئة ببشر حقاً — نخفيها، إلا لو إشعار "الدعوة انتهت" المنفصل بانتظار دوره بالأسفل
-    $('#specNotice').classList.add('hidden'); // NEW CODE
-  } // NEW CODE
-  if(ONL.viaInviteJoin){
-    ONL.viaInviteJoin=false;
-    if(!seated)showSpectatorNotice();
-  }
+  uiRenderSpectatorStatus(v,seated);
+  ONL.viaInviteJoin=false;
   oSfxFromLog(v.log);
   { // NEW CODE — كشف الرمي بالميدان من تغيّر الحالة لا من نص السجل (السيرفر قد يستبدل "رمى بالميدان" بـ"كمّل N أوراق" بنفس الطلب فيضيع الحدث)
     const fc=(v.field||[]).length;
     if(ONL._prevFieldCount!=null&&fc===ONL._prevFieldCount+1&&!(v.lastSettle&&v.lastSettle.seq!==ONL._prevSettleSeqForThrow))GameSoundManager.playActionSound(); // NEW CODE — نظام الصوت الجديد (الرمي بالأونلاين)
     ONL._prevFieldCount=fc; ONL._prevSettleSeqForThrow=v.lastSettle?v.lastSettle.seq:null;
   }
-  const modeAr=v.mode==='team'?'جماعي':'فردي';
-  const hasCategory=v.tierName&&v.tierName.includes('—'); // الاسم يتضمّن تصنيف الجلسة أصلاً (جلسة سريعة/جلسة كاملة)
-  $('#oHeaderTtl').firstChild.textContent=(hasCategory?v.tierName:(v.tierName?`${modeAr} - ${v.tierName}`:`${modeAr} - ودي`))+' ';
-  const hGoal=$('#oHeaderGoal');
-  if(v.tierGoal){hGoal.textContent=`🎯 ${toH(v.tierGoal)} نقطة`;hGoal.classList.remove('hidden');}
-  else hGoal.classList.add('hidden');
+  uiRenderMatchHeader(v,true);
   const specEl=$('#oSpecCount');
   if(ONL.spectators>0){ $('#oSpecN').textContent=ONL.spectators; specEl.classList.remove('hidden'); }
   else specEl.classList.add('hidden');
@@ -3998,12 +4130,13 @@ function renderOnl(){
     const isHolder=v.phase==='waqf'&&v.waqf&&v.waqf.holder===pid;
     const holderVal=isHolder?v.waqf.contested.reduce((s,c)=>s+cardVal(c),0):0;
     const seatUid=isBot(pid)?null:(v.uids&&v.uids[pid]); // NEW CODE — نحلّه وقت البناء، لا وقت النقر لاحقاً (نفس نمط addFriendBtnHTML الحالي)
-    const seatName=v.names[pid]||'لاعب', seatAva=v.avatars&&v.avatars[pid]; // NEW CODE
+    const seatName=uiPlayerName(v,pid), seatAva=v.avatars&&v.avatars[pid];
     const pb=renderSeatCard(el,{
       turn:hisTurn,
       holderBadgeHtml:isHolder?`<div class="holderVal">${toH(holderVal)}</div>`:'',
       avaHtml:avatarHTML(v.avatars&&v.avatars[pid],52), // الإصلاح الجوهري: كانت isBot(pid)?botAvatarFor(pid):... — botAvatarFor دالة منفصلة قديمة تتجاهل v.avatars كلياً (تعتمد فقط على رقم البوت)، فصور البوتات الجديدة من السيرفر ما كانت تظهر إطلاقاً
-      nameHtml:`${v.names[pid]||'لاعب'}${mate?' <span style="color:var(--peach2)">(شريكك)</span>':''}`,
+      nameHtml:`${esc(seatName)}${mate?' <span style="color:var(--peach2)">(شريكك)</span>':''}`,
+      autoControlled:!!(v.autoControlled&&v.autoControlled[pid]),teamScore:v.mode==='team',
       handCount:v.handCounts[pid],
       pts:toH(teamCombinedPts(pid)), // FIX — كان p.points: بالجماعي يعرض الآن مجموع الفريق (يطابق نسبة التعبئة)
       pct:goalPct(teamCombinedPts(pid),v.tierGoal), // NEW CODE
@@ -4081,10 +4214,18 @@ function renderOnl(){
   const bottomPid=seated?me:v.seats[0];
   const id=$('#oIdent');
   id.classList.toggle('turnGlow',myTurn);
-  id.innerHTML=`${myTurn?'<div class="bubble">دورك</div>':''}<div class="nm">${seated?(v.names[me]||'أنت'):(v.names[bottomPid]||'لاعب')}</div><div class="ava">${seated?avatarHTML(myAvatar(),52):avatarHTML(v.avatars&&v.avatars[bottomPid],52)}</div>`;
+  const auto=!!(v.autoControlled&&v.autoControlled[bottomPid]);
+  const resume=seated&&auto&&v.canResumeControl===true;
+  id.innerHTML=`${myTurn?'<div class="bubble">دورك</div>':''}<div class="uiSelfName"><div class="nm">${esc(uiPlayerName(v,bottomPid))}</div>${resume?'<button id="uiResumeControl" type="button" title="إلغاء التحكم التلقائي والعودة للعب اليدوي">أستعيد التحكم</button>':auto?'<span class="uiAutoText">تحكم تلقائي</span>':''}</div><div class="ava">${seated?avatarHTML(myAvatar(),52):avatarHTML(v.avatars&&v.avatars[bottomPid],52)}</div>`;
+  syncTargetExpressions();
+  if(resume)$('#uiResumeControl').onclick=()=>{
+    if(ONL.transport!=='poll'&&(!ONL.ws||ONL.ws.readyState!==1)){oToast('انتظر عودة الاتصال لاستعادة التحكم');return;}
+    oSend({type:'resume-control'});
+    $('#uiResumeControl').textContent='جارٍ الاستعادة…';
+  };
   const myPile=v.piles[bottomPid]||{points:0,count:0,top:null};
   const myDisplayPts=v.piles[bottomPid]?teamCombinedPts(bottomPid):0; // FIX — كان myPile.points فقط: بالجماعي يعرض الآن مجموع الفريق
-  const mp=$('#oMyPile');mp.innerHTML=`<span class="pts"><i class="ptsFill" style="width:${goalPct(myDisplayPts,v.tierGoal)}%"></i><b>${myDisplayPts} نقطة</b></span>`;
+  const mp=$('#oMyPile');mp.innerHTML=`<span class="pts"><i class="ptsFill" style="width:${goalPct(myDisplayPts,v.tierGoal)}%"></i><b>${toH(myDisplayPts)} <small>${v.mode==='team'?'للفريق':'نقطة'}</small></b></span>`;
   if(myPile.top){const w2=document.createElement('div');w2.style.cssText='display:flex;align-items:center;gap:4px';w2.appendChild(cardEl(myPile.top,'sm'));
     w2.insertAdjacentHTML('beforeend',`<span class="pileCntX">×${toH(myPile.count)}</span>`);mp.appendChild(w2)}
   // يدي — تباعد ديناميكي يملأ الشاشة (نفس الفردي)
@@ -4156,7 +4297,7 @@ function renderOnl(){
   pb2.style.display=(myTurn&&v.canPass)?'block':'none';
   pb2.onclick=()=>oAction({t:'pass'});
   $('#oOver').classList.add('hidden');
-  if(!seated){hint.innerHTML='أنت تتفرج على الطاولة';tb.disabled=true}
+  if(!seated){hint.innerHTML='';tb.disabled=true}
   else if(!myTurn){hint.innerHTML=v.phase==='waqf'?'':'دور <b>'+(v.names[v.turn]||'لاعب')+'</b>...';tb.disabled=true}
   else if(!ONL.sel){
     hint.innerHTML=v.forced?'<b>الأكل إجباري</b> — كل ورقك ياكل':'اختر ورقة من يدك';
@@ -4208,18 +4349,7 @@ function renderOnl(){
     $('#oWaqfCntL').textContent=`×${toH(w.contested.length)}`;
     // NEW CODE — لا صندوق ولا رسالة تغطي اليد: التوجيه يظهر بشريط التلميح فقط، والورقة الصالحة نفسها تُنقَر أو تُسحب للميدان للمزايدة
     const canB=seated&&v.canBid;
-    const haveCard=(v.myHand||[]).some(c=>c.rank===w.rank||c.rank===JOKER);
-    if(seated){
-      if(canB)hint.innerHTML='<b>وقّف!</b> — انقر أو اسحب ورقتك المُضاءة للميدان';
-      else if(w.holder===me)hint.innerHTML='الأكلة بيدك — اصمد حتى نهاية العدّ';
-      else if(w.endgame&&w.onlyBidder&&w.onlyBidder!==me&&haveCard){
-        hint.innerHTML='الجولة ختامية والدور فاتك — لا يمكنك المزايدة';
-        if(ONL._toastedEndgameLock!==w.deadline){ONL._toastedEndgameLock=w.deadline;oToast('⛔ جولة ختامية — دورك فات، ما تقدر توقف هالمرة');}
-      }
-      else if(w.endgame&&w.onlyBidder===me&&!haveCard)hint.innerHTML='الجولة ختامية — دورك للإيقاف لكن ما عندك الرقم';
-      else if(v.mode==='team'&&teamOf(w.holder)===teamOf(me))hint.innerHTML='الأكلة عند شريكك — خلّها له';
-      else hint.innerHTML='ما عندك الرقم ولا جوكر — تقدر تتفرج بس';
-    }
+    hint.innerHTML=canB?'<b>وقّف!</b> — انقر أو اسحب ورقتك المُضاءة للميدان':'';
   }else $('#oWaqf').classList.add('hidden');
 }
 function renderLobby(){
@@ -4301,6 +4431,8 @@ function renderLobby(){
   $('#lobbyHint').textContent=isCreator
     ?(lb.mode==='team'?'جماعي: أنت وصديقك الأول شريكان — والبوتات ضدكم':'أرسل الرابط ثم اضغط ابدأ — البوتات تكمّل الناقص')
     :'بانتظار منشئ الغرفة يبدأ الجولة...';
+  if(ONL.tournament)$('#lobbyStart').classList.add('hidden');
+  if(ONL.tournament)$('#lobbyHint').textContent='مباراة البطولة تبدأ تلقائيًا عند اتصال اللاعبين الأربعة';
   $('#lobbyStart').onclick=()=>oSend({type:'start'});
   const pubBtn=$('#pubInviteBtn');
   pubBtn.onclick=async()=>{
@@ -4329,7 +4461,6 @@ function renderOver(){
   $('#oOver').classList.remove('hidden');
   const me=ONL.you;
   const seated=!!(r.scores&&r.scores[me]);
-  $('#oResTtl').textContent='نهاية الجولة';
   const competitive=!!(r.tier&&r.tier.fee); // الطور التنافسي: أي طبقة عندها رسوم دخول فعلية
   // FIX — renderOver() تُستدعى من renderOnl() بلا أي شرط كل ما وصل أي تحديث حالة من السيرفر ولو تافه (نبضة
   // حضور للاعبين الباقين بالطاولة، إلخ) طالما status="over" لسا قائمة. كل نداء كان يعيد كل شي من الصفر:
@@ -4337,8 +4468,9 @@ function renderOver(){
   // فايرستور من جديد بتوقيت وصول مختلف لكل شارة)، ويكرر صوت الفوز — هذا هو "الترمش والتخبط" اللي وصفته بالضبط.
   // الحارس يقارن *محتوى* r لا مرجعه: كل رسالة WebSocket تُقرأ بـJSON.parse وتبني كائناً جديداً حتى لو نفس
   // المحتوى بالحرف، فمقارنة r!==r_قديم بالمرجع فقط كانت ستفشل صامتة (كل رسالة تُحسب "نتيجة جديدة" رغم تطابقها).
-  const rFingerprint=JSON.stringify(r); // FIX
-  if(competitive&&seated&&ONL._statsPulledForResult!==rFingerprint){ // FIX
+  const rFingerprint=ONL.room+'|'+me+'|'+JSON.stringify(r);
+  uiBeginOnlineResult(r,seated,rFingerprint);
+  if(seated&&ONL._statsPulledForResult!==rFingerprint){ // Bounded existing refresh, including friendly rewards.
     ONL._statsPulledForResult=rFingerprint; // FIX
     pullServerStats(); // FIX
     setTimeout(pullServerStats,1800); // FIX
@@ -4359,7 +4491,7 @@ function renderOver(){
     const myTeam=r.teams.findIndex(t=>t.includes(me));
     const wt=r.winnerTeam;
     $('#oResSub').textContent=!seated?(wt==='draw'?'تعادل الفريقان':'فاز فريق '+(r.teams[wt]||[]).map(p=>r.scores[p].name||'لاعب').join(' و')):
-      (wt==='draw'?'تعادل الفريقان!':(wt===myTeam?('فريقك فاز — مبروك!'+(!competitive?' +100 🪙 لكل لاعب بفريقك':'')):'فاز فريق الخصوم — عوّضوها')); // FIX — إظهار جائزة الجلسة الخاصة الجماعية
+      (wt==='draw'?'تعادل الفريقان!':(wt===myTeam?'فريقك فاز — مبروك!':'فاز فريق الخصوم — عوّضوها'));
     const fBanner=$('#oForfeitBanner'); if(fBanner)fBanner.classList.toggle('hidden',!(r.forfeit&&wt===myTeam)); // NEW CODE — الفريق الخاسر أصلاً بلا أحد متصل ليراه، فيكفي شرط الفائز فقط
     const tOrder=(wt===1)?[1,0]:[0,1]; // الفائز أولاً بالمركز الأول
     tOrder.forEach((ti,pos)=>{
@@ -4393,14 +4525,7 @@ function renderOver(){
   rows.querySelectorAll('.oAddFriendBtn').forEach(b=>{ b.onclick=()=>sendFriendRequest(b.dataset.uid,b.dataset.name,b); }); // NEW CODE — data-uid بدل data-pid
   fetchAndShowOtherRanks(); // NEW CODE — يعبّي شارات كل اللاعبين (بما فيهم أنا) بشكل غير متزامن بعد الرسم
   } // FIX — إغلاق حارس "نتيجة جديدة فعلاً" — إحصاءات الذهب/الرتبة تحتها تكمل تحدّثها الطبيعي (لها حارسها المستقل عبر ONL._statsPulledForResult أعلاه أصلاً)
-  // NEW CODE — قسم إحصاءات اللاعب المتحركة (ذهب + رتبة) — يحل محل منطق oResRankLine القديم (كان يعتمد على
-  // G._rankDelta المحسوبة محليًا؛ صارت النقاط تُحسب بالسيرفر حصرياً، فهذا القسم يُعبّى ويتحرك عبر
-  // animateResultsScreenCounters أدناه، تُستدعى تلقائيًا من pullServerStats فور اكتشاف رقم جديد فعلي)
-  $('#oMyStats').classList.toggle('hidden',!(competitive&&seated)); // NEW CODE
-  if(competitive&&seated){ // NEW CODE
-    $('#oMyGoldNum').textContent=toH(ST.n('gold')); $('#oMyGoldDelta').textContent=''; // NEW CODE
-    $('#oMyRankNum').textContent=toH(ST.n('rank')); $('#oMyRankDelta').textContent=''; // NEW CODE
-  } // NEW CODE
+  uiPresentOnlineResult(r,seated);
   // FIX — سطر واضح: رسوم الدخول والجائزة منفصلين (بدل الاكتفاء بالفارق الصافي فقط بـoMyGoldDelta)
   const feeWinEl=$('#oFeeWinLine'); // FIX
   if(competitive&&seated&&r.tier&&r.tier.fee){ // FIX
@@ -4434,19 +4559,9 @@ async function fetchAndShowOtherRanks(){ // NEW CODE
 } // NEW CODE
 // NEW CODE — يحرّك عدّادي الذهب/الرتبة بشاشة النتيجة أمام عين اللاعب — يُستدعى من pullServerStats فور اكتشاف
 // رقم جديد فعلي من السيرفر (لا حساب محلي هنا، فقط عرض/حركة لما وصل فعلاً)
-function animateResultsScreenCounters(oldGold,newGold,oldRank,newRank){ // NEW CODE
-  if($('#oOver').classList.contains('hidden')||$('#oMyStats').classList.contains('hidden'))return; // NEW CODE — الشاشة مو مفتوحة أو مو جلسة تنافسية، لا داعي
-  if(newGold!==oldGold){ // NEW CODE
-    $('#oMyGoldDelta').textContent='('+(newGold>=oldGold?'+':'')+toH(newGold-oldGold)+')'; // NEW CODE
-    $('#oMyGoldDelta').style.color=newGold>=oldGold?'#5e6b40':'#c0392b'; // NEW CODE
-    animateRankPoints('oMyGoldNum',oldGold,newGold); // NEW CODE
-  } // NEW CODE
-  if(newRank!==oldRank){ // NEW CODE
-    $('#oMyRankDelta').textContent='('+(newRank>=oldRank?'+':'')+toH(newRank-oldRank)+')'; // NEW CODE
-    $('#oMyRankDelta').style.color=newRank>=oldRank?'#5e6b40':'#c0392b'; // NEW CODE
-    animateRankPoints('oMyRankNum',oldRank,newRank); // NEW CODE
-  } // NEW CODE
-} // NEW CODE
+function animateResultsScreenCounters(oldGold,newGold,oldRank,newRank){
+  uiResultServerStats(newGold,newRank);
+}
 function oTick(){ // مزامنة المهل مع الخادم وإرسال الحسم/المهلة تلقائياً
   if(!ONL.active||!ONL.view||ONL.status!=='playing')return;
   const v=ONL.view;
@@ -4525,7 +4640,7 @@ $('#oExit').onclick=()=>{
   const isSeated=ONL.view&&ONL.view.me===ONL.you&&ONL.view.seats.includes(ONL.you);
   if(ONL.status==='playing'&&isSeated)showQuitConfirm(); else leaveOnline();
 };
-$('#oMenu').onclick=leaveOnline;
+$('#oMenu').onclick=()=>{const cup=!!ONL.tournament;leaveOnline();if(cup)cupOpen();};
 // FIX — معالج زر الإعادة حُذف مع الزر
 // FIX — كان هنا معالج $('#copyBtn').onclick؛ الزر والعنصر أُزيلا من اللوبي معاً (رابط النسخ غير محتاج)
 $('#oSnd').onclick=()=>{muted=!muted;uiSoundButtons();if(!muted){ac();SFX.tick()}};
@@ -4537,6 +4652,9 @@ $('#oSnd').onclick=()=>{muted=!muted;uiSoundButtons();if(!muted){ac();SFX.tick()
 // طاولات: تغيّر تدرّج خلفية الطاولة. ظهر الورق: يغيّر تدرّج ظهر البطاقة.
 const BGV='?v64'; // FIX — استبدلت صورة ثيم المجلس الشعبي بالصورة المتّفق عليها فعلياً (كانت الموقعة تعرض صورة أقدم من قبل هذا الاتفاق) // FIX — كسر كاش صورة المجلس الشعبي: أُعيدت بدقتها الأصلية بلا تكبير مصطنع (كان يسبب بكسلة/تنعيماً) // FIX — صورة المجلس الشعبي الجديدة (بالنوافذ الظاهرة) // كسر كاش الصور — حدّثه مع كل تغيير لملفات bg
 const SHOP_THEMES=[
+  {id:'theme-emerald',name:'النادي الزمردي',price:0,bg:'ui-art/room-emerald.svg',preview:'ui-art/room-emerald.svg',table:'ui-art/table-emerald.svg'},
+  {id:'theme-midnight',name:'الليلة الكحلية',price:0,bg:'ui-art/room-midnight.svg',preview:'ui-art/room-midnight.svg',table:'ui-art/table-midnight.svg'},
+  {id:'theme-royal',name:'المجلس الملكي',price:0,bg:'ui-art/room-royal.svg',preview:'ui-art/room-royal.svg',table:'ui-art/table-royal.svg'},
   {id:'theme-popular', name:'المجلس الشعبي', icon:'🏺', price:10000, grad:'radial-gradient(130% 90% at 50% 30%, #6e3a20 0%, #3a2012 85%)', bg:'ui-art/majlis-popular-realistic.png', preview:'ui-art/majlis-popular-realistic.png', table:'ui-art/table-popular.svg'}, // NEW CODE — لم تعد مجانية، صار للسجاد الفارسي هذا الدور
   // FIX — حُذفت الديوانية والنفود والواحة والنادي: بقي المجلس الشعبي والسجّاد الفارسي فقط بطلبك
   {id:'theme-persian',name:'السجّاد الفارسي', icon:'🪆', price:0, grad:'radial-gradient(130% 90% at 50% 30%, #6b2a22 0%, #2a1010 85%)', bg:'bg/majlis-persian.jpg'+BGV, preview:'bg/majlis-persian-preview.jpg'+BGV}, // NEW CODE — صارت الخلفية المجانية الافتراضية الجديدة بدل المجلس الشعبي، بطاولة table-center الافتراضية
@@ -4545,6 +4663,7 @@ const SHOP_THEMES=[
 // حُذفت مصفوفة SHOP_EFFECTS (كانت هنا) — نظام تأثيرات الإشعارات أُلغي بالكامل
 function shopOwned(){
   let o; try{ o=JSON.parse(localStorage.getItem('wb-owned')||'["theme-persian","back-default"]'); }catch(e){ o=['theme-persian','back-default']; }
+  if(!Array.isArray(o))o=['theme-persian','back-default'];
   // ترحيل: كانت "الديوانية" مجانية وصارت مدفوعة — أي لاعب مفعّل عليها حالياً يحتفظ بملكيتها تلقائياً (لا يُطالَب بالشراء رجعياً لشي كان يملكه فعلياً وهو مجاني)
   // FIX — ترحيل الديوانية القديم حُذف (الثيم نفسه أُلغي) — التطبيع الدفاعي صار داخل applyTheme
   // NEW CODE — ترحيل: السجّاد الفارسي صار الخلفية المجانية الجديدة للجميع (حتى اللاعبين الحاليين اللي انحفظت بياناتهم قبل وجوده)
@@ -4561,43 +4680,8 @@ function shopEquipped(kind){
 // + الثيمات) عن App Store، لأن آبل تمنع أي دفع خارجي لعناصر داخل التطبيق وتشترط IAP الرسمي. بملف واحد للمنصات كلها يصير
 // العلم بالمنصة: ظاهر على الويب/أندرويد، مخفي على iOS تلقائياً — بلا أي تعديل يدوي عند كل رفعة.
 const SHOW_STORE=!(window.Capacitor&&window.Capacitor.getPlatform&&window.Capacitor.getPlatform()==='ios');
-function openShop(){ if(!SHOW_STORE)return; renderShop(); renderAdRewardBtn(); show('shop'); mountNav('shop','shop'); } // FIX — أضفنا renderAdRewardBtn // NEW CODE — يتجاهل أي استدعاء بالكامل لما SHOW_STORE=false
-function renderShop(){
-  $('#shopGold').textContent=ST.n('gold').toLocaleString('en');
-  renderGoldPackages(); // NEW CODE — باقات الذهب الحقيقية (Paymob)، منفصلة عن حلقة الثيمات أسفلها
-  const items=SHOP_THEMES;
-  const kind='theme';
-  const owned=shopOwned(), eq=shopEquipped(kind);
-  const list=$('#shopList');list.innerHTML='';
-  for(const it of items){
-    const isOwned=owned.includes(it.id)||it.price===0;
-    const isEq=eq===it.id;
-    const card=document.createElement('div');
-    card.dataset.theme=it.id;
-    card.style.cssText='border-radius:20px;background:#fff;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.25)'+(isEq?';box-shadow:0 0 0 2.5px #d67f48,0 4px 14px rgba(0,0,0,.25)':'');
-    card.innerHTML=`
-      <div style="width:100%;height:104px;background:${it.preview?`url('${it.preview}') center/cover no-repeat`:(it.bg?`url('${it.bg}') center/cover no-repeat`:it.grad)};display:flex;align-items:center;justify-content:center;font-size:30px">${(it.preview||it.bg)?'':it.icon}</div>
-      <div style="padding:10px 12px 12px">
-      <div style="font-size:13.5px;font-weight:800;color:#201e1d">${it.name}</div>
-      ${isEq?'<div style="margin-top:8px;height:34px;border-radius:999px;background:#fbe9dc;color:#b2622d;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #d67f48">مُفعّل</div>'
-        :isOwned?'<button class="shopBtn" style="margin-top:8px;width:100%;height:34px;border:0;border-radius:999px;background:#eee8dc;color:#8b857c;font-weight:800;font-size:13px;cursor:pointer">مِلكك ✓</button>'
-        :`<button class="shopBtn" style="margin-top:8px;width:100%;height:34px;border:0;border-radius:999px;background:#33302c;color:#f6c14d;font-weight:800;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px"><i style="width:13px;height:13px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block"></i>${toH(it.price)}</button>`}
-      </div>`;
-    const btn=card.querySelector('.shopBtn');
-    if(btn)btn.onclick=()=>{
-      if(isOwned){ localStorage.setItem('wb-eq-'+kind,it.id); try{fbSaveProfile()}catch(x){} toast2(`فُعّل ${it.name}`); renderShop(); }
-      else{
-        if(ST.n('gold')<it.price){toast2('ذهبك لا يكفي');return}
-        ST.set('gold',ST.n('gold')-it.price);
-        const o=shopOwned();o.push(it.id);localStorage.setItem('wb-owned',JSON.stringify(o));
-        localStorage.setItem('wb-eq-'+kind,it.id);try{fbSaveProfile()}catch(x){}
-        toast2(`اشتريت وفعّلت ${it.name} — خُصم ${toH(it.price)} 🪙`);
-        renderShop();refreshHome();
-      }
-    };
-    list.appendChild(card);
-  }
-}
+function openShop(tab){uiOpenShop(tab);}
+function renderShop(){uiRenderShop();}
 // ═══ NEW CODE — باقات شراء الذهب (Paymob): عرض فقط هنا (الأسعار الحقيقية والحاسمة تعيش بالسيرفر
 // حصراً في payments.js — هذا الجدول للعرض المرئي لا أكثر، لا يُستخدم أبداً لحساب أي خصم فعلي) ═══
 const GOLD_PACKAGES_DISPLAY=[
@@ -4607,17 +4691,9 @@ const GOLD_PACKAGES_DISPLAY=[
   {key:'tier4',sar:50, label:'6,500 🪙'},
   {key:'tier5',sar:100,label:'14,000 🪙'},
 ];
-function renderGoldPackages(){ // NEW CODE
-  const wrap=$('#goldPkgList'); if(!wrap)return; wrap.innerHTML=''; // NEW CODE
-  for(const p of GOLD_PACKAGES_DISPLAY){ // NEW CODE
-    const card=document.createElement('button'); // NEW CODE
-    card.style.cssText='border:0;border-radius:16px;background:#fff;padding:12px 8px;text-align:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.2);display:flex;flex-direction:column;gap:4px;align-items:center'; // NEW CODE
-    card.innerHTML=`<span style="font-size:15px;font-weight:800;color:#201e1d">${p.label}</span><span style="font-size:12px;color:#8b857c;font-weight:800">${p.sar} ﷼</span>`; // NEW CODE
-    card.onclick=()=>buyGoldPackage(p.key); // NEW CODE
-    wrap.appendChild(card); // NEW CODE
-  } // NEW CODE
-} // NEW CODE
+function renderGoldPackages(){uiRenderGoldPackages();}
 async function buyGoldPackage(tierKey){ // NEW CODE — يبدأ عملية الدفع الفعلية عبر Paymob
+  if(!SHOW_STORE)return;
   if(!FB.ready||!FB.user){ toast2('سجّل دخولك بحساب أولاً لشراء الذهب'); return; } // NEW CODE
   try{ // NEW CODE
     toast2('جارٍ التحويل لصفحة الدفع...'); // NEW CODE
@@ -4642,6 +4718,7 @@ function checkPaymentReturn(){ // NEW CODE
 // تطبيق الطاولة المفعّلة على شاشتي اللعب
 function applyEquippedTheme(uiThemeOverride){
   try{
+    uiMigrateThemeChoice();
     let th=SHOP_THEMES.find(t=>t.id===shopEquipped('theme'));
     if(!th){ th=SHOP_THEMES.find(t=>t.id==='theme-persian'); try{localStorage.setItem('wb-eq-theme','theme-persian');}catch(e){} } // FIX — أي ثيم محذوف مركَّباً يُثبَّت على الفارسي بالتخزين نفسه
     if(!th)return;
@@ -4651,13 +4728,6 @@ function applyEquippedTheme(uiThemeOverride){
     if(o)o.style.background=bgVal;
     const tableUrl=th.table||'bg/table-center.png'+(typeof BGV!=='undefined'?BGV:''); // NEW CODE — طاولة الثيم الخاصة، أو الافتراضية
     document.querySelectorAll('.tableWood').forEach(el=>{el.style.backgroundImage=`url('${tableUrl}')`});
-    // Device-local visual preference; ownership, shop and server data stay unchanged.
-    let visual=uiThemeOverride||'emerald';
-    if(!uiThemeOverride){try{visual=localStorage.getItem('wb-ui-table')||'emerald'}catch(e){}}
-    if(['emerald','midnight','royal'].includes(visual)){
-      for(const screen of [g,o])if(screen)screen.style.background=`url('ui-art/room-${visual}.svg') center/cover no-repeat`;
-      document.querySelectorAll('.tableWood').forEach(el=>{el.style.backgroundImage=`url('ui-art/table-${visual}.svg')`});
-    }
   }catch(e){}
 }
 /* ================= الصدارة ================= */
@@ -4908,12 +4978,13 @@ function navHTML(active){
 function mountNav(screenId,active){
   const sc=document.getElementById(screenId);if(!sc)return;
   let bar=sc.querySelector('.navBar');
-  const holder=sc.querySelector('[data-navholder]')||sc.firstElementChild||sc;
+  const holder=screenId==='home'?sc:(sc.querySelector('[data-navholder]')||sc);
   if(!bar){
     const wrap=document.createElement('div');wrap.innerHTML=navHTML(active);
     bar=wrap.firstElementChild;
-    (sc.querySelector('[data-navholder]')||sc).appendChild(bar);
+    holder.appendChild(bar);
   }
+  if(bar.parentElement!==holder)holder.appendChild(bar);
   bar.querySelectorAll('.navBtn').forEach(b=>{
     b.classList.toggle('on',b.dataset.nav===active);
       if(b.dataset.nav===active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
@@ -5073,8 +5144,8 @@ async function pullServerStats(retriesLeft){
         refreshRankCard();
         const newRank=ST.n('rank'), newGold=ST.n('gold'); // NEW CODE — أضفنا newGold
         if(newRank!==oldRank)showRankChangeToast(oldRank,newRank); // NEW CODE — الرتبة تغيّرت فعليًا (فوز/خسارة/انسحاب، محسوبة بالسيرفر) — نوري اللاعب فورًا بتوست متحرك
-        animateResultsScreenCounters(oldGold,newGold,oldRank,newRank); // NEW CODE — لو شاشة النتيجة مفتوحة، حرّك عدّاداتها هي كمان
       }
+      if(d.gold!==undefined&&!(doc.metadata&&doc.metadata.fromCache))animateResultsScreenCounters(oldGold,ST.n('gold'),oldRank,ST.n('rank'));
     }
   }catch(e){}
   _pullingStats=false;
@@ -5726,22 +5797,84 @@ async function doSignup(){
   try{ const r=await FB.auth.createUserWithEmailAndPassword(em,pw); window.wbLog&&window.wbLog('  ✅ الحساب أُنشئ! أنتقل للرئيسية'); await afterAuth(r.user,true); }
   catch(e){ window.wbLog&&window.wbLog('  ❌ فشل الإنشاء: '+(e&&e.code||e.message||e)); toast2(authErr(e)); }
 }
-// دخول بـGoogle
-// NEW CODE — تسجيل الدخول بـApple: يستخدم @capacitor-firebase/authentication المثبَّتة أصلاً (تدعم Apple أصلياً
-// عبر ASAuthorizationController الحقيقية على iOS — لا علاقة لها بقيد الـWebView اللي منع دخول جوجل الأصلي؛
-// أبل تشترط هذا المسار الأصلي بالذات لأي تطبيق يعرض خيار دخول اجتماعي). النتيجة تحدّث FB.auth الوِبي مباشرة
-// (المكوّن يستخدم نفس getAuth() المشترك داخلياً)، فنمرّ afterAuth() بنفس أسلوب مسار جوجل بالضبط — صفر تكرار منطق.
+// Apple: obtain a native credential, then sign in to the web Auth used by the game.
+// https://github.com/capawesome-team/capacitor-firebase/blob/main/packages/authentication/docs/firebase-js-sdk.md
+let _appleSignInBusy=false, _appleHandledUid=null;
 async function doApple(){
+  if(_appleSignInBusy)return;
+  _appleSignInBusy=true;
+  _appleHandledUid=null;
+  const button=document.getElementById('lgApple');
+  const label=button&&button.querySelector('span');
+  const oldLabel=label&&label.textContent;
+  const oldDisabled=button&&button.disabled;
+  const oldBusy=button&&button.getAttribute('aria-busy');
+  let phase='prepare';
+  if(button){button.disabled=true;button.setAttribute('aria-busy','true');}
+  if(label)label.textContent='جارٍ تسجيل الدخول…';
   try{
-    const {FirebaseAuthentication}=Capacitor.Plugins;
-    if(!FirebaseAuthentication){ toast2('الدخول بـ Apple غير متاح بهذا الإصدار'); return; }
-    await FirebaseAuthentication.signInWithApple();
-    if(!FB.auth.currentUser){ toast2('تعذّر إكمال الدخول — حاول مرة أخرى'); return; }
-    await afterAuth(FB.auth.currentUser);
-    toast2('تم الدخول بنجاح ✓');
+    const cap=window.Capacitor;
+    const plugin=cap&&cap.Plugins&&cap.Plugins.FirebaseAuthentication;
+    if(!cap||!cap.getPlatform||cap.getPlatform()!=='ios'||!plugin||
+       typeof plugin.signInWithApple!=='function'||
+       (cap.isPluginAvailable&&!cap.isPluginAvailable('FirebaseAuthentication'))){
+      toast2('الدخول بحساب Apple غير متاح في هذا الإصدار؛ حدّث التطبيق');return;
+    }
+    if(!(await ensureFB())){toast2('تعذّر الاتصال بخدمة الدخول؛ تحقق من اتصالك وأعد المحاولة');return;}
+    await FB.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    phase='apple';
+    const result=await plugin.signInWithApple({skipNativeAuth:true});
+    const nativeCredential=result&&result.credential;
+    if(!nativeCredential||typeof nativeCredential.idToken!=='string'||!nativeCredential.idToken||
+       typeof nativeCredential.nonce!=='string'||!nativeCredential.nonce){
+      const error=new Error('Incomplete Apple credential');error.code='apple/missing-credential';throw error;
+    }
+    phase='firebase';
+    const credential=new firebase.auth.OAuthProvider('apple.com').credential({
+      idToken:nativeCredential.idToken,rawNonce:nativeCredential.nonce
+    });
+    const signedIn=await FB.auth.signInWithCredential(credential);
+    const user=signedIn.user;
+    // The Auth observer may fire before OR after this promise. This flow owns afterAuth.
+    _appleHandledUid=user.uid;
+    const appleName=result.user&&typeof result.user.displayName==='string'?result.user.displayName.trim():'';
+    if(appleName&&!user.displayName){
+      try{await user.updateProfile({displayName:appleName});}
+      catch(_){console.warn('[Apple sign-in] profile name could not be saved');}
+    }
+    // Apple's relay address is private contact information, not a player nickname.
+    if(!localStorage.getItem('wb-name'))localStorage.setItem('wb-name',user.displayName||appleName||'لاعب');
+    phase='profile';
+    await afterAuth(user);
+    if(FB.auth.currentUser&&FB.auth.currentUser.uid===user.uid)toast2('تم الدخول بنجاح ✓');
   }catch(e){
-    if(e&&/cancel/i.test(e.message||e.code||''))return; // المستخدم ألغى بنفسه — بلا رسالة خطأ مزعجة
-    toast2('تعذّر الدخول بحساب Apple — حاول مرة أخرى');
+    const rawCode=String(e&&e.code||'');
+    const code=/^[a-z0-9/_-]{1,80}$/i.test(rawCode)?rawCode.toLowerCase().replace(/^auth\//,''):'unknown';
+    const message=String(e&&e.message||'');
+    if(phase==='apple'&&(code==='1001'||/cancel|popup-closed-by-user/.test(code)||
+       /cancel|\b1001\b|إلغاء|ألغيت|أُلغي/i.test(message)))return;
+    // Do not log tokens, nonce, email, or raw error objects.
+    console.warn('[Apple sign-in]',{phase,code});
+    const messages={
+      'network-request-failed':'انقطع الاتصال أثناء الدخول؛ تحقق من الشبكة وأعد المحاولة',
+      'account-exists-with-different-credential':'هذا البريد مرتبط بحساب سابق؛ ادخل بالطريقة التي استخدمتها أول مرة',
+      'credential-already-in-use':'حساب Apple مرتبط بحساب موجود؛ ادخل بالطريقة السابقة',
+      'operation-not-allowed':'الدخول بحساب Apple غير متاح حاليًا؛ استخدم طريقة دخول أخرى',
+      'invalid-credential':'انتهت صلاحية محاولة الدخول أو تعذّر التحقق منها؛ حاول مرة أخرى',
+      'missing-or-invalid-nonce':'تعذّر التحقق من محاولة الدخول؛ أعد المحاولة',
+      'apple/missing-credential':'لم تكتمل موافقة Apple؛ أعد المحاولة',
+      'user-disabled':'هذا الحساب موقوف؛ تواصل مع الدعم',
+      'too-many-requests':'محاولات كثيرة؛ انتظر قليلًا ثم أعد المحاولة'
+    };
+    toast2(phase==='profile'?'تم تسجيل الدخول، لكن تعذّر تحميل بيانات اللاعب؛ أعد فتح التطبيق':
+      messages[code]||'تعذّر الدخول بحساب Apple؛ أعد المحاولة أو استخدم طريقة دخول أخرى');
+  }finally{
+    _appleSignInBusy=false;
+    if(button){
+      button.disabled=oldDisabled;
+      if(oldBusy===null)button.removeAttribute('aria-busy');else button.setAttribute('aria-busy',oldBusy);
+    }
+    if(label)label.textContent=oldLabel;
   }
 }
 async function doGoogle(){
@@ -6063,7 +6196,7 @@ async function enterTier(t){
     ONL.pendingMode=teamPlay?'team':'solo';
     enterMatchWithInterstitial(ONL.pendingTier.key, teamPlay?'team':'solo'); // الإعلان الخلالي يخص اللعب السريع
   }else{
-    newGame({mode:'solo',diff: t.lvMax<=9?'easy':t.lvMax<=16?'med':'hard', name:localStorage.getItem('wb-name')||'أنت', tierGoal:t.goal});
+    newGame({mode:'solo',diff: t.lvMax<=9?'easy':t.lvMax<=16?'med':'hard', name:localStorage.getItem('wb-name')||'أنت', tierGoal:t.goal,tierKey:t.key});
   }
 }
 let G_TIER=null; // الطبقة النشطة للجولة الحالية
@@ -6076,13 +6209,11 @@ const ST={n:k=>parseInt(localStorage.getItem('wb-'+k)||'0',10),
     if(h.length>20)h=h.slice(-20); // نحتفظ بآخر 20، نعرض آخر 5 بالملف الشخصي
     localStorage.setItem('wb-history',JSON.stringify(h));
   },
-  game(won,myPts){
+  game(won,myPts,rewardGold=true){
     ST.set('games',ST.n('games')+1);
     if(won)ST.set('wins',ST.n('wins')+1);
     if(myPts>ST.n('best'))ST.set('best',myPts);
-    ST.set('xp',ST.n('xp')+10+(won?15:0));
-    ST.set('gold',ST.n('gold')+5+(won?25:0));
-    ST.set('level',1+Math.floor(ST.n('xp')/100));
+    if(rewardGold)ST.set('gold',ST.n('gold')+5+(won?25:0));
     ST.pushHistory(won);
   }};
 
@@ -6486,11 +6617,30 @@ function swapInviteBtnToExpired(btn){ // FIX
   if(row){ row.style.transition='opacity .35s'; row.style.opacity='0'; setTimeout(()=>row.remove(),360); } // FIX
   else{ btn.outerHTML=`<button class="invJoinBtn" disabled style="display:block;width:calc(100% - 20px);margin:2px 10px 12px;padding:11px;border-radius:14px;background:rgba(255,255,255,.25);color:rgba(255,255,255,.75);font-family:var(--fh);font-size:16px;border:none;cursor:not-allowed;box-shadow:none">⏱️ دعوة منتهية</button>`; } // FIX — احتياط: لو الحاوية غير موجودة لأي سبب، نعود للسلوك القديم بدل خطأ صامت
 }
-function showSpectatorNotice(txt){ // NEW CODE — أضفنا معامل نص اختياري
-  if(txt)$('#specNoticeTxt').textContent=txt; // NEW CODE — نص مخصّص لو أُرفق، وإلا يبقى النص الافتراضي بالـHTML كما هو
+function uiRenderSpectatorStatus(v,seated){
+  const status=v.viewerStatus||(seated?'seated':'spectator');
+  const key=ONL.room+'|'+status;
+  if(status==='seated'){
+    $('#specNotice').classList.add('hidden');
+    ONL._specNoticeKey=null; ONL._specDismissedKey=null;
+    return;
+  }
+  const messages={
+    absence:['الجولة مستمرة من المدرّج','انتهت مشاركتك بعد غياب ثلاثة أدوار. تابع الجولة الآن؛ يمكنك اللعب مجددًا في الجولة التالية.'],
+    fee:['أنت تشاهد الجولة','لم يكتمل دفع رسوم الدخول؛ الكمبيوتر يكمل هذا المقعد حتى نهاية الجولة.'],
+    waiting:['مكانك ينتظرك في المجلس','أنت تشاهد الآن. سُجّل طلب جلوسك في هذه الجلسة الودية؛ ستنضم عند إتاحة المقعد وانتهاء المزايدة الحالية.'],
+    spectator:['مقعدك في المدرّج','تابع اللعب وشاهد قرارات اللاعبين. أنت تشاهد هذه الجولة دون حجز مقعد.']
+  };
+  const message=messages[status]||messages.spectator;
+  ONL._specNoticeKey=key;
+  if(ONL._specDismissedKey!==key)showSpectatorNotice(message[1],message[0]);
+}
+function showSpectatorNotice(txt,title){
+  $('#uiSpecTitle').textContent=title||'مقعدك في المدرّج';
+  $('#specNoticeTxt').textContent=txt||'الدعوة لم تعد متاحة للجلوس. يمكنك متابعة الجولة كمشاهد.';
   $('#specNotice').classList.remove('hidden');
 }
-$('#specDismissBtn').onclick=()=>$('#specNotice').classList.add('hidden');
+$('#specDismissBtn').onclick=()=>{ONL._specDismissedKey=ONL._specNoticeKey;$('#specNotice').classList.add('hidden');};
 $('#specLeaveBtn').onclick=()=>{ $('#specNotice').classList.add('hidden'); leaveOnline(); };
 function joinRoomFromChat(room, expectSeat){
   if(!room)return;
@@ -6690,13 +6840,15 @@ function startFriendsSync(){
 // تسجيل من لعبت معهم عند بدء أي طاولة أونلاين
 const _oldHandle=oHandle;
 oHandle=function(msg){
+  if(msg.status==='playing'&&ONL.status!=='playing'){UI_RESULT.online=null;ONL._lastRenderedOverFingerprint=null;ONL._statsPulledForResult=null;}
   _oldHandle(msg);
   if(msg.status==='playing'&&msg.view&&msg.view.humans){
     ONL._scored=false;
     for(const p of msg.view.humans)FR.add(p,msg.view.names[p]);
   }
-  if(msg.status==='over'&&msg.result&&!ONL._scored){
+  if(msg.status==='over'&&msg.result&&!ONL._scored&&msg.result.scores&&msg.result.scores[ONL.you]){
     ONL._scored=true;
+    if(msg.tournament){refreshHome();return;}
     try{
       const r=msg.result, me=ONL.you;
       const myPts=(r.scores&&r.scores[me])?r.scores[me].points:0;
@@ -6709,14 +6861,13 @@ oHandle=function(msg){
         // (_processTierRankPoints) — إبقاؤها هنا كانت تتعارض فعلياً: الحفظ المحلي المؤجَّل (fbSaveProfile)
         // يكتب فوق القيمة الذرية الصحيحة بقيمة محلية قد تكون قديمة، وهذا بالضبط كان يسبب "لاعب متصدر
         // فعلياً بلا أي إحصائيات ظاهرة" حين يفشل الحفظ المحلي لأي سبب بينما نقاط الصدارة تبقى صحيحة سيرفرياً
-        ST.set('xp',ST.n('xp')+15+(won?25:0));
-        ST.set('level',1+Math.floor(ST.n('xp')/100));
         ST.pushHistory(won);
         // NEW CODE — نقاط الرتبة صارت تُحسب وتُطبَّق بالسيرفر حصرياً (_processTierRankPoints) — التوست يظهر تلقائيًا
         // فور ما refreshHome/pullServerStats تكتشف الرقم الجديد بالأسفل، بلا أي حساب محلي هنا إطلاقًا
         G._tierResult={won,win:G_TIER.win,fee:G_TIER.fee,name:G_TIER.name};
         G_TIER=null;
-      }else{ ST.game(won,myPts); }
+      }else{ ST.game(won,myPts,false); }
+      uiResultLocalXp();
       refreshHome(); // يسحب الذهب الفعلي المحدَّث من السيرفر تلقائيًا (pullServerStats)
     }catch(e){}
   }
@@ -7027,7 +7178,7 @@ function renderAfResults(q){
   if(!q){el.innerHTML='<div style="text-align:center;color:var(--mut);font-weight:700;font-size:13px;padding:24px 14px">ابحث بالاسم أو اسم المستخدم (مثل @'+(localStorage.getItem('wb-username')||'username')+') لإضافة صديق</div>';return}
   // FIX — بحث بالاسم واسم المستخدم معاً (كان يوزرنيم فقط؛ أي بحث بالاسم كان يُرفض فوراً برسالة خطأ بلا أي محاولة)
   const uname=q.replace(/^@/,'').trim().toLowerCase();
-  const nameQ=q.toLowerCase();
+  const nameQ=q.normalize('NFKC').toLowerCase().replace(/\s+/g,' ').trim();
   const wantUsername=/^[a-z0-9_]{3,16}$/.test(uname);
   const wantName=nameQ.length>=2;
   if(!wantUsername&&!wantName){
@@ -7038,13 +7189,27 @@ function renderAfResults(q){
   (async()=>{
     try{
       await ensureFB();
-      const tasks=[]; // NEW CODE — استعلامان بالتوازي: يوزرنيم (تطابق تام) واسم (تطابق بادئة)، حسب صلاحية كل صيغة بالنص المكتوب
-      if(wantUsername)tasks.push(FB.db.collection('players').where('username_lc','==',uname).limit(5).get());
-      if(wantName)tasks.push(FB.db.collection('players').where('name_lc','>=',nameQ).where('name_lc','<=',nameQ+'\uf8ff').limit(5).get());
-      const snaps=await Promise.all(tasks);
+      const tasks=[];
+      const players=FB.db.collection('players');
+      if(wantUsername)tasks.push(players.where('username_lc','==',uname).limit(10).get());
+      if(wantName){
+        tasks.push(players.where('name_lc','>=',nameQ).where('name_lc','<=',nameQ+'\uf8ff').limit(15).get());
+        // Legacy accounts may not have name_lc. Query indexed display names as well.
+        const variants=new Set([q,nameQ,nameQ.replace(/\b[a-z]/g,c=>c.toUpperCase()),nameQ.toUpperCase()]);
+        for(const name of variants)tasks.push(players.where('name','>=',name).where('name','<=',name+'\uf8ff').limit(15).get());
+      }
+      const results=await Promise.allSettled(tasks);
       if(requestId!==AF.searchId)return;
+      const successful=results.filter(r=>r.status==='fulfilled');
+      if(!successful.length)throw new Error('Search unavailable');
       const seen=new Set(); const docs=[];
-      for(const snap of snaps)snap.forEach(doc=>{ if(!seen.has(doc.id)){seen.add(doc.id);docs.push(doc);} }); // NEW CODE — دمج نتيجتي البحث بلا تكرار لنفس اللاعب لو طلع بكلا الاستعلامين
+      for(const {value:snap} of successful)snap.forEach(doc=>{
+        if(!seen.has(doc.id)){seen.add(doc.id);docs.push(doc);}
+      });
+      docs.sort((a,b)=>{
+        const exact=d=>[d.data().name,d.data().name_lc,d.data().username_lc].some(n=>String(n||'').toLowerCase()===nameQ);
+        return Number(exact(b))-Number(exact(a));
+      });
       el.innerHTML='';
       if(!docs.length){ el.innerHTML='<div style="text-align:center;color:var(--mut);font-weight:700;font-size:13px;padding:24px 14px">ما فيه نتائج مطابقة</div>'; return; }
       docs.forEach(doc=>{
@@ -7073,7 +7238,13 @@ function renderAfResults(q){
   })();
 }
 $('#afBack').onclick=()=>openFriends();
-$('#afSearch').addEventListener('input',()=>renderAfResults($('#afSearch').value));
+let afSearchTimer;
+$('#afSearch').addEventListener('input',()=>{
+  clearTimeout(afSearchTimer); AF.searchId++;
+  const q=$('#afSearch').value;
+  if(!q.trim()){renderAfResults('');return;}
+  afSearchTimer=setTimeout(()=>renderAfResults(q),280);
+});
 document.querySelectorAll('.afTab').forEach(t=>t.onclick=()=>{
   AF.tab=t.dataset.t;
   document.querySelectorAll('.afTab').forEach(x=>{const on=x===t;x.classList.toggle('on',on);
@@ -7084,7 +7255,7 @@ document.querySelectorAll('.afTab').forEach(t=>t.onclick=()=>{
 $('#hProfBtn').onclick=()=>openProfile();
 // NEW CODE — حذفنا $('#hChat').onclick — الزر نفسه اتحذف من الترويسة العلوية، الدردشة صارت بالشريط السفلي فقط
 $('#hDaily').onclick=()=>{SFX.tick();showRewardChoice()};
-$('#hGoldBtn').onclick=()=>{SFX.tick();openShop()};
+$('#hGoldBtn').onclick=()=>{SFX.tick();openShop('gold')};
 if(!SHOW_STORE){ const plus=document.querySelector('#hGoldBtn b'); if(plus)plus.style.display='none'; } // NEW CODE — يخفي إشارة "+" (تلمّح لعملية شراء) طالما المتجر مقفل — لا يترك زراً يبدو تفاعلياً بلا وظيفة
 $('#setupBack').onclick=()=>goHome();
 
@@ -7212,9 +7383,11 @@ async function bootTo(){
     if(user){
       const gp=document.getElementById('gloginPrompt'); if(gp)gp.remove(); // FIX — دخل فعلاً: أزل شاشة الربط تحت شاشة "✓ تم"
       if(GLOGIN){ await gloginFinish(user); return; } // NEW CODE — مسجّل أصلاً بالمتصفح: سلّم الهوية فوراً بلا أي دخول جديد
+      if(_appleSignInBusy||_appleHandledUid===user.uid)return; // Apple already owns this profile load.
       if(_redirectHandled)return; // already handled directly above — تجنّب التكرار
       await afterAuth(user);
     }else{
+      _appleHandledUid=null;
       if(GLOGIN){ if(_redirectChecked)showGloginPrompt(); return; } // FIX — بوضع الربط: شاشة الربط فقط (بعد حسم العودة)، لا ترحيب عادي ولا أي إطلاق تلقائي
       // غير مسجّل: أظهر شاشة الترحيب مع زر الدخول
       const lb=$('#wLogin'), ld=$('#wLoading');
@@ -7249,11 +7422,12 @@ else window.addEventListener('load',bootTo);
 <script>
 if('serviceWorker' in navigator&&location.protocol==='https:'){
   navigator.serviceWorker.register('sw.js').catch(()=>{});
-  fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
-    const m=t.match(/waggif-v(\d+)/); const bt=document.getElementById('buildTag');
-    if(m&&bt)bt.textContent='build v'+m[1];
-  }).catch(()=>{});
 }
+// Capacitor iOS uses a local scheme; showing the bundled build does not require a service worker.
+fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
+  const m=t.match(/waggif-v(\d+)/); const bt=document.getElementById('buildTag');
+  if(m&&bt)bt.textContent='build v'+m[1];
+}).catch(()=>{});
 </script>
 <!-- ============ تكامل AdMob الفعلي — النسخة الصحيحة المؤكَّدة من فحص ملف plugin.js الفعلي ============ -->
 <!-- FIX — المحاولة الأولى (استيراد ES module) لم تعمل: هذا المشروع بلا أداة تجميع، فـimport يفشل صامتاً حتى
@@ -7340,5 +7514,6 @@ if('serviceWorker' in navigator&&location.protocol==='https:'){
      يدوياً — مهم: غيّر اسمه لـ"firebase-auth-plugin.js" وقت النسخ (لا تسمّه plugin.js زي ما هو، لأن AdMob
      أيضاً عنده ملف بنفس الاسم بالضبط بمجلده — لو الاثنين اتسمّوا plugin.js بنفس مجلد www، الثاني يمحو الأول). -->
 <script src="firebase-auth-plugin.js"></script>
+<script src="ui-tournament.js"></script>
 </body>
 </html>

@@ -1,0 +1,119 @@
+/* Majabeed leagues — interface only; card, pile and field geometry stays intact. */
+#leagueHub{--lg-ink:#183b31;--lg-gold:#dfbd79;--lg-paper:#fbf4e6;position:fixed;inset:0;z-index:8500;display:flex;flex-direction:column;box-sizing:border-box;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);color:var(--lg-ink);background:radial-gradient(ellipse at 50% 0,#fffaf1,#eee1c6);font-family:var(--fb);direction:rtl;isolation:isolate}#leagueHub[hidden]{display:none!important}#leagueHub *{box-sizing:border-box}#leagueHub button,#leagueHub input,#leagueHub select{font:inherit}#leagueHub button{cursor:pointer;min-height:44px;border:1px solid #b3a183;border-radius:14px;padding:10px 16px;background:var(--lg-paper);color:var(--lg-ink);font-weight:800}#leagueHub button:disabled{opacity:.6;cursor:wait}#leagueHub button:focus-visible,#leagueHub input:focus-visible,#leagueHub select:focus-visible{outline:3px solid #d1a851;outline-offset:2px}.lg-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;color:#f7e9c9;background:linear-gradient(135deg,#294a3b,#102d27);border-bottom:1px solid #be9a5a}.lg-head h1{font-family:var(--fh);font-size:clamp(22px,6vw,32px);margin:0}.lg-head small{display:block;opacity:.75;font-size:11px;letter-spacing:1.5px}.lg-body{overflow:auto;min-height:0;flex:1;overscroll-behavior:contain;padding:18px 16px 24px;scrollbar-width:thin}.lg-wrap{max-width:900px;margin:auto}.lg-tabs,.lg-nav{display:flex;gap:6px;background:#294636;padding:7px;flex:none}.lg-tabs button,.lg-nav button{flex:1;min-width:0;padding:9px 3px!important;font-size:12px!important}.lg-tabs button:not(.selected),.lg-nav button:not(.selected){background:transparent!important;color:#e1d0ac!important;border-color:transparent!important}.lg-tabs button.selected,.lg-nav button.selected{background:#fff6df!important;box-shadow:0 2px 10px #05140f33}.lg-nav{border-radius:24px 24px 0 0;box-shadow:0 -4px 20px #20312822;padding:9px 12px}.lg-nav span{display:block;font-size:20px}.lg-hero{text-align:center;padding:22px 14px;background:linear-gradient(135deg,#375d47,#183c32);border-radius:24px;color:#fff0ce;border:1px solid #c7a768;margin-bottom:18px;box-shadow:0 8px 16px #183c3218}.lg-trophy{display:block;font-size:48px;filter:drop-shadow(0 4px 3px #0003)}.lg-hero h2{font-family:var(--fh);margin:8px 0;font-size:27px}.lg-hero p{line-height:1.8;margin:8px 0;font-size:13px}.lg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px}.lg-card{position:relative;border-radius:22px;background:#fff8e9;border:1px solid #cbb995;box-shadow:0 5px 0 #b2a08033;padding:16px;overflow:hidden}.lg-card h3{font-family:var(--fh);font-size:23px;margin:8px 0 12px;overflow-wrap:anywhere}.lg-card .lg-kicker{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:#7b6947}.lg-card footer{display:flex;gap:8px;margin-top:14px}.lg-card footer button{flex:1}.lg-strong{background:linear-gradient(#e9cd90,#d6ae63)!important;border-color:#b3873e!important}.lg-badge{display:inline-block;border-radius:20px;background:#e3ebd9;padding:4px 10px;font-size:11px;font-weight:800}.lg-data{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;gap:6px;margin:14px 0}.lg-data>div{padding:10px 5px;border-radius:12px;background:#e9dfc966}.lg-data b{display:block;font-size:20px;font-variant-numeric:tabular-nums}.lg-data small{font-size:10px;color:#716548}.lg-prizes{display:flex;gap:8px;text-align:center}.lg-prizes>div{flex:1;border:1px solid #ccb584;border-radius:15px;padding:12px 4px;background:#f4e3b9}.lg-prizes b{display:block;font-size:24px}.lg-note{font-size:12px;line-height:1.8;color:#665e4a}.lg-empty{text-align:center;padding:50px 20px;line-height:1.9}.lg-empty span{font-size:54px}.lg-empty h2{font-family:var(--fh)}.lg-form{display:grid;gap:12px;max-width:560px;margin:auto}.lg-form label{display:grid;gap:6px;font-weight:800;font-size:13px}.lg-form input,.lg-form select,.lg-chat-send input{width:100%;min-width:0;border-radius:12px;background:#fffaf1;border:1px solid #b6a17a;padding:12px;color:#183b31}.lg-form .lg-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}.lg-person{display:flex;align-items:center;gap:10px;min-width:0;padding:8px 0}.lg-person .lg-avatar{width:40px;height:40px;flex:none;overflow:hidden;border-radius:50%;border:2px solid #d9b669}.lg-person .lg-avatar img{width:100%;height:100%;object-fit:cover}.lg-person strong{font-size:13px;overflow-wrap:anywhere}.lg-person small{display:block;font-size:10px;color:#807357}.lg-people{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px}.lg-bracket{display:flex;align-items:stretch;gap:30px;overflow:auto;padding:12px 0 22px;direction:rtl}.lg-round{flex:0 0 270px;display:flex;flex-direction:column;gap:14px;justify-content:space-around}.lg-round h3{text-align:center;font-family:var(--fh);margin:0}.lg-match{border:1px solid #b99c61;border-radius:18px;background:#fff7e8;padding:12px;position:relative;box-shadow:0 4px 8px #19332812}.lg-match:after{content:'';position:absolute;top:50%;left:-30px;width:30px;border-top:2px solid #b4a27f}.lg-round:last-child .lg-match:after{display:none}.lg-team{border-radius:12px;padding:3px 8px}.lg-team.winner{background:#dce9c7}.lg-team .lg-person{padding:3px 0}.lg-team .lg-avatar{width:28px;height:28px}.lg-score{text-align:center;font-size:21px;font-weight:900;margin:7px 0;direction:ltr;font-variant-numeric:tabular-nums}.lg-chat{display:grid;gap:10px;min-height:220px;align-content:start}.lg-message{border-radius:14px;background:#fff7e9;border:1px solid #e3d3b4;padding:10px 14px;max-width:90%;overflow-wrap:anywhere}.lg-message.mine{justify-self:start;background:#dce8d5}.lg-message small{color:#7b705a}.lg-message p{margin:5px 0;white-space:pre-wrap;font-size:14px}.lg-chat-send{display:flex;gap:8px;position:sticky;bottom:0;background:#efe3cd;padding:12px 0}.lg-leader{display:flex;gap:12px;align-items:center;padding:12px;background:#fff6e3;border:1px solid #cdb88c;border-radius:16px;margin-bottom:10px}.lg-leader>em{font-size:23px;font-style:normal;color:#b28739}.lg-leader .lg-person{flex:1}.lg-leader>b{text-align:center;font-size:22px}.lg-leader>b small{display:block;font-size:10px;font-weight:400}.lg-alert{background:#f2dfb6;padding:12px;border-radius:12px;margin-bottom:12px;line-height:1.7;font-size:13px}.lg-loading{text-align:center;padding:45px}.lg-profile{margin:16px;border:1px solid #c9a867;border-radius:18px;background:linear-gradient(130deg,#254a39,#15382c);color:#f8e4b6;padding:16px;display:flex;align-items:center;gap:16px}.lg-profile>span{font-size:32px}.lg-profile b{font-family:var(--fh);font-size:25px}.lg-profile small{display:block;font-size:12px;color:#d6dcc3}
+#onl[data-league="true"]{background-color:#123b31!important;background-image:radial-gradient(ellipse at 50% 45%,#47735333,transparent 65%),repeating-linear-gradient(45deg,transparent 0 23px,#e4cb8e08 24px 25px)!important}#onl[data-league="true"] .tableWood{border-color:#c7a769!important;box-shadow:inset 0 0 0 3px #213d29,0 0 0 1px #af9149!important}#onl[data-league="true"] #topbar{border-bottom:1px solid #c6a86a66}#onl[data-league="true"] #uiOnlineTitle{color:#eed092;cursor:pointer}#onl[data-league="true"] #uiOnlineMode{color:#d6d7bd}#onl[data-league="true"] #lobbyMode,#onl[data-league="true"] #lobbyGoal,#onl[data-league="true"] #lobbyPublic,#onl[data-league="true"] #lobbyStart,#onl[data-league="true"] #pubInviteBtn,#onl[data-league="true"] #onlineFriendsBtn{display:none!important}#lgResultBack{width:100%;margin-top:10px;border-radius:12px;border:1px solid #b99c61;padding:12px;background:#234937;color:#fae7bc;font:inherit;font-weight:bold}#onl[data-league="true"] #oMyStats{display:none!important}
+@media(max-height:600px){.lg-head{padding:7px 14px}.lg-hero{padding:12px}.lg-nav button{min-height:40px}.lg-nav span{display:inline;font-size:15px}.lg-body{padding:10px}}
+
+/* v327: viewport-sized shell; the action/composer and navigation occupy real rows. */
+#leagueHub{height:100%;height:var(--lg-height,100dvh);top:var(--lg-offset,0px);bottom:auto;font-size:16px;line-height:1.5;overflow:hidden}
+#leagueHub [hidden]{display:none!important}
+#leagueHub .lg-head{flex:none;min-height:68px;padding:9px 12px;gap:10px}
+#leagueHub .lg-head>div{min-width:0;flex:1;text-align:center}
+#leagueHub .lg-head h1{font-size:25px;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#leagueHub .lg-head small{font-size:9px;letter-spacing:1.6px;margin-bottom:4px}
+#leagueHub .lg-head button{width:44px;height:44px;min-height:44px;flex:none;padding:4px;font-size:14px;border-radius:13px}
+#leagueHub .lg-body{padding:12px;flex:1 1 0;min-height:0;overflow:auto;scroll-padding:12px}
+#leagueHub .lg-wrap{max-width:720px;width:100%;margin:0 auto}
+#leagueHub .lg-tabs{padding:6px 10px;gap:5px;border-bottom:1px solid #bda66a55}
+#leagueHub .lg-tabs button,#leagueHub .lg-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.25;font-size:12px!important;padding:6px 3px!important;border-radius:12px;min-height:52px}
+#leagueHub .lg-tabs button{min-height:55px}
+#leagueHub .lg-tabs span,#leagueHub .lg-nav span{font-size:12px;font-weight:800}
+#leagueHub .lg-icon{width:23px;height:23px;display:inline-block;vertical-align:middle;flex:none}
+#leagueHub .lg-nav{position:relative;inset:auto;flex:0 0 auto;padding:6px 10px;gap:6px;border-radius:18px 18px 0 0;box-shadow:0 -2px 12px #17342715;z-index:1}
+#leagueHub .lg-hero{padding:16px;border-radius:20px;margin:0 0 12px}
+#leagueHub .lg-hero h2{font-size:24px;line-height:1.3;margin:5px 0}
+#leagueHub .lg-hero p{font-size:13px;line-height:1.65;margin:6px 0}
+#leagueHub .lg-trophy{font-size:0;filter:none;margin:0;color:var(--lg-gold)}
+#leagueHub .lg-trophy .lg-icon{width:40px;height:40px;stroke-width:1.35}
+#leagueHub .lg-welcome{display:grid;grid-template-columns:44px 1fr;text-align:start;gap:2px 10px;padding:14px}
+#leagueHub .lg-welcome .lg-trophy{grid-row:1/3;align-self:center}
+#leagueHub .lg-welcome h2{font-size:23px;margin:0}
+#leagueHub .lg-welcome p{font-size:12px;margin:0}
+#leagueHub .lg-detail-hero{display:grid;grid-template-columns:40px 1fr;gap:3px 10px;text-align:start}
+#leagueHub .lg-detail-hero .lg-trophy{grid-row:1/4;align-self:center}
+#leagueHub .lg-detail-hero .lg-badge{justify-self:start;font-size:11px;line-height:1.3;padding:4px 9px}
+#leagueHub .lg-detail-hero h2{display:none}
+#leagueHub .lg-detail-hero p{margin:2px 0;font-size:12px}
+#leagueHub .lg-detail-hero>b{grid-column:2;font-size:19px;font-variant-numeric:tabular-nums;direction:ltr;text-align:right}
+#leagueHub .lg-badge{color:#24422e;background:#dfead5}
+#leagueHub .lg-grid{gap:12px}
+#leagueHub .lg-card{padding:13px;border-radius:17px}
+#leagueHub .lg-card h3{font-size:23px;margin:6px 0 10px}
+#leagueHub .lg-prizes{gap:8px;font-size:13px}
+#leagueHub .lg-prizes>div{padding:10px 4px;border-radius:13px}
+#leagueHub .lg-prizes b{font-size:27px;line-height:1.5}
+#leagueHub .lg-data{margin:12px 0;gap:7px}
+#leagueHub .lg-data>div{padding:9px 4px}
+#leagueHub .lg-data b{font-size:22px;line-height:1.4}
+#leagueHub .lg-data small{font-size:11px}
+#leagueHub .lg-rules{margin:12px 0;color:#5b614f;border-top:1px solid #d9cba9;padding-top:10px;font-size:13px}
+#leagueHub .lg-rules summary{cursor:pointer;font-weight:800;padding:4px 0}
+#leagueHub .lg-share{display:grid;grid-template-columns:1fr 44px;gap:5px 8px;align-items:center;margin:12px 0 0}
+#leagueHub .lg-share label{grid-column:1/-1;font-size:12px;font-weight:700}
+#leagueHub .lg-share input{width:100%;min-width:0;border:1px solid #cfbb90;background:#fffdf5;color:var(--lg-ink);padding:9px 10px;font-size:14px;font-weight:800;letter-spacing:1px;border-radius:10px}
+#leagueHub .lg-share button{padding:4px;width:44px;height:44px}
+#leagueHub .lg-empty{padding:30px 12px;text-align:center;font-size:14px;line-height:1.65}
+#leagueHub .lg-empty>.lg-icon{width:38px;height:38px;color:#806b42}
+#leagueHub .lg-empty h2{font-size:23px;margin:12px 0 6px}
+#leagueHub .lg-empty p{margin:0;font-size:13px}
+#leagueHub .lg-dock{flex:none;background:#fbf4e6;border-top:1px solid #d9caa8;padding:8px 12px;box-shadow:0 -3px 12px #2031280b}
+#leagueHub .lg-dock>button{display:block;width:100%;max-width:720px;margin:auto;min-height:46px;padding:9px 12px;font-size:15px}
+#leagueHub .lg-dock-note{font-size:11px;text-align:center;margin:0 0 6px;color:#526451}
+#leagueHub .lg-code-form{display:flex;gap:8px;margin:12px 0}
+#leagueHub .lg-code-form input{min-width:0;flex:1;border-radius:12px;padding:10px;border:1px solid #b6a17a;background:#fffaf1}
+#leagueHub[data-view="chat"] .lg-body{padding:12px}
+#leagueHub[data-view="chat"] .lg-wrap{min-height:100%;display:flex;flex-direction:column;position:relative}
+#leagueHub .lg-chat{display:flex;flex-direction:column;justify-content:flex-end;flex:1;min-height:0;gap:10px;align-content:normal;padding:6px 0}
+#leagueHub .lg-message{width:fit-content;max-width:86%;align-self:flex-end;padding:9px 12px;border-radius:15px 15px 15px 4px;box-shadow:0 2px 4px #263b2310}
+#leagueHub .lg-message.mine{align-self:flex-start;background:#deead8;border-radius:15px 15px 4px 15px}
+#leagueHub .lg-message-meta{display:flex;justify-content:space-between;gap:14px;align-items:center;color:#52664e;font-size:11px}
+#leagueHub .lg-message-meta strong{font-size:11px;overflow-wrap:anywhere}
+#leagueHub .lg-message-meta time{direction:ltr;white-space:nowrap;font-size:10px}
+#leagueHub .lg-message p{font-size:15px;line-height:1.65;margin:5px 0 0;unicode-bidi:plaintext}
+#leagueHub .lg-chat-empty{margin:auto;text-align:center;color:#697362;font-size:14px;padding:25px 12px}
+#leagueHub .lg-chat-send{position:static;display:flex;align-items:center;max-width:720px;margin:auto;padding:0;gap:8px;background:none}
+#leagueHub .lg-chat-send input{height:46px;flex:1;min-width:0;font-size:16px;padding:10px 12px;border-radius:15px}
+#leagueHub .lg-chat-send button{height:46px;width:46px;flex:none;padding:6px;border-radius:14px;background:#224b39;color:#fff0ce;border-color:#224b39}
+#leagueHub .lg-chat-send button .lg-icon{transform:scaleX(-1)}
+#leagueHub .lg-chat-error{max-width:720px;margin:4px auto 0;font-size:12px;color:#993c29}
+#leagueHub .lg-chat-error:empty{display:none}
+#leagueHub .lg-new-chat{position:sticky;bottom:5px;align-self:center;font-size:12px;padding:6px 12px;min-height:36px;box-shadow:0 3px 14px #13271f33;background:#254936;color:#fff2d6}
+#leagueHub[data-keyboard="true"] .lg-nav{display:none}
+#leagueHub[data-keyboard="true"]{padding-bottom:0}
+@media(max-height:600px){#leagueHub .lg-head{min-height:54px;padding:5px 10px}#leagueHub .lg-head small{display:none}#leagueHub .lg-head h1{font-size:22px}#leagueHub .lg-tabs button{min-height:44px;flex-direction:row;gap:5px}#leagueHub .lg-nav button{min-height:44px;flex-direction:row;font-size:11px!important}#leagueHub .lg-hero{padding:10px}#leagueHub .lg-body{padding:10px}}
+@media(prefers-reduced-motion:reduce){#leagueHub *{scroll-behavior:auto!important}}
+
+/* v328: compact identity header and short, nonblocking route transitions. */
+#leagueHub .lg-head{display:grid;grid-template-columns:78px minmax(0,1fr) 78px;gap:8px;min-height:72px;padding:10px 14px;background:linear-gradient(120deg,#173b30,#102c25);box-shadow:0 3px 14px #0b201629;position:relative;z-index:2}
+#leagueHub .lg-head-title{min-width:0;text-align:center}
+#leagueHub .lg-head h1{font-size:clamp(22px,5.8vw,28px);line-height:1.3;font-weight:900}
+#leagueHub .lg-head small{color:#dfc98f;opacity:1;font-size:10px;font-weight:600;letter-spacing:0;margin:0 0 1px;line-height:1.4}
+#leagueHub .lg-head button{display:flex;align-items:center;justify-content:center;gap:4px;height:44px;min-height:44px;padding:7px;background:#ffffff0a;border-color:#cfb78055;color:#f6e6bf;box-shadow:inset 0 1px 0 #fff1;transition:background-color .15s,transform .15s}
+#leagueHub .lg-head button:active{background:#cfb78026;transform:scale(.96)}
+#leagueHub #lgBack{width:78px;border-radius:22px;font-size:13px;white-space:nowrap}
+#leagueHub #lgBack .lg-icon{width:18px;height:18px}
+#leagueHub #lgRefresh{width:44px;border-radius:50%;justify-self:end}
+#leagueHub #lgRefresh .lg-icon{width:21px;height:21px}
+#leagueHub #lgRefresh[data-loading="true"] .lg-icon{animation:lg-refresh-spin .9s linear infinite}
+#leagueHub .lg-loading{display:flex;flex-direction:column;align-items:center;gap:12px;padding:48px 16px;font-size:14px;color:#647260}
+#leagueHub .lg-loading-mark{display:grid;place-items:center;width:54px;height:54px;border:1px solid #c4ab7455;border-radius:18px;color:#36593f;background:#ead4a82e}
+#leagueHub .lg-tabs button,#leagueHub .lg-nav button{transition:background-color .15s,color .15s}
+@keyframes lg-refresh-spin{to{transform:rotate(360deg)}}
+@media(max-width:350px){#leagueHub .lg-head{grid-template-columns:68px minmax(0,1fr) 48px;gap:5px;padding:9px 10px}#leagueHub #lgBack{width:68px}#leagueHub .lg-head h1{font-size:22px}}
+@media(max-height:600px){#leagueHub .lg-head{min-height:56px;padding-top:5px;padding-bottom:5px}#leagueHub .lg-head small{display:none}}
+@media(prefers-reduced-motion:reduce){#leagueHub .lg-head button,#leagueHub .lg-nav button,#leagueHub .lg-tabs button{transition:none}#leagueHub #lgRefresh[data-loading="true"] .lg-icon{animation:none}}
+
+/* v330: requirements are visible before registration, including its refusal reason. */
+#leagueHub .lg-rank-rule{padding:11px 12px;margin:10px 0;border:1px solid #c7ba91;border-radius:12px;background:#eee9d7;text-align:start}
+#leagueHub .lg-rank-rule strong{display:block;font-size:13px;line-height:1.7;color:#294b38}
+#leagueHub .lg-rank-rule small{display:block;font-size:11px;line-height:1.8;color:#6b694f}
+#leagueHub .lg-rank-status{margin:8px 0 0;padding-top:8px;border-top:1px solid #cbc7ac;font-size:12px;line-height:1.8;color:#365c42}
+#leagueHub .lg-rank-status.is-outside{color:#8d4d28;font-weight:800}
+#lgActionError{flex:none;margin:8px 12px 0;padding:10px 12px;border:1px solid #c69b74;border-radius:12px;background:#ffeedc;color:#854b28;font-size:12px;line-height:1.7;max-height:18vh;overflow:auto}
+#lgActionError[hidden]{display:none}
+
+/* v331: the existing registration and the reason for refusing another stay visible. */
+#leagueHub .lg-registration-note{margin:8px 0 12px;padding:10px 12px;background:#e7eddf;border:1px solid #b6c8a7;border-radius:12px;color:#345039;text-align:start}
+#leagueHub .lg-registration-note p{font-size:12px;line-height:1.7;margin:0 0 7px}
+#leagueHub .lg-registration-note button{min-height:36px;padding:6px 12px;font-size:12px;background:#f8f6e9}
+#leagueHub .lg-dock .lg-registration-note{max-width:720px;margin:0 auto 8px}
+#leagueHub #lgActionError{flex-shrink:0;font-weight:700}

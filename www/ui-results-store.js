@@ -3,6 +3,7 @@
 const UI_RESULT={online:null,local:null};
 const UI_SHOP={tab:'themes',preview:null,busy:false};
 let uiArtSerial=0;
+function uiGoldCoin(){return '<img class="uiGoldCoin" src="ui-art/gold-coin.svg" alt="" aria-hidden="true" width="32" height="32">';}
 function uiShopIcon(kind){
   const paths={themes:'<rect x="5" y="3" width="14" height="18" rx="3"/><path d="m12 7 3 5-3 5-3-5 3-5Z"/>',gold:'<ellipse cx="12" cy="7" rx="8" ry="4"/><path d="M4 7v5c0 2 4 4 8 4s8-2 8-4V7M4 12v5c0 2 4 4 8 4s8-2 8-4v-5"/>'};
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">'+paths[kind]+'</svg>';
@@ -23,15 +24,16 @@ function uiResultArt(kind){
 }
 function uiRewardSnapshot(){return {gold:ST.n('gold'),xp:ST.n('xp'),rank:ST.n('rank'),level:ST.n('level')||1};}
 function uiRewardDelta(value){return (value>0?'+':value<0?'−':'')+toH(Math.abs(value));}
-function uiAnimateRewardNumber(el,value){
+function uiAnimateRewardNumber(el,value,format=toH){
   if(!el||!Number.isFinite(value))return;
+  if(el._uiFrame&&el._uiTarget===value)return;
   const from=Number.isFinite(el._uiValue)?el._uiValue:value;
   if(el._uiFrame)cancelAnimationFrame(el._uiFrame);
-  el._uiValue=value;
-  const finish=()=>{el.textContent=toH(value);el._uiFrame=0;};
+  el._uiTarget=value;
+  const finish=()=>{el._uiValue=value;el.textContent=format(value);el._uiFrame=0;};
   if(from===value||document.hidden||window.matchMedia('(prefers-reduced-motion: reduce)').matches){finish();return;}
   const start=performance.now();
-  const step=now=>{const p=Math.min(1,(now-start)/850),n=Math.round(from+(value-from)*(1-Math.pow(1-p,3)));el.textContent=toH(n);if(p<1)el._uiFrame=requestAnimationFrame(step);else finish();};
+  const step=now=>{const p=Math.min(1,(now-start)/850),n=Math.round(from+(value-from)*(1-Math.pow(1-p,3)));el._uiValue=n;el.textContent=format(n);if(p<1)el._uiFrame=requestAnimationFrame(step);else finish();};
   el._uiFrame=requestAnimationFrame(step);
 }
 function uiShowResultRewards(scope){
@@ -41,52 +43,152 @@ function uiShowResultRewards(scope){
     const total=document.getElementById(p+'My'+label+'Num');
     const delta=document.getElementById(p+'My'+label+'Delta');
     if(!total)continue;
-    uiAnimateRewardNumber(total,model.current[field]);
-    if(delta){delta.textContent=uiRewardDelta(model.current[field]-model.base[field]);delta.classList.toggle('is-negative',model.current[field]<model.base[field]);}
+    if(scope==='online'&&model.preparing&&!model.revealed)total.textContent=toH(model.current[field]);
+    else uiAnimateRewardNumber(total,model.current[field]);
+    if(delta){
+      const amount=scope==='online'?model.delta[field]:model.current[field]-model.base[field];
+      delta.classList.toggle('is-pending',amount===null);delta.classList.toggle('is-negative',amount<0);
+      if(amount===null){delta.textContent='بانتظار التأكيد';delta._uiValue=0;}
+      else if(scope==='online'&&model.preparing&&!model.revealed)delta.textContent=uiRewardDelta(amount);
+      else uiAnimateRewardNumber(delta,amount,uiRewardDelta);
+    }
   }
   const fill=document.getElementById(p+'XpFill');if(fill)fill.style.width=((Math.max(0,model.current.xp)%100))+'%';
   const level=document.getElementById(p+'XpLevel');if(level)level.textContent='المستوى '+toH(model.current.level);
-  const note=document.getElementById(p+'RewardNote');if(note)note.textContent=scope==='online'&&!model.synced?'جارٍ تحديث رصيدك…':'رصيدك ونقاط رتبتك بعد الجولة';
+  const note=document.getElementById(p+'RewardNote');
+  if(note)note.textContent=scope!=='online'?'رصيدك بعد الجولة':model.synced?'تم تأكيد النتيجة · رصيدك الحالي':model.fetching?'جارٍ التحقق من المكافأة…':model.exhausted?'لم يكتمل تأكيد المكافأة بعد. حدّث الرصيد للتحقق.':'بانتظار تأكيد مكافأة الجولة…';
+  if(scope==='online')uiResultFeeLine(model);
+  const refresh=document.getElementById('oRewardRefresh');
+  if(scope==='online'&&refresh){refresh.hidden=model.synced||!model.competitive;refresh.disabled=!!model.fetching;refresh.onclick=()=>pullServerStats(0);}
 }
 function uiSetupResult(scope,opts){
   const online=scope==='online',p=online?'o':'l',root=document.getElementById(online?'oOver':'results');
   root.dataset.outcome=opts.draw?'draw':opts.won?'win':'loss';
-  root.dataset.kind=online&&ONL.tournament?'tournament':opts.competitive?'competitive':online?'friendly':'practice';
+  root.dataset.kind=online&&ONL.league?'league':online&&ONL.tournament?'tournament':opts.competitive?'competitive':online?'friendly':'practice';
   const kind=document.getElementById(p+'ResultKind');
-  if(kind)kind.textContent=online&&ONL.tournament?'بطولة التاسعة · نتيجة المباراة':opts.watching?'مشاهدة · نهاية الجولة':opts.competitive?'نتيجة اللعب التنافسي':online?'جمعتكم أحلى · جلسة ودية':'تدريب · نهاية الجولة';
+  if(kind)kind.textContent=online&&ONL.league?'مباراة دوري':online&&ONL.tournament?'بطولة التاسعة · نتيجة المباراة':opts.watching?'مشاهدة · نهاية الجولة':opts.competitive?'نتيجة اللعب التنافسي':online?'جمعتكم أحلى · جلسة ودية':'تدريب · نهاية الجولة';
   const art=document.getElementById(p+'ResultArt');if(art)art.innerHTML=uiResultArt(online&&!opts.competitive?'friendly':'competitive');
-  const goldIcon=document.querySelector('#'+p+'GoldReward .uiRewardIcon');if(goldIcon)goldIcon.innerHTML=uiGoldArt(0);
+  const goldIcon=document.querySelector('#'+p+'GoldReward .uiRewardIcon');if(goldIcon)goldIcon.innerHTML=uiGoldCoin();
   const title=document.getElementById(online?'oResTtl':'resTtl');
   title.textContent=opts.watching?'اكتملت الجولة':opts.draw?'تعادل يليق بكم':opts.won?'يا سلام على الفوز!':'نعوّضها الجاية';
   document.getElementById(p+'MyStats').classList.toggle('hidden',!!opts.watching||(online&&!opts.competitive));
   const rank=document.getElementById('oRankReward');if(online&&rank)rank.classList.toggle('hidden',!opts.competitive);
 }
 function uiBeginOnlineResult(r,seated,key){
-  if(UI_RESULT.online&&UI_RESULT.online.key===key)return;
+  if(UI_RESULT.online&&UI_RESULT.online.key===key){uiReceiveResultReward(ONL.reward);return;}
+  uiCancelResultPreparation();
   const base=uiRewardSnapshot();
-  UI_RESULT.online={key,seated,base,current:{...base},synced:false};
-  for(const label of ['Gold','Xp','Rank']){const el=document.getElementById('oMy'+label+'Num');if(el){if(el._uiFrame)cancelAnimationFrame(el._uiFrame);el._uiValue=base[label.toLowerCase()];}}
+  const draw=!!r.draw||r.winnerTeam==='draw',won=r.mode==='team'?r.teams?.[r.winnerTeam]?.includes(ONL.you):r.winner===ONL.you;
+  UI_RESULT.online={key,seated,uid:FB.user?.uid,rewardKey:ONL.reward?.key||null,base,current:{...base},synced:false,competitive:!ONL.league&&!ONL.tournament&&!!r.tier?.fee,won:!!won&&!draw,
+    received:{entry:null,gold:draw||!won||r.tier?.win===0?0:null,rank:draw?0:null},entry:null,payout:null,delta:{gold:null,rank:null},applied:{},revision:0,lastReadRevision:-1,fetching:false,exhausted:false};
+  for(const label of ['Gold','Xp','Rank'])for(const suffix of ['Num','Delta']){const el=document.getElementById('oMy'+label+suffix);if(el){if(el._uiFrame)cancelAnimationFrame(el._uiFrame);el._uiFrame=0;el._uiValue=suffix==='Num'?base[label.toLowerCase()]:0;}}
+  uiReceiveResultReward(ONL.reward);
   uiShowResultRewards('online');
+}
+function uiReceiveResultReward(receipt){
+  const m=UI_RESULT.online;
+  if(!m||!m.seated||!receipt||receipt.key!==m.rewardKey||FB.user?.uid!==m.uid)return;
+  let changed=false;
+  for(const field of ['entry','gold','rank'])if(Number.isSafeInteger(receipt[field]?.delta)&&(field!=='entry'||receipt[field].delta<=0)&&m.received[field]!==receipt[field].delta){m.received[field]=receipt[field].delta;changed=true;}
+  if(changed){m.revision++;m.synced=false;m.exhausted=false;}
+}
+function uiResultReadToken(){
+  const m=UI_RESULT.online;if(!m?.seated||!m.competitive||ONL.status!=='over'||FB.user?.uid!==m.uid)return null;
+  m.lastReadRevision=m.revision;m.fetching=true;m.exhausted=false;uiShowResultRewards('online');
+  return {key:m.key,uid:m.uid,revision:m.revision};
+}
+function uiResultNeedsRead(){const m=UI_RESULT.online;return !!(m?.seated&&m.competitive&&ONL.status==='over'&&FB.user?.uid===m.uid&&m.lastReadRevision<m.revision);}
+function uiResultReadFinished(token){
+  const m=UI_RESULT.online;if(!token||!m||m.key!==token.key||FB.user?.uid!==token.uid)return;
+  m.fetching=false;m.exhausted=!m.synced;uiShowResultRewards('online');
 }
 function uiPresentOnlineResult(r,seated){
   if(UI_RESULT.online&&UI_RESULT.online.presented)return;
   if(UI_RESULT.online)UI_RESULT.online.presented=true;
   const won=r.mode==='team'?r.winnerTeam===r.teams.findIndex(t=>t.includes(ONL.you)):r.winner===ONL.you;
-  uiSetupResult('online',{competitive:!!(r.tier&&r.tier.fee),won,draw:r.draw||r.winnerTeam==='draw',watching:!seated});
+  uiSetupResult('online',{competitive:!ONL.league&&!ONL.tournament&&!!(r.tier&&r.tier.fee),won,draw:r.draw||r.winnerTeam==='draw',watching:!seated});
 }
 function uiResultLocalXp(){
   const model=UI_RESULT.online;if(!model||!model.seated)return;
   model.current.xp=ST.n('xp');model.current.level=ST.n('level')||1;
   uiShowResultRewards('online');
 }
-function uiResultServerStats(gold,rank){
+function uiResultServerStats(gold,rank,token){
   const model=UI_RESULT.online;
-  if(!model||!model.seated||ONL.status!=='over')return;
-  const previous=model.current.gold;
+  if(!model||!model.seated||ONL.status!=='over'||!token||token.key!==model.key||token.uid!==FB.user?.uid||token.revision!==model.revision)return;
+  if(!Number.isSafeInteger(gold)||!Number.isSafeInteger(rank))return;
   model.current.gold=gold;model.current.rank=rank;
-  model.current.xp=ST.n('xp');model.current.level=ST.n('level')||1;model.synced=true;
+  model.entry=model.received.entry;model.payout=model.received.gold;
+  const netGold=model.entry!==null&&model.payout!==null?model.entry+model.payout:null;
+  for(const [field,label] of [['gold','Gold'],['rank','Rank']]){
+    const amount=field==='gold'?netGold:model.received[field];if(amount===null)continue;
+    model.delta[field]=amount;
+    if(!model.applied[field]){
+      model.applied[field]=true;
+      const total=document.getElementById('oMy'+label+'Num');
+      if(total){if(total._uiFrame)cancelAnimationFrame(total._uiFrame);total._uiFrame=0;total._uiValue=Math.max(0,model.current[field]-amount);}
+      const box=document.getElementById('o'+label+'Reward');
+      if(amount>0&&box){box.classList.remove('is-gaining');void box.offsetWidth;box.classList.add('is-gaining');}
+    }
+  }
+  model.current.xp=ST.n('xp');model.current.level=ST.n('level')||1;
+  model.synced=model.delta.gold!==null&&model.delta.rank!==null;
+  uiShowResultRewards('online');uiTryRevealOnlineResult();
+}
+// v332: prepare one complete result off-screen; the only deadline belongs to this visible client.
+function uiResultFeeLine(m){
+  const line=document.getElementById('oFeeWinLine');if(!line)return;
+  const visible=m.competitive&&m.seated;line.classList.toggle('hidden',!visible);if(!visible)return;
+  const amount=n=>n===null?'غير مؤكد':uiRewardDelta(n);
+  line.innerHTML='<span>رسوم الدخول <bdi>'+amount(m.entry)+'</bdi>'+uiGoldCoin()+'</span>'+(m.won?'<span>الجائزة <bdi>'+amount(m.payout)+'</bdi>'+uiGoldCoin()+'</span>':'');
+}
+function uiResultIsCurrent(m){return !!(m&&UI_RESULT.online===m&&ONL.status==='over'&&FB.user?.uid===m.uid);}
+function uiCancelResultPreparation(){
+  const m=UI_RESULT.online;if(!m)return;
+  if(m.prepareTimer)clearTimeout(m.prepareTimer);m.prepareTimer=null;
+  for(const done of m.assetCleanups||[])done();m.assetCleanups=[];m.preparing=false;
+}
+function uiPrepareOnlineResult(){
+  const m=UI_RESULT.online;if(!m||m.preparing||m.revealed)return;
+  m.preparing=true;m.contentReady=false;m.assetCleanups=[];
+  const root=document.getElementById('oOver'),loading=document.getElementById('oResultLoading');
+  root.dataset.ready='false';root.setAttribute('aria-busy','true');loading.hidden=false;
+  document.getElementById('oResultLoadingBack').onclick=()=>document.getElementById('oMenu').click();
+  m.prepareTimer=setTimeout(()=>{if(uiResultIsCurrent(m)){m.timedOut=true;uiTryRevealOnlineResult();}},8000);
+}
+function uiFinishOnlineResultContent(ranksReady){
+  const m=UI_RESULT.online;if(!m?.preparing||m.contentStarted)return;m.contentStarted=true;
+  Promise.resolve(ranksReady).catch(()=>{}).then(()=>{if(uiResultIsCurrent(m)&&m.preparing){m.rowsReady=true;uiTryRevealOnlineResult();}});
+}
+function uiWaitResultImages(m){
+  m.assetsStarted=true;
+  const badge=document.getElementById('oRankBadge_'+ONL.you);if(badge&&m.competitive&&m.synced)badge.innerHTML=rankBadgeHTML(m.current.rank,10);
+  const images=Array.from(document.querySelectorAll('#oOver #resCard img'));
+  const assets=images.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{
+    const done=()=>{img.removeEventListener('load',done);img.removeEventListener('error',done);resolve();};
+    img.addEventListener('load',done,{once:true});img.addEventListener('error',done,{once:true});m.assetCleanups.push(done);
+  }));
+  Promise.allSettled(assets).then(()=>{if(uiResultIsCurrent(m)&&m.preparing){m.contentReady=true;uiTryRevealOnlineResult();}});
+}
+function uiDeferResultRankToast(from,to){
+  const m=UI_RESULT.online;if(!uiResultIsCurrent(m)||!m.preparing||m.revealed)return false;
+  m.rankChange={from:m.rankChange?.from??from,to};return true;
+}
+function uiTryRevealOnlineResult(){
+  const m=UI_RESULT.online;if(!uiResultIsCurrent(m)||!m.preparing||m.revealed)return;
+  if(!m.timedOut){
+    if(!m.rowsReady||(m.seated&&m.competitive&&!m.synced))return;
+    if(!m.assetsStarted){uiWaitResultImages(m);return;}
+    if(!m.contentReady)return;
+  }
+  m.revealed=true;
+  if(m.timedOut&&!m.synced)m.exhausted=true;
+  uiCancelResultPreparation();
+  const root=document.getElementById('oOver');root.dataset.ready='true';root.setAttribute('aria-busy','false');root.scrollTop=0;
+  document.getElementById('oResultLoading').hidden=true;
   uiShowResultRewards('online');
-  if(gold>previous){const box=document.getElementById('oGoldReward');box.classList.remove('is-gaining');void box.offsetWidth;box.classList.add('is-gaining');}
+  if(m.seated&&m.won&&typeof SFX!=='undefined')SFX.win();
+  if(m.rankChange)showRankChangeToast(m.rankChange.from,m.rankChange.to);
 }
 function uiPresentLocalResult(won,draw){
   const base=G._uiRewardBase||uiRewardSnapshot();
@@ -178,7 +280,7 @@ function uiRenderGoldPackages(){
   const names=['حفنة ذهب','رصّة ذهب','كيس المجلس','صندوق الذهب','خزنة المجلس'];
   GOLD_PACKAGES_DISPLAY.forEach((pkg,i)=>{
     const card=document.createElement('button');card.type='button';card.className='uiGoldPackage';card.dataset.package=pkg.key;
-    card.innerHTML=uiGoldArt(i)+'<span class="uiGoldPackageName">'+names[i]+'</span><strong>'+pkg.label.replace(' 🪙','')+' <small>ذهب</small></strong><span class="uiGoldPackagePrice">'+toH(pkg.sar)+' ر.س</span>';
+    card.innerHTML=uiGoldArt(i)+'<span class="uiGoldPackageName">'+names[i]+'</span><strong>'+pkg.label.replace(/ ذهب$/,'')+' <small>ذهب</small></strong><span class="uiGoldPackagePrice">'+toH(pkg.sar)+' ر.س</span>';
     card.onclick=()=>buyGoldPackage(pkg.key);wrap.appendChild(card);
   });
 }

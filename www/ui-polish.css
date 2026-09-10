@@ -250,8 +250,7 @@ button:disabled:active{transform:none}
 .resRow .pt{font-size:24px;color:#294d34;font-variant-numeric:tabular-nums;flex:none}
 .resRow .gold{font-size:13px;color:#856a35}
 .resRow .ava{flex:none}
-#oMyStats{gap:10px!important;flex-wrap:wrap;padding:12px;background:#edf1e5;border:1px solid #dce4ce;border-radius:16px}
-#oMyStats>div{flex:1;justify-content:center;flex-wrap:wrap;min-width:110px}
+#oMyStats{gap:10px!important}
 #oMyGoldNum,#oMyRankNum{font-size:22px!important}
 #oMyGoldDelta,#oMyRankDelta{font-size:13px!important}
 #oFeeWinLine{font-size:13px!important;flex-wrap:wrap;gap:8px!important;line-height:1.5}
@@ -767,7 +766,7 @@ button:disabled:active{transform:none}
 #resCard #resSub,#resCard #oResSub{font-family:var(--fb);font-size:12px!important;font-weight:600!important;line-height:1.7;color:var(--ui-result-muted)!important;margin:0 auto 15px!important;max-width:340px}
 #teamLine{font-family:var(--fh);font-size:15px;margin:0 0 12px;color:var(--ui-result-ink);background:#f1eadc;border-radius:12px;padding:7px 10px}
 #oForfeitBanner{font-family:var(--fb)!important;font-size:12px!important;line-height:1.6!important;padding:9px 12px!important;background:#eee0b8!important;box-shadow:none!important;color:#735b30!important;border:1px solid #d8c189}
-.uiRewardGrid{display:grid!important;grid-template-columns:1fr 1fr;gap:9px;margin:0 0 15px;text-align:center}
+.uiRewardGrid{display:grid!important;grid-template-columns:minmax(0,1fr);gap:9px;margin:0 0 15px;text-align:center}
 .uiRewardGrid.hidden{display:none!important}
 .uiRewardTile{position:relative;display:grid;grid-template-columns:1fr auto;align-items:center;gap:1px 6px;min-width:0;min-height:103px;padding:12px 14px;border:1px solid #dbc895;border-radius:17px;background:linear-gradient(130deg,#f9e7b1,#f4edd6);overflow:hidden;text-align:start}
 .uiRewardTile>span:not(.uiRewardIcon){grid-column:1;font-size:11px;font-weight:800;color:#857143}
@@ -924,3 +923,146 @@ button:disabled:active{transform:none}
 #cupTableNotice{position:absolute;top:45%;inset-inline:15%;padding:15px;border:1px solid #d7b36b;border-radius:15px;background:#163e35;color:#fff1c7;text-align:center;z-index:80;pointer-events:none}
 
 #onl[data-tournament="true"] #pubInviteBtn,#onl[data-tournament="true"] #lobbyStart{display:none!important}
+
+/* v330: opaque, muted cards keep overlapping faces readable. Geometry is unchanged. */
+#hand .card.dimmed-card,#oHand .card.dimmed-card{opacity:1;filter:grayscale(.65) brightness(.78);pointer-events:none;transition:filter .18s,box-shadow .18s}
+#hand .card.eatable,#oHand .card.eatable{box-shadow:0 0 0 2px #f6d786,0 0 0 4px #183e31,0 7px 14px #0005}
+#hand .card.waqfPlayable,#oHand .card.waqfPlayable{filter:none;box-shadow:0 0 0 2.5px #ffe4a0,0 0 0 5px #204c39,0 10px 18px #0006}
+#hand .card.eatable::after,#oHand .card.eatable::after,#hand .card.waqfPlayable::after,#oHand .card.waqfPlayable::after{content:'أكل';position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);z-index:3;border:1px solid #efd392;border-radius:8px;background:#214c39;color:#fff3d1;padding:1px 6px;font:800 10px/1.6 var(--fb);white-space:nowrap;pointer-events:none}
+#hand .card.waqfPlayable::after,#oHand .card.waqfPlayable::after{content:'مزايدة'}
+#hand .card:focus-visible,#oHand .card:focus-visible{outline:2px solid #fff0ba;outline-offset:5px}
+
+/* Two equally sized rewards, with separate confirmed deltas and current totals. */
+#oOver{z-index:395}
+#oMyStats{grid-template-columns:repeat(2,minmax(0,1fr));padding:0;background:none;border:0;border-radius:0;align-items:stretch}
+#oMyStats>.uiRewardTile{display:grid;grid-template-columns:minmax(0,1fr) 28px;grid-template-rows:auto 1fr auto;grid-column:auto;min-width:0;min-height:126px;gap:8px 3px;padding:13px 11px;text-align:start;align-items:center}
+#oMyStats>.uiRewardTile>span:not(.uiRewardIcon){grid-column:1/-1;grid-row:1;font-size:11px;line-height:1.7}
+#oMyStats>.uiRewardTile>.uiRewardIcon{grid-column:2;grid-row:2;width:27px;height:27px}
+#oMyStats>.uiRewardTile>strong{grid-column:1;grid-row:2;font-size:clamp(19px,5.2vw,26px);line-height:1.4;direction:ltr;unicode-bidi:isolate;text-align:start}
+#oMyStats>.uiRewardTile>.uiRewardDelta{grid-column:1/-1;grid-row:3;justify-self:start;font-family:var(--fb);font-size:16px;line-height:1.5;font-weight:900;min-width:36px;padding:2px 8px;border-radius:8px}
+#oMyStats>.uiRewardRank{background:linear-gradient(135deg,#dfebdd,#eef1e6);border-color:#b6cbb0;color:#335940}
+#oMyStats>.uiRewardRank>strong,#oMyStats>.uiRewardRank>span{color:#335940}
+#oMyStats>.uiRewardRank>.uiRewardIcon{background:#c8ddbd;border-color:#87a47b;box-shadow:none;color:#356140;border-radius:9px}
+.uiRewardIcon svg{width:22px;height:22px}
+#oMyStats .uiRewardDelta.is-pending{font-size:10px;font-weight:700;color:#756e59;background:#ffffff60;direction:rtl}
+#oMyStats .uiRewardDelta.is-negative{color:var(--ui-result-negative)}
+#oMyStats .uiRewardNote{padding:1px 4px;font-size:11px;line-height:1.7}
+#oRewardRefresh{grid-column:1/-1;justify-self:center;border:1px solid #becab0;background:#edf0e2;color:#345740;border-radius:10px;padding:7px 16px;font:800 12px/1.5 var(--fb);min-height:36px;cursor:pointer}
+#oRewardRefresh[hidden]{display:none}
+#oRewardRefresh:disabled{opacity:.6;cursor:wait}
+@media(max-width:350px){#oMyStats>.uiRewardTile{padding:10px 8px;min-height:116px;grid-template-columns:minmax(0,1fr)}#oMyStats>.uiRewardTile>.uiRewardIcon{display:none}#oMyStats>.uiRewardTile>strong{font-size:21px}}
+@media(max-height:600px){#oMyStats>.uiRewardTile{min-height:100px;gap:3px;padding-block:8px}}
+@media(prefers-reduced-motion:reduce){#hand .card.dimmed-card,#oHand .card.dimmed-card{transition:none}}
+
+/* v332: complete result reveal, confirmed net gold, and one currency icon on every platform. */
+.uiGoldCoin{display:inline-block;width:20px;height:20px;max-width:none;object-fit:contain;vertical-align:middle;flex:none}
+.uiRewardIcon>.uiGoldCoin{width:34px;height:34px}
+#oMyStats>.uiRewardTile>.uiRewardChange{grid-column:1/-1;grid-row:3;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.uiRewardChange>small{font-size:10px;line-height:1.5;color:#796740}
+#oMyStats .uiRewardChange>.uiRewardDelta{font:900 16px/1.5 var(--fb);min-width:36px;padding:2px 8px;border-radius:8px}
+#oFeeWinLine>span{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
+#oFeeWinLine bdi{font-variant-numeric:tabular-nums;font-weight:800}
+#oOver[data-ready="false"]>#resCard{display:none!important}
+.uiResultLoading{display:flex;flex-direction:column;align-items:center;gap:18px;max-width:300px;color:#f7e8c4;text-align:center;font-weight:800}
+.uiResultLoading[hidden]{display:none}
+.uiResultLoading p{margin:0;font-size:18px;line-height:1.7}
+.uiResultLoadingMark{width:38px;height:38px;border:3px solid #ddc48b40;border-top-color:#e6c579;border-radius:50%;animation:uiResultLoadingSpin 1s linear infinite}
+.uiResultLoading button{border:1px solid #e0c99477;border-radius:14px;background:#244b3b;color:#fff0cf;padding:12px 18px;font:800 14px/1.5 var(--fb);cursor:pointer}
+.uiResultRankPending{font-size:10px;line-height:1.5;color:#7a7c68}
+.expressionSend{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:102px}
+.expressionCost{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.expressionCost bdi{direction:ltr;unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+.expressionCost .uiGoldCoin{width:18px;height:18px}
+.expressionPreview small{display:block;margin-top:3px;font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+.expressionTargets{display:grid;grid-template-columns:1fr}
+.expressionTargets button{justify-content:flex-start;min-height:42px;padding:10px 12px;text-align:start}
+.expressionTargets button .expressionTargetName{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;line-height:1.6;font-weight:800}
+@keyframes uiResultLoadingSpin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.uiResultLoadingMark{animation:none}}
+
+/* v333 — keep the avatar clock; hide only the duplicate header bar. */
+#oTimerTop{display:none!important}
+#lgSeatJoin[hidden]{display:none!important}
+#lgSeatJoin{min-width:0;min-height:48px;height:48px;padding:4px 6px;border-radius:14px;background:linear-gradient(#f1d49b,#d9b16a);color:#153527;box-shadow:0 3px 0 #896a39;font-size:13px;line-height:1.35}
+#onl[data-lg-can-seat="true"] #oThrow{display:none}
+.lg-seat-options{display:grid;gap:10px}
+.lg-seat-options h3,.lg-seat-options p{margin:0}
+
+/* v334 — verified live UI findings: keep session controls outside the scrolling list. */
+#sessionsModal>div{display:flex;flex-direction:column;overflow:hidden!important}
+#sessionsModal>div>div:first-child{flex-shrink:0}
+#sessionsList{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+#sessionsEmpty{flex-shrink:0}
+#sessionsClose{width:44px!important;height:44px!important;flex-shrink:0}
+/* Keep the @ prefix on the left without changing Arabic player names or live status. */
+.frRow[data-fpid] .fSt:not(.on){direction:ltr;unicode-bidi:isolate;text-align:right}
+/* A faded toast must also leave the accessibility tree when its display time ends. */
+#toastGTxt:not(.show){visibility:hidden}
+
+/* v335 — home-only identity and finite motion. No timers or gameplay selectors. */
+#home .hTitle{position:relative;isolation:isolate;font-weight:400;text-shadow:none}
+#home .uiHomeWordmark{display:inline-block;color:var(--ui-gold-bright);filter:drop-shadow(0 2px 0 #99713a) drop-shadow(0 5px 8px #0005);white-space:nowrap}
+#home .hTitle::before,#home .hTitle::after{content:"";position:absolute;top:54%;width:28px;height:1px;pointer-events:none;opacity:.7;background:linear-gradient(90deg,transparent,var(--ui-gold),transparent)}
+#home .hTitle::before{right:calc(50% + 82px)}
+#home .hTitle::after{left:calc(50% + 82px)}
+#home .hLogoCards{isolation:isolate}
+#home .hLogoCards::before{background:radial-gradient(ellipse,#eac77f38,transparent 70%);pointer-events:none}
+#home .hLogoCards img{transform-origin:50% 85%}
+#home .hLogoCards img:nth-child(1){--home-card-angle:-14deg;--home-card-lift:-4px;--home-card-tilt:-1deg}
+#home .hLogoCards img:nth-child(2){--home-card-angle:-1deg;--home-card-lift:-6px;--home-card-tilt:1deg}
+#home .hLogoCards img:nth-child(3){--home-card-angle:13deg;--home-card-lift:-4px;--home-card-tilt:1deg}
+#home #hOnl{overflow:hidden}
+#home #hOnl::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;opacity:0;background:linear-gradient(105deg,transparent 32%,#fff8df55 48%,transparent 64%);transform:translateX(110%)}
+@supports ((background-clip:text) or (-webkit-background-clip:text)){
+ #home .uiHomeWordmark{background-image:linear-gradient(110deg,var(--ui-gold) 15%,var(--ui-gold-bright) 38%,#fff9df 47%,var(--ui-gold-bright) 56%,var(--ui-gold) 78%);background-size:240% 100%;background-position:100% 50%;background-clip:text;-webkit-background-clip:text;color:transparent}
+}
+@media(prefers-reduced-motion:no-preference){
+ #home:not(.hidden) .hLogo{animation:uiHomeArrive .65s var(--ui-ease) both}
+ #home:not(.hidden) .hLogoCards img{animation:uiHomeCardDrift 5.6s ease-in-out 3}
+ #home:not(.hidden) .hLogoCards img:nth-child(1){animation-delay:.15s}
+ #home:not(.hidden) .hLogoCards img:nth-child(2){animation-delay:.55s}
+ #home:not(.hidden) .hLogoCards img:nth-child(3){animation-delay:.9s}
+ #home:not(.hidden) .hLogoCards::before{animation:uiHomeHalo 5.6s ease-in-out 3}
+ #home:not(.hidden) .uiHomeWordmark{animation:uiHomeGold 7s ease-in-out 2}
+ #home:not(.hidden) .hMenu{animation:uiHomeArrive .5s .08s var(--ui-ease) backwards}
+ #home:not(.hidden) .hMenu>#hOnl{animation:uiHomeReveal .38s .1s ease-out backwards}
+ #home:not(.hidden) .hMenu>#hSessions{animation:uiHomeReveal .38s .17s ease-out backwards}
+ #home:not(.hidden) .hMenu>.row2{animation:uiHomeReveal .38s .24s ease-out backwards}
+ #home:not(.hidden) .hMenu>#hTournament{animation:uiHomeReveal .38s .31s ease-out backwards}
+ #home:not(.hidden) #hOnl::after{animation:uiHomeSweep 6.8s 1.1s ease-in-out 2}
+}
+@keyframes uiHomeArrive{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes uiHomeReveal{from{opacity:.3}to{opacity:1}}
+@keyframes uiHomeCardDrift{0%,100%{transform:translateY(0) rotate(var(--home-card-angle))}50%{transform:translateY(var(--home-card-lift)) rotate(calc(var(--home-card-angle) + var(--home-card-tilt)))}}
+@keyframes uiHomeHalo{0%,100%{opacity:.65;transform:scale(.96)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes uiHomeGold{0%,68%,100%{background-position:100% 50%}82%,94%{background-position:0% 50%}}
+@keyframes uiHomeSweep{0%,62%,100%{opacity:0;transform:translateX(110%)}65%{opacity:.6;transform:translateX(110%)}83%{opacity:.6;transform:translateX(-110%)}86%{opacity:0;transform:translateX(-110%)}}
+@media(prefers-reduced-motion:reduce){
+ #home .hLogo,#home .hLogoCards img,#home .hLogoCards::before,#home .uiHomeWordmark,#home .hMenu,#home .hMenu>*,#home #hOnl::after{animation:none!important}
+}
+@media(forced-colors:active){
+ #home .uiHomeWordmark{background:none;color:CanvasText;filter:none}
+ #home .hTitle::before,#home .hTitle::after,#home #hOnl::after{display:none}
+}
+
+/* v336 — fixed application viewport, independently scrollable content. */
+html{overflow:hidden;overscroll-behavior:none}
+body{position:fixed;inset:0;width:100%;overscroll-behavior:none}
+#frame{overscroll-behavior:none}
+.screen{overscroll-behavior:none}
+#pfRecovery{margin:16px 18px 0;padding:16px;border:1px solid var(--ui-paper-line);border-radius:18px;background:var(--ui-paper);color:var(--ui-text)}
+#pfRecovery[hidden],#profile.uiOtherProfile #pfRecovery{display:none!important}
+#pfResetPassword{width:100%;min-height:46px;padding:10px 14px;border-radius:13px;border:1px solid var(--ui-border);background:var(--ui-green);color:var(--ui-gold-bright);font-weight:800}
+#pfRecovery p{font-size:12px;line-height:1.8;margin-top:8px;overflow-wrap:anywhere}
+#pfResetStatus:empty{display:none}
+#pfResetPassword:disabled{opacity:.65}
+.uiWatchIcon{display:inline-block;width:22px;height:22px;flex:0 0 22px;vertical-align:middle;pointer-events:none}
+.sessSpecBtn,.frBtn.watch{gap:8px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+#oSpecCount{display:inline-flex;align-items:center;gap:4px;font-size:12px;min-height:24px;color:var(--ui-gold-bright);font-variant-numeric:tabular-nums}
+#oSpecCount.hidden{display:none!important}
+#oSpecCount .uiWatchIcon{width:20px;height:20px;flex-basis:20px}
+.lg-fixed-fee{padding:14px;border:1px solid var(--ui-border);border-radius:14px;background:var(--ui-paper);color:var(--ui-text);line-height:1.8}
+.lg-fixed-fee p{font-size:12px;margin-top:4px}
+/* Move each side seat as a unit, including its pile. Field/card layout stays unchanged. */
+#seatR,#seatL,#oSeatR,#oSeatL{transform:translateY(28px)}
+@media(max-height:740px){#seatR,#seatL,#oSeatR,#oSeatL{transform:translateY(52px)}}

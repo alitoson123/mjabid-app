@@ -110,15 +110,14 @@ img,.card,.suAv,.avatarImg{image-rendering:auto;image-rendering:high-quality;bac
 /* المقاعد */
 .seat{position:absolute;display:flex;flex-direction:column;align-items:center;gap:3px;width:96px;z-index:5;padding:8px 9px;border-radius:20px;background:rgba(0,0,0,.28);transition:box-shadow .3s}
 .seat .ava{width:52px;height:52px;border-radius:50%;background:#f0e3cc;color:#5e2f0e;display:flex;align-items:center;justify-content:center;font-size:23px;position:relative;border:2.5px solid transparent;transition:.2s}
-/* NEW CODE — مؤقت الأفاتار: استُبدل SVG (stroke-dasharray) بـconic-gradient — يتجنّب أعطال رندر معروفة على iOS Safari
-   مع transform:rotate على SVG. @property تسجّل النسبة كقيمة قابلة للانتقال السلس (fallback: قفزة مباشرة بلا كسر بالمتصفحات الأقدم) */
+/* v333 — حواف متدرجة دون تغيير حجم حلقة الوقت أو توقيت تحديثها. */
 @property --timerPct{syntax:'<percentage>';inherits:false;initial-value:100%}
 .avaRing{position:absolute;inset:-5px;pointer-events:none;display:none;z-index:5;border-radius:50%;
   --timerPct:100%;--timerColor:#f6c14d;
-  background:conic-gradient(var(--timerColor) var(--timerPct), rgba(0,0,0,.25) 0);
+  background:conic-gradient(var(--timerColor) max(0%, calc(var(--timerPct) - .3%)), rgba(0,0,0,.25) var(--timerPct));
   transition:--timerPct .95s linear,background .3s;
-  -webkit-mask-image:radial-gradient(circle farthest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3.5px)); /* NEW CODE — circle صريحة بدل الشكل الضمني (ellipse افتراضياً) — يمنع أي بيضاوية محتملة على iOS */
-  mask-image:radial-gradient(circle farthest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3.5px));
+  -webkit-mask-image:radial-gradient(circle farthest-side, transparent calc(100% - 3.8px), #000 calc(100% - 3.2px), #000 calc(100% - .6px), transparent 100%);
+  mask-image:radial-gradient(circle farthest-side, transparent calc(100% - 3.8px), #000 calc(100% - 3.2px), #000 calc(100% - .6px), transparent 100%);
   -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;}
 .avaRing.on{display:block}
 .avaSec{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);min-width:19px;height:19px;padding:0 4px;border-radius:999px;background:#fff;color:#33302c;font-family:var(--fh);font-size:12px;display:none;align-items:center;justify-content:center;box-shadow:0 2px 5px rgba(0,0,0,.4);z-index:6}
@@ -698,6 +697,8 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 <link rel="stylesheet" href="ui-polish.css">
 <script defer src="ui-results-store.js"></script>
 <script defer src="ui-polish.js"></script>
+<link rel="stylesheet" href="ui-leagues.css">
+<link rel="stylesheet" href="ui-card-motion.css">
 </head>
 <body>
 <div id="frame">
@@ -765,7 +766,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
     <div style="width:100%;max-width:420px;background:#fdf9f0;border-radius:24px 24px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px));max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
         <span style="font-family:var(--fh);font-size:23px;color:#5e2f0e">الجلسات النشطة</span>
-        <button id="sessionsClose" style="width:32px;height:32px;border-radius:50%;border:0;background:#f0e3cc;color:#5e2f0e;font-size:15px;cursor:pointer">✕</button>
+        <button id="sessionsClose" type="button" aria-label="إغلاق الجلسات النشطة" style="width:32px;height:32px;border-radius:50%;border:0;background:#f0e3cc;color:#5e2f0e;font-size:15px;cursor:pointer">✕</button>
       </div>
       <div id="sessionsList"></div>
       <div id="sessionsEmpty" class="hidden" style="text-align:center;padding:34px 10px;color:var(--mut);font-family:var(--fb);font-size:14px">ما فيه جلسات نشطة الآن — كن أول من يبدأ! 🃏</div>
@@ -776,7 +777,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
     <div style="width:100%;max-width:420px;background:#fdf9f0;border-radius:24px 24px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px));max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
         <span style="font-family:var(--fh);font-size:23px;color:#5e2f0e">صندوق الوارد</span>
-        <button id="inboxClose" style="width:32px;height:32px;border-radius:50%;border:0;background:#f0e3cc;color:#5e2f0e;font-size:15px;cursor:pointer">✕</button>
+        <button id="inboxClose" type="button" aria-label="إغلاق صندوق الوارد" style="width:32px;height:32px;border-radius:50%;border:0;background:#f0e3cc;color:#5e2f0e;font-size:15px;cursor:pointer">✕</button>
       </div>
       <div id="inboxList"></div>
       <div id="inboxEmpty" class="hidden" style="text-align:center;padding:34px 10px;color:var(--mut);font-family:var(--fb);font-size:14px">لا يوجد رسائل 📭</div>
@@ -900,7 +901,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
     <div id="topbar" style="position:relative;z-index:35">
       <button class="exitLike" id="oExit" style="background:none;color:var(--sageL);font-size:12px;font-weight:700;text-decoration:underline;border:none;cursor:pointer">خروج</button>
       <div class="ttl uiMatchHeader" id="oHeaderTtl">
-        <div class="uiMatchWords"><div class="uiMatchTitleLine"><span id="uiOnlineTitle">جلسة سريعة</span><span id="connDot"></span><span id="oSpecCount" class="hidden" aria-label="عدد المشاهدين">◉ <span id="oSpecN">0</span></span></div><span id="uiOnlineMode" class="uiMatchDetail">جماعي ٢×٢</span></div>
+        <div class="uiMatchWords"><div class="uiMatchTitleLine"><span id="uiOnlineTitle">جلسة سريعة</span><span id="connDot"></span><span id="oSpecCount" class="hidden" aria-label="عدد المشاهدين"><svg class="uiWatchIcon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg><span id="oSpecN">0</span></span></div><span id="uiOnlineMode" class="uiMatchDetail">جماعي ٢×٢</span></div>
         <span id="oHeaderGoal" class="hidden uiMatchGoal"></span>
       </div>
       <button id="oSnd" style="background:rgba(240,250,225,.12);color:var(--mint);border-radius:99px;padding:4px 10px;font-size:13px;border:none;cursor:pointer">🔊</button>
@@ -963,6 +964,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
             </div>
           </span>
           <button class="abtn" id="oThrow">رمي</button>
+          <button class="abtn" id="lgSeatJoin" type="button" hidden>انضم مكان الكمبيوتر</button>
           <button class="abtn" id="oPass" style="display:none">تجاوز</button>
           <button id="oReactBtn">التعبيرات</button>
         </div>
@@ -994,23 +996,24 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
     </div>
     <div id="oWaqf" class="hidden"></div>
     <div id="oOver" class="hidden">
+      <div id="oResultLoading" class="uiResultLoading" role="status" hidden><span class="uiResultLoadingMark" aria-hidden="true"></span><p>جارٍ تجهيز النتيجة…</p><button id="oResultLoadingBack" type="button">العودة للرئيسية</button></div>
       <div id="resCard" class="uiResultCard" style="width:100%;max-width:340px;background:var(--sand);border-radius:24px;padding:22px 20px;text-align:center">
         <span id="oResultKind" class="uiResultKind"></span><div id="oResultArt" class="uiResultArt"></div>
         <h2 id="oResTtl" style="font-family:var(--fh);font-size:30px;color:var(--clay)"></h2>
         <div id="oResSub" style="font-size:14px;font-weight:700;color:var(--mut);margin-bottom:14px"></div>
         <div id="oForfeitBanner" class="hidden" style="margin:0 0 14px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,#f6c14d,#e3a93c);color:#5c3a0a;font-family:var(--fh);font-size:15px;font-weight:800;box-shadow:0 3px 0 #a97a1f">🏆 انسحب الخصم! فوز مستحق لفريقك</div>
         <div id="oMyStats" class="uiRewardGrid hidden">
-          <div id="oGoldReward" class="uiRewardTile uiRewardGold"><span class="uiRewardIcon" aria-hidden="true">◈</span><span>رصيد الذهب</span><strong id="oMyGoldNum">0</strong><b id="oMyGoldDelta" class="uiRewardDelta"></b><i class="uiRewardSpark" aria-hidden="true">✦</i></div>
+          <div id="oGoldReward" class="uiRewardTile uiRewardGold"><span class="uiRewardIcon" aria-hidden="true">◈</span><span>رصيد الذهب</span><strong id="oMyGoldNum">0</strong><div class="uiRewardChange"><small>صافي الجولة</small><b id="oMyGoldDelta" class="uiRewardDelta"></b></div><i class="uiRewardSpark" aria-hidden="true">✦</i></div>
           <div class="uiRewardTile uiRewardXp"><span class="uiRewardIcon" aria-hidden="true">✧</span><span>الخبرة</span><strong id="oMyXpNum">0</strong><b id="oMyXpDelta" class="uiRewardDelta"></b></div>
           <div class="uiXpProgress"><div><span id="oXpLevel"></span><span>خبرتك للمستوى التالي</span></div><div class="uiXpTrack"><i id="oXpFill"></i></div></div>
-          <div id="oRankReward" class="uiRankReward"><span>النقاط التنافسية</span><strong id="oMyRankNum">0</strong><b id="oMyRankDelta"></b></div><p id="oRewardNote" class="uiRewardNote" role="status"></p>
+          <div id="oRankReward" class="uiRankReward uiRewardTile uiRewardRank"><span class="uiRewardIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m12 2 8 4v6c0 5-8 10-8 10S4 17 4 12V6Z"/><path d="m12 7 4 5-4 5-4-5Z"/></svg></span><span>النقاط التنافسية</span><strong id="oMyRankNum">0</strong><b id="oMyRankDelta" class="uiRewardDelta"></b><i class="uiRewardSpark" aria-hidden="true">✦</i></div><p id="oRewardNote" class="uiRewardNote" role="status"></p><button id="oRewardRefresh" type="button" hidden>تحديث الرصيد</button>
         </div>
         <!-- FIX — سطر واضح: رسوم الدخول والجائزة منفصلين، لا الفارق الصافي فقط -->
         <div id="oFeeWinLine" class="hidden" style="font-size:12.5px;font-weight:700;color:var(--mut);margin-bottom:14px;display:flex;justify-content:center;gap:14px"></div>
         <div class="uiResultSectionLabel">حصيلة الطاولة</div><div id="oResRows"></div>
         <div style="display:flex;gap:10px;margin-top:8px">
           <!-- FIX — حُذف زر "العب مرة أخرى" بالكامل بطلبك (إلغاء إعادة اللعبة) -->
-          <button id="oMenu" style="flex:1;padding:14px;border-radius:16px;font-family:var(--fh);font-size:19px;background:var(--sand2);color:var(--ink2);border:2px solid var(--line);cursor:pointer">العودة للمجلس</button>
+          <button id="oMenu" style="flex:1;padding:14px;border-radius:16px;font-family:var(--fh);font-size:19px;background:var(--sand2);color:var(--ink2);border:2px solid var(--line);cursor:pointer">العودة للرئيسية</button>
         </div>
       </div>
     </div>
@@ -1168,6 +1171,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
         <div class="t">الإنجازات</div>
         <div id="pfAchievementsList"></div>
       </div>
+      <section id="pfRecovery" hidden><button id="pfResetPassword" type="button">إعادة ضبط كلمة المرور</button><p>نرسل رابطًا إلى بريد حسابك؛ لا تحتاج كلمة المرور القديمة.</p><p id="pfResetStatus" role="status" aria-live="polite"></p></section>
       <button id="pfOut">تسجيل الخروج</button>
       <button id="pfDeleteAcc" style="width:100%;margin-top:10px;padding:10px;background:none;border:none;color:#b3382b;font-family:var(--fb);font-weight:700;font-size:12px;text-decoration:underline;cursor:pointer">حذف الحساب نهائيًا</button>
       <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--mut)"><a href="https://mjabid.com/terms.html" target="_blank" style="color:inherit">شروط الاستخدام</a> · <a href="https://mjabid.com/privacy.html" target="_blank" style="color:inherit">سياسة الخصوصية</a></div>
@@ -1211,7 +1215,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
   <div class="screen hidden" id="shop">
     <div data-navholder style="position:absolute;inset:0;display:flex;flex-direction:column;background:radial-gradient(130% 90% at 50% 22%,#2f5138 0%,#16281c 85%)">
       <div style="display:flex;align-items:center;gap:10px;padding:calc(18px + env(safe-area-inset-top, 47px)) 16px 0">
-        <button class="qBtn" id="shopBack" style="width:40px;height:40px;border-radius:999px;border:0;background:rgba(0,0,0,.32);color:#ffc6a5;display:flex;align-items:center;justify-content:center;flex:none;font-size:0;box-shadow:inset 0 0 0 1.5px rgba(249,244,237,.14)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></button>
+        <button class="qBtn" id="shopBack" type="button" aria-label="العودة للرئيسية" style="width:40px;height:40px;border-radius:999px;border:0;background:rgba(0,0,0,.32);color:#ffc6a5;display:flex;align-items:center;justify-content:center;flex:none;font-size:0;box-shadow:inset 0 0 0 1.5px rgba(249,244,237,.14)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></button>
         <span style="font-family:var(--fh);font-size:25px;color:#ffc6a5;text-shadow:0 2px 0 rgba(0,0,0,.35)">المتجر</span>
         <span style="margin-right:auto;display:flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:999px;background:#33302c;color:#f6c14d;font-weight:800;font-size:13.5px;flex:none"><i style="width:15px;height:15px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block"></i><span id="shopGold">0</span></span>
       </div>
@@ -1238,7 +1242,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
   <div class="screen hidden" id="lboard">
     <div data-navholder style="position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(130% 90% at 50% 22%,#2f5138 0%,#16281c 85%)">
       <div style="display:flex;align-items:center;gap:10px;padding:calc(18px + env(safe-area-inset-top, 47px)) 16px 0">
-        <button class="qBtn" id="lboardBack" style="width:40px;height:40px;border-radius:999px;border:0;background:rgba(0,0,0,.32);color:#ffc6a5;display:flex;align-items:center;justify-content:center;flex:none;font-size:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></button>
+        <button class="qBtn" id="lboardBack" type="button" aria-label="العودة للرئيسية" style="width:40px;height:40px;border-radius:999px;border:0;background:rgba(0,0,0,.32);color:#ffc6a5;display:flex;align-items:center;justify-content:center;flex:none;font-size:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></button>
         <span style="font-family:var(--fh);font-size:25px;color:#ffc6a5;text-shadow:0 2px 0 rgba(0,0,0,.35)">الصدارة</span>
       </div>
       <div id="lbTabs" style="display:flex;background:rgba(0,0,0,.28);border-radius:999px;padding:3px;margin:14px 16px 0;flex-shrink:0">
@@ -1311,7 +1315,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
           <img src="court_Q.png" alt="">
           <img src="court_J.png" alt="">
         </div>
-        <div class="hTitle">مجابيد</div>
+        <div class="hTitle"><span class="uiHomeWordmark">مجابيد</span></div>
       </div>
       <div class="hMenu">
         <button class="hBig onl" id="hOnl">
@@ -1342,11 +1346,11 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
           <button class="hBig grp" id="hGroup">
             <img src="cards/JS.png" alt="" style="position:absolute;left:14px;bottom:8px;width:44px;border-radius:6px;opacity:.32;pointer-events:none;background:#fdfcf8">
             <b style="font-size:18px;margin-top:4px">أنشئ مجموعة</b>
-            <span>مع أصدقائك — 800 🪙</span><!-- FIX — سعر إنشاء الجلسة الخاصة ظاهر من البداية (رُفع من 400) -->
+            <span>مع أصدقائك — 800 <img class="uiGoldCoin" src="ui-art/gold-coin.svg" alt="ذهب" width="32" height="32"></span><!-- FIX — سعر إنشاء الجلسة الخاصة ظاهر من البداية (رُفع من 400) -->
           </button>
 
         </div>
-        <button class="hBig" id="hTournament"><span class="cupButtonIcon"><svg viewBox="0 0 64 64" width="42" height="42" fill="none" aria-hidden="true"><path d="M20 10h24v14c0 12-5 18-12 18s-12-6-12-18V10Z" fill="#e6c279" stroke="#a7772e" stroke-width="2"/><path d="M20 15H10v8c0 8 6 13 13 13m21-21h10v8c0 8-6 13-13 13M32 42v10m-12 4h24" stroke="#b68a40" stroke-width="4" stroke-linecap="round"/><path d="m32 17 6 9-6 9-6-9 6-9Z" fill="#28533e"/></svg></span><span class="cupButtonText"><b>بطولة التاسعة</b><small>كل ليلة · ٨ فرق · جوائز للأبطال</small></span><span class="cupButtonTime">٩:٠٠ م</span></button>
+        <button class="hBig" id="hTournament"><span class="cupButtonIcon"><svg viewBox="0 0 64 64" width="42" height="42" fill="none" aria-hidden="true"><path d="M20 10h24v14c0 12-5 18-12 18s-12-6-12-18V10Z" fill="#e6c279" stroke="#a7772e" stroke-width="2"/><path d="M20 15H10v8c0 8 6 13 13 13m21-21h10v8c0 8-6 13-13 13M32 42v10m-12 4h24" stroke="#b68a40" stroke-width="4" stroke-linecap="round"/><path d="m32 17 6 9-6 9-6-9 6-9Z" fill="#28533e"/></svg></span><span class="cupButtonText"><b>الدوريات</b><small>دوريات مجابيد · عامة · خاصة</small></span><span class="cupButtonTime">🏆</span></button>
       </div>
     </div>
   </div>
@@ -1363,7 +1367,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
     <div id="rulesCard">
       <div id="rulesHead"><span class="t">قوانين اللعب</span><span class="cnt">10 قوانين</span><button class="qBtn" id="rulesX">✕</button></div>
       <div id="rulesList">
-        <div class="rCard"><div class="n">1</div><div><b>هدف اللعبة</b><p>اجمع أكبر نقاط في كومتك. <b>العشرة والصور والإكّة = 10 نقاط</b>، و<b>الجوكر = 50</b>، وباقي الأرقام صفر. عند نهاية الجولة صاحب أعلى نقاط (أو فريقه) يفوز. وفي الطبقات التنافسية: أول من يبلغ هدف النقاط تنتهي الجولة فوراً ويفوز.</p></div></div>
+        <div class="rCard"><div class="n">1</div><div><b>هدف اللعبة</b><p>اجمع أكبر نقاط في كومتك. <b>العشرة والصور والإكّة = 10 نقاط</b>، و<b>الجوكر = 50</b>، وباقي الأرقام صفر. عند نهاية الجولة صاحب أعلى نقاط (أو فريقه) يفوز. وفي الساحات التنافسية: أول من يبلغ هدف النقاط تنتهي الجولة فوراً ويفوز.</p></div></div>
         <div class="rCard"><div class="n">2</div><div><b>التوزيع</b><p>القرعة تحدد الموزّع — يبدأ بـ<b>13 ورقة</b> ويلعب أول، وبقية اللاعبين <b>12</b>. الميدان يفتح بـ<b>13 ورقة</b>: وحدة من كل رتبة بلا جوكر. الدور يمشي عكس عقارب الساعة. ويدك <b>تتجدد إلى 13</b> لما يجي دورك — بعد ما تستقر الأكلة.</p></div></div>
         <div class="rCard"><div class="n">3</div><div><b>الأكل</b><p>في دورك، انزل ورقة تطابق رقماً بالميدان أو أعلى كومة خصم — وتكنس بها <b>كل</b> المطابق: ورق الميدان وكل السلاسل المكشوفة من نفس الرقم عند خصومك دفعة واحدة. الأكل إجباري فقط إذا كان كل ورقك ياكل.</p></div></div>
         <div class="rCard"><div class="n">4</div><div><b>وقّف!</b><p>بعد كل أكلة تفتح نافذة <b>5 ثوانٍ</b> للجميع: من عنده نفس الرقم أو جوكر يصرخ «وقّف!» ويخطفها. كل خطفة تعيد العدّ من جديد — وآخر من تستقر عنده يواصل دوره حتى يرمي.</p></div></div>
@@ -1453,7 +1457,7 @@ const $=s=>document.querySelector(s);
 // ⚠️ الصق مفاتيح مشروعك هنا (من إعدادات Firebase → تطبيق الويب).
 // هذه المفاتيح آمنة للنشر في كود الواجهة (مصمّمة لذلك).
 // رقم إصدار التطبيق — يُحدَّث يدويًا مع كل نسخة تُرفع للمتاجر (مو نفس رقم كاش الـSW)
-const APP_VERSION='1.2.0'; // iOS: matches Ali's current MARKETING_VERSION.
+const APP_VERSION='1.2.0'; // iOS: keep Ali's Xcode marketing version.
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCZZrU2tip4efYEfYhUi9F_DNfuRZ22adU",
   authDomain: "jops-e508d.firebaseapp.com",
@@ -2741,10 +2745,10 @@ function endRound(){
   if(G._tierResult){
     const tr=G._tierResult;
     title=tr.name;
-    if(tr.won) sub=`فزت! +${toH(tr.win)} 🪙 (رجّعت دخولك مضاعفاً)`;
-    else if(tr.draw) sub=`تعادل — رجّعنا لك دخولك ${toH(tr.fee)} 🪙 كامل`;
-    else if(tr.consol>0) sub=`المركز ${toH(tr.rank)} — استرجعت ${toH(tr.consol)} 🪙 من دخولك`;
-    else sub=`خسرت دخول ${toH(tr.fee)} 🪙 — عوّضها الجاية`;
+    if(tr.won) sub=`فزت! +${toH(tr.win)} ذهب (رجّعت دخولك مضاعفاً)`;
+    else if(tr.draw) sub=`تعادل — رجّعنا لك دخولك ${toH(tr.fee)} ذهب كامل`;
+    else if(tr.consol>0) sub=`المركز ${toH(tr.rank)} — استرجعت ${toH(tr.consol)} ذهب من دخولك`;
+    else sub=`خسرت دخول ${toH(tr.fee)} ذهب — عوّضها الجاية`;
   }
   $('#resTtl').textContent=title; $('#resSub').textContent=sub;
   // عرض تغيّر نقاط الرتبة التنافسية (إن وُجدت)
@@ -2815,6 +2819,7 @@ function show(id,overlay){
   else{$('#waqf').classList.add('hidden');$('#results').classList.add('hidden')}
   $('#'+id).classList.remove('hidden');
   quickScreen(id,overlay); // QUICK-MATCH — فتح/غلق مراقبة العدد عند التنقل فقط
+  if(typeof lgAutoWake==='function')lgAutoWake(); // v331: navigation explicitly wakes/stops home admission.
 }
 let toastT;
 function toast(txt){
@@ -3081,7 +3086,7 @@ function renderScatterField(container,fieldArr,opts){
     el.style.transform=finalT;
     if(el.parentElement!==container)container.appendChild(el);
     newMap.set(f.id,{x,y,r:p.r,card:f});
-    if(prevMap&&!prevMap.has(f.id)){
+    if(!window.UICardFlow&&prevMap&&!prevMap.has(f.id)){
       const d=dirFor(f.by)||{x:0,y:160};
       uiCardMotion(el,[
         {transform:`translate(-50%,-50%) translate(${x+d.x*.6}px,${y+d.y*.6}px) rotate(${p.r-16}deg) scale(.9)`,opacity:.25},
@@ -3091,7 +3096,7 @@ function renderScatterField(container,fieldArr,opts){
     }
   });
   if(!fieldArr.length)container.innerHTML=emptyHtml;
-  if(prevMap&&!UI_REDUCED_MOTION.matches&&!document.hidden){
+  if(!window.UICardFlow&&prevMap&&!UI_REDUCED_MOTION.matches&&!document.hidden){
     const parent=container.parentElement;
     let layer=parent&&parent.querySelector(':scope > .fieldGhostLayer');
     if(parent&&!layer){layer=document.createElement('div');layer.className='fieldGhostLayer';layer.style.cssText='position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:300';parent.appendChild(layer)}
@@ -3142,7 +3147,7 @@ function renderBidStack(container,cards,opts){
     el.style.transform=finalT;
     el.style.transition='transform .4s ease-out';
     el.style.boxShadow='0 8px 16px rgba(0,0,0,.6)';
-    if(!prevIds.has(c.id)){
+    if(!window.UICardFlow&&!prevIds.has(c.id)){
       const ax=dirForCard(c);
       uiCardMotion(el,[
         {transform:`translate(-50%,-50%) translate(${jit.dx+ax.x*STACK_ENTER_DIST}px,${jit.dy+ax.y*STACK_ENTER_DIST}px) rotate(${jit.rot}deg) scale(.5)`,opacity:.2},
@@ -3484,10 +3489,11 @@ $('#adRewardBtn').onclick=async()=>{ // FIX
 // إن كانت الواجهة على نفس نطاق الـWorker (نادر) نكتشفه؛ وإلا نتصل بالعنوان المطلق.
 function onSrvHost(){ return location.host===GAME_SRV; }
 function oBase(){ return (onSrvHost()?location.pathname.replace(/\/+$/,''):'https://'+GAME_SRV)+'/ws/'+ONL.room; }
+async function oLeagueHeaders(){return ONL.room?.startsWith('lg-')&&FB.user?{authorization:'Bearer '+await FB.user.getIdToken()}:{};}
 async function oPost(obj){
   try{
     const r=await fetch(oBase()+'?send=1&pid='+encodeURIComponent(ONL.pid),
-      {method:'POST',body:JSON.stringify(obj)});
+      {method:'POST',headers:await oLeagueHeaders(),body:JSON.stringify(obj)});
     const d=await r.json();
     if(d&&d.type==='error'){
       if(ONL.lastSent==='settle'||ONL.lastSent==='timeout'){ONL.lastSent=null;return}
@@ -3506,7 +3512,7 @@ async function oPollLoop(){
   while(ONL.active&&ONL.transport==='poll'&&ONL.pollGen===my){
     let gotMsg=false; // FIX
     try{
-      const r=await fetch(oBase()+'?poll=1&nowait=1&since='+ONL.pollSeq+'&pid='+encodeURIComponent(ONL.pid)); // FIX — أضفنا nowait=1
+      const r=await fetch(oBase()+'?poll=1&nowait=1&since='+ONL.pollSeq+'&pid='+encodeURIComponent(ONL.pid),{headers:await oLeagueHeaders()}); // FIX — أضفنا nowait=1
       const d=await r.json();
       $('#connDot').classList.remove('off');
       if(typeof d.seq==='number')ONL.pollSeq=d.seq;
@@ -3542,7 +3548,7 @@ function enterOnline(){
   let pid=localStorage.getItem('wb-player-id')||sessionStorage.getItem('wb-player-id');
   if(!pid){pid='p-'+Math.random().toString(36).slice(2,10);}
   localStorage.setItem('wb-player-id',pid);
-  ONL.pid=pid;
+  ONL.pid=room.startsWith('lg-')&&FB.user?'lp-'+FB.user.uid:pid;
   // FIX — كان هنا $('#inviteLink').value=location.href؛ العنصر أُزيل من اللوبي (رابط غير محتاج)، فحذفنا هذا السطر معه
   // اسم اللاعب: من الإعداد أو المحفوظ سابقاً
   const savedNm=($('#nameIn').value||'').trim()||localStorage.getItem('wb-name')||'';
@@ -3584,6 +3590,7 @@ function startActiveSessionsListener(){ // NEW CODE
       if(!$('#sessionsModal').classList.contains('hidden'))renderSessionsList(); // NEW CODE — النافذة مفتوحة أصلاً؟ حدّث محتواها فورًا كمان
     }, e=>console.warn('active_rooms listen failed',e)); // NEW CODE
 } // NEW CODE
+function uiWatchIcon(){return '<svg class="uiWatchIcon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';}
 function sessionCardHTML(roomId,d){ // NEW CODE
   const bareTierKey=(d.tierKey||'').replace(/^session-/,''); // NEW CODE — "جلسة كاملة" تسبق مفتاح الطبقة بـsession- أصلاً (راجع enterTier بالعميل)
   const tier=TIERS.find(t=>t.key===bareTierKey); // NEW CODE
@@ -3597,7 +3604,7 @@ function sessionCardHTML(roomId,d){ // NEW CODE
     :`<span class="avaEmpty">+</span>`).join(''); // NEW CODE
   const btnHTML=canJoin // NEW CODE
     ?`<button class="sessJoinBtn" data-room="${esc(roomId)}">اقعد — متاح ${toH(4-humanCount)}</button>` // NEW CODE
-    :`<button class="sessSpecBtn" data-room="${esc(roomId)}">👁 تفرج</button>`; // NEW CODE
+    :`<button class="sessSpecBtn" data-room="${esc(roomId)}">${uiWatchIcon()}<span>مشاهدة المباراة</span></button>`; // NEW CODE
   return `<div class="sessCard">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px">
       <div style="display:flex;align-items:center;gap:8px;min-width:0">
@@ -3632,6 +3639,7 @@ function joinActiveSession(roomId,spectate){ // NEW CODE — spectate=true تح�
 $('#hSessions').onclick=()=>{ SFX.tick(); $('#sessionsModal').classList.remove('hidden'); renderSessionsList(); }; // NEW CODE
 $('#sessionsClose').onclick=()=>$('#sessionsModal').classList.add('hidden'); // NEW CODE
 function leaveOnline(){
+  if(typeof uiCancelResultPreparation==='function')uiCancelResultPreparation();
   $('#pageLoaderTxt').textContent='جاري الخروج...'; // NEW CODE
   $('#pageLoader').classList.remove('hidden'); $('#pageLoader').style.opacity='1'; // NEW CODE
   $('#quitConfirm').classList.add('hidden');
@@ -3656,6 +3664,7 @@ function oHandle(msg){
     const pl=$('#pageLoader'); // NEW CODE
     if(pl){ pl.style.opacity='0'; setTimeout(()=>pl.classList.add('hidden'),260); } // NEW CODE — نفس مدة التلاشي (٢٦٠مل) المستخدمة أصلاً بـshowPageLoader لثبات بصري
   } // NEW CODE
+  ONL.league=msg.league||null;ONL.reward=msg.reward||null;
   document.getElementById('onl').dataset.tournament=msg.tournament?'true':'false';ONL.tournament=msg.tournament||null;ONL.status=msg.status;ONL.seats=msg.seats||[];ONL.you=msg.you;ONL.view=msg.view;ONL.result=msg.result;ONL.lobby=msg.lobby||null;ONL.spectators=msg.spectators||0;
   // FIX — إصلاح جذري: السيرفر يرسل uids كحقل شقيق لـview (server.js: uids:this._safeUidsMap())، لكن هنا كنا
   // نسند ONL.view=msg.view مباشرة بلا دمج uids فيها إطلاقاً — يعني ONL.view.uids كانت undefined دائماً بكل
@@ -3672,6 +3681,7 @@ function oHandle(msg){
     if(nm)oAction({t:'setName',name:nm});
   }
   renderOnl();
+  if(typeof uiLeagueState==='function')uiLeagueState(msg);
   if(MATCH.on)renderMatch(); // QUICK-MATCH — تحديث البحث عند وصول حالة فعلية، بلا interval
 }
 function oConnect(){
@@ -3760,7 +3770,7 @@ function openReactionsPanel(){
   wrap.innerHTML=`<div id="reactSheet" role="dialog" aria-modal="true" aria-labelledby="expressionTitle" dir="rtl">
     <header class="expressionHeader"><div><h3 id="expressionTitle">التعبيرات</h3><p>مزح وتشجيع على الطاولة</p></div><button class="expressionClose" aria-label="إغلاق">×</button></header>
     <div id="reactGrid">${EXPRESSIONS.map(r=>`<button class="reactBtn" data-id="${r.id}" aria-pressed="false">${expressionArt(r)}<span>${r.t}</span></button>`).join('')}</div>
-    <footer class="expressionFooter"><p class="expressionPreview" aria-live="polite">اختر تعبيرك · كل إرسال ٥٠ ذهبًا</p><button class="expressionSend" disabled>إرسال · ٥٠ ذهبًا</button></footer>
+    <footer class="expressionFooter"><p class="expressionPreview" aria-live="polite">اختر التعبير ثم اسم اللاعب</p><button class="expressionSend" disabled>إرسال <span class="expressionCost"><bdi>${toH(REACT_COST)}</bdi><span>ذهب</span>${uiGoldCoin()}</span></button></footer>
   </div>`;
   sc.appendChild(wrap);
   const close=()=>{wrap.remove();document.getElementById('oReactBtn')?.focus();};
@@ -3784,8 +3794,8 @@ function openReactionsPanel(){
     targetPid=null;send.disabled=true;
     let targets=wrap.querySelector('.expressionTargets');
     if(!targets){targets=document.createElement('div');targets.className='expressionTargets';wrap.querySelector('.expressionFooter').before(targets);}
-    targets.innerHTML='<p>لمن ترسل التعبير؟</p>'+ONL.view.seats.filter(pid=>pid!==ONL.you).map(pid=>`<button data-target="${esc(pid)}">${avatarHTML(ONL.view.avatars&&ONL.view.avatars[pid],32)}<span>${esc(uiPlayerName(ONL.view,pid))}</span></button>`).join('');
-    targets.querySelectorAll('button').forEach(btn=>{btn.onclick=()=>{targetPid=btn.dataset.target;targets.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===btn)));send.disabled=false;};});
+    targets.innerHTML='<p>اختر اسم اللاعب</p>'+ONL.view.seats.filter(pid=>pid!==ONL.you).map(pid=>`<button data-target="${esc(pid)}" aria-pressed="false"><span class="expressionTargetName" dir="auto">${esc(uiPlayerName(ONL.view,pid))}</span></button>`).join('');
+    targets.querySelectorAll('button').forEach(btn=>{btn.onclick=()=>{targetPid=btn.dataset.target;targets.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===btn)));wrap.querySelector('.expressionPreview').innerHTML=expressionArt(selected)+`<span>${selected.t}<small>إلى: ${esc(uiPlayerName(ONL.view,targetPid))}</small></span>`;send.disabled=false;};});
   };});
   send.onclick=()=>{if(!selected||send.disabled)return;send.disabled=true;sendReaction(selected.id,targetPid);close();};
   wrap.querySelector('.expressionClose').focus();
@@ -4057,7 +4067,7 @@ function renderOnl(){
   if(v.lastSettle&&v.lastSettle.seq!==ONL._lastSettleSeq){
     const firstSighting=ONL._lastSettleSeq===undefined; // FIX — أول ما نشوف أي seq بعد دخول/إعادة اتصال/جولة جديدة: نتبنّاه بصمت بلا أي صوت أو طيران — كان غياب هذا الحارس يجعل أول رسالة تحمل استقراراً قديماً (بعد انضمام أو بداية جولة) تُشغّل الكتلة كاملة زوراً — غالباً فور رمية اللاعب نفسه غير المرتبطة، بكروت قديمة وباتجاه حائز قديم — هذا بالضبط "يتطاير له وهو ما أكل، فقط لأنه لعب"
     ONL._lastSettleSeq=v.lastSettle.seq;
-    if(!firstSighting){ // FIX
+    if(!firstSighting&&!window.UICardFlow){ // v329: the measured visual layer owns settlement; no synthetic phase hold.
     ONL._holdUntil=Date.now()+380;
     GameSoundManager.playCardArrive(); // NEW CODE — صوت حقيقي بدل الكشط المبرمج: استقرار المزايدة (الأونلاين، عبر lastSettle.seq الموثوق)
     const holder=v.lastSettle.holder;
@@ -4366,7 +4376,7 @@ function renderLobby(){
     let tb=$('#lobbyTierTag');
     if(!tb){tb=document.createElement('div');tb.id='lobbyTierTag';tb.style.cssText='margin-top:10px;background:var(--clay);color:#fff;border-radius:99px;padding:6px 16px;font-family:var(--fh);font-size:15px;display:flex;align-items:center;gap:8px';
       const anchor=$('#lobbyMode');if(anchor&&anchor.parentNode)anchor.parentNode.insertBefore(tb,anchor.nextSibling);}
-    tb.innerHTML=`طبقة ${lb.tier.name} · دخول ${toH(lb.tier.fee)} 🪙 · ربح ${toH(lb.tier.win)}`;
+    tb.innerHTML=`الساحة ${lb.tier.name} · دخول <bdi>${toH(lb.tier.fee)}</bdi> ${uiGoldCoin()} · ربح <bdi>${toH(lb.tier.win)}</bdi> ${uiGoldCoin()}`;
     tb.style.display='flex';
   }else if(lb.tier&&lb.tier.goal){
     let tb=$('#lobbyTierTag');
@@ -4458,22 +4468,22 @@ $('#lobbyName').addEventListener('input',()=>{
 function renderOver(){
   const v=ONL.view,r=ONL.result;if(!r)return;
   $('#oWaqf').classList.add('hidden');
-  $('#oOver').classList.remove('hidden');
   const me=ONL.you;
   const seated=!!(r.scores&&r.scores[me]);
-  const competitive=!!(r.tier&&r.tier.fee); // الطور التنافسي: أي طبقة عندها رسوم دخول فعلية
+  const competitive=!ONL.league&&!ONL.tournament&&!!(r.tier&&r.tier.fee); // الطور التنافسي: أي طبقة عندها رسوم دخول فعلية
   // FIX — renderOver() تُستدعى من renderOnl() بلا أي شرط كل ما وصل أي تحديث حالة من السيرفر ولو تافه (نبضة
   // حضور للاعبين الباقين بالطاولة، إلخ) طالما status="over" لسا قائمة. كل نداء كان يعيد كل شي من الصفر:
   // يطلب إحصاءات السيرفر مرة ثانية، يمسح صفوف النتيجة ويبنيها من جديد (شارات الرتبة تولد فاضية ثم تُطلب من
   // فايرستور من جديد بتوقيت وصول مختلف لكل شارة)، ويكرر صوت الفوز — هذا هو "الترمش والتخبط" اللي وصفته بالضبط.
   // الحارس يقارن *محتوى* r لا مرجعه: كل رسالة WebSocket تُقرأ بـJSON.parse وتبني كائناً جديداً حتى لو نفس
   // المحتوى بالحرف، فمقارنة r!==r_قديم بالمرجع فقط كانت ستفشل صامتة (كل رسالة تُحسب "نتيجة جديدة" رغم تطابقها).
-  const rFingerprint=ONL.room+'|'+me+'|'+JSON.stringify(r);
+  const rFingerprint=ONL.room+'|'+me+'|'+(ONL.reward?.key||'')+'|'+JSON.stringify(r);
   uiBeginOnlineResult(r,seated,rFingerprint);
-  if(seated&&ONL._statsPulledForResult!==rFingerprint){ // Bounded existing refresh, including friendly rewards.
+  uiPrepareOnlineResult();
+  $('#oOver').classList.remove('hidden');
+  if(competitive&&seated&&ONL._statsPulledForResult!==rFingerprint){ // Competitive result balances only; league/friendly results need no competitive refresh.
     ONL._statsPulledForResult=rFingerprint; // FIX
     pullServerStats(); // FIX
-    setTimeout(pullServerStats,1800); // FIX
   } // FIX
   // FIX — زر الإعادة حُذف نهائياً
   if(ONL._lastRenderedOverFingerprint!==rFingerprint){ // FIX
@@ -4485,7 +4495,7 @@ function renderOver(){
     const uid=v&&v.uids&&v.uids[pid]; // NEW CODE — نحلّه هنا مرة واحدة وقت البناء
     const alreadyFriend=uid&&FB_FRIENDS.some(f=>f.uid===uid); // NEW CODE — مقارنة uid الحقيقي، لا pid الجلسة المؤقت (FR.list().pid مشتق من uid بصيغة مختلفة تمامًا، لن يتطابق أبدًا مع pid الجولة الحالي)
     const showBtn=!isMe&&!isBot&&uid&&!alreadyFriend; // NEW CODE — يُخفى تمامًا لو صديق بالفعل أو بلا uid موثّق
-    return `<span style="display:inline-flex;flex-wrap:wrap;align-items:center;gap:5px">${esc(name)}${isMe?' (أنت)':''}${!isBot?`<span id="oRankBadge_${esc(pid)}" style="display:inline-block"></span>`:''}${showBtn?addFriendBtnHTML(uid,name):''}</span>`; // FIX — أضفنا flex-wrap:wrap: لو الاسم طويل + الشارة + زر الإضافة ما تسع بسطر واحد بعمود ضيق، تنزل الشارة/الزر لسطر تحتها بترتيب، بدل انضغاط أفقي عشوائي
+    return `<span style="display:inline-flex;flex-wrap:wrap;align-items:center;gap:5px">${esc(name)}${isMe?' (أنت)':''}${!isBot?`<span id="oRankBadge_${esc(pid)}" style="display:inline-block"><span class="uiResultRankPending">الرتبة غير متاحة</span></span>`:''}${showBtn?addFriendBtnHTML(uid,name):''}</span>`; // FIX — أضفنا flex-wrap:wrap: لو الاسم طويل + الشارة + زر الإضافة ما تسع بسطر واحد بعمود ضيق، تنزل الشارة/الزر لسطر تحتها بترتيب، بدل انضغاط أفقي عشوائي
   };
   if(r.mode==='team'){
     const myTeam=r.teams.findIndex(t=>t.includes(me));
@@ -4508,7 +4518,7 @@ function renderOver(){
         <div class="pt">${r.teamPoints[ti]} <span style="font-size:11px;font-family:var(--fb)">نقطة</span></div>
         <div class="gold">🂠 ${team.reduce((x,p)=>x+r.scores[p].cards,0)}</div></div>`);
     });
-    if(wt===myTeam)SFX.win();
+
   }else{
     const order=Object.entries(r.scores).sort((a,b)=>b[1].points-a[1].points||b[1].cards-a[1].cards);
     const win=r.draw?null:r.winner;
@@ -4520,19 +4530,15 @@ function renderOver(){
         <div class="pt">${sc.points} <span style="font-size:11px;font-family:var(--fb)">نقطة</span></div>
         <div class="gold">🂠 ${sc.cards}</div></div>`);
     });
-    if(win===me)SFX.win();
+
   }
   rows.querySelectorAll('.oAddFriendBtn').forEach(b=>{ b.onclick=()=>sendFriendRequest(b.dataset.uid,b.dataset.name,b); }); // NEW CODE — data-uid بدل data-pid
-  fetchAndShowOtherRanks(); // NEW CODE — يعبّي شارات كل اللاعبين (بما فيهم أنا) بشكل غير متزامن بعد الرسم
+  UI_RESULT.online.ranksReady=fetchAndShowOtherRanks(rFingerprint); // NEW CODE — يعبّي شارات كل اللاعبين (بما فيهم أنا) بشكل غير متزامن بعد الرسم
   } // FIX — إغلاق حارس "نتيجة جديدة فعلاً" — إحصاءات الذهب/الرتبة تحتها تكمل تحدّثها الطبيعي (لها حارسها المستقل عبر ONL._statsPulledForResult أعلاه أصلاً)
   uiPresentOnlineResult(r,seated);
-  // FIX — سطر واضح: رسوم الدخول والجائزة منفصلين (بدل الاكتفاء بالفارق الصافي فقط بـoMyGoldDelta)
-  const feeWinEl=$('#oFeeWinLine'); // FIX
-  if(competitive&&seated&&r.tier&&r.tier.fee){ // FIX
-    const iWon=(r.mode==='team')?(r.teams&&r.teams[r.winnerTeam]&&r.teams[r.winnerTeam].includes(me)):(r.winner===me); // FIX
-    feeWinEl.innerHTML=`<span>دخول: ${toH(r.tier.fee)} 🪙</span>${iWon?`<span style="color:#5e6b40;font-weight:800">جائزة: ${toH(r.tier.win)} 🪙</span>`:''}`; // FIX — الجائزة تُعرض فقط لو فزت فعلياً؛ الخاسر يشوف رسوم دخوله فقط، لا جائزة لم يكسبها
-    feeWinEl.classList.remove('hidden'); // FIX
-  }else{ feeWinEl.classList.add('hidden'); } // FIX
+  if(uiResultNeedsRead())pullServerStats(0); // v330: a new confirmed receipt needs one fresh balance read.
+  uiResultFeeLine(UI_RESULT.online);
+  uiFinishOnlineResultContent(UI_RESULT.online.ranksReady);
 }
 // NEW CODE — يرسل طلب صداقة فعلي (لا مجرد توست وهمي) عبر آلية WBMsg.sendFriendReq الموجودة أصلاً، بعد حلّ
 // uid الحقيقي للاعب من ONL.view.uids (السيرفر يصدّرها الآن للمقاعد الموثّقة فقط — راجع _stateFor)
@@ -4546,21 +4552,23 @@ async function sendFriendRequest(uid,name,btnEl){ // NEW CODE — تستقبل u
   if(btnEl){ btnEl.textContent='✓'; btnEl.style.opacity='.5'; }
 }
 // NEW CODE — يجلب رتبة كل لاعب حقيقي بشاشة النتيجة (بما فيّ أنا) عبر uid المصدَّر من السيرفر، ويعبّي شارته
-async function fetchAndShowOtherRanks(){ // NEW CODE
-  const uids=ONL.view&&ONL.view.uids; if(!uids)return; // NEW CODE
-  if(!(await ensureFB()))return; // NEW CODE
-  await Promise.all(Object.entries(uids).map(async([pid,uid])=>{ // NEW CODE
-    try{ // NEW CODE
-      const doc=await FB.db.collection('players').doc(uid).get(); // NEW CODE
-      const pts=doc.exists?(doc.data().rank||0):0; // NEW CODE
-      const el=document.getElementById('oRankBadge_'+pid); if(el)el.innerHTML=rankBadgeHTML(pts,10); // NEW CODE
-    }catch(e){} // NEW CODE
-  })); // NEW CODE
-} // NEW CODE
+async function fetchAndShowOtherRanks(key){
+  const m=UI_RESULT.online,uids={...(ONL.view?.uids||{})};
+  const current=()=>uiResultIsCurrent(m)&&m.key===key&&!m.revealed;
+  if(!current()||!(await ensureFB())||!current())return;
+  await Promise.all(Object.entries(uids).map(async([pid,uid])=>{
+    try{
+      const doc=await FB.db.collection('players').doc(uid).get();
+      if(!current()||!doc.exists)return;
+      const points=Number(doc.data().rank);if(!Number.isSafeInteger(points))return;
+      const el=document.getElementById('oRankBadge_'+pid);if(el)el.innerHTML=rankBadgeHTML(points,10);
+    }catch(e){} // A missing badge keeps its explicit fallback; no invented rank 0.
+  }));
+}
 // NEW CODE — يحرّك عدّادي الذهب/الرتبة بشاشة النتيجة أمام عين اللاعب — يُستدعى من pullServerStats فور اكتشاف
 // رقم جديد فعلي من السيرفر (لا حساب محلي هنا، فقط عرض/حركة لما وصل فعلاً)
-function animateResultsScreenCounters(oldGold,newGold,oldRank,newRank){
-  uiResultServerStats(newGold,newRank);
+function animateResultsScreenCounters(oldGold,newGold,oldRank,newRank,resultRead){
+  uiResultServerStats(newGold,newRank,resultRead);
 }
 function oTick(){ // مزامنة المهل مع الخادم وإرسال الحسم/المهلة تلقائياً
   if(!ONL.active||!ONL.view||ONL.status!=='playing')return;
@@ -4685,11 +4693,11 @@ function renderShop(){uiRenderShop();}
 // ═══ NEW CODE — باقات شراء الذهب (Paymob): عرض فقط هنا (الأسعار الحقيقية والحاسمة تعيش بالسيرفر
 // حصراً في payments.js — هذا الجدول للعرض المرئي لا أكثر، لا يُستخدم أبداً لحساب أي خصم فعلي) ═══
 const GOLD_PACKAGES_DISPLAY=[
-  {key:'tier1',sar:5,  label:'500 🪙'},
-  {key:'tier2',sar:10, label:'1,100 🪙'},
-  {key:'tier3',sar:25, label:'3,000 🪙'},
-  {key:'tier4',sar:50, label:'6,500 🪙'},
-  {key:'tier5',sar:100,label:'14,000 🪙'},
+  {key:'tier1',sar:5,  label:'500 ذهب'},
+  {key:'tier2',sar:10, label:'1,100 ذهب'},
+  {key:'tier3',sar:25, label:'3,000 ذهب'},
+  {key:'tier4',sar:50, label:'6,500 ذهب'},
+  {key:'tier5',sar:100,label:'14,000 ذهب'},
 ];
 function renderGoldPackages(){uiRenderGoldPackages();}
 async function buyGoldPackage(tierKey){ // NEW CODE — يبدأ عملية الدفع الفعلية عبر Paymob
@@ -4753,9 +4761,11 @@ function sentReqsSet(){ try{return new Set(JSON.parse(localStorage.getItem('wb-s
 function markReqSent(uid){ if(!uid)return; const s=sentReqsSet(); s.add(uid); localStorage.setItem('wb-sent-reqs',JSON.stringify([...s])); }
 function hasSentReq(uid){ return !!uid && sentReqsSet().has(uid); }
 function viewProfile(player){
+  if(typeof uiLeagueProfile==='function')uiLeagueProfile(player.uid);
   uiRememberProfileOrigin();
   $('#profile').classList.add('uiOtherProfile');
   viewedProfile=player;
+  uiRenderProfileRecovery();
   $('#pfAva').innerHTML=avatarHTML(player.ava||'🎭',80);
   $('#pfAva').style.cursor='default';$('#pfAva').onclick=null;
   applyRankColor($('#pfAva'),player.rpts||0); // NEW CODE — لون الحلقة حسب رتبة اللاعب المعروض
@@ -5071,7 +5081,7 @@ async function claimGift(id,btnEl){
     const data=await res.json().catch(()=>({ok:false}));
     if(data.ok&&!data.alreadyClaimed){
       ST.set('gold',ST.n('gold')+data.gold);
-      toast2(`استلمت ${toH(data.gold)} 🪙 — مبروك!`);
+      toast2(`استلمت ${toH(data.gold)} ذهب — مبروك!`);
       refreshHome();
     }else if(data.ok&&data.alreadyClaimed){
       toast2('استلمتها من قبل بالفعل');
@@ -5125,12 +5135,15 @@ let _pullingStats=false;
 async function pullServerStats(retriesLeft){
   if(retriesLeft===undefined)retriesLeft=3; // FIX — محاولة فورية + ٣ إعادات (تقريباً ١+٢+٤=٧ث تغطية إجمالية)
   if(_pullingStats)return; _pullingStats=true;
+  const statsUid=FB.user?.uid,resultRead=typeof uiResultReadToken==='function'?uiResultReadToken():null;
   const oldRank=ST.n('rank'); // NEW CODE — نلتقطها قبل أي تحديث، عشان نقارن ونشغّل التوست لو تغيّرت فعلياً
   const oldGold=ST.n('gold'); // NEW CODE — نفس الفكرة، لتحريك عدّاد الذهب بشاشة النتيجة لو مفتوحة
-  let changed=false; // FIX
+  let changed=false,readAgain=false,profileTimer=null; // FIX
   try{
-    if(!(await ensureFB())||!FB.user){_pullingStats=false;return}
-    const doc=await FB.db.collection('players').doc(FB.user.uid).get();
+    const profileRead=(async()=>{if(!(await ensureFB())||!FB.user||FB.user.uid!==statsUid)return null;return FB.db.collection('players').doc(statsUid).get();})();
+    const doc=await Promise.race([profileRead,new Promise((_,reject)=>{profileTimer=setTimeout(()=>reject(Error('profile timeout')),7000);})]);
+    if(!doc)return;
+    if(FB.user?.uid!==statsUid)return;
     if(doc.exists){
       const d=doc.data();
       for(const k of ['gold','level','xp','rank','achievement','achievementDate']){ // NEW CODE — أضفنا achievement/achievementDate
@@ -5143,14 +5156,15 @@ async function pullServerStats(retriesLeft){
         $('#hGold').textContent=ST.n('gold').toLocaleString('en');
         refreshRankCard();
         const newRank=ST.n('rank'), newGold=ST.n('gold'); // NEW CODE — أضفنا newGold
-        if(newRank!==oldRank)showRankChangeToast(oldRank,newRank); // NEW CODE — الرتبة تغيّرت فعليًا (فوز/خسارة/انسحاب، محسوبة بالسيرفر) — نوري اللاعب فورًا بتوست متحرك
+        if(newRank!==oldRank&&!(typeof uiDeferResultRankToast==='function'&&uiDeferResultRankToast(oldRank,newRank)))showRankChangeToast(oldRank,newRank); // NEW CODE — الرتبة تغيّرت فعليًا (فوز/خسارة/انسحاب، محسوبة بالسيرفر) — نوري اللاعب فورًا بتوست متحرك
       }
-      if(d.gold!==undefined&&!(doc.metadata&&doc.metadata.fromCache))animateResultsScreenCounters(oldGold,ST.n('gold'),oldRank,ST.n('rank'));
+      if(d.gold!==undefined&&d.rank!==undefined&&!(doc.metadata&&doc.metadata.fromCache))animateResultsScreenCounters(oldGold,ST.n('gold'),oldRank,ST.n('rank'),resultRead);
     }
   }catch(e){}
-  _pullingStats=false;
+  finally{clearTimeout(profileTimer);_pullingStats=false;if(typeof uiResultReadFinished==='function')uiResultReadFinished(resultRead);readAgain=typeof uiResultNeedsRead==='function'&&uiResultNeedsRead();if(readAgain)queueMicrotask(()=>pullServerStats(0));}
+  if(readAgain)return;
   // FIX — لو ما تغيّر شي وبعدنا عندنا محاولات، أعد المحاولة بعد مهلة متصاعدة (السيرفر قد لا يكون خلص المعالجة بعد)
-  if(!changed&&retriesLeft>0)setTimeout(()=>pullServerStats(retriesLeft-1),(4-retriesLeft)*1000); // FIX
+  if(!changed&&retriesLeft>0)setTimeout(()=>{if(FB.user?.uid===statsUid&&(!resultRead||UI_RESULT.online?.key===resultRead.key))pullServerStats(retriesLeft-1);},(4-retriesLeft)*1000); // FIX
 }
 function refreshRankCard(){
   const card=$('#rankCard'); if(!card)return;
@@ -5367,7 +5381,7 @@ async function claimDaily(sc){ // FIX
       localStorage.setItem('wb-daily-streak',String(data.day)); // FIX
       ST.set('gold',ST.n('gold')+data.amount); // FIX — فقط بعد تأكيد السيرفر الفعلي
       if(sc)sc.classList.add('hidden'); // FIX
-      toast2(`+${toH(data.amount)} 🪙 مكافأة اليوم ${toH(data.day)}`); // FIX
+      toast2(`+${toH(data.amount)} ذهب مكافأة اليوم ${toH(data.day)}`); // FIX
       refreshHome(); // FIX
     }else if(data.error==='already-claimed-today'){ // FIX
       toast2('استلمتها اليوم بالفعل'); if(sc)sc.classList.add('hidden'); // FIX
@@ -5386,7 +5400,7 @@ function showRewardChoice(){
     sc.innerHTML=`<div style="position:absolute;inset:0;background:rgba(12,10,6,.6);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;z-index:60;padding:22px">
       <div style="position:relative;width:100%;max-width:340px;background:#fdf9f0;border-radius:30px;padding:22px 18px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4)">
         <button id="rewardX" style="position:absolute;top:14px;left:14px;width:34px;height:34px;border-radius:999px;border:0;background:#f0e3cc;color:#5e2f0e;cursor:pointer;font-size:14px;font-weight:800">✕</button>
-        <div style="font-family:var(--fh);font-size:24px;color:#5e2f0e">اكسب ذهباً 🪙</div>
+        <div style="font-family:var(--fh);font-size:24px;color:#5e2f0e">اكسب ذهباً</div>
         <div style="display:flex;flex-direction:column;gap:12px;margin-top:18px">
           <button id="rwDaily" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:20px;border:0;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.1);cursor:pointer;text-align:right">
             <span style="width:46px;height:46px;border-radius:999px;background:linear-gradient(#e2925c,#d67f48);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none">🎁</span>
@@ -5394,7 +5408,7 @@ function showRewardChoice(){
           </button>
           <button id="rwAd" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:20px;border:0;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.1);cursor:pointer;text-align:right">
             <span style="width:46px;height:46px;border-radius:999px;background:linear-gradient(#8a9b6c,#7a8a5e);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none">🎬</span>
-            <span style="flex:1"><b style="display:block;font-size:15px;color:#201e1d">شاهد إعلان</b><span id="rwAdSub" style="font-size:11.5px;color:#8a6a4a;font-weight:700">احصل على 300 🪙 فوراً</span></span>
+            <span style="flex:1"><b style="display:block;font-size:15px;color:#201e1d">شاهد إعلان</b><span id="rwAdSub" style="font-size:11.5px;color:#8a6a4a;font-weight:700">احصل على 300 ذهب فوراً</span></span>
           </button>
         </div>
       </div></div>`;
@@ -5429,7 +5443,7 @@ function showRewardChoice(){
   // FIX — نص الحالة صار يعكس التبريد الصحيح بالساعة (نفس منطق زر المتجر بالضبط)، لا التحقق اليومي القديم
   const _adLastTime=parseInt(localStorage.getItem('wb-lastAdRewardTime')||'0',10); // FIX
   const _adRemaining=60*60*1000-(Date.now()-_adLastTime); // FIX
-  $('#rwAdSub').textContent=_adRemaining>0?('متاح خلال '+Math.ceil(_adRemaining/60000)+' دقيقة'):'احصل على 300 🪙 فوراً'; // FIX
+  $('#rwAdSub').textContent=_adRemaining>0?('متاح خلال '+Math.ceil(_adRemaining/60000)+' دقيقة'):'احصل على 300 ذهب فوراً'; // FIX
   $('#rwAd').style.pointerEvents='auto';
   sc.classList.remove('hidden');
 }
@@ -5459,7 +5473,7 @@ function showDailyReward(){
     cell.style.cssText=`position:relative;border-radius:16px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;background:${active?'linear-gradient(#e2925c,#d67f48)':done?'#e4e9d3':'#fff'};${active?'transform:scale(1.06);box-shadow:0 4px 14px rgba(214,127,72,.45)':'box-shadow:0 2px 6px rgba(0,0,0,.08)'}`;
     cell.innerHTML=`${i===7?'<span style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:14px">👑</span>':''}
       <div style="font-size:10px;font-weight:800;color:${active?'#fff7ef':done?'#5e6b40':'#8a6a4a'}">يوم ${toH(i)}</div>
-      <div style="width:26px;height:26px;border-radius:999px;background:${active?'#fff7ef':'radial-gradient(circle at 35% 30%,#ffe08a,#f6c14d 45%,#c77b1e)'};box-shadow:inset 0 -2px 3px rgba(122,55,10,.35);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#7a4c07">${done?'✓':'🪙'}</div>
+      <div style="width:26px;height:26px;border-radius:999px;background:${active?'#fff7ef':'radial-gradient(circle at 35% 30%,#ffe08a,#f6c14d 45%,#c77b1e)'};box-shadow:inset 0 -2px 3px rgba(122,55,10,.35);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#7a4c07">${done?'✓':uiGoldCoin()}</div>
       <div style="font-size:11px;font-weight:800;color:${active?'#fff7ef':done?'#5e6b40':'#201e1d'}">${toH(DAILY_REWARDS[i-1])}</div>`;
     grid.appendChild(cell);
   }
@@ -5481,7 +5495,7 @@ $('#awardsBack').onclick=()=>goHome();
 // تبويبات المتجر
 // ربط نقر .shopTab محذوف — شريط التبويبات نفسه اتحذف من الـHTML
 $('#hGroup').onclick=()=>{ // FIX — تحقق الذهب قبل الدخول للوبي أصلاً (كان يدخل بحرّية ويُرفض لاحقاً لحظة الضغط على "ابدأ" فقط)
-  if(ST.n('gold')<800){toast2('ذهبك لا يكفي — إنشاء جلسة خاصة يحتاج 800 🪙');return}
+  if(ST.n('gold')<800){toast2('ذهبك لا يكفي — إنشاء جلسة خاصة يحتاج 800 ذهب');return}
   SFX.tick(); history.replaceState(null,'',location.pathname); ONL.pendingTier=null; ONL.pendingMode=null; enterOnline();
 };
 
@@ -5587,7 +5601,7 @@ function renderMatch(){
     MATCH.on=false;QUICK_SEARCH.assigned=false;applyEquippedTheme();show('onl');renderOnl();return;
   }
   const tb=$('#mTierBadge'),tier=ONL.pendingTier;
-  if(tier){tb.classList.remove('hidden');tb.textContent='طبقة '+tier.name+' · دخول '+toH(tier.fee)+' 🪙 · ربح '+toH(tier.win);}else tb.classList.add('hidden');
+  if(tier){tb.classList.remove('hidden');tb.textContent='الساحة '+tier.name+' · دخول '+toH(tier.fee)+' ذهب · ربح '+toH(tier.win);}else tb.classList.add('hidden');
   const assigned=QUICK_SEARCH.assigned;
   const lb=ONL.lobby||{};
   const seats=assigned?(ONL.seats||[]).map(pid=>({pid,name:(lb.names||{})[pid]||'لاعب',avatar:(lb.avatars||{})[pid]})):QUICK_SEARCH.seats;
@@ -5942,6 +5956,37 @@ async function doGoogle(){
     }else toast2(authErr(e));
   }
 }
+// v336 — recovery goes only to the signed-in account email, never to a profile being viewed.
+let UI_PROFILE_RESET={uid:null,pending:false,sent:false,message:''};
+function uiRenderProfileRecovery(reopen=false){
+ const uid=FB.user?.uid||null;
+ if(UI_PROFILE_RESET.uid!==uid)UI_PROFILE_RESET={uid,pending:false,sent:false,message:''};
+ const m=UI_PROFILE_RESET,box=$('#pfRecovery'),button=$('#pfResetPassword');
+ if(!box||!button)return;
+ box.hidden=!!viewedProfile||!uid;
+ if(box.hidden)return;
+ if(reopen&&!m.pending){m.sent=false;m.message='';}
+ const email=String(FB.user.email||'').trim();
+ button.disabled=m.pending||m.sent||!email;
+ button.textContent=m.pending?'جارٍ إرسال الرابط…':m.sent?'تم إرسال رابط إعادة الضبط':'إعادة ضبط كلمة المرور';
+ $('#pfResetStatus').textContent=email?m.message:'هذا الحساب لا يحتوي بريدًا لاستعادة كلمة المرور. استخدم وسيلة الدخول المرتبطة به.';
+}
+async function uiResetProfilePassword(){
+ if(viewedProfile||!FB.user?.uid)return;
+ uiRenderProfileRecovery();const m=UI_PROFILE_RESET,uid=FB.user.uid,email=String(FB.user.email||'').trim();
+ if(m.pending||m.sent||!email)return;
+ m.pending=true;m.message='';uiRenderProfileRecovery();
+ try{
+  if(!(await ensureFB()))throw new Error('تعذّر الاتصال بالخوادم — تحقّق من الإنترنت');
+  if(FB.user?.uid!==uid||UI_PROFILE_RESET!==m)return;
+  await FB.auth.sendPasswordResetEmail(email);
+  if(FB.user?.uid!==uid||UI_PROFILE_RESET!==m)return;
+  m.sent=true;m.message='أرسلنا رابط إعادة الضبط إلى بريد حسابك. تحقق أيضًا من الرسائل غير المرغوبة.';
+ }catch(e){if(FB.user?.uid===uid&&UI_PROFILE_RESET===m)m.message=authErr(e);}
+ finally{if(UI_PROFILE_RESET===m){m.pending=false;uiRenderProfileRecovery();}}
+}
+bindTap('pfResetPassword',uiResetProfilePassword);
+
 // استعادة كلمة المرور
 async function doForgot(){
   const em=$('#lgEmail').value.trim();
@@ -6151,11 +6196,11 @@ function renderTiers(){
       <div style="position:absolute;top:0;bottom:0;left:14px;display:flex;align-items:center;gap:5px;height:30px;padding:0 11px;border-radius:999px;background:rgba(0,0,0,.55);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.15);color:#f6c14d;font-weight:800;font-size:13px;margin:auto 0"><i style="width:12px;height:12px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block"></i>${toH(fee)}</div>
       <div style="position:absolute;top:0;bottom:0;right:14px;text-align:right;min-width:0;display:flex;flex-direction:column;justify-content:center">
         <div style="display:flex;align-items:center;justify-content:flex-end;gap:7px"><b style="font-size:18px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7);white-space:nowrap">${t.name}</b>${locked?'<span style="font-size:9.5px;font-weight:800;color:#fff;background:rgba(0,0,0,.5);border-radius:999px;padding:1px 8px;white-space:nowrap">ذهب غير كافٍ</span>':''}</div>
-        <div style="font-size:12px;color:#e8e4da;font-weight:700;margin-top:3px;text-shadow:0 1px 4px rgba(0,0,0,.7);white-space:nowrap">هدف ${toH(tierVal(t,'goal'))} نقطة · ربح ${toH(win)} 🪙</div>
+        <div style="font-size:12px;color:#e8e4da;font-weight:700;margin-top:3px;text-shadow:0 1px 4px rgba(0,0,0,.7);white-space:nowrap">هدف ${toH(tierVal(t,'goal'))} نقطة · ربح ${toH(win)} ${uiGoldCoin()}</div>
         ${(tiersMode==='online'||tiersMode==='online-team')?'<div class="uiTierSearching" data-quick-tier="'+t.key+'">العدد غير متاح</div>':''}
       </div>`;
     if(!locked)card.onclick=()=>enterTier(t);
-    else card.onclick=()=>toast2(`ذهبك لا يكفي — تحتاج ${toH(fee)} 🪙 لدخول ${t.name}`);
+    else card.onclick=()=>toast2(`ذهبك لا يكفي — تحتاج ${toH(fee)} ذهب لدخول ${t.name}`);
     list.appendChild(card);
   }); // NEW CODE — إغلاق forEach
   quickCounts();
@@ -6185,11 +6230,11 @@ async function enterTier(t){
   if(fee>0){ // FIX (منقول من آيفون) — تحقق طازج فقط للطبقات المدفوعة؛ كان الفحص يعتمد على رصيد محلي مخبّأ فقط، فلاعب رصيده الحقيقي تغيّر
     // (إنفاق بجهاز/تبويب ثانٍ، أو تأخر تزامن) يدخل بثقة زائفة ويُطرد لاحقاً وقت خصم السيرفر — ولو تصادف مع أكثر من لاعب بنفس الغرفة يُطردون معاً. هذا يمنعه من جذره.
     const g=await freshGold();
-    if(g<fee){toast2(`ذهبك لا يكفي — تحتاج ${toH(fee)} 🪙`);return}
+    if(g<fee){toast2(`ذهبك لا يكفي — تحتاج ${toH(fee)} ذهب`);return}
   }
   // رسم الدخول وربح الفوز يُحسمان ويُصرفان من طرف السيرفر مباشرة (موثوق)، مو من الجهاز — يظهران بعد لحظات من بدء/انتهاء الجولة
   G_TIER={tier:t.key,mode:teamPlay?'team':'solo',fee,win,goal,name:isQuickOnline?'جلسة سريعة — '+t.name:t.name,online:isQuickOnline};
-  toast2(`دخلت ${G_TIER.name} — رسم الدخول ${toH(fee)} 🪙، الفوز يرجّع ${toH(win)}`);
+  toast2(`دخلت ${G_TIER.name} — رسم الدخول ${toH(fee)} ذهب، الفوز يرجّع ${toH(win)}`);
   if(isQuickOnline){
     // أونلاين تنافسي: ابحث عن خصوم في غرفة عامة حسب الطبقة والوضع — الخادم يحسم الرهان مركزياً
     ONL.pendingTier={key:t.key,name:G_TIER.name,fee,win,goal}; // REMOVED session — لا بادئة session- بعد الآن
@@ -6373,9 +6418,11 @@ function renderAvatarPicker(){
 function myCode(){return (localStorage.getItem('wb-player-id')||'p-????????').slice(2)}
 function myUsername(){return localStorage.getItem('wb-username')||'';}
 function openProfile(){
+  if(typeof uiLeagueProfile==='function')uiLeagueProfile(FB.user?.uid);
   uiRememberProfileOrigin();
   $('#profile').classList.remove('uiOtherProfile');
   viewedProfile=null; // ملفي أنا
+  uiRenderProfileRecovery(true);
   {const ab=$('#pfAddFriend');if(ab)ab.style.display='none';}
   $('#pfAva').innerHTML=avatarHTML(myAvatar(),80);
   $('#pfAva').style.cursor='pointer';
@@ -6626,6 +6673,7 @@ function uiRenderSpectatorStatus(v,seated){
     return;
   }
   const messages={
+    'league-arrival':['انتهت مهلة حضور الجولة','لم يكتمل دخولك لطاولة الدوري خلال مهلة الحضور 90 ثانية؛ الكمبيوتر يكمل مكانك في هذه الجولة. يمكنك المتابعة كمشاهد، والعودة في الجولة التالية إن تأهل فريقك.'],
     absence:['الجولة مستمرة من المدرّج','انتهت مشاركتك بعد غياب ثلاثة أدوار. تابع الجولة الآن؛ يمكنك اللعب مجددًا في الجولة التالية.'],
     fee:['أنت تشاهد الجولة','لم يكتمل دفع رسوم الدخول؛ الكمبيوتر يكمل هذا المقعد حتى نهاية الجولة.'],
     waiting:['مكانك ينتظرك في المجلس','أنت تشاهد الآن. سُجّل طلب جلوسك في هذه الجلسة الودية؛ ستنضم عند إتاحة المقعد وانتهاء المزايدة الحالية.'],
@@ -6654,6 +6702,7 @@ function joinRoomFromChat(room, expectSeat){
 }
 // افتح بروفايل لاعب عام من Firestore
 async function viewPublicProfile(uid){
+  if(typeof uiLeagueProfile==='function')uiLeagueProfile(uid);
   if(!uid)return;
   toast2('جارٍ فتح الملف...');
   if(!(await ensureFB()))return;
@@ -7070,7 +7119,7 @@ function frRow(f,activeRoom){
   const canDM=!!f.uid;
   const invBtn='<button class="frBtn inv" data-inv="'+f.pid+'" data-nm="'+esc(f.name)+'" data-uid="'+(f.uid||'')+'">دعوة للعب</button>';
   const msgBtn=canDM?'<button class="frBtn" data-dm="'+f.pid+'" data-nm="'+esc(f.name)+'" data-uid="'+f.uid+'" data-ava="'+encodeURIComponent(ava)+'" style="background:#ece0ca;color:var(--clay)">💬</button>':'';
-  const watchBtn=activeRoom?'<button class="frBtn watch" data-watch="'+esc(activeRoom)+'" style="background:#dcebd6;color:var(--sage)">👀 شاهد</button>':'';
+  const watchBtn=activeRoom?'<button class="frBtn watch" data-watch="'+esc(activeRoom)+'" style="background:#dcebd6;color:var(--sage)">'+uiWatchIcon()+'<span>شاهد</span></button>':'';
   const statusLine=activeRoom?'<div class="fSt on">🟢 يلعب الآن</div>':'<div class="fSt">'+(f.uid?'@'+esc(f.username||''):'صديق')+'</div>';
   return `<div class="frRow" data-fpid="${esc(f.pid)}"><div class="fAva" style="overflow:hidden">${avatarHTML(ava,44)}</div>
     <div class="fBody"><div class="fNm">${esc(f.name)}</div>${statusLine}</div>
@@ -7428,6 +7477,7 @@ fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
   const m=t.match(/waggif-v(\d+)/); const bt=document.getElementById('buildTag');
   if(m&&bt)bt.textContent='build v'+m[1];
 }).catch(()=>{});
+
 </script>
 <!-- ============ تكامل AdMob الفعلي — النسخة الصحيحة المؤكَّدة من فحص ملف plugin.js الفعلي ============ -->
 <!-- FIX — المحاولة الأولى (استيراد ES module) لم تعمل: هذا المشروع بلا أداة تجميع، فـimport يفشل صامتاً حتى
@@ -7514,6 +7564,7 @@ fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
      يدوياً — مهم: غيّر اسمه لـ"firebase-auth-plugin.js" وقت النسخ (لا تسمّه plugin.js زي ما هو، لأن AdMob
      أيضاً عنده ملف بنفس الاسم بالضبط بمجلده — لو الاثنين اتسمّوا plugin.js بنفس مجلد www، الثاني يمحو الأول). -->
 <script src="firebase-auth-plugin.js"></script>
-<script src="ui-tournament.js"></script>
+<script src="ui-card-motion.js"></script>
+<script src="ui-leagues.js"></script>
 </body>
 </html>

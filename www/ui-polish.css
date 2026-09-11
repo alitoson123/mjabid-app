@@ -1077,7 +1077,7 @@ body{position:fixed;inset:0;width:100%;overscroll-behavior:none}
 #home .hLogoCards{display:block;margin:0 auto;height:clamp(52px,calc(var(--ui-home-height) - 600px),108px);transform:none}
 #home .hLogoCards img{height:clamp(48px,calc(var(--ui-home-height) - 610px),87px);width:auto;max-width:62px;object-fit:contain}
 #home .hTitle{font-size:clamp(36px,calc(var(--ui-home-height) / 14),48px)}
-#home .hMenu{flex:1 1 auto;min-height:0;max-height:450px;display:grid;grid-template-rows:minmax(84px,1.2fr) minmax(52px,.72fr) minmax(88px,1.1fr) minmax(64px,.8fr);gap:clamp(6px,calc(var(--ui-home-height) - 620px),10px);padding-top:8px;padding-bottom:8px}
+#home .hMenu{flex:1 1 auto;min-height:0;max-height:450px;display:grid;grid-template-columns:minmax(0,1fr);justify-content:stretch;justify-items:stretch;grid-template-rows:minmax(84px,1.2fr) minmax(52px,.72fr) minmax(88px,1.1fr) minmax(64px,.8fr);gap:clamp(6px,calc(var(--ui-home-height) - 620px),10px);padding-top:8px;padding-bottom:8px}
 #home .hMenu>.hBig,#home .hMenu>.row2,#home .hMenu>.row2>.hBig{height:100%;min-height:0;margin:0}
 #home #hOnl{padding:26px 14px 8px}
 #home #hOnl>span>span>b{font-size:26px!important;line-height:1.2}

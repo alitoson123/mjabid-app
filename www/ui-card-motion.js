@@ -44,7 +44,7 @@ window.UICardFlow=(()=>{
     const on=model.id==='online', g={field:nodes(on?'#oField > .card[data-id]':'#field > .card[data-id]'),
       hand:nodes(on?'#oHand > .card[data-id]':'#hand > .card[data-id]'),stack:nodes(on?'#oWaqfStack > .card[data-id]':'#contested > .card[data-id]'),
       hands:new Map(),piles:new Map(),pileCards:new Map()};
-    g.center=at(document.getElementById(on?'oWaqfStack':'contested'),51,72)||at(document.getElementById(on?'oField':'field'),51,72)||fallback?.center;
+    g.center=at(document.getElementById(on?'oWaqfStack':'contested'),54,77)||at(document.getElementById(on?'oField':'field'),54,77)||fallback?.center;
     g.deck=at(document.getElementById(on?'oDeckStack':'deckStack'))||fallback?.deck;
     model.seats.forEach((pid,k)=>{
       const seat=document.getElementById(on?['oIdent','oSeatR','oSeat','oSeatL'][k]:['meIdent','seatR','seatT','seatL'][k]);
@@ -75,6 +75,7 @@ window.UICardFlow=(()=>{
     if(distance<2&&Math.abs(to.w-from.w)<2)return;
     const el=cardEl(card,'sm');el.classList.add('uiCardFlight');el.removeAttribute('data-id');el.removeAttribute('data-rank');el.removeAttribute('aria-label');el.setAttribute('aria-hidden','true');
     el.dataset.motionKind=options.kind||'play';el.dataset.motionPlayer=String(options.pid??'');
+    if(options.merge)el.classList.add('uiCardFlightMerged');
     const w=to.w||44,h=to.h||62;el.style.width=w+'px';el.style.height=h+'px';
     el.style.zIndex=String(options.order||1);layerFor().appendChild(el);
     const duration=options.duration||Math.round(Math.min(470,Math.max(330,280+distance*.3))), delay=options.delay||0;
@@ -109,6 +110,14 @@ window.UICardFlow=(()=>{
       if(pid!==undefined&&geo.piles.has(pid))return geo.piles.get(pid);
     }
     return geo.hands.get(actor)||geo.center;
+  }
+  // v350: bids start a short distance from the stack, along the actual bidder direction.
+  // Measured viewport geometry handles all four seats, spectators and scaled native screens.
+  function bidOrigin(from,to){
+    if(!from||!to)return from;
+    const dx=from.x-to.x,dy=from.y-to.y,d=Math.hypot(dx,dy);
+    const reach=Math.min(d,95*(to.w||54)/54);
+    return {...to,x:to.x+(d?dx/d*reach:0),y:to.y+(d?dy/d*reach:0),angle:0};
   }
   function capturedSources(before,model,geo,cards){
     const sources=new Map();
@@ -150,9 +159,10 @@ window.UICardFlow=(()=>{
       const atomicBid=before.waqf&&finalPlayed&&!geo.stack.has(key(finalPlayed));
       cards.forEach((c,i)=>{
         const wasContested=before.waqf?.cards.some(old=>key(old)===key(c));
-        const start=geo.stack.get(key(c))||(wasContested?geo.center:origin({...model,settle:settlement},captureGeo,c,c.by??settlement.holder,i===cards.length-1));
+        let start=geo.stack.get(key(c))||(wasContested?geo.center:origin({...model,settle:settlement},captureGeo,c,c.by??settlement.holder,i===cards.length-1));
         const lands=top&&key(c)===key(top);
         const via=atomicBid&&key(c)===key(finalPlayed)?geo.center:null;
+        if(via)start=bidOrigin(start,via);
         fly(ctx,c,start,dest,{kind:'collect',pid:settlement.holder,area:lands?'pile':null,target:lands?dest?.el:null,delay:via?0:(atomicBid?210:0)+i*12,order:i+1,merge:!lands,...(via?{via,duration:640}:{})});
       });
       if(model.id==='online'&&!document.hidden)GameSoundManager.playCardArrive();
@@ -166,8 +176,9 @@ window.UICardFlow=(()=>{
       for(const c of unique.values()){
         const last=key(c)===key(cards[cards.length-1]), pid=last?model.waqf.holder:c.by??model.waqf.holder;
         const to=now.stack.get(key(c))||now.center;
-        const start=origin(model,captureGeo,c,pid,last);
-        fly(ctx,c,start,to,{kind:last?(before.waqf?'bid':'play'):'capture',pid,area:'stack',target:now.stack.get(key(c))?.el,delay:last?0:Math.min(order*12,60),order:++order,merge:!now.stack.has(key(c))});
+        const isBid=last&&!!before.waqf;
+        const originalStart=origin(model,captureGeo,c,pid,last),start=isBid?bidOrigin(originalStart,to):originalStart;
+        fly(ctx,c,start,to,{kind:last?(isBid?'bid':'play'):'capture',pid,area:'stack',target:now.stack.get(key(c))?.el,delay:last?0:Math.min(order*12,60),order:++order,merge:!now.stack.has(key(c)),...(isBid?{duration:300}:{})});
       }
       ctx.capture=null;
     }
@@ -194,6 +205,7 @@ window.UICardFlow=(()=>{
     if(reduced.matches||document.hidden){for(const f of [...ctx.flights.values()])f.stop();ctx.capture=null;}
     else present(ctx,before,geo,current,now);
     delete current.previous;delete current.captureSources;ctx.previous=current;ctx.geometry=now;ctx.frame=Date.now();
+    window.UITablePresentation?.refresh();
     return result;
   }
   const originalOnline=renderOnl, originalLocal=render, originalWaqf=renderWaqf;
@@ -213,4 +225,127 @@ window.UICardFlow=(()=>{
     for(const id of ['onl','game','waqf']){const el=document.getElementById(id);if(el)observer.observe(el,{attributes:true,attributeFilter:['class']});}
   }
   return {reset};
+})();
+
+/* v344 — field depth, capture caption and seat-anchored speech. DOM only. */
+window.UITablePresentation=(()=>{
+  const byId=id=>document.getElementById(id);
+  const visible=el=>!!(el&&el.isConnected&&!el.closest('.hidden')&&el.getClientRects().length);
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+  const entries=[
+    ['chatBubble','meIdent','game','bottom'],
+    ['oChatBubble','oIdent','onl','bottom'],
+    ['oChatBubbleR','oSeatR','onl','right'],
+    ['oChatBubbleT','oSeat','onl','top'],
+    ['oChatBubbleL','oSeatL','onl','left']
+  ].map(([id,seat,root,side])=>({bubble:byId(id),seat:byId(seat),root:byId(root),side}))
+    .filter(e=>e.bubble&&e.seat&&e.root);
+  let frame=0;
+
+  function overlap(a,b){
+    return Math.max(0,Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x))*
+      Math.max(0,Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y));
+  }
+  function chooseSpeechBox(anchor,size,bounds,obstacles,side){
+    const gap=10,w=Math.min(size.w,bounds.w),h=Math.min(size.h,bounds.h);
+    const cx=anchor.x+anchor.w/2,cy=anchor.y+anchor.h/2;
+    const candidates=[
+      {x:cx-w/2,y:anchor.y-h-gap,tail:'bottom'},
+      {x:cx-w/2,y:anchor.y+anchor.h+gap,tail:'top'},
+      {x:anchor.x-w-gap,y:cy-h/2,tail:'right'},
+      {x:anchor.x+anchor.w+gap,y:cy-h/2,tail:'left'}
+    ];
+    // Extra lanes allow simultaneous messages to separate without covering cards.
+    for(const p of candidates.slice(0,2)){
+      candidates.push({...p,x:bounds.x},{...p,x:bounds.x+bounds.w-w});
+    }
+    let best=null,bestCost=Infinity;
+    candidates.forEach((p,i)=>{
+      const x=Math.max(bounds.x,Math.min(bounds.x+bounds.w-w,p.x));
+      const y=Math.max(bounds.y,Math.min(bounds.y+bounds.h-h,p.y));
+      const box={x,y,w,h,tail:p.tail};
+      const cost=obstacles.reduce((s,o)=>s+overlap(box,o)*(o.weight||1),0)+
+        overlap(box,anchor)*12+Math.hypot(x+w/2-cx,y+h/2-cy)*.4+i*.1+
+        ((side==='bottom'&&p.tail!=='bottom')?15:0);
+      if(cost<bestCost){best=box;bestCost=cost;}
+    });
+    return best;
+  }
+  function layout(){
+    frame=0;
+    const occupied=new Map();
+    for(const e of entries){
+      if(!visible(e.bubble)||!visible(e.seat)||!visible(e.root))continue;
+      const r=e.root.getBoundingClientRect();
+      const sx=r.width/e.root.offsetWidth,sy=r.height/e.root.offsetHeight;
+      if(!Number.isFinite(sx)||!Number.isFinite(sy)||sx<=0||sy<=0)continue;
+      const local=el=>{const q=el.getBoundingClientRect();return {x:(q.left-r.left)/sx,y:(q.top-r.top)/sy,w:q.width/sx,h:q.height/sy};};
+      const anchor=local(e.seat.querySelector('.ava')||e.seat);
+      const online=e.root.id==='onl';
+      const hud=e.root.querySelector('#topbar');
+      const hand=byId(online?'oHand':'hand');
+      const top=visible(hud)?Math.max(8,local(hud).y+local(hud).h+6):8;
+      const bottom=visible(hand)?Math.min(e.root.offsetHeight-8,local(hand).y-8):e.root.offsetHeight-8;
+      const bounds={x:8,y:top,w:Math.max(1,e.root.offsetWidth-16),h:Math.max(1,bottom-top)};
+      e.bubble.style.maxWidth=Math.min(164,Math.max(112,bounds.w*.44))+'px';
+      e.bubble.style.maxHeight=Math.min(86,bounds.h)+'px';
+      const size={w:e.bubble.offsetWidth,h:e.bubble.offsetHeight};
+      const obstacles=[...e.root.querySelectorAll('.seat .ava,.seat .pts,.pileBox,#oIdent .ava,#meIdent .ava,.card[data-id]')]
+        .filter(visible).map(el=>({...local(el),weight:el.classList.contains('card')?12:8}));
+      const used=occupied.get(e.root)||[];
+      const box=chooseSpeechBox(anchor,size,bounds,[...obstacles,...used],e.side);
+      e.bubble.style.left=box.x+'px';e.bubble.style.top=box.y+'px';
+      e.bubble.dataset.uiTail=box.tail;
+      const vertical=box.tail==='top'||box.tail==='bottom';
+      const target=vertical?anchor.x+anchor.w/2-box.x:anchor.y+anchor.h/2-box.y;
+      e.bubble.style.setProperty('--ui-speech-tail',Math.max(12,Math.min((vertical?box.w:box.h)-12,target))+'px');
+      used.push({...box,weight:30});occupied.set(e.root,used);
+    }
+  }
+  function refresh(){
+    if(frame||document.hidden||!entries.some(e=>visible(e.bubble)&&visible(e.root)))return;
+    frame=requestAnimationFrame(layout);
+  }
+  for(const e of entries){
+    e.bubble.classList.add('uiTableSpeech');
+    // Keep every existing ID and element; remove self speech from the hand's flex row.
+    e.root.appendChild(e.bubble);
+  }
+  if(entries.length&&typeof MutationObserver==='function'){
+    const observer=new MutationObserver(refresh);
+    for(const e of entries)observer.observe(e.bubble,{attributes:true,attributeFilter:['class'],childList:true,characterData:true,subtree:true});
+    for(const root of new Set(entries.map(e=>e.root)))observer.observe(root,{attributes:true,attributeFilter:['class']});
+  }
+  if(entries.length&&typeof ResizeObserver==='function'){
+    const observer=new ResizeObserver(refresh);
+    for(const el of new Set(entries.flatMap(e=>[e.root,e.seat])))observer.observe(el);
+  }
+  window.addEventListener('resize',refresh);
+  const clearCaptions=()=>{
+    if(frame){cancelAnimationFrame(frame);frame=0;}
+    for(const id of ['field','oField']){
+      const layer=byId(id)?.parentElement?.querySelector(':scope > .uiEatLayer');
+      if(layer){clearTimeout(layer._uiEatTimer);layer.replaceChildren();}
+    }
+  };
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)clearCaptions();else refresh();});
+  window.addEventListener('pagehide',clearCaptions);
+  if(typeof showEatFx==='function')showEatFx=function(fieldSelId,points){
+    const field=document.querySelector(fieldSelId),value=Number(points);
+    if(!visible(field)||document.hidden||!Number.isFinite(value)||value<=0)return;
+    const host=field.parentElement||field;
+    let layer=host.querySelector(':scope > .uiEatLayer');
+    if(!layer){layer=document.createElement('div');layer.className='uiEatLayer';host.appendChild(layer);}
+    layer.style.cssText='position:absolute;inset:0;pointer-events:none;z-index:310';
+    clearTimeout(layer._uiEatTimer);layer.replaceChildren();
+    const badge=document.createElement('div');badge.className='eatFxPts uiEatCaption';
+    const amount=document.createElement('b');amount.className='uiEatAmount';amount.setAttribute('dir','ltr');amount.textContent='+'+String(Math.trunc(value));
+    const label=document.createElement('span');label.className='uiEatLabel';label.textContent='نقاط الأكلة';
+    badge.appendChild(amount);badge.appendChild(label);layer.appendChild(badge);
+    if(!reduced.matches){const ring=document.createElement('div');ring.className='eatFxRing';layer.appendChild(ring);}
+    // One replacement-safe UI expiry per field; no polling or server alarm.
+    layer._uiEatTimer=setTimeout(()=>layer.replaceChildren(),1300);
+  };
+  refresh();
+  return {refresh};
 })();

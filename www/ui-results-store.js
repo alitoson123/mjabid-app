@@ -164,7 +164,7 @@ function uiWaitResultImages(m){
   m.assetsStarted=true;
   const badge=document.getElementById('oRankBadge_'+ONL.you);if(badge&&m.competitive&&m.synced)badge.innerHTML=rankBadgeHTML(m.current.rank,10);
   const images=Array.from(document.querySelectorAll('#oOver #resCard img'));
-  const assets=images.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{
+  const assets=images.map(img=>window.MajabeedImages&&img.getAttribute?.('data-mj-avatar')?MajabeedImages.prepare(img):img.complete?Promise.resolve():new Promise(resolve=>{
     const done=()=>{img.removeEventListener('load',done);img.removeEventListener('error',done);resolve();};
     img.addEventListener('load',done,{once:true});img.addEventListener('error',done,{once:true});m.assetCleanups.push(done);
   }));

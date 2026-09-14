@@ -694,11 +694,20 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script src="image-cache.js"></script>
 <link rel="stylesheet" href="ui-polish.css">
 <script defer src="ui-results-store.js"></script>
 <script defer src="ui-polish.js"></script>
 <link rel="stylesheet" href="ui-leagues.css">
 <link rel="stylesheet" href="ui-card-motion.css">
+<link rel="stylesheet" href="ui-community.css">
+<link rel="stylesheet" href="ui-field-cards-v348.css">
+<link rel="stylesheet" href="ui-match-tiers-v349.css">
+<link rel="stylesheet" href="ui-table-cards-v350.css">
+<link rel="stylesheet" href="ui-lobby-chat-v351.css">
+<link rel="stylesheet" href="ui-pile-joker-v352.css">
+<link rel="stylesheet" href="ui-session-polish-v353.css">
+<link rel="stylesheet" href="ui-bid-stack-v355.css">
 </head>
 <body>
 <div id="frame">
@@ -901,7 +910,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
     <div id="topbar" style="position:relative;z-index:35">
       <button class="exitLike" id="oExit" style="background:none;color:var(--sageL);font-size:12px;font-weight:700;text-decoration:underline;border:none;cursor:pointer">خروج</button>
       <div class="ttl uiMatchHeader" id="oHeaderTtl">
-        <div class="uiMatchWords"><div class="uiMatchTitleLine"><span id="uiOnlineTitle">جلسة سريعة</span><span id="connDot"></span><span id="oSpecCount" class="hidden" aria-label="عدد المشاهدين"><svg class="uiWatchIcon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg><span id="oSpecN">0</span></span></div><span id="uiOnlineMode" class="uiMatchDetail">جماعي ٢×٢</span></div>
+        <div class="uiMatchWords"><div class="uiMatchTitleLine"><span id="uiOnlineTitle">لعب تنافسي</span><span id="connDot"></span><span id="oSpecCount" class="hidden" aria-label="عدد المشاهدين"><svg class="uiWatchIcon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg><span id="oSpecN">0</span></span></div><span id="uiOnlineMode" class="uiMatchDetail">جماعي ٢×٢</span></div>
         <span id="oHeaderGoal" class="hidden uiMatchGoal"></span>
       </div>
       <button id="oSnd" style="background:rgba(240,250,225,.12);color:var(--mint);border-radius:99px;padding:4px 10px;font-size:13px;border:none;cursor:pointer">🔊</button>
@@ -970,29 +979,45 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
         </div>
       </div>
     </div>
-    <div id="onlWait" class="hidden">
-      <h2>طاولة الأصدقاء</h2>
-      <div class="sub">أرسل الرابط لأصدقائك (حتى 3) — والبوتات تكمّل الناقص</div>
-      <input id="lobbyName" type="hidden" value="">
-      <button id="pubInviteBtn" style="margin-top:10px;width:100%;max-width:330px;padding:11px;border-radius:14px;background:rgba(255,255,255,.1);color:#ccdbb2;font-family:var(--fb);font-weight:800;font-size:13px;border:1.5px dashed rgba(204,219,178,.4);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">📣 أرسل دعوة بالشات العام</button>
-      <button id="onlineFriendsBtn" style="margin-top:8px;width:100%;max-width:330px;padding:11px;border-radius:14px;background:rgba(255,255,255,.1);color:#ccdbb2;font-family:var(--fb);font-weight:800;font-size:13px;border:1.5px dashed rgba(204,219,178,.4);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">👥 دعوة الأصدقاء</button>
-      <!-- FIX — اللوحة المطوية حُذفت: الزر يفتح نافذة منبثقة حقيقية (تُبنى ديناميكياً) بالأصدقاء المتصلين فقط -->
-      <div id="lobbyMode" style="display:flex;gap:8px;margin-top:16px;width:100%;max-width:330px">
-        <button data-m="solo" class="lmBtn on">كل واحد لحاله</button>
-        <button data-m="team" class="lmBtn">جماعي مع بعض</button>
+    <div id="onlWait" class="hidden uiLobbyCompact">
+      <div class="uiLobbyShell">
+        <header class="uiLobbyHeader">
+          <div><span class="uiLobbyEyebrow">لوبي الجلسة</span><h2>طاولة الأصدقاء</h2><div class="sub">جماعي أو فردي · حتى 4 لاعبين</div></div>
+          <span id="uiLobbyCount" aria-label="اللاعبون في الطاولة"><bdi>0 / 4</bdi><small>لاعبون</small></span>
+        </header>
+        <input id="lobbyName" type="hidden" value="">
+        <div id="uiLobbyTabs" role="tablist" aria-label="لوبي الجلسة">
+          <button id="uiLobbySeatsTab" type="button" role="tab" aria-selected="true" aria-controls="uiLobbySeatsPanel" data-lobby-tab="seats">الطاولة</button>
+          <button id="uiLobbySettingsTab" type="button" role="tab" aria-selected="false" aria-controls="uiLobbySettingsPanel" data-lobby-tab="settings" tabindex="-1">الإعدادات</button>
+        </div>
+        <section id="uiLobbySeatsPanel" class="uiLobbyPanel" role="tabpanel" aria-labelledby="uiLobbySeatsTab">
+          <div id="lobbyPlayers"></div>
+          <p id="uiLobbySeatHelp"></p>
+          <div class="uiLobbyInvites">
+            <button id="onlineFriendsBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M19 7v6m-3-3h6"/></svg>دعوة الأصدقاء</button>
+            <button id="pubInviteBtn" type="button">دعوة في العام</button>
+          </div>
+        </section>
+        <section id="uiLobbySettingsPanel" class="uiLobbyPanel" role="tabpanel" aria-labelledby="uiLobbySettingsTab" hidden>
+          <p class="uiLobbySettingsNote">إعدادات الجلسة يحددها المنشئ</p>
+          <div id="lobbyMode">
+            <button data-m="solo" class="lmBtn on" type="button">فردي</button>
+            <button data-m="team" class="lmBtn" type="button">جماعي 2×2</button>
+          </div>
+          <div id="lobbyGoal">
+            <button data-g="deck" class="lmBtn on" type="button">الرزمة كاملة</button>
+            <button data-g="points" class="lmBtn" type="button">هدف نقاط</button>
+          </div>
+          <div id="lobbyPublic">
+            <button data-p="0" class="lmBtn on" type="button">خاصة بالرابط</button>
+            <button data-p="1" class="lmBtn" type="button">جلسة عامة</button>
+          </div>
+        </section>
+        <footer class="uiLobbyFooter">
+          <button id="lobbyStart" class="hidden" type="button">بدء المباراة</button>
+          <div id="lobbyHint" class="pulse" role="status">بانتظار اللاعبين…</div>
+        </footer>
       </div>
-      <div id="lobbyGoal" style="display:flex;gap:8px;margin-top:8px;width:100%;max-width:330px">
-        <button data-g="deck" class="lmBtn on">حتى يخلص الورق</button>
-        <button data-g="points" class="lmBtn">هدف نقاط</button>
-      </div>
-      <!-- NEW CODE — مفتاح ظهور المجموعة بالجلسات النشطة -->
-      <div id="lobbyPublic" style="display:flex;gap:8px;margin-top:8px;width:100%;max-width:330px">
-        <button data-p="0" class="lmBtn on">خاصة (بالرابط بس)</button>
-        <button data-p="1" class="lmBtn">تظهر بالجلسات النشطة</button>
-      </div>
-      <div id="lobbyPlayers" style="margin-top:14px;width:100%;max-width:330px"></div>
-      <button id="lobbyStart" class="hidden" style="margin-top:16px;width:100%;max-width:330px;padding:16px;border-radius:999px;background:linear-gradient(#e2925c,#d67f48);color:#fff7ef;font-family:var(--fh);font-size:22px;box-shadow:0 6px 0 #5e2f0e;border:none;cursor:pointer">ابدأ — والبوتات تكمّل</button>
-      <div id="lobbyHint" class="pulse">بانتظار الأصدقاء...</div>
     </div>
     <div id="oWaqf" class="hidden"></div>
     <div id="oOver" class="hidden">
@@ -1030,7 +1055,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
           <img src="court_K.png" alt="">
           <img src="court_Q.png" alt="">
           <img src="court_J.png" alt="">
-          <img src="court_JOKER.png" alt="">
+          <img src="court_JOKER_v352.png" alt="">
         </div>
         <div id="wTitle">مجابيد</div>
         <div id="wSub">ورق المجالس… كِل ولا تنكِل</div>
@@ -1135,7 +1160,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
   </div>
   <!-- الملف الشخصي -->
   <div class="screen hidden" id="profile">
-    <div style="position:absolute;inset:0;display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch">
+    <div id="pfShell" style="position:absolute;inset:0;display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch">
       <div id="pfHead">
         <button class="qBtn" id="pfBack">→</button>
         <button id="pfEdit">تعديل</button>
@@ -1143,6 +1168,14 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
         <div id="pfName">ضيف</div>
         <div id="pfMeta"><span id="pfRankBadge"></span><span id="pfCode">@--------</span></div>
       </div>
+      <nav id="pfTabs" role="tablist" aria-label="أقسام الملف الشخصي">
+        <button id="pfTabOverview" role="tab" aria-controls="pfPanelOverview" aria-selected="true" data-pf-tab="overview">نظرة عامة</button>
+        <button id="pfTabHistory" role="tab" aria-controls="pfPanelHistory" aria-selected="false" data-pf-tab="history" tabindex="-1">السجل</button>
+        <button id="pfTabAchievements" role="tab" aria-controls="pfPanelAchievements" aria-selected="false" data-pf-tab="achievements" tabindex="-1">الإنجازات</button>
+        <button id="pfTabAccount" role="tab" aria-controls="pfPanelAccount" aria-selected="false" data-pf-tab="account" tabindex="-1">الحساب</button>
+      </nav>
+      <div id="pfPages">
+      <section id="pfPanelOverview" role="tabpanel" aria-labelledby="pfTabOverview" tabindex="0">
       <div id="pfStats">
         <div class="pfStat"><span class="pfStatIc">🎴</span><b id="stGames">0</b><span>مباراة</span></div>
         <div class="pfStat"><span class="pfStatIc">🏆</span><b id="stWins">0</b><span>فوز</span></div>
@@ -1161,30 +1194,47 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
         <div id="pfRankRemain" style="font-size:12px;font-weight:700;color:var(--mut)"></div>
         <div id="pfRankDemote" style="font-size:12px;font-weight:800;color:#c0392b;margin-top:4px;display:none"></div>
       </div>
+      <div id="pfProfileActions" hidden></div>
+      </section>
+      <section id="pfPanelHistory" role="tabpanel" aria-labelledby="pfTabHistory" tabindex="0" hidden>
+      <h2 class="pfPageTitle">سجل النتائج</h2><p id="pfHistoryEmpty" class="pfPageEmpty">لا توجد نتائج محفوظة على هذا الجهاز بعد.</p>
       <div id="pfHistory" style="margin:10px 16px 0;display:none">
-        <div style="font-size:11.5px;font-weight:800;color:var(--mut);margin-bottom:7px">آخر 5 مباريات</div>
+        <div style="font-size:11.5px;font-weight:800;color:var(--mut);margin-bottom:7px">آخر 20 نتيجة محفوظة على هذا الجهاز</div>
         <div id="pfHistoryRow" style="display:flex;gap:7px"></div>
       </div>
       <!-- NEW CODE — حُذفت حاوية "الأوسمة المكتسبة" نهائيًا (استُبدلت بقسم الإنجازات) -->
       <!-- NEW CODE — قسم الإنجازات الجديد (عضو مؤسس + إنجازات الصدارة الأسبوعية) -->
+      </section>
+      <section id="pfPanelAchievements" role="tabpanel" aria-labelledby="pfTabAchievements" tabindex="0" hidden>
       <div id="pfAchievements" style="margin:14px 16px 0">
         <div class="t">الإنجازات</div>
         <div id="pfAchievementsList"></div>
       </div>
-      <section id="pfRecovery" hidden><button id="pfResetPassword" type="button">إعادة ضبط كلمة المرور</button><p>نرسل رابطًا إلى بريد حسابك؛ لا تحتاج كلمة المرور القديمة.</p><p id="pfResetStatus" role="status" aria-live="polite"></p></section>
+      </section>
+      <section id="pfPanelAccount" role="tabpanel" aria-labelledby="pfTabAccount" tabindex="0" hidden>
+      <h2 class="pfPageTitle">إعدادات الحساب</h2>
+      <section id="pfRecovery" hidden><form id="pfPasswordForm">
+        <h3>إعادة تعيين كلمة المرور</h3>
+        <label for="pfNewPassword">كلمة المرور الجديدة</label><input id="pfNewPassword" type="password" autocomplete="new-password" minlength="6" maxlength="128" required>
+        <label for="pfConfirmPassword">تأكيد كلمة المرور الجديدة</label><input id="pfConfirmPassword" type="password" autocomplete="new-password" minlength="6" maxlength="128" required>
+        <button id="pfResetPassword" type="submit">حفظ كلمة المرور</button><p id="pfResetStatus" role="status" aria-live="polite"></p>
+      </form></section>
       <button id="pfOut">تسجيل الخروج</button>
       <button id="pfDeleteAcc" style="width:100%;margin-top:10px;padding:10px;background:none;border:none;color:#b3382b;font-family:var(--fb);font-weight:700;font-size:12px;text-decoration:underline;cursor:pointer">حذف الحساب نهائيًا</button>
       <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--mut)"><a href="https://mjabid.com/terms.html" target="_blank" style="color:inherit">شروط الاستخدام</a> · <a href="https://mjabid.com/privacy.html" target="_blank" style="color:inherit">سياسة الخصوصية</a></div>
+      </section>
+      </div>
     </div>
   </div>
   <!-- المحادثة -->
   <div class="screen hidden" id="chat">
     <div id="chWrap" data-navholder>
       <div id="chHead"><button class="qBtn" id="chBack" style="width:40px;height:40px;border-radius:999px;border:0;background:rgba(0,0,0,.32);color:#ffc6a5;display:flex;align-items:center;justify-content:center;flex:none;font-size:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></button><span class="t" id="chTitle">الدردشة</span><button id="chClearBtn" class="hidden" title="مسح المحادثة" style="width:36px;height:36px;border-radius:999px;border:0;background:rgba(0,0,0,.32);color:#ffc6a5;display:flex;align-items:center;justify-content:center;flex:none;font-size:16px;cursor:pointer;margin-right:auto">🗑️</button></div>
-      <div id="chTabs" style="display:flex;background:rgba(0,0,0,.32);border-radius:999px;padding:4px;margin:14px 0 0;box-shadow:inset 0 0 0 1.5px rgba(249,244,237,.12)">
-        <button class="chTab on" data-ct="public" style="flex:1;height:38px;border:0;border-radius:999px;font-family:var(--fb);font-weight:800;font-size:14px;cursor:pointer">الشات العام</button>
-        <button class="chTab" data-ct="friends" style="flex:1;height:38px;border:0;border-radius:999px;font-family:var(--fb);font-weight:800;font-size:14px;cursor:pointer">الخاص</button>
+      <div id="chTabs" role="group" aria-label="قنوات الدردشة" style="display:flex;background:rgba(0,0,0,.32);border-radius:999px;padding:4px;margin:14px 0 0;box-shadow:inset 0 0 0 1.5px rgba(249,244,237,.12)">
+        <button class="chTab on" data-ct="public" aria-pressed="true" style="flex:1;height:38px;border:0;border-radius:999px;font-family:var(--fb);font-weight:800;font-size:14px;cursor:pointer">العام</button>
+        <button class="chTab" data-ct="friends" aria-pressed="false" style="flex:1;height:38px;border:0;border-radius:999px;font-family:var(--fb);font-weight:800;font-size:14px;cursor:pointer">الخاص</button>
       </div>
+      <aside id="uiChatNotice" class="uiNotice uiChatNotice" aria-label="رسالة الإدارة المثبتة" hidden><span class="uiNoticeMark" aria-hidden="true">◆</span><div><small>رسالة مثبتة من الإدارة</small><h3 id="uiChatNoticeTitle"></h3><p id="uiChatNoticeBody"></p><a id="uiChatNoticeLink" target="_blank" rel="noopener noreferrer" hidden></a></div></aside>
       <div id="chList"></div><button id="uiNewMessages" type="button" class="hidden" aria-live="polite"></button>
       <div id="chInput"><button id="chSend">➤</button><input id="chMsg" placeholder="اكتب رسالتك..." maxlength="300"></div>
     </div>
@@ -1275,13 +1325,13 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
     </div>
   </div>
   <div class="screen hidden" id="tiers">
-    <div style="position:absolute;inset:0;display:flex;flex-direction:column;background:#fdf9f0">
+    <div class="uiTiersSurface" style="position:absolute;inset:0;display:flex;flex-direction:column;background:#fdf9f0">
       <div style="display:flex;align-items:center;gap:10px;padding:calc(18px + env(safe-area-inset-top, 47px)) 16px 0">
         <button class="qBtn" id="tiersBack" style="width:40px;height:40px;border-radius:999px;border:0;background:#f0e3cc;color:#5e2f0e;display:flex;align-items:center;justify-content:center;flex:none;font-size:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></button>
-        <span style="font-family:var(--fh);font-size:25px;color:#5e2f0e">اختر طبقتك</span>
+        <span class="uiTiersTitle" style="font-family:var(--fh);font-size:25px;color:#5e2f0e">اختر المستوى</span>
         <span style="margin-right:auto;display:flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:999px;background:#33302c;color:#f6c14d;font-weight:800;font-size:13.5px;flex:none"><i style="width:15px;height:15px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block"></i><span id="tiersGold">0</span></span>
       </div>
-      <div id="tiersSubRow" style="padding:2px 18px 0;font-size:12.5px;font-weight:700;color:#8a6a4a" ><span id="tiersSub">فردي — اختر رسوم الدخول</span></div>
+      <div id="tiersSubRow" style="padding:2px 18px 0;font-size:12.5px;font-weight:700;color:#8a6a4a" ><span id="tiersSub">اختر المستوى المناسب لطاولتك</span></div>
       <!-- REMOVED — مبدّل فردي/جماعي (#tiersModeToggle): ما بقي إلا وضع أونلاين واحد (جماعي ٢×٢) -->
       <div id="tiersList" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 18px 30px;display:flex;flex-direction:column;gap:12px"></div>
     </div>
@@ -1318,11 +1368,12 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
         <div class="hTitle"><span class="uiHomeWordmark">مجابيد</span></div>
       </div>
       <div class="hMenu">
+        <aside id="uiHomeNotice" class="uiNotice uiHomeNotice" aria-label="إعلان مجابيد" hidden><span class="uiNoticeMark" aria-hidden="true">✦</span><div><small>إعلانات مجابيد</small><h3 id="uiHomeNoticeTitle"></h3><p id="uiHomeNoticeBody"></p><a id="uiHomeNoticeLink" target="_blank" rel="noopener noreferrer" hidden></a></div></aside>
         <button class="hBig onl" id="hOnl">
           <span class="live"><i></i><span id="uiQuickTotal">العدد غير متاح</span></span>
           <span style="display:flex;align-items:center;gap:14px">
             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.8 2.6 4 5.6 4 9s-1.2 6.4-4 9c-2.8-2.6-4-5.6-4-9s1.2-6.4 4-9z"></path></svg>
-            <span><b style="font-size:24px">لعب سريع</b><span>بحث عن لاعبين — جماعي ٢×٢</span></span><!-- FIX — الطور الفردي الأونلاين حُذف بطلب صريح؛ بقي الجماعي فقط -->
+            <span><b style="font-size:24px">لعب تنافسي</b><span>بحث عن لاعبين — جماعي 2×2</span></span><!-- FIX — الطور الفردي الأونلاين حُذف بطلب صريح؛ بقي الجماعي فقط -->
           </span>
         </button>
         <!-- NEW CODE — زر الجلسات النشطة -->
@@ -1367,15 +1418,15 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
     <div id="rulesCard">
       <div id="rulesHead"><span class="t">قوانين اللعب</span><span class="cnt">10 قوانين</span><button class="qBtn" id="rulesX">✕</button></div>
       <div id="rulesList">
-        <div class="rCard"><div class="n">1</div><div><b>هدف اللعبة</b><p>اجمع أكبر نقاط في كومتك. <b>العشرة والصور والإكّة = 10 نقاط</b>، و<b>الجوكر = 50</b>، وباقي الأرقام صفر. عند نهاية الجولة صاحب أعلى نقاط (أو فريقه) يفوز. وفي الساحات التنافسية: أول من يبلغ هدف النقاط تنتهي الجولة فوراً ويفوز.</p></div></div>
-        <div class="rCard"><div class="n">2</div><div><b>التوزيع</b><p>القرعة تحدد الموزّع — يبدأ بـ<b>13 ورقة</b> ويلعب أول، وبقية اللاعبين <b>12</b>. الميدان يفتح بـ<b>13 ورقة</b>: وحدة من كل رتبة بلا جوكر. الدور يمشي عكس عقارب الساعة. ويدك <b>تتجدد إلى 13</b> لما يجي دورك — بعد ما تستقر الأكلة.</p></div></div>
-        <div class="rCard"><div class="n">3</div><div><b>الأكل</b><p>في دورك، انزل ورقة تطابق رقماً بالميدان أو أعلى كومة خصم — وتكنس بها <b>كل</b> المطابق: ورق الميدان وكل السلاسل المكشوفة من نفس الرقم عند خصومك دفعة واحدة. الأكل إجباري فقط إذا كان كل ورقك ياكل.</p></div></div>
-        <div class="rCard"><div class="n">4</div><div><b>وقّف!</b><p>بعد كل أكلة تفتح نافذة <b>5 ثوانٍ</b> للجميع: من عنده نفس الرقم أو جوكر يصرخ «وقّف!» ويخطفها. كل خطفة تعيد العدّ من جديد — وآخر من تستقر عنده يواصل دوره حتى يرمي.</p></div></div>
+        <div class="rCard"><div class="n">1</div><div><b>هدف اللعبة</b><p>اجمع أكبر نقاط في كومتك. <b>العشرة والصور والإكّة = 10 نقاط</b>، و<b>الجوكر = 50</b>، وباقي الأرقام صفر. عند نهاية الجولة يفوز صاحب أعلى نقاط، أو الفريق بمجموع كومتَي شريكيه. عند تساوي النقاط يُحسم الفوز بعدد الورق، وإن تساوى أيضًا تكون النتيجة تعادلًا. في مباراة لها هدف نقاط تنتهي عند بلوغه، وقد تنتهي قبله عند نفاد الرزمة والأيدي أو تعذّر الحركة للجميع والرزمة خالية.</p></div></div>
+        <div class="rCard"><div class="n">2</div><div><b>التوزيع</b><p>القرعة تحدد الموزّع — يبدأ بـ<b>10 أوراق</b> ويلعب أول، وبقية اللاعبين <b>9 أوراق</b>. الميدان يفتح بـ<b>13 ورقة</b>: وحدة من كل رتبة بلا جوكر. الدور يمشي عكس عقارب الساعة. ويدك <b>تتجدد إلى 10 أوراق</b> من الرزمة عند بداية دورك، وكذلك بعد استقرار الأكلة إذا استمر دورك، ما دامت فيها أوراق.</p></div></div>
+        <div class="rCard"><div class="n">3</div><div><b>الأكل</b><p>في دورك، انزل ورقة تطابق رقماً بالميدان أو أعلى كومة خصم — وتكنس بها <b>كل</b> المطابق: ورق الميدان وكل السلاسل المكشوفة من نفس الرقم عند خصومك دفعة واحدة. إذا كانت الورقة تأكل من الميدان أو كومة خصم فلا تُرمى بالميدان. تقدر ترمي ورقة أخرى مسموحة، ويصير الأكل إجباريًا إذا ما عندك رمية قانونية وكل ورقك يأكل.</p></div></div>
+        <div class="rCard"><div class="n">4</div><div><b>وقّف!</b><p>بعد كل أكلة، ما دامت الرزمة لم تنفد، تفتح نافذة <b>5 ثوانٍ</b>: أي لاعب غير صاحب الأكلة وعنده نفس الرقم أو جوكر يضغط «وقّف!» ويخطفها. كل خطفة تعيد العدّ من جديد — وآخر من تستقر عنده يواصل دوره حتى يرمي.</p></div></div>
         <div class="rCard"><div class="n">5</div><div><b>السرقة</b><p>لو أعلى كومة خصمك يطابق ورقة بيدك، انزلها وخذ كل مكشوفها ومعه الجوكرات المدفونة فيه — <b>ومعها كل مطابق بالميدان وعند بقية الخصوم</b>. المدفون المختلف يبقى لصاحبه.</p></div></div>
         <div class="rCard"><div class="n">6</div><div><b>الجوكر</b><p>ياكل أي بطاقة تختارها، وفيتو يوقّف أي أكلة — لكنه <b>لا يُرمى بالميدان أبداً</b>، ولا يكون المكشوف أعلى الكومة: يُدفن مع البطاقة التي أُكل بها.</p></div></div>
-        <div class="rCard"><div class="n">7</div><div><b>الطور الختامي</b><p>لما <b>تخلص الرزمة</b> تتغيّر قواعد «وقّف» تماماً: <b>فقط اللاعب التالي</b> يحق له الخطف، و<b>خطفة وحدة تحسمها فوراً</b> بلا إعادة عدّ. والأهم: <b>الخاطف ما يلعب</b> — الدور ينتقل مباشرة للي بعده. وأي لاعب يده فاضية ينتقز تلقائياً.</p></div></div>
+        <div class="rCard"><div class="n">7</div><div><b>الطور الختامي</b><p>لما <b>تخلص الرزمة</b> تتغيّر قواعد «وقّف» تماماً: <b>فقط اللاعب التالي</b> يحق له الخطف، و<b>خطفة وحدة تحسمها فوراً</b> بلا إعادة عدّ. والأهم: <b>الخاطف ما يلعب</b> — الدور ينتقل مباشرة للي بعده. وأي لاعب يده فاضية يُتجاوز تلقائيًا. إذا انتهت الأيدي بأكلة استقرّت، تضم ما بقي في الميدان؛ أما النهاية برمية أو تعذّر الحركة فتُهمل بقية الميدان.</p></div></div>
         <div class="rCard"><div class="n">8</div><div><b>إذا وقف الجميع</b><p>لو دار الدور على الأربعة وما عند أحد حركة قانونية، <b>تنقلب ورقة من الرزمة للميدان</b> ويكمل اللعب (والجوكر ما ينقلب أبداً). وإذا كانت الرزمة خالية أصلاً، تنتهي الجولة و<b>أي ورق متبقٍ بالميدان يُهمَل — ما يُحسب لأحد</b>.</p></div></div>
-        <div class="rCard"><div class="n">9</div><div><b>المؤقتات</b><p>لكل دور <b>20 ثانية</b> — إذا انتهت تُلعب عنك حركة قانونية تلقائياً.</p></div></div>
+        <div class="rCard"><div class="n">9</div><div><b>المؤقتات</b><p>في الأونلاين لكل دور لعب <b>10 ثوانٍ</b>، ولمزايدة «وقّف» <b>5 ثوانٍ</b> ظاهرة. إذا انتهى وقت اللعب يتولى الكمبيوتر التحكم. في الأونلاين، الغياب يُحسب على أدوار اللعب فقط؛ وبعد <b>3 أدوار متتالية</b> بلا مشاركة يحل الكمبيوتر مكانك ولا تعود للجولة نفسها. عدم المزايدة لا يُحسب غيابًا.</p></div></div>
         <div class="rCard"><div class="n">10</div><div><b>الجماعي 2×2</b><p>شريكك مقابلك. كومته <b>مفتوحة لك تاكل منها</b> إذا احتجت، لكن ما ترمي بالميدان ورقة تكشف كومته ما دام عندك بديل ثاني — عشان ما تسهّل على الخصوم سرقتها.</p></div></div>
       </div>
       <button id="rulesOk">فهمت — يلا نلعب</button>
@@ -1384,13 +1435,18 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
   <!-- البحث عن لاعبين -->
   <div class="screen hidden" id="match">
     <div id="matchWrap">
-      <div id="matchHead"><button class="qBtn" id="mBack">←</button><span class="tag">طاولة رباعية</span><span class="t">لعب أونلاين</span></div>
+      <div id="matchHead"><button class="qBtn" id="mBack">←</button><span class="tag">جماعي 2×2</span><span class="t">البحث عن لاعبين</span></div>
       <div id="mCircle" aria-hidden="true"><span class="uiMatchCard">♠</span><span class="uiMatchCard">♦</span><span class="uiMatchCard">♣</span></div>
       <div id="mTitle" role="status">نجهّز طاولتك…</div>
-      <div id="mSub">تبدأ المباراة بعد اكتمال أربعة لاعبين حقيقيين</div>
+      <div id="mSub">تبدأ المباراة عند اكتمال 4 لاعبين</div>
       <div id="mTierBadge" class="hidden" style="background:var(--clay);color:#fff;border-radius:99px;padding:7px 18px;font-family:var(--fh);font-size:16px;margin-bottom:16px;display:flex;align-items:center;gap:8px"></div>
       <div id="uiMatchProgress"><span id="uiMatchCount" role="status">جاري تجهيز المقاعد</span><div id="uiMatchSteps" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div>
       <div id="mGrid"></div>
+      <section id="uiQuickBotOption" aria-label="خيارات البحث">
+        <label class="uiQuickBotLabel" for="uiQuickAllowBots"><input id="uiQuickAllowBots" type="checkbox" aria-describedby="uiQuickBotNote"><span><b>إكمال المقاعد بالكمبيوتر</b><small>اختياري بعد دقيقتين من البحث</small></span><span class="uiQuickBotSwitch" aria-hidden="true"></span></label>
+        <div id="uiQuickBotCountdown" class="hidden" aria-live="off"><span id="uiQuickBotTimeLabel">الكمبيوتر متاح خلال</span><strong id="uiQuickBotTime" dir="ltr">02:00</strong></div>
+        <p id="uiQuickBotNote" role="status">نجمع المفعّلين عند انتهاء مهلة أحدهم، ويكمل الكمبيوتر المقاعد. نفس الرسوم والمكافآت.</p>
+      </section>
       <div class="uiQuickActions"><button id="uiQuickChangeTier" type="button">تغيير المستوى</button><button id="uiQuickRetry" type="button" class="hidden">إعادة المحاولة</button></div>
       <button id="mCancel">إلغاء البحث</button>
     </div>
@@ -1576,8 +1632,9 @@ async function _fbSaveProfileNow(){ // FIX — التنفيذ الفعلي، م�
   const ref=FB.db.collection('players').doc(FB.user.uid);
   const cosmetic={name:data.name, updated:data.updated}; // FIX
   for(const k of PROFILE_COSMETIC_KEYS)if(data[k]!==undefined)cosmetic[k]=data[k]; // FIX
-  try{ await ref.set(cosmetic,{merge:true}); }catch(e){ console.warn('save cosmetic profile failed',e); } // FIX — كتابة ١: التجميلي فقط
-  try{ await ref.set(data,{merge:true}); }catch(e){ console.warn('save profile failed',e); } // كتابة ٢: الكاملة كما كانت حرفياً
+  try{ await ref.set(data,{merge:true}); }catch(e){
+    try{await ref.set(cosmetic,{merge:true});}catch(err){console.warn('save profile failed',err);}
+  }
 }
 function fbSaveProfile(immediate){ // FIX — immediate=true: تنفيذ فوري وإرجاع Promise (لا انتظار ٨٠٠مل) — يُستخدم قبل تسجيل الخروج
   if(!FB.ready||!FB.user)return Promise.resolve();
@@ -1585,6 +1642,93 @@ function fbSaveProfile(immediate){ // FIX — immediate=true: تنفيذ فور�
   if(immediate)return _fbSaveProfileNow();
   _fbSaveTimer=setTimeout(_fbSaveProfileNow,800);
   return Promise.resolve();
+}
+
+/* v339: UI-only read budgets; nothing here belongs to the JSON-cloned game state. */
+const UI_COST={uid:null,generation:0,statsAt:0,badgeAt:0,chatOffset:0,docs:new Map(),pages:{},replyStops:new Set(),deleting:new Set()};
+function uiCostChatVisible(){const el=document.getElementById('chat');return !!el&&!el.classList.contains('hidden');}
+function uiCostStop(){
+  for(const key of ['pubUnsub','prvUnsub','invUnsub','freqUnsub','frUnsub']){if(WBMsg[key])WBMsg[key]();WBMsg[key]=null;}
+  for(const stop of UI_COST.replyStops)stop();UI_COST.replyStops.clear();
+  if(typeof INV_WATCHERS!=='undefined')INV_WATCHERS.splice(0).forEach(stop=>stop());
+  _inviteListening=false;_freqListening=false;_friendsListening=false;
+}
+function uiCostReset(uid){
+  uiCostStop();UI_COST.uid=uid;UI_COST.generation++;UI_COST.docs.clear();UI_COST.pages={};UI_COST.deleting.clear();
+  UI_COST.chatOffset=0;UI_COST.statsAt=0;UI_COST.badgeAt=0;
+  FB_FRIENDS=[];FB_FREQS=[];WBMsg._pubCallback=null;WBMsg._prvCallback=null;
+  startActiveSessionsListener._at=0;startActiveSessionsListener._pending=null;
+  syncSystemMessages._at=0;syncSystemMessages._pending=null;
+}
+function uiCostResume(){
+  if(document.hidden||!FB.user)return;
+  if(typeof ONL==='undefined'||!ONL.active)startInviteListener();
+  if(uiCostChatVisible()){
+    if(CHAT_MODE==='public'&&WBMsg._pubCallback)WBMsg.listenPublic(WBMsg._pubCallback);
+    if(CHAT_MODE==='dm'&&CHAT_DM&&WBMsg._prvCallback)WBMsg.listenPrivate(CHAT_DM.uid,WBMsg._prvCallback);
+  }
+  if(!document.getElementById('home')?.classList.contains('hidden')){startActiveSessionsListener();syncSystemMessages();}
+}
+function uiCostRoute(id){
+  if(['game','onl','setup','match','results'].includes(id)){
+    for(const key of ['invUnsub','freqUnsub','frUnsub']){if(WBMsg[key])WBMsg[key]();WBMsg[key]=null;}
+    _inviteListening=false;_freqListening=false;_friendsListening=false;
+  }else if(FB.user&&!document.hidden){startInviteListener();}
+  if(id!=='chat'){
+    if(WBMsg.pubUnsub){WBMsg.pubUnsub();WBMsg.pubUnsub=null;}
+    WBMsg.stopPrivate();
+  }
+  if(id==='home'){startActiveSessionsListener();syncSystemMessages();}
+}
+document.addEventListener('visibilitychange',()=>document.hidden?uiCostStop():uiCostResume());
+window.addEventListener('pagehide',uiCostStop);
+window.addEventListener('pageshow',()=>uiCostResume());
+async function uiCostDoc(path){
+  const key=(FB.user?.uid||'')+':'+path,entry=UI_COST.docs.get(key),now=Date.now();
+  if(entry&&now-entry.at<60000)return entry.promise;
+  const promise=FB.db.doc(path).get().catch(error=>{if(UI_COST.docs.get(key)?.promise===promise)UI_COST.docs.delete(key);throw error;});
+  UI_COST.docs.set(key,{at:now,promise});
+  while(UI_COST.docs.size>200)UI_COST.docs.delete(UI_COST.docs.keys().next().value);
+  return promise;
+}
+function uiCostPageSnapshot(kind,snap,onChange){
+  const page=UI_COST.pages[kind]||(UI_COST.pages[kind]={extra:[],busy:false});
+  page.first=snap.docs;page.onChange=onChange;
+  if(!page.extra.length){page.cursor=snap.docs[snap.docs.length-1];page.more=snap.docs.length===50;}
+  uiCostEmitPage(kind);
+}
+function uiCostEmitPage(kind){
+  const page=UI_COST.pages[kind];if(!page)return;
+  const rows=new Map();for(const d of [...page.first,...page.extra])if(!rows.has(d.id))rows.set(d.id,d.data());
+  page.onChange([...rows.values()]);
+}
+async function uiCostMore(kind){
+  const page=UI_COST.pages[kind];if(!page||page.busy||!page.more||!page.cursor||!FB.user)return;
+  page.busy=true;const generation=UI_COST.generation;
+  try{
+    const root=kind==='friends'?'friends':'friend_reqs',sub=kind==='friends'?'list':'items';
+    const snap=await FB.db.collection(root).doc(FB.user.uid).collection(sub).orderBy('ts','desc').startAfter(page.cursor).limit(50).get();
+    if(generation!==UI_COST.generation)return;
+    page.extra.push(...snap.docs);page.cursor=snap.docs[snap.docs.length-1]||page.cursor;page.more=snap.docs.length===50;
+    uiCostEmitPage(kind);
+  }catch(e){toast2('تعذّر تحميل المزيد — حاول مجددًا');}
+  finally{page.busy=false;}
+}
+function uiCostMoreButton(el,kind){
+  if(!UI_COST.pages[kind]?.more)return;
+  const b=document.createElement('button');b.className='frBtn';b.dataset.costMore=kind;
+  b.textContent=kind==='friends'?'تحميل أصدقاء أقدم':'تحميل طلبات أقدم';
+  b.onclick=async()=>{b.disabled=true;await uiCostMore(kind);if(b.isConnected)b.disabled=false;};el.appendChild(b);
+}
+function uiCostChatPages(el,total){
+  const label=document.createElement('div');label.textContent='المحادثات — صفحة '+(1+Math.floor(UI_COST.chatOffset/20));el.appendChild(label);
+  for(const [text,delta] of [['السابق',-20],['التالي',20]]){
+    if(delta<0&&UI_COST.chatOffset===0||delta>0&&UI_COST.chatOffset+20>=total)continue;
+    const b=document.createElement('button');b.className='frBtn';b.textContent=text;b.dataset.costPage=String(delta);
+    b.onclick=()=>{UI_COST.chatOffset+=delta;UI_COST.badgeAt=0;setChatTab('friends');updateDmBadge();};el.appendChild(b);
+  }
+  if(UI_COST.pages.friends?.more){const b=document.createElement('button');b.className='frBtn';b.textContent='تحميل أصدقاء أقدم';
+    b.onclick=async()=>{b.disabled=true;await uiCostMore('friends');if(uiCostChatVisible()&&CHAT_MODE==='friends')setChatTab('friends');};el.appendChild(b);}
 }
 
 /* ================= الرسائل والدعوات عبر Firebase ================= */
@@ -1629,7 +1773,8 @@ const WBMsg={
     }catch(e){ toast2('تعذّر الإرسال'); }
   },
   listenPublic(onMsg){
-    if(!FB.ready)return;
+    this._pubCallback=onMsg;
+    if(!FB.ready||document.hidden||!uiCostChatVisible()||CHAT_MODE!=='public')return;
     if(this.pubUnsub){this.pubUnsub();this.pubUnsub=null;}
     this.pubUnsub=FB.db.collection('public_chat').orderBy('ts','desc').limit(50)
       .onSnapshot(snap=>{
@@ -1657,22 +1802,24 @@ const WBMsg={
     if(!FB.ready||!FB.user)return false;
     const id=this.dmId(FB.user.uid,otherUid);
     try{
-      const snap=await FB.db.collection('dms').doc(id).collection('msgs').limit(500).get();
+      const snap=await FB.db.collection('dms').doc(id).collection('msgs').orderBy('ts','desc').limit(499).get();
       const batch=FB.db.batch();
       snap.forEach(doc=>batch.delete(doc.ref));
       batch.set(FB.db.collection('dms').doc(id), {last:'',lastTs:0}, {merge:true});
       await batch.commit();
-      return true;
+      if(snap.size===499)toast2('تم مسح أحدث 499 رسالة؛ يمكن مسح الدفعة الأقدم بطلب جديد');
+      UI_COST.docs.clear();return true;
     }catch(e){ console.warn('clearDM failed:',e.message||e); return false; } // NEW CODE — تسجيل السبب الفعلي (مثل رفض صلاحية) بدل ابتلاعه بصمت
   },
   listenPrivate(otherUid, onMsg){
-    if(!FB.ready||!FB.user)return;
+    this._prvCallback=onMsg;
+    if(!FB.ready||!FB.user||document.hidden||!uiCostChatVisible()||CHAT_MODE!=='dm'||CHAT_DM?.uid!==otherUid)return;
     const id=this.dmId(FB.user.uid,otherUid);
     if(this.prvUnsub){this.prvUnsub();this.prvUnsub=null;}
     this.curChat=otherUid;
-    this.prvUnsub=FB.db.collection('dms').doc(id).collection('msgs').orderBy('ts','asc').limit(80)
+    this.prvUnsub=FB.db.collection('dms').doc(id).collection('msgs').orderBy('ts','desc').limit(80)
       .onSnapshot(snap=>{
-        const msgs=[]; snap.forEach(d=>msgs.push(d.data()));
+        const msgs=[]; snap.forEach(d=>msgs.push(d.data())); msgs.reverse();
         onMsg(msgs);
       },err=>console.warn('dm listen',err));
   },
@@ -1694,7 +1841,7 @@ const WBMsg={
     if(!FB.ready||!FB.user)return;
     if(this.invUnsub){this.invUnsub();this.invUnsub=null;}
     this._invStart=Date.now();
-    this.invUnsub=FB.db.collection('invites').doc(FB.user.uid).collection('items')
+    this.invUnsub=FB.db.collection('invites').doc(FB.user.uid).collection('items').orderBy('ts','desc').limit(20)
       .onSnapshot(snap=>{
         snap.docChanges().forEach(ch=>{
           if(ch.type==='added'||ch.type==='modified'){
@@ -1708,8 +1855,12 @@ const WBMsg={
   // يراقب ردّ المدعوّ (للداعي)
   watchInviteReply(inviteeUid, onReply){
     if(!FB.ready||!FB.user)return null;
-    return FB.db.collection('invites').doc(inviteeUid).collection('items').doc(FB.user.uid)
-      .onSnapshot(doc=>{ if(doc.exists){ const d=doc.data(); if(d.status&&d.status!=='pending')onReply(d.status); } });
+    let unsub=null,timer=null,closed=false;
+    const close=()=>{closed=true;if(unsub)unsub();clearTimeout(timer);UI_COST.replyStops.delete(close);};
+    unsub=FB.db.collection('invites').doc(inviteeUid).collection('items').doc(FB.user.uid)
+      .onSnapshot(doc=>{if(closed)return;if(doc.exists){const d=doc.data();if(d.status&&d.status!=='pending'){close();onReply(d.status);}}},close);
+    if(closed){unsub();return close;}
+    timer=setTimeout(close,300000);UI_COST.replyStops.add(close);return close;
   },
   async replyInvite(fromUid, accept){
     if(!FB.ready||!FB.user)return;
@@ -1736,15 +1887,19 @@ const WBMsg={
   listenFriendReqs(onChange){
     if(!FB.ready||!FB.user)return;
     if(this.freqUnsub){this.freqUnsub();this.freqUnsub=null;}
-    this.freqUnsub=FB.db.collection('friend_reqs').doc(FB.user.uid).collection('items')
+    this.freqUnsub=FB.db.collection('friend_reqs').doc(FB.user.uid).collection('items').orderBy('ts','desc').limit(50)
       .onSnapshot(snap=>{
-        const reqs=[]; snap.forEach(d=>reqs.push(d.data()));
-        onChange(reqs);
+        uiCostPageSnapshot('requests',snap,onChange);
       },err=>{ if(window.wbLog)window.wbLog('طلبات الصداقة: '+(err&&err.code||err)); });
   },
   async clearFriendReq(fromUid){
     if(!FB.ready||!FB.user)return;
-    try{ await FB.db.collection('friend_reqs').doc(FB.user.uid).collection('items').doc(fromUid).delete(); }catch(e){}
+    const uid=FB.user.uid,key=uid+':'+fromUid,generation=UI_COST.generation;
+    if(UI_COST.deleting.has(key))return;UI_COST.deleting.add(key);
+    try{await FB.db.collection('friend_reqs').doc(uid).collection('items').doc(fromUid).delete();
+      if(generation!==UI_COST.generation)return;
+      const page=UI_COST.pages.requests;if(page){page.extra=page.extra.filter(d=>d.id!==fromUid);page.first=page.first.filter(d=>d.id!==fromUid);uiCostEmitPage('requests');}
+    }catch(e){}finally{UI_COST.deleting.delete(key);}
   },
 
   // ===== الصداقة المركزية (تُخزَّن للطرفين في Firestore) =====
@@ -1765,10 +1920,9 @@ const WBMsg={
   listenFriends(onChange){
     if(!FB.ready||!FB.user)return;
     if(this.frUnsub){this.frUnsub();this.frUnsub=null;}
-    this.frUnsub=FB.db.collection('friends').doc(FB.user.uid).collection('list').orderBy('ts','desc')
+    this.frUnsub=FB.db.collection('friends').doc(FB.user.uid).collection('list').orderBy('ts','desc').limit(50)
       .onSnapshot(snap=>{
-        const list=[]; snap.forEach(d=>list.push(d.data()));
-        onChange(list);
+        uiCostPageSnapshot('friends',snap,onChange);
       },err=>{ if(window.wbLog)window.wbLog('listenFriends: '+(err&&err.code||err)); });
   },
   async removeFriend(otherUid){
@@ -1777,6 +1931,7 @@ const WBMsg={
     try{
       await FB.db.collection('friends').doc(me).collection('list').doc(otherUid).delete();
       await FB.db.collection('friends').doc(otherUid).collection('list').doc(me).delete();
+      const page=UI_COST.pages.friends;if(FB.user?.uid===me&&page){page.first=page.first.filter(d=>d.id!==otherUid);page.extra=page.extra.filter(d=>d.id!==otherUid);uiCostEmitPage('friends');}
     }catch(e){}
   }
 };
@@ -2143,7 +2298,7 @@ function cardEl(c,cls){
   d.className='card '+(c.rank===JOKER?'jok':(red?'rd':'bk'))+' '+(cls||'');
   d.setAttribute('aria-label',c.rank===JOKER?'جوكر':rankAr(c.rank)+' '+({'♠':'بستوني','♥':'قلوب','♦':'ديناري','♣':'سباتي'}[c.suit]||''));
   d.dataset.id=c.id;d.dataset.rank=c.rank; // NEW CODE — يخدم اكتشاف هدف السحب والإفلات لاحقاً بلا أي تكرار منطق
-  const img=c.rank===JOKER?'court_JOKER.png':`cards/${rankTxt(c.rank)}${SUIT_CODE[c.suit]}.png`;
+  const img=c.rank===JOKER?'court_JOKER_v352.png':`cards/${rankTxt(c.rank)}${SUIT_CODE[c.suit]}.png`;
   d.style.backgroundImage=`url('${img}')`;
   return d;
 }
@@ -2815,9 +2970,11 @@ function confetti(){
 
 /* ================= الواجهة ================= */
 function show(id,overlay){
+  if(!overlay)uiCostRoute(id);
   if(!overlay){for(const s of['setup','game','waqf','results','onl','login','signup','gcomplete','home','match','welcome','profile','chat','friends','addfr','tiers','shop','lboard','awardsScr'])$('#'+s).classList.add('hidden')}
   else{$('#waqf').classList.add('hidden');$('#results').classList.add('hidden')}
   $('#'+id).classList.remove('hidden');
+  if(!overlay&&typeof uiCommunityRoute==='function')uiCommunityRoute(id);
   quickScreen(id,overlay); // QUICK-MATCH — فتح/غلق مراقبة العدد عند التنقل فقط
   if(typeof lgAutoWake==='function')lgAutoWake(); // v331: navigation explicitly wakes/stops home admission.
 }
@@ -2890,7 +3047,7 @@ function uiMatchLabels(v){
   const level=tiers[key]||tiers[fallback]||'';
   const friendly=v.isFriendlySession===true||(v.isFriendlySession==null&&v.isFriendly===true);
   const session=v.isSession||String(v.tierKey||'').startsWith('session-')||raw.includes('جلسة كاملة')||raw.toLowerCase().startsWith('session-');
-  const title=v.local?'تدريب':friendly?'جلسة ودية':session?'جلسة كاملة':'جلسة سريعة';
+  const title=v.local?'تدريب':friendly?'جلسة ودية':session?'جلسة كاملة':'لعب تنافسي';
   const mode=v.mode==='team'?'جماعي ٢×٢':'فردي';
   const goal=Number(v.tierGoal);
   return {title,detail:mode+(level?' · '+level:''),goal:Number.isFinite(goal)&&goal>0?'الهدف '+toH(goal):''};
@@ -2908,6 +3065,26 @@ function uiPlayerName(v,pid){
   const name=String(v.names[pid]||'لاعب');
   return v.autoControlled&&v.autoControlled[pid]?name.replace(/ · تحكم تلقائي$/,''):name;
 }
+// v352 — presentation metrics derived from the authoritative count; never written to game state.
+function uiPileMetrics(total){
+  const value=Number(total),count=Number.isFinite(value)?Math.max(0,Math.floor(value)):0;
+  const depth=count<2?0:Math.min(5,.8+.8*Math.log2(count));
+  const edges=Math.min(5,Math.max(0,count-1)),shadows=[];
+  for(let i=1;i<=edges;i++)shadows.push(`0 ${+(depth*i/edges).toFixed(2)}px 0 ${i%2?'#c8c4b7':'#f5f1e6'}`);
+  shadows.push(`0 ${+(depth+2).toFixed(2)}px 5px rgba(25,20,12,.22)`);
+  return {count,depth:+depth.toFixed(2),shadow:shadows.join(',')};
+}
+function uiPileCountHTML(total,cls='pileCntX'){
+  const {count}=uiPileMetrics(total);
+  return `<span class="${cls} uiPileCount" aria-label="عدد أوراق الكومة: ${count}" title="${count} ورقة"><svg viewBox="0 0 18 20" aria-hidden="true"><path d="M5 2h9a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"/><path d="M1 7v9a3 3 0 0 0 3 3h8M9.5 6 12 9.5l-2.5 3.5L7 9.5Z"/></svg><bdi dir="ltr">${toH(count)}</bdi></span>`;
+}
+function uiPileCard(card,total){
+  const el=cardEl(card,'sm'),metrics=uiPileMetrics(total);
+  el.classList.add('uiPileTop');el.dataset.pileCount=String(metrics.count);
+  el.style.setProperty('--ui-pile-shadow',metrics.shadow);
+  return el;
+}
+
 function renderSeatCard(el,opts){
   const {turn,holderBadgeHtml,avaHtml,nameHtml,handCount,pts,pct,pileTopCard,pileBadgeHtml,onAvaClick}=opts; // NEW CODE — أضفنا onAvaClick اختياري. FIX — أضفنا pct (نسبة التعبئة نحو هدف النقاط، ٠ لو ما فيه هدف)
   el.classList.toggle('turnGlow',turn);
@@ -2919,7 +3096,7 @@ function renderSeatCard(el,opts){
     <div class="pileBox"></div>`;
   el.querySelector('.ava').onclick=onAvaClick||null; // NEW CODE — الفردي لا يمرر هذا المعامل إطلاقاً، فسلوكه يبقى كما هو تماماً
   const pb=el.querySelector('.pileBox');
-  if(pileTopCard){pb.appendChild(cardEl(pileTopCard,'sm')); // REVERT — رجع لقياس .sm الطبيعي (44×62)، بنفس مكان/حجم النسخة المرفقة
+  if(pileTopCard){pb.appendChild(uiPileCard(pileTopCard,opts.pileCount)); // REVERT — رجع لقياس .sm الطبيعي (44×62)، بنفس مكان/حجم النسخة المرفقة
     if(pileBadgeHtml)pb.insertAdjacentHTML('beforeend',pileBadgeHtml);}
   else pb.innerHTML='<div style="font-size:10px;color:rgba(204,219,178,.5);font-weight:700">كومة فاضية</div>';
   return pb;
@@ -3025,21 +3202,21 @@ function renderBoard(){
   }
   b.innerHTML=h;
 }
-// إحداثيات تبعثر بطاقات الميدان لتبدو كومة طبيعية بدل شبكة مرتّبة (مطابقة للتصميم)
-// FIX — استُبدل الجدول الثابت (12 موضعاً مسبقاً، يُعاد استخدامها بالتدوير) بحساب ديناميكي حسب العدد الفعلي
-// الحالي بالضبط، كما طلبت: >6 يُقسم لصفين متوازيين (ceil/floor، فـ9=5+4 و12=6+6 تلقائياً)؛ 2-6 صف واحد
-// وسط الطاولة؛ 1 كرت يقف منفرداً بتكبير طفيف. renderScatterField أدناه بلا أي تغيير بمنطق الأنيميشن
-// (دخول من جهة الرامي/خروج شبَحي لمن أكل) — استبدال حساب الموضع فقط، فتبقى الحركات الموجودة كما هي.
-function fieldLayout(total){ // NEW CODE
-  if(total<=0)return []; // NEW CODE
-  if(total===1)return [{x:0,y:0,r:0,scale:1.08}]; // NEW CODE — تطابق طلبك بالحرف: كرت وحيد بمنتصف الطاولة مكبَّراً قليلاً
-  const row=(n,cy)=>{ // NEW CODE — صف أفقي واحد متمركز، بميلان خفيف تدريجي كباقي عناصر التصميم
-    const mid=(n-1)/2; // NEW CODE
-    return Array.from({length:n},(_,i)=>{ const d=i-mid; return {x:Math.round(d*46),y:cy,r:Math.round(d*3.2*10)/10,scale:1}; }); // NEW CODE
-  };
-  if(total<=6)return row(total,0); // NEW CODE — صف واحد وسط الطاولة تماماً
-  const topN=Math.ceil(total/2), botN=total-topN; // NEW CODE — يطابق مثالك بالحرف: 9→5+4، 12→6+6
-  return [...row(topN,-38), ...row(botN,38)]; // NEW CODE
+// v350 — flat, centered rows inside the existing field container. Presentation only.
+// Up to 6 cards per row; 9 stays 5+4 and 12 stays 6+6 at the normal 286px width.
+// More rows / smaller measured containers adapt without moving the field or player seats.
+function fieldLayout(total,availableWidth=286,availableHeight=234){
+  if(total<=0)return [];
+  const width=Math.max(1,Number(availableWidth)||286),height=Math.max(1,(Number(availableHeight)||234)-20);
+  const columns=Math.max(1,Math.min(6,Math.floor((width+2)/48))),rows=Math.ceil(total/columns);
+  const gapY=Math.min(12,height/(rows*5)),lift=Math.max(0,Math.min(10,gapY-2));
+  const scale=Math.min(1,width/46,(height-(rows-1)*gapY)/(rows*66));
+  const w=46*scale,h=66*scale,base=Math.floor(total/rows),extra=total%rows,out=[];
+  for(let row=0;row<rows;row++){
+    const count=base+(row<extra?1:0),step=count>1?Math.min(w+8,(width-w)/(count-1)):0;
+    for(let col=0;col<count;col++)out.push({x:(col-(count-1)/2)*step,y:(row-(rows-1)/2)*(h+gapY),r:0,scale:1,w,h,lift});
+  }
+  return out;
 }
 // اتجاهات دخول/خروج ورقة الميدان حسب المقعد (0=أنا،1=يمين،2=فوق،3=يسار) — تحاكي "نزولها" من صاحبها و"طيرانها" لمن أكلها.
 // مشتركة بين الفردي والأونلاين (نفس القيم بالضبط) — الفردي يمرر رقم المقعد كما هو، والأونلاين يمرره بعد تدويره بدالة kOf ليصير نسبيًا لمقعد اللاعب.
@@ -3072,12 +3249,12 @@ function renderScatterField(container,fieldArr,opts){
   for(const child of [...container.children])if(!child.classList.contains('card')||!curIds.has(Number(child.dataset.id)))child.remove();
   const newMap=new Map(),counts={};
   for(const f of fieldArr)counts[f.rank]=(counts[f.rank]||0)+1;
-  const layout=fieldLayout(fieldArr.length);
+  const layout=fieldLayout(fieldArr.length,container.clientWidth||286,container.clientHeight||234);
   fieldArr.forEach((f,i)=>{
     const el=existing.get(String(f.id))||cardEl(f,'sm');
     const p=layout[i],match=!!(sel&&(sel.rank===f.rank||sel.rank===JOKER)&&myTurn);
-    const x=p.x,y=p.y+(match?-10:0);
-    el.style.width='42px';el.style.height='60px';
+    const x=p.x,y=p.y-(match?p.lift:0);
+    el.style.width=p.w+'px';el.style.height=p.h+'px';
     el.style.position='absolute';el.style.left='50%';el.style.top='50%';
     el.style.zIndex=match?200:(counts[f.rank]>=2?100+i:i+1);
     el.classList.toggle('match',match);
@@ -3085,7 +3262,7 @@ function renderScatterField(container,fieldArr,opts){
     const finalT=`translate(-50%,-50%) translate(${x}px,${y}px) rotate(${p.r}deg) scale(${p.scale||1})`;
     el.style.transform=finalT;
     if(el.parentElement!==container)container.appendChild(el);
-    newMap.set(f.id,{x,y,r:p.r,card:f});
+    newMap.set(f.id,{x,y,r:p.r,w:p.w,h:p.h,card:f});
     if(!window.UICardFlow&&prevMap&&!prevMap.has(f.id)){
       const d=dirFor(f.by)||{x:0,y:160};
       uiCardMotion(el,[
@@ -3104,7 +3281,7 @@ function renderScatterField(container,fieldArr,opts){
     removed.forEach(([id,info],i)=>{
       const d=dirFor(lastEaterSeat)||{x:0,y:160};
       const ghost=cardEl(info.card,'sm');
-      ghost.style.cssText+=';position:absolute;left:50%;top:50%;width:42px;height:60px;pointer-events:none;z-index:300';
+      ghost.style.cssText+=';position:absolute;left:50%;top:50%;width:'+(info.w||46)+'px;height:'+(info.h||66)+'px;pointer-events:none;z-index:300';
       (layer||container).appendChild(ghost);
       uiCardMotion(ghost,[
         {transform:`translate(-50%,-50%) translate(${info.x}px,${info.y}px) rotate(${info.r}deg)`,opacity:1},
@@ -3120,43 +3297,38 @@ function renderScatterField(container,fieldArr,opts){
 const STACK_DIR_UNIT={0:{x:0,y:1},1:{x:1,y:0},2:{x:0,y:-1},3:{x:-1,y:0}};
 const STACK_ENTER_DIST=42; // مسافة انطلاق الورقة من جهة صاحبها قبل ما تصل مركز الكومة
 
-/**
- * يرسم كومة أوراق "وقّف" المتنازع عليها فوق بعضها بإزاحة/ميلان عشوائي ثابت لكل ورقة (لا يهتز بإعادة الرسم)
- * وأنيميشن دخول من جهة صاحب كل ورقة. مطابق تمامًا للسلوك السابق في renderWaqf() و renderOnl().
- * @param {HTMLElement} container حاوية الكومة (#contested أو #oWaqfStack)
- * @param {Array} cards الأوراق المطلوب عرضها (الفردي: الكومة كاملة، الأونلاين: آخر 5 فقط)
- * @param {Object} opts
- * @param {Map} opts.jitterMap Map محفوظة لدى المستدعي لثبات الإزاحة العشوائية بين الرسمات
- * @param {Set} opts.prevIds آخر Set محفوظة من نداء سابق
- * @param {(card:Object)=>{x:number,y:number}} opts.dirForCard اتجاه الدخول الخاص بورقة معيّنة
- * @param {{w:number,h:number}} [opts.size] حجم اختياري للورقة (افتراضي حجم sm العادي)
- * @returns {Set} مجموعة جديدة يجب على المستدعي حفظها لاستخدامها بالنداء القادم
+/** v355: vertical card layers, each exposing its lower edge only.
+ * Earlier cards add bounded paper thickness. The newest face stays centered; one contact shadow only.
  */
 function renderBidStack(container,cards,opts){
-  const {jitterMap,prevIds,dirForCard,size}=opts;
-  cards.forEach((c,i)=>{
-    const el=cardEl(c,'sm');
-    if(size){el.style.width=size.w+'px';el.style.height=size.h+'px'}
-    el.style.position='absolute';
-    el.style.zIndex=i+1; // الأحدث (آخر بالمصفوفة الزمنية) دائمًا فوق
-    el.style.transformOrigin='center center';
-    if(!jitterMap.has(c.id))jitterMap.set(c.id,{dx:Math.random()*6-3,dy:Math.random()*6-3,rot:Math.random()*10-5});
-    const jit=jitterMap.get(c.id);
-    el.style.left='50%';el.style.top='50%';
-    const finalT=`translate(-50%,-50%) translate(${jit.dx}px,${jit.dy}px) rotate(${jit.rot}deg)`;
-    el.style.transform=finalT;
-    el.style.transition='transform .4s ease-out';
-    el.style.boxShadow='0 8px 16px rgba(0,0,0,.6)';
+  const {prevIds,dirForCard,size={w:54,h:77}}=opts;
+  const shown=cards.slice(-8),metrics=uiPileMetrics(cards.length);
+  const layers=Math.max(0,shown.length-1),hidden=Math.max(0,metrics.count-shown.length);
+  const depth=hidden?Math.min(5,Math.log2(hidden+1)):0;
+  container.classList.add('uiBidStackFlat','uiBidStackPaper');
+  container.dataset.pileCount=String(metrics.count);
+  container.style.setProperty('--ui-bid-card-w',size.w+'px');
+  container.style.setProperty('--ui-bid-card-h',size.h+'px');
+  container.style.setProperty('--ui-bid-stack-x','0px');
+  container.style.setProperty('--ui-bid-stack-y',(layers*3)+'px');
+  container.style.setProperty('--ui-bid-stack-depth',(+depth.toFixed(2))+'px');
+  shown.forEach((c,i)=>{
+    const el=cardEl(c,'sm'),back=shown.length-1-i,dx=0,dy=back*3;
+    el.style.width=size.w+'px';el.style.height=size.h+'px';
+    el.style.position='absolute';el.style.zIndex=i+1;
+    el.style.transformOrigin='center center';el.style.left='50%';el.style.top='50%';
+    const finalT=`translate(-50%,-50%) translate(${dx}px,${dy}px)`;
+    el.style.transform=finalT;el.style.transition='none';el.style.boxShadow='none';
     if(!window.UICardFlow&&!prevIds.has(c.id)){
       const ax=dirForCard(c);
       uiCardMotion(el,[
-        {transform:`translate(-50%,-50%) translate(${jit.dx+ax.x*STACK_ENTER_DIST}px,${jit.dy+ax.y*STACK_ENTER_DIST}px) rotate(${jit.rot}deg) scale(.5)`,opacity:.2},
+        {transform:`translate(-50%,-50%) translate(${dx+ax.x*STACK_ENTER_DIST}px,${dy+ax.y*STACK_ENTER_DIST}px)`,opacity:1},
         {transform:finalT,opacity:1}
-      ],{duration:280,easing:'cubic-bezier(.22,.75,.25,1)'});
+      ],{duration:300,easing:'cubic-bezier(.22,.7,.26,1)'});
     }
     container.appendChild(el);
   });
-  return new Set(cards.map(c=>c.id));
+  return new Set(shown.map(c=>c.id));
 }
 
 /** يحسب ويطبّق التباعد الديناميكي بين أوراق اليد بحيث تملأ عرض الشاشة بالكامل (نفس المنطق بين الفردي والأونلاين) */
@@ -3188,8 +3360,8 @@ function render(){
       handCount:toH(p.hand.length),
       pts:toH(teamPts(p)), // FIX — كان pilePts(p): بالجماعي يعرض الآن مجموع الفريق (يطابق نسبة التعبئة)
       pct:goalPct(teamPts(p),G.tierGoal), teamScore:G.opts.mode==='team',
-      pileTopCard:pileTop(p),
-      pileBadgeHtml:(run>1?`<div class="runB">×${toH(run)}</div>`:'')+`<div class="cnt">${toH(p.pile.length)}</div>`
+      pileTopCard:pileTop(p),pileCount:p.pile.length,
+      pileBadgeHtml:(run>1?`<div class="runB">×${toH(run)}</div>`:'')+uiPileCountHTML(p.pile.length,'cnt')
     });
   }
   // أنا
@@ -3200,10 +3372,10 @@ function render(){
   id.innerHTML=`${myTurn?'<div class="bubble">دورك</div>':''}<div class="nm">${me.name}${me.team!=null?' 🤝':''}</div><div class="ava">${_avTxt}</div>`;
   const mp=$('#myPile');mp.innerHTML=`<span class="pts"><i class="ptsFill" style="width:${goalPct(teamPts(me),G.tierGoal)}%"></i><b>${toH(teamPts(me))} <small>${G.opts.mode==='team'?'للفريق':'نقطة'}</small></b></span>`; // FIX — كان pilePts(me) بلا تعبئة
   const mt=pileTop(me);
-  if(mt){const w=document.createElement('div');w.style.position='relative';w.appendChild(cardEl(mt,'sm'));
+  if(mt){const w=document.createElement('div');w.style.position='relative';w.appendChild(uiPileCard(mt,me.pile.length));
     const myRun=topRunLen(me.pile);
     if(myRun>1)w.insertAdjacentHTML('beforeend',`<div class="runB">×${toH(myRun)}</div>`);
-    w.insertAdjacentHTML('beforeend',`<div style="position:absolute;bottom:-4px;right:-8px;background:var(--ink);color:var(--sand);font-size:9px;font-weight:800;border-radius:99px;padding:0 5px">${toH(me.pile.length)}</div>`);
+    w.insertAdjacentHTML('beforeend',uiPileCountHTML(me.pile.length,'cnt'));
     mp.appendChild(w)}
   // الميدان — تدخل الورقة من اتجاه من رماها وتطير بتجاه من أكلها (منطق مشترك مع الأونلاين عبر renderScatterField)
   const fld=$('#field');
@@ -3309,7 +3481,7 @@ function renderWaqf(){
     dirForCard:c=>STACK_DIR_UNIT[c.by!=null?c.by:0]
   });
   const v=st.contested.reduce((s,c)=>s+cardVal(c),0);
-  $('#waqfVal').textContent=`${toH(v)} نقطة على الطاولة`;
+  $('#waqfVal').innerHTML='<span class="uiBidTotals">'+uiPileCountHTML(st.contested.length)+'<span><bdi>'+toH(v)+'</bdi> نقطة</span></span>';
   // (شارة خطفة حُذفت بناءً على طلب المستخدم)
   // زر الإنسان
   const me=G.players[0];
@@ -3329,7 +3501,7 @@ function renderWaqf(){
     natSlot.classList.toggle('hidden',!nat);
     if(jok){jokSlot.appendChild(mkCard(jok));jokSlot.onclick=()=>humanBid(jok)}
     if(nat){natSlot.appendChild(mkCard(nat));natSlot.onclick=()=>humanBid(nat)}
-    $('#waqfBidCnt').textContent='×'+toH(st.contested.length);
+    $('#waqfBidCnt').textContent=toH(st.contested.length)+' ورقة';
     const only=(jok&&!nat)?jok:((nat&&!jok)?nat:null);
     box.style.cursor=only?'pointer':'default';
     box.onclick=only?(()=>humanBid(only)):null;
@@ -3496,10 +3668,11 @@ async function oPost(obj){
       {method:'POST',headers:await oLeagueHeaders(),body:JSON.stringify(obj)});
     const d=await r.json();
     if(d&&d.type==='error'){
+      if(obj.type==='start')uiSessionStartFailed();
       if(ONL.lastSent==='settle'||ONL.lastSent==='timeout'){ONL.lastSent=null;return}
       oToast(d.error);
     }
-  }catch(e){}
+  }catch(e){if(obj.type==='start'){uiSessionStartFailed();oToast('تعذّر تأكيد البدء؛ تحقق من الاتصال');}}
 }
 async function oPollLoop(){
   const my=++ONL.pollGen;
@@ -3544,6 +3717,7 @@ function enterOnline(){
   if(!room){room=Math.random().toString(36).slice(2,8);params.set('room',room);
     history.replaceState(null,'',location.pathname+'?'+params.toString());}
   ONL.room=room; ONL.active=true; ONL.sel=null; ONL.namedSent=false; ONL.transport='ws'; ONL.wsFails=0; ONL.queue=[]; ONL.pollSeq=0; ONL.status=null;
+  uiSessionStartReset();
   ONL.spectateOnly=params.get('spectate')==='1'; // NEW CODE — نقرأها طازجة بكل دخول (لا نعتمد على حالة سابقة قد تكون باقية من زيارة تانية)
   let pid=localStorage.getItem('wb-player-id')||sessionStorage.getItem('wb-player-id');
   if(!pid){pid='p-'+Math.random().toString(36).slice(2,10);}
@@ -3560,6 +3734,7 @@ function enterOnline(){
     if(!ONL._loaderHiddenOnce){ ONL._loaderHiddenOnce=true; const pl=$('#pageLoader'); if(pl){ pl.style.opacity='0'; setTimeout(()=>pl.classList.add('hidden'),260); } } // NEW CODE
   },10000); // NEW CODE
   show('onl');
+  uiLobbySetTab('seats');$('#onlWait').classList.add('uiLobbyCompact');
   applyEquippedTheme();
   $('#onlWait').classList.remove('hidden');
   $('#oWaqf').classList.add('hidden');$('#oOver').classList.add('hidden');
@@ -3577,18 +3752,22 @@ function enterOnline(){
 // محتوى النافذة فقط وقت فتحها فعليًا. يقرأ العميل مجموعة active_rooms مباشرة عبر Firebase SDK (يكتبها
 // السيرفر فقط عبر REST بحساب خدمة يتجاوز قواعد الأمان أصلاً — راجع db.js: publishRoomStatus/removeRoomStatus).
 let ACTIVE_SESSIONS=[]; // NEW CODE
-function startActiveSessionsListener(){ // NEW CODE
-  if(!FB.ready||!FB.db||startActiveSessionsListener._started)return; // NEW CODE
-  startActiveSessionsListener._started=true; // NEW CODE
-  FB.db.collection('active_rooms').orderBy('updatedAt','desc').limit(30) // NEW CODE
-    .onSnapshot(snap=>{ // NEW CODE
+async function startActiveSessionsListener(force){ // NEW CODE
+  if(!FB.ready||!FB.db||document.hidden)return;
+  if(startActiveSessionsListener._pending)return startActiveSessionsListener._pending;
+  if(!force&&Date.now()-(startActiveSessionsListener._at||0)<60000)return;
+  const generation=UI_COST.generation;
+  return startActiveSessionsListener._pending=FB.db.collection('active_rooms').orderBy('updatedAt','desc').limit(30).get().then(snap=>{
+    if(generation!==UI_COST.generation)return;
+    startActiveSessionsListener._at=Date.now();
+
       const STALE_MS=20*60*1000; // NEW CODE — طبقة حماية إضافية بالعميل: نتجاهل أي جلسة ما تحدّثت من ٢٠ دقيقة (احتياطي لو removeRoomStatus فاتها لأي سبب بالسيرفر)
       ACTIVE_SESSIONS=snap.docs.map(d=>({id:d.id,...d.data()})).filter(d=>(Date.now()-(d.updatedAt||0))<STALE_MS); // NEW CODE
       const n=ACTIVE_SESSIONS.length; // NEW CODE
       const numEl=$('#sessCountNum'); if(numEl)numEl.textContent=toH(n); // NEW CODE
       const lblEl=$('#sessCountLbl'); if(lblEl)lblEl.textContent=n===1?'جلسة مباشرة':'جلسات مباشرة'; // NEW CODE
       if(!$('#sessionsModal').classList.contains('hidden'))renderSessionsList(); // NEW CODE — النافذة مفتوحة أصلاً؟ حدّث محتواها فورًا كمان
-    }, e=>console.warn('active_rooms listen failed',e)); // NEW CODE
+    }).catch(e=>console.warn('active_rooms read failed',e)).finally(()=>{if(generation===UI_COST.generation)startActiveSessionsListener._pending=null;});
 } // NEW CODE
 function uiWatchIcon(){return '<svg class="uiWatchIcon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';}
 function sessionCardHTML(roomId,d){ // NEW CODE
@@ -3636,9 +3815,10 @@ function joinActiveSession(roomId,spectate){ // NEW CODE — spectate=true تح�
   $('#sessionsModal').classList.add('hidden'); // NEW CODE
   enterOnline(); // NEW CODE
 } // NEW CODE
-$('#hSessions').onclick=()=>{ SFX.tick(); $('#sessionsModal').classList.remove('hidden'); renderSessionsList(); }; // NEW CODE
+$('#hSessions').onclick=()=>{ startActiveSessionsListener(true); SFX.tick(); $('#sessionsModal').classList.remove('hidden'); renderSessionsList(); }; // NEW CODE
 $('#sessionsClose').onclick=()=>$('#sessionsModal').classList.add('hidden'); // NEW CODE
 function leaveOnline(){
+  uiSessionStartReset();
   if(typeof uiCancelResultPreparation==='function')uiCancelResultPreparation();
   $('#pageLoaderTxt').textContent='جاري الخروج...'; // NEW CODE
   $('#pageLoader').classList.remove('hidden'); $('#pageLoader').style.opacity='1'; // NEW CODE
@@ -3680,6 +3860,7 @@ function oHandle(msg){
     const nm=($('#nameIn').value||'').trim();
     if(nm)oAction({t:'setName',name:nm});
   }
+  uiSessionHandleReceipt(msg);
   renderOnl();
   if(typeof uiLeagueState==='function')uiLeagueState(msg);
   if(MATCH.on)renderMatch(); // QUICK-MATCH — تحديث البحث عند وصول حالة فعلية، بلا interval
@@ -3695,7 +3876,7 @@ function oConnect(){
     const joinMsg=await withIdToken({type:'join',playerId:ONL.pid,name:(($('#lobbyName')&&$('#lobbyName').value)||$('#nameIn').value||localStorage.getItem('wb-name')||'').trim(),avatar:myAvatar(),tier:ONL.pendingTier||undefined,mode:ONL.pendingTier?(ONL.pendingMode||'solo'):undefined,spectate:ONL.spectateOnly||undefined}); // NEW CODE — أضفنا spectate
     ws.send(JSON.stringify(joinMsg));
     while(ONL.queue.length)ws.send(JSON.stringify(ONL.queue.shift())); };
-  ws.onclose=()=>{ if(!ONL.active)return; $('#connDot').classList.add('off');
+  ws.onclose=()=>{ if(!ONL.active)return; uiSessionStartFailed(); $('#connDot').classList.add('off');
     ONL.wsFails++;
     if(ONL.wsFails>=2&&ONL.status===null){ switchToPoll(); return; } // المتصفح يرفض ws؟ انتقل للاستطلاع
     $('#oHint').innerHTML=ONL.status?'انقطع الاتصال — إعادة المحاولة...':'';
@@ -3703,6 +3884,7 @@ function oConnect(){
   ws.onmessage=e=>{
     let msg;try{msg=JSON.parse(e.data)}catch(err){return}
     if(msg.type==='error'){
+      uiSessionStartFailed();
       if(ONL.lastSent==='settle'||ONL.lastSent==='timeout'){ONL.lastSent=null;return}
       oToast(msg.error);return;
     }
@@ -4150,8 +4332,8 @@ function renderOnl(){
       handCount:v.handCounts[pid],
       pts:toH(teamCombinedPts(pid)), // FIX — كان p.points: بالجماعي يعرض الآن مجموع الفريق (يطابق نسبة التعبئة)
       pct:goalPct(teamCombinedPts(pid),v.tierGoal), // NEW CODE
-      pileTopCard:p.top,
-      pileBadgeHtml:`<span class="pileCntX">×${toH(p.count)}</span>`,
+      pileTopCard:p.top,pileCount:p.count,
+      pileBadgeHtml:uiPileCountHTML(p.count),
       onAvaClick:seatUid?(()=>MiniProfile.open(seatUid,seatName,seatAva)):null // NEW CODE — بوت أو بلا uid موثّق = بلا تفاعل إطلاقاً
     });
     // سرقة هذه الكومة؟
@@ -4194,15 +4376,14 @@ function renderOnl(){
     clearTimeout(ONL._fieldHideTimeout); // FIX
     ONL._lastFieldMap=new Map(); // FIX
     const stk=$('#oWaqfStack');stk.innerHTML='';
-    const all=v.waqf.contested, MAXV=5;
-    const visible=all.slice(-MAXV); // ترتيب زمني كما هو: الأقدم أولاً، الأحدث أخيرًا (يحدد z-index تلقائيًا)
+    const all=v.waqf.contested; // v354 — retain the full count; show up to eight distinct real card edges.
     const settling=!!ONL._settleInfo;
     ONL._stackJitter=ONL._stackJitter||new Map(); // إزاحة/ميلان عشوائي لكل ورقة يُحسب مرة واحدة فقط ويُحفظ — بدونه كانت الكومة ستهتز بعشوائية جديدة بكل رسم
-    // كومة المزايدة (منطق مشترك مع الفردي عبر renderBidStack) — هنا فقط أصغر حجمًا (51×72) وباتجاه يراعي حالة "الاستقرار" أثناء الحسم
-    ONL._lastStackIds=renderBidStack(stk,visible,{
+    // v350 — نفس حجم الكومة المسطحة في المحلي والأونلاين، مع حفظ اتجاه المزايدة والحسم.
+    ONL._lastStackIds=renderBidStack(stk,all,{
       jitterMap:ONL._stackJitter,
       prevIds:ONL._lastStackIds||new Set(),
-      size:{w:51,h:72}, // أصغر بنسبة ٢٠٪ من الحجم السابق (٦٤×٩٠) — ورق المزايدة تحديدًا
+      size:{w:54,h:77}, // v350 — حجم الكومة المعتمد في المعاينة
       dirForCard:c=>{
         const targetPid=settling?v.waqf.holder:(c.by!=null?c.by:v.waqf.holder);
         return STACK_DIR_UNIT[kOf(targetPid)];
@@ -4236,8 +4417,8 @@ function renderOnl(){
   const myPile=v.piles[bottomPid]||{points:0,count:0,top:null};
   const myDisplayPts=v.piles[bottomPid]?teamCombinedPts(bottomPid):0; // FIX — كان myPile.points فقط: بالجماعي يعرض الآن مجموع الفريق
   const mp=$('#oMyPile');mp.innerHTML=`<span class="pts"><i class="ptsFill" style="width:${goalPct(myDisplayPts,v.tierGoal)}%"></i><b>${toH(myDisplayPts)} <small>${v.mode==='team'?'للفريق':'نقطة'}</small></b></span>`;
-  if(myPile.top){const w2=document.createElement('div');w2.style.cssText='display:flex;align-items:center;gap:4px';w2.appendChild(cardEl(myPile.top,'sm'));
-    w2.insertAdjacentHTML('beforeend',`<span class="pileCntX">×${toH(myPile.count)}</span>`);mp.appendChild(w2)}
+  if(myPile.top){const w2=document.createElement('div');w2.style.cssText='display:flex;align-items:center;gap:4px';w2.appendChild(uiPileCard(myPile.top,myPile.count));
+    w2.insertAdjacentHTML('beforeend',uiPileCountHTML(myPile.count));mp.appendChild(w2)}
   // يدي — تباعد ديناميكي يملأ الشاشة (نفس الفردي)
   const hd=$('#oHand');
   const anyTop=k=>{const pid=seatAt(k);const t=v.piles[pid].top;if(!t)return false;
@@ -4356,17 +4537,121 @@ function renderOnl(){
       ONL._lastWaqfBannerTxt=srcTxt;
       $('#oWaqfBannerTxt').innerHTML=srcTxt;
     }
-    $('#oWaqfCntL').textContent=`×${toH(w.contested.length)}`;
+    $('#oWaqfCntL').innerHTML=uiPileCountHTML(w.contested.length);
     // NEW CODE — لا صندوق ولا رسالة تغطي اليد: التوجيه يظهر بشريط التلميح فقط، والورقة الصالحة نفسها تُنقَر أو تُسحب للميدان للمزايدة
     const canB=seated&&v.canBid;
     hint.innerHTML=canB?'<b>وقّف!</b> — انقر أو اسحب ورقتك المُضاءة للميدان':'';
   }else $('#oWaqf').classList.add('hidden');
 }
+// v351 — local presentation only: no game-state fields, storage or network requests.
+function uiLobbySetTab(tab){
+  const selected=tab==='settings'?'settings':'seats';
+  document.querySelectorAll('#uiLobbyTabs [data-lobby-tab]').forEach(button=>{
+    const on=button.dataset.lobbyTab===selected;
+    button.setAttribute('aria-selected',String(on));button.tabIndex=on?0:-1;
+  });
+  $('#uiLobbySeatsPanel').hidden=selected!=='seats';
+  $('#uiLobbySettingsPanel').hidden=selected!=='settings';
+}
+document.querySelectorAll('#uiLobbyTabs [data-lobby-tab]').forEach(button=>{
+  button.onclick=()=>uiLobbySetTab(button.dataset.lobbyTab);
+  button.onkeydown=event=>{
+    if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+    event.preventDefault();
+    const tab=event.key==='Home'?'seats':event.key==='End'?'settings':button.dataset.lobbyTab==='seats'?'settings':'seats';
+    uiLobbySetTab(tab);$('#uiLobby'+(tab==='seats'?'Seats':'Settings')+'Tab').focus();
+  };
+});
+function uiLobbySeatsHTML(lb,seats,you){
+  const seatRow=index=>{
+    const pid=seats[index],mine=!!pid&&pid===you,bot=!!pid&&pid.startsWith('bot-');
+    if(!pid)return `<div class="lobbyRow uiLobbyEmptySeat" data-seat="${index}"><div class="lr-ava" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div><div class="lr-nm">مقعد متاح</div><div class="lr-tag">بانتظار لاعب</div></div>`;
+    // Names are escaped once by oHandle. Avatars use the same cached renderer as gameplay.
+    const name=bot?'كمبيوتر':(lb.names&&lb.names[pid])||(mine?'أنت':'لاعب '+(index+1));
+    const avatar=(lb.avatars&&lb.avatars[pid])||(mine?myAvatar():bot?'🤖':'🎭');
+    return `<div class="lobbyRow${mine?' uiLobbyOwnSeat':''}${mine&&lb.mode==='team'?' draggableRow':''}" data-seat="${index}"><div class="lr-ava">${avatarHTML(avatar,52)}</div><div class="lr-nm">${name}${mine?'<small>أنت</small>':''}</div><div class="lr-tag">${pid===lb.creator?'منشئ الجلسة':bot?'كمبيوتر':'في الطاولة'}</div></div>`;
+  };
+  if(lb.mode!=='team')return `<div class="uiLobbySoloSeats">${[0,1,2,3].map(seatRow).join('')}</div>`;
+  // Match _startGame exactly: when only two humans are present, they become partners.
+  const pairs=seats.length===2?[[0,1],[2,3]]:[[0,2],[1,3]];
+  const mine=pairs.findIndex(pair=>pair.some(index=>seats[index]&&seats[index]===you));
+  return pairs.map((pair,team)=>`<div class="teamZone" data-team="${team}"><div class="teamZoneLabel">${mine<0?'شراكة':mine===team?'فريقك':'المنافسون'}</div>${pair.map(seatRow).join('')}</div>`).join('<span class="uiLobbyVersus" aria-label="مواجهة">VS</span>');
+}
+// v353 — display a creation debit only after a matching, confirmed server receipt.
+var UI_SESSION_START={room:null,pending:false,awaitingDebit:false,seen:null};
+function uiSessionStartReset(){
+  UI_SESSION_START={room:ONL.room||null,pending:false,awaitingDebit:false,seen:null};
+  document.getElementById('uiSessionFeeToast')?.remove();
+}
+function uiSessionFeeModel(lb){
+  if(!ONL.room||ONL.room.startsWith('pub-')||ONL.league||ONL.tournament||lb?.tier?.fee)return null;
+  const fee=lb?.creationFee;
+  if(fee&&Number.isSafeInteger(fee.amount)&&fee.amount>=0)return {amount:fee.amount,paid:fee.paid===true};
+  // Older servers use the same 800 creation fee but do not expose their paid flag.
+  return {amount:800,paid:false};
+}
+function uiSessionRenderStart(lb){
+  if(UI_SESSION_START.room!==ONL.room)uiSessionStartReset();
+  const btn=document.getElementById('lobbyStart');if(!btn)return;
+  const fee=uiSessionFeeModel(lb);
+  btn.disabled=UI_SESSION_START.pending;
+  btn.setAttribute('aria-busy',String(UI_SESSION_START.pending));
+  btn.innerHTML='<span>'+(UI_SESSION_START.pending?'جارٍ بدء الجلسة…':'بدء الجلسة')+'</span>'+
+    (fee?(fee.paid?'<span class="uiSessionFeePaid">رسوم الإنشاء مدفوعة</span>':'<span class="uiSessionStartCost"><small>رسوم الإنشاء</small><bdi dir="ltr">'+toH(fee.amount)+'</bdi>'+uiGoldCoin()+'</span>'):'');
+  btn.onclick=uiSessionStart;
+}
+function uiSessionStart(){
+  if(!ONL.active||ONL.status!=='lobby'||ONL.lobby?.creator!==ONL.you||UI_SESSION_START.pending)return;
+  if(ONL.transport!=='poll'&&ONL.ws?.readyState!==1){oToast('انتظر عودة الاتصال لبدء الجلسة');return;}
+  const fee=uiSessionFeeModel(ONL.lobby);
+  UI_SESSION_START.pending=true;UI_SESSION_START.awaitingDebit=!!fee&&!fee.paid&&fee.amount>0;
+  uiSessionRenderStart(ONL.lobby);
+  try{oSend({type:'start'});}catch(_){uiSessionStartFailed();oToast('تعذّر إرسال البدء؛ حاول مرة أخرى');}
+}
+function uiSessionStartFailed(){
+  UI_SESSION_START.pending=false;UI_SESSION_START.awaitingDebit=false;
+  if(ONL.status==='lobby')uiSessionRenderStart(ONL.lobby);
+}
+function uiSessionShowDebit(receipt){
+  document.getElementById('uiSessionFeeToast')?.remove();
+  const el=document.createElement('div');el.id='uiSessionFeeToast';el.setAttribute('role','status');
+  el.innerHTML='<p>تم إنشاء الجلسة</p><div class="uiSessionDebitAmount"><bdi dir="ltr">−'+toH(receipt.amount)+'</bdi>'+uiGoldCoin()+'</div><small>رسوم الإنشاء · الرصيد بعد الخصم <bdi dir="ltr">'+toH(receipt.after)+'</bdi></small>';
+  el.addEventListener('animationend',event=>{if(event.target===el)el.remove();});
+  document.getElementById('onl').appendChild(el);
+}
+function uiSessionHandleReceipt(msg){
+  if(!ONL.active||msg.type!=='state')return;
+  if(UI_SESSION_START.room!==ONL.room)uiSessionStartReset();
+  const r=msg.creationReceipt;
+  if(r&&typeof r.id==='string'&&r.id&&r.room===ONL.room&&r.pid===msg.you&&Number.isSafeInteger(r.amount)&&r.amount>0&&
+    Number.isSafeInteger(r.before)&&Number.isSafeInteger(r.after)&&r.after>=0&&r.before-r.after===r.amount&&UI_SESSION_START.seen!==r.id){
+    UI_SESSION_START.seen=r.id;
+    if(UI_SESSION_START.pending&&UI_SESSION_START.awaitingDebit){
+      // Store the confirmed total, never subtract the fee from a cached balance.
+      try{localStorage.setItem('wb-gold',String(r.after));}catch(_){}
+      const gold=document.getElementById('hGold');if(gold)gold.textContent=toH(r.after);
+      if(!document.hidden)uiSessionShowDebit(r);
+      UI_SESSION_START.awaitingDebit=false;
+    }
+  }
+  if(msg.status!=='lobby'){UI_SESSION_START.pending=false;UI_SESSION_START.awaitingDebit=false;}
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)document.getElementById('uiSessionFeeToast')?.remove();});
+
 function renderLobby(){
   $('#onlWait').classList.remove('hidden');
   $('#oOver').classList.add('hidden');$('#oWaqf').classList.add('hidden');
+  const wait=$('#onlWait');wait.classList.toggle('uiLobbyCompact',!ONL.league);
+  if(ONL.league&&typeof lgRenderLobby==='function'){$('#lobbyPlayers')._uiSeatFingerprint='';uiLobbySetTab('seats');lgRenderLobby(ONL);return;}
+  if(wait.dataset.uiLobbyRoom!==ONL.room){wait.dataset.uiLobbyRoom=ONL.room||'';uiLobbySetTab('seats');}
   const lb=ONL.lobby||{mode:'solo',creator:null,names:{}};
-  const isCreator=lb.creator===ONL.you;
+  const seats=ONL.seats||[],isCreator=!!ONL.you&&lb.creator===ONL.you;
+  wait.querySelector('h2').textContent=ONL.tournament?'انتظار المباراة':'طاولة الأصدقاء';
+  wait.querySelector('.sub').textContent=(lb.mode==='team'?'جماعي 2×2':'فردي')+' · '+(lb.tier?.goal?'الهدف '+toH(lb.tier.goal)+' نقطة':'الرزمة كاملة');
+  $('#uiLobbyCount').innerHTML='<bdi>'+seats.length+' / 4</bdi><small>لاعبون</small>';
+  $('#uiLobbySeatHelp').textContent=lb.mode==='team'
+    ?(seats.includes(ONL.you)&&seats.length>2?'اسحب مقعدك فوق لاعب لتبديل مكانكما.':'كل شريكين يلعبان معًا.')
+    :'كل لاعب ينافس منفردًا.';
   // أونلاين تنافسي: المنشئ يرسل إعداد الطبقة مرة واحدة
   if(isCreator&&ONL.pendingTier&&(!lb.tier||lb.tier.key!==ONL.pendingTier.key)){
     withIdToken({type:'config',mode:ONL.pendingMode||'solo',tier:ONL.pendingTier}).then(oSend);
@@ -4376,7 +4661,7 @@ function renderLobby(){
     let tb=$('#lobbyTierTag');
     if(!tb){tb=document.createElement('div');tb.id='lobbyTierTag';tb.style.cssText='margin-top:10px;background:var(--clay);color:#fff;border-radius:99px;padding:6px 16px;font-family:var(--fh);font-size:15px;display:flex;align-items:center;gap:8px';
       const anchor=$('#lobbyMode');if(anchor&&anchor.parentNode)anchor.parentNode.insertBefore(tb,anchor.nextSibling);}
-    tb.innerHTML=`الساحة ${lb.tier.name} · دخول <bdi>${toH(lb.tier.fee)}</bdi> ${uiGoldCoin()} · ربح <bdi>${toH(lb.tier.win)}</bdi> ${uiGoldCoin()}`;
+    tb.innerHTML=`الساحة ${lb.tier.name} · دخول <bdi>${toH(lb.tier.fee)}</bdi> ${uiGoldCoin()} · صافي الربح عند الفوز <bdi dir="ltr">${tierNetLabel(lb.tier.fee,lb.tier.win)}</bdi> ${uiGoldCoin()} · يُضاف عند الفوز <bdi>${toH(lb.tier.win)}</bdi> ذهب إجمالًا`;
     tb.style.display='flex';
   }else if(lb.tier&&lb.tier.goal){
     let tb=$('#lobbyTierTag');
@@ -4410,47 +4695,26 @@ function renderLobby(){
     b.disabled=!isCreator; // NEW CODE
     b.onclick=()=>{if(isCreator)oSend({type:'config',isPublic:b.dataset.p==='1'})}; // NEW CODE
   } // NEW CODE
-  // قائمة اللاعبين
-  const lp=$('#lobbyPlayers');lp.innerHTML='';
-  const seats=ONL.seats||[];
-  const seatRowHtml=(i)=>{ // NEW CODE — دالة موحّدة لبناء صف مقعد واحد (DRY بين وضعي جماعي وفردي)
-    if(i<seats.length){
-      const pid=seats[i];
-      const nm=(lb.names&&lb.names[pid])||(pid===ONL.you?'أنت — اكتب اسمك بالأعلى':'لاعب '+(i+1));
-      const mine=pid===ONL.you;
-      return `<div class="lobbyRow${mine?' draggableRow':''}" data-seat="${i}"><div class="lr-ava">${mine?'😎':'🎭'}</div><div class="lr-nm">${nm}${mine?' (أنت)':''}</div><div class="lr-tag">${pid===lb.creator?'منشئ الغرفة':''}</div></div>`; // FIX — pid===lb.creator بدل i===0 (كان يتحرّك مع تبديل المقاعد)
-    }
-    return `<div class="lobbyRow" style="opacity:.55" data-seat="${i}"><div class="lr-ava">🤖</div><div class="lr-nm">بوت — إذا ما لحق أحد</div><div class="lr-tag"></div></div>`;
-  };
-  if(lb.mode==='team'){ // NEW CODE — وضع جماعي: منطقتان مسمّيتان صراحة + سحب وإفلات لاختيار الشريك (يحرّك كل لاعب مقعده هو بس)
-    // FIX — نفس شرط _startGame بالضبط (mode==='team'&&seats.length===2): بالضبط لاعبان حقيقيان يتقعّدان شريكين
-    // تلقائياً وقت البدء الفعلي — نعرضهما هنا بنفس الترتيب مسبقاً، عشان اللوبي يطابق ما راح يصير فعلياً دائماً،
-    // لا يعرض ترتيباً مؤقتاً يُستبدَل بآخر مفاجئ لحظة الضغط "ابدأ"
-    const twoAutoPartner=seats.length===2; // FIX
-    const team1=twoAutoPartner?[0,1]:[0,2]; // FIX
-    const team2=twoAutoPartner?[2,3]:[1,3]; // FIX
-    lp.innerHTML=`
-      <div class="teamZone" data-team="0"><div class="teamZoneLabel">🔵 الفريق الأول</div>${seatRowHtml(team1[0])}${seatRowHtml(team1[1])}</div>
-      <div class="teamZone" data-team="1"><div class="teamZoneLabel">🟠 الفريق الثاني</div>${seatRowHtml(team2[0])}${seatRowHtml(team2[1])}</div>
-    `;
-    attachSeatDrag(lp);
-  }else{ // فردي: نفس السلوك القديم بلا فرق أو سحب
-    for(let i=0;i<4;i++) lp.insertAdjacentHTML('beforeend',seatRowHtml(i));
+  // v351 — real avatars and compact seat pairs, with the same server seat indices.
+  const lp=$('#lobbyPlayers'),fingerprint=JSON.stringify([ONL.room,ONL.you,lb.mode,lb.creator,lb.names,lb.avatars,seats]);
+  if(lp._uiSeatFingerprint!==fingerprint){
+    lp.innerHTML=uiLobbySeatsHTML(lb,seats,ONL.you);lp._uiSeatFingerprint=fingerprint;
+    if(lb.mode==='team')attachSeatDrag(lp);
   }
   $('#lobbyStart').classList.toggle('hidden',!isCreator);
   $('#lobbyHint').textContent=isCreator
-    ?(lb.mode==='team'?'جماعي: أنت وصديقك الأول شريكان — والبوتات ضدكم':'أرسل الرابط ثم اضغط ابدأ — البوتات تكمّل الناقص')
-    :'بانتظار منشئ الغرفة يبدأ الجولة...';
+    ?(seats.length<4?'يكمل الكمبيوتر المقاعد المتاحة عند البدء.':'اكتملت الطاولة. يمكنك بدء المباراة.')
+    :'بانتظار بدء المباراة من منشئ الجلسة…';
   if(ONL.tournament)$('#lobbyStart').classList.add('hidden');
   if(ONL.tournament)$('#lobbyHint').textContent='مباراة البطولة تبدأ تلقائيًا عند اتصال اللاعبين الأربعة';
-  $('#lobbyStart').onclick=()=>oSend({type:'start'});
+  uiSessionRenderStart(lb);
   const pubBtn=$('#pubInviteBtn');
   pubBtn.onclick=async()=>{
     if(pubBtn.disabled)return;
     pubBtn.disabled=true; pubBtn.textContent='...جارٍ الإرسال';
     const ok=await WBMsg.sendPublicInvite(ONL.room, lb.mode||'solo');
-    if(ok){ pubBtn.textContent='✓ تم الإرسال بالشات العام'; setTimeout(()=>{pubBtn.textContent='📣 أرسل دعوة بالشات العام';pubBtn.disabled=false;},20000); }
-    else { pubBtn.textContent='📣 أرسل دعوة بالشات العام'; pubBtn.disabled=false; toast2('تعذّر الإرسال'); }
+    if(ok){ pubBtn.textContent='✓ تم إرسال الدعوة'; setTimeout(()=>{pubBtn.textContent='دعوة في العام';pubBtn.disabled=false;},20000); }
+    else { pubBtn.textContent='دعوة في العام'; pubBtn.disabled=false; toast2('تعذّر الإرسال'); }
   };
   $('#onlineFriendsBtn').onclick=showOnlineFriendsPanel; // NEW CODE
 }
@@ -5018,7 +5282,7 @@ function refreshHome(){
   try{$('#hDailyBadge').classList.toggle('hidden',!(checkDaily().due||_adReadyH));}catch(e){}
   refreshInboxBadge(); // NEW CODE
   refreshRankCard();
-  pullServerStats(); // يلتقط أي تعديل إداري (كالذهب من لوحة التحكم) بدون ما يحتاج المستخدم يعيد فتح التطبيق
+  if(FB.user&&Date.now()-(UI_COST.statsAt||0)>30000){UI_COST.statsAt=Date.now();pullServerStats(0);} // Result confirmation retains its independent reads/retries.
 }
 // NEW CODE ================= صندوق الوارد =================
 // يبدأ فارغاً فعليًا لكل لاعب. الرسائل الحقيقية تصل عبر syncSystemMessages (تقرأ من Firestore، تكتبها لوحة
@@ -5081,6 +5345,7 @@ async function claimGift(id,btnEl){
     const data=await res.json().catch(()=>({ok:false}));
     if(data.ok&&!data.alreadyClaimed){
       ST.set('gold',ST.n('gold')+data.gold);
+      syncSystemMessages(true);
       toast2(`استلمت ${toH(data.gold)} ذهب — مبروك!`);
       refreshHome();
     }else if(data.ok&&data.alreadyClaimed){
@@ -5090,16 +5355,18 @@ async function claimGift(id,btnEl){
     }
   }catch(e){ toast2('تعذّر الاتصال بالسيرفر'); }
 }
-$('#hInbox').onclick=()=>{ SFX.tick(); $('#inboxModal').classList.remove('hidden'); renderInboxList(); }; // NEW CODE
+$('#hInbox').onclick=()=>{ syncSystemMessages(true); SFX.tick(); $('#inboxModal').classList.remove('hidden'); renderInboxList(); }; // NEW CODE
 $('#inboxClose').onclick=()=>$('#inboxModal').classList.add('hidden'); // NEW CODE
 // FIX — إعادة تصميم جوهرية: كانت wb-inbox تتراكم للأبد بلا تحقق (wb-inbox-seen يمنع فقط إعادة الإضافة، لا
 // يعكس حذف الإدمن للمستند من فايرستور إطلاقاً) — هذا سبب "الرسائل الشبحية": حذف الإدمن يوقف الوصول للاعبين
 // الجدد فقط، لكن من استلمها فعلاً تبقى عنده للأبد بلا أي طريقة لإزالتها حتى لو حذفها الإدمن مركزياً.
 // الآن: wb-inbox تُعاد بناؤها بالكامل من اللقطة الحيّة الحالية (رسائل + هدايا) في كل مزامنة، ناقص أي معرّف
 // حذفه اللاعب بنفسه (wb-inbox-dismissed). حذف الإدمن للمستند = يختفي من اللقطة = يختفي للجميع تلقائياً.
-function syncSystemMessages(){
-  if(!FB.ready||!FB.db||syncSystemMessages._started)return;
-  syncSystemMessages._started=true;
+async function syncSystemMessages(force){
+  if(!FB.ready||!FB.db||document.hidden)return;
+  if(syncSystemMessages._pending)return syncSystemMessages._pending;
+  if(!force&&Date.now()-(syncSystemMessages._at||0)<300000)return;
+  const generation=UI_COST.generation;
   let msgDocs=[], giftDocs=[];
   const rebuild=()=>{
     let dismissed; try{ dismissed=JSON.parse(localStorage.getItem('wb-inbox-dismissed')||'[]'); }catch(e){ dismissed=[]; }
@@ -5118,12 +5385,15 @@ function syncSystemMessages(){
     refreshInboxBadge();
     if(!$('#inboxModal').classList.contains('hidden'))renderInboxList();
   };
-  FB.db.collection('system_messages').orderBy('ts','desc').limit(30).onSnapshot(snap=>{
-    msgDocs=snap.docs.map(d=>({id:d.id,data:d.data()})); rebuild();
-  },e=>console.warn('system_messages listen failed',e));
-  FB.db.collection('global_gifts').orderBy('ts','desc').limit(20).onSnapshot(snap=>{ // نظام الهدايا الجديد بنفس آلية المزامنة الحيّة
-    giftDocs=snap.docs.map(d=>({id:d.id,data:d.data()})); rebuild();
-  },e=>console.warn('global_gifts listen failed',e));
+  return syncSystemMessages._pending=Promise.all([
+    FB.db.collection('system_messages').orderBy('ts','desc').limit(30).get(),
+    FB.db.collection('global_gifts').orderBy('ts','desc').limit(20).get()
+  ]).then(([messages,gifts])=>{
+    if(generation!==UI_COST.generation)return;
+    msgDocs=messages.docs.map(d=>({id:d.id,data:d.data()}));
+    giftDocs=gifts.docs.map(d=>({id:d.id,data:d.data()}));
+    syncSystemMessages._at=Date.now();rebuild();
+  }).catch(e=>console.warn('inbox read failed',e)).finally(()=>{if(generation===UI_COST.generation)syncSystemMessages._pending=null;});
 }
 let _pullingStats=false;
 // FIX — الإصلاح الجذري لـ"إشعار الرتبة متأخر/لا يظهر" و"الذهب لا يتحدّث بالرئيسية إلا بإعادة تحميل الصفحة":
@@ -5501,17 +5771,77 @@ $('#hGroup').onclick=()=>{ // FIX — تحقق الذهب قبل الدخول ل
 
 /* ---- QUICK-MATCH: بحث حقيقي تدفع تحديثاته أحداث WebSocket فقط ---- */
 let MATCH={on:false,iv:null};
-var QUICK_SEARCH={ws:null,wanted:false,tier:null,counts:null,seats:[],you:null,assigned:false,error:'',generation:0};
+var QUICK_SEARCH={ws:null,wanted:false,tier:null,counts:null,seats:[],you:null,assigned:false,error:'',generation:0,allowBots:false,botSupported:false,botConfirmed:false,botDeadline:0,botTimer:null,botDisplayTimer:null,botPending:null,botError:'',botAssigned:false,botGroupSupported:false,botGroupToken:null,botHumanCount:0};
 function quickCounts(){
   if(!QUICK_SEARCH)return;
   const counts=QUICK_SEARCH.counts,total=counts?Object.values(counts).reduce((a,b)=>a+b,0):null;
   const totalEl=document.getElementById('uiQuickTotal');
   if(totalEl)totalEl.textContent=total===null?'العدد غير متاح':toH(total)+' يبحثون الآن';
   document.querySelectorAll('[data-quick-tier]').forEach(el=>{
-    el.textContent=counts?'يبحث الآن: '+toH(counts[el.dataset.quickTier]||0)+' لاعبين':'تعذّر تحديث العدد';
+    el.textContent=counts?toH(counts[el.dataset.quickTier]||0)+' يبحثون الآن':'تعذّر تحديث العدد';
   });
 }
+// v346: display-only net value; fees and awards remain server-authoritative.
+function tierNetLabel(fee,win){
+  const net=Number(win)-Number(fee);
+  return (net>0?'+':'')+toH(net);
+}
+function quickBotCountdown(){
+  const q=QUICK_SEARCH;
+  clearTimeout(q.botDisplayTimer);q.botDisplayTimer=null;
+  const box=document.getElementById('uiQuickBotCountdown');
+  if(!box)return;
+  const visible=MATCH.on&&!!q.tier&&!q.assigned&&q.allowBots&&q.botSupported&&q.botConfirmed&&!!q.botDeadline&&!q.botError&&!document.hidden&&q.ws?.readyState===1;
+  box.classList.toggle('hidden',!visible);
+  if(!visible)return;
+  const remaining=Math.max(0,q.botDeadline-Date.now());
+  const seconds=Math.ceil(remaining/1000);
+  document.getElementById('uiQuickBotTime').textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
+  document.getElementById('uiQuickBotTimeLabel').textContent=q.botPending?'جارٍ تجهيز الطاولة':remaining>0?(q.botGroupSupported?'طلب الإكمال خلال':'الكمبيوتر متاح خلال'):'بانتظار تأكيد الطاولة';
+  // Local paint only: no network request, no game state and no server alarm.
+  if(remaining>0&&!q.botPending)q.botDisplayTimer=setTimeout(quickBotCountdown,Math.min(1000,remaining));
+}
+function quickBotStop(){
+  clearTimeout(QUICK_SEARCH.botTimer);QUICK_SEARCH.botTimer=null;
+  clearTimeout(QUICK_SEARCH.botDisplayTimer);QUICK_SEARCH.botDisplayTimer=null;
+  document.getElementById('uiQuickBotCountdown')?.classList.add('hidden');
+}
+function quickBotPlan(){
+  quickBotStop();
+  const q=QUICK_SEARCH;
+  if(!MATCH.on||!q.tier||q.assigned||!q.allowBots||!q.botSupported||!q.botConfirmed||!q.botDeadline||q.botPending||q.botError||document.hidden||q.ws?.readyState!==1)return;
+  quickBotCountdown();
+  const ws=q.ws,generation=q.generation;
+  q.botTimer=setTimeout(()=>{
+    q.botTimer=null;
+    if(ws!==q.ws||generation!==q.generation||!MATCH.on||!q.allowBots||!q.botConfirmed||q.assigned||document.hidden)return;
+    q.botPending=crypto.randomUUID();
+    try{ws.send(JSON.stringify({type:'quick-bot-request',requestId:q.botPending,botGroupToken:q.botGroupToken}));}
+    catch(_){q.botPending=null;q.botError='تعذّر طلب مباراة الكمبيوتر؛ أعد المحاولة';}
+    renderMatch();
+  },Math.max(0,q.botDeadline-Date.now()));
+}
+function quickBotToggle(enabled){
+  const q=QUICK_SEARCH;if(q.assigned)return;
+  const wasEnabled=q.allowBots;
+  q.allowBots=enabled===true;q.botError='';
+  if(q.allowBots&&(!wasEnabled||!q.botGroupToken))q.botGroupToken=crypto.randomUUID();
+  if(!q.allowBots)q.botGroupToken=null;
+  if(!q.allowBots){quickBotStop();q.botPending=null;q.botConfirmed=false;}
+  if(q.ws?.readyState===1&&q.tier){
+    try{q.ws.send(JSON.stringify({type:'quick-bots',enabled:q.allowBots,botGroupToken:q.botGroupToken,visible:!document.hidden}));}
+    catch(_){q.botConfirmed=false;q.botError='تعذّر حفظ خيار الكمبيوتر؛ أعد المحاولة';}
+  }
+  quickBotPlan();renderMatch();
+}
+// v353: a visibility event updates eligibility; no heartbeat or extra timer.
+function quickBotPresence(){
+  const q=QUICK_SEARCH;
+  if(!q.tier||!q.botGroupSupported||!q.botGroupToken||q.ws?.readyState!==1)return;
+  try{q.ws.send(JSON.stringify({type:'quick-bot-presence',visible:!document.hidden,botGroupToken:q.botGroupToken}));}catch(_){}
+}
 function quickClose(){
+  quickBotStop();QUICK_SEARCH.botDeadline=0;QUICK_SEARCH.botPending=null;QUICK_SEARCH.botConfirmed=false;QUICK_SEARCH.botSupported=false;QUICK_SEARCH.botGroupSupported=false;QUICK_SEARCH.botGroupToken=null;
   const ws=QUICK_SEARCH.ws;QUICK_SEARCH.ws=null;QUICK_SEARCH.generation++;
   QUICK_SEARCH.counts=null;QUICK_SEARCH.seats=[];
   if(ws){ws.onclose=null;ws.onerror=null;try{ws.close(1000,'leaving queue');}catch(_){}}
@@ -5537,14 +5867,38 @@ function quickConnect(){
       if(!msg.counts||keys.some(k=>!Number.isSafeInteger(msg.counts[k])||msg.counts[k]<0))return;
       QUICK_SEARCH.counts=Object.fromEntries(keys.map(k=>[k,msg.counts[k]]));
       QUICK_SEARCH.seats=Array.isArray(msg.seats)?msg.seats.slice(0,4):[];QUICK_SEARCH.you=msg.you;
+      QUICK_SEARCH.botSupported=msg.botFallbackSupported===true;
+      QUICK_SEARCH.botGroupSupported=msg.botGroupSupported===true;
+      QUICK_SEARCH.botConfirmed=msg.allowBots===true&&msg.tier===QUICK_SEARCH.tier;
+      if(msg.tier===QUICK_SEARCH.tier&&Number.isFinite(msg.botWaitMs))QUICK_SEARCH.botDeadline=Date.now()+Math.max(0,msg.botWaitMs);
+      quickBotPlan();
       if(msg.tier)QUICK_SEARCH.error='';
       quickCounts();if(MATCH.on)renderMatch();
     }else if(msg.type==='quick-match'){
       if(!MATCH.on||msg.tier!==QUICK_SEARCH.tier||!/^pub-live-(beginner|amateur|pro|elite|legend)-[a-f0-9-]{36}$/.test(msg.room))return;
+      const groupAccepted=msg.botGrouped===true&&QUICK_SEARCH.botGroupSupported&&QUICK_SEARCH.botConfirmed&&!!QUICK_SEARCH.botGroupToken&&
+        msg.botGroupToken===QUICK_SEARCH.botGroupToken&&Number.isInteger(msg.humanCount)&&msg.humanCount>=1&&msg.humanCount<=3;
+      if(msg.botFallback===true&&(document.hidden||!QUICK_SEARCH.allowBots||
+        (msg.botGrouped===true?!groupAccepted:!QUICK_SEARCH.botPending||msg.requestId!==QUICK_SEARCH.botPending))){
+        // User disabled the option or hid the app during setup. Never enter that bot room.
+        QUICK_SEARCH.botPending=null;QUICK_SEARCH.botDeadline=0;QUICK_SEARCH.botConfirmed=false;
+        quickJoin();return;
+      }
+      QUICK_SEARCH.botAssigned=msg.botFallback===true;
+      QUICK_SEARCH.botHumanCount=QUICK_SEARCH.botAssigned?(groupAccepted?msg.humanCount:1):0;
       QUICK_SEARCH.assigned=true;QUICK_SEARCH.tier=null;quickClose();
       const params=new URLSearchParams();params.set('room',msg.room);
       history.replaceState(null,'',location.pathname+'?'+params.toString());
       enterOnline();show('match');renderMatch();
+    }else if(msg.type==='quick-bot-wait'){
+      if(msg.requestId!==QUICK_SEARCH.botPending)return;
+      QUICK_SEARCH.botPending=null;
+      if(Number.isFinite(msg.remainingMs))QUICK_SEARCH.botDeadline=Date.now()+Math.max(1,msg.remainingMs);
+      quickBotPlan();if(MATCH.on)renderMatch();
+    }else if(msg.type==='quick-bot-error'){
+      if(msg.requestId!==QUICK_SEARCH.botPending)return;
+      QUICK_SEARCH.botPending=null;QUICK_SEARCH.botError=String(msg.error||'تعذّر تجهيز مباراة الكمبيوتر');
+      quickBotStop();if(MATCH.on)renderMatch();
     }else if(msg.type==='quick-error'){
       QUICK_SEARCH.error=String(msg.error||'تعذّر البحث');QUICK_SEARCH.tier=null;
       quickClose();if(MATCH.on)renderMatch();else toast2(QUICK_SEARCH.error);
@@ -5566,19 +5920,24 @@ async function quickJoin(){
     name:localStorage.getItem('wb-name')||'لاعب',avatar:myAvatar()});
   if(ws!==QUICK_SEARCH.ws||generation!==QUICK_SEARCH.generation||tier!==QUICK_SEARCH.tier||!MATCH.on)return;
   if(!msg.idToken){QUICK_SEARCH.error='سجّل الدخول للبحث عن مباراة';QUICK_SEARCH.tier=null;renderMatch();return;}
+  if(QUICK_SEARCH.allowBots&&!QUICK_SEARCH.botGroupToken)QUICK_SEARCH.botGroupToken=crypto.randomUUID();
+  msg.allowBots=QUICK_SEARCH.allowBots;
+  msg.botGroupVersion=1;msg.botGroupToken=QUICK_SEARCH.botGroupToken;msg.visible=!document.hidden;
   try{ws.send(JSON.stringify(msg));}catch(_){QUICK_SEARCH.error='تعذّر إرسال البحث';quickClose();renderMatch();}
 }
 function cancelQuickMatch(changeTier){
   const assigned=QUICK_SEARCH.assigned;
   MATCH.on=false;QUICK_SEARCH.tier=null;QUICK_SEARCH.wanted=false;quickClose();
   if(assigned&&ONL.active)leaveOnline();
-  QUICK_SEARCH.assigned=false;QUICK_SEARCH.error='';
+  QUICK_SEARCH.assigned=false;QUICK_SEARCH.botAssigned=false;QUICK_SEARCH.botError='';QUICK_SEARCH.error='';
   if(changeTier)openTiers('online-team');else goHome();
 }
 $('#hOnl').onclick=()=>{SFX.tick();openTiers('online-team')};
 $('#mBack').onclick=$('#mCancel').onclick=()=>cancelQuickMatch(false);
 $('#uiQuickChangeTier').onclick=()=>cancelQuickMatch(true);
+$('#uiQuickAllowBots').onchange=e=>quickBotToggle(e.target.checked);
 $('#uiQuickRetry').onclick=()=>{
+  if(QUICK_SEARCH.botError&&QUICK_SEARCH.tier&&QUICK_SEARCH.ws?.readyState===1){QUICK_SEARCH.botError='';quickBotPlan();renderMatch();return;}
   if(QUICK_SEARCH.assigned){cancelQuickMatch(true);return;}
   if(ONL.pendingTier)enterMatch(ONL.pendingTier.key,'team');
 };
@@ -5586,10 +5945,11 @@ window.addEventListener('online',()=>{if(QUICK_SEARCH.wanted)quickConnect();});
 window.addEventListener('offline',()=>{if(QUICK_SEARCH.wanted){quickClose();QUICK_SEARCH.error='انقطع الاتصال؛ سيُستأنف البحث عند رجوع الشبكة';if(MATCH.on)renderMatch();}});
 window.addEventListener('pagehide',()=>quickClose());
 window.addEventListener('pageshow',()=>{if(QUICK_SEARCH.wanted)quickConnect();});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&QUICK_SEARCH.wanted)quickConnect();});
+document.addEventListener('visibilitychange',()=>{quickBotPresence();if(document.hidden)quickBotStop();else if(QUICK_SEARCH.wanted){quickConnect();quickBotPlan();}});
 function enterMatch(tierKey,mode){
-  if(mode!=='team'){toast2('اللعب السريع متاح جماعي ٢×٢');return;}
+  if(mode!=='team'){toast2('اللعب التنافسي متاح جماعي 2×2');return;}
   if(!['beginner','amateur','pro','elite','legend'].includes(tierKey))return;
+  quickBotStop();QUICK_SEARCH.botPending=null;QUICK_SEARCH.botDeadline=0;QUICK_SEARCH.botConfirmed=false;QUICK_SEARCH.botError='';QUICK_SEARCH.botAssigned=false;QUICK_SEARCH.allowBots=false;QUICK_SEARCH.botGroupToken=null;QUICK_SEARCH.botHumanCount=0;
   MATCH.on=true;QUICK_SEARCH.assigned=false;QUICK_SEARCH.error='';QUICK_SEARCH.seats=[];QUICK_SEARCH.tier=tierKey;
   show('match');
   if(QUICK_SEARCH.ws&&QUICK_SEARCH.ws.readyState===1)quickJoin();
@@ -5601,23 +5961,38 @@ function renderMatch(){
     MATCH.on=false;QUICK_SEARCH.assigned=false;applyEquippedTheme();show('onl');renderOnl();return;
   }
   const tb=$('#mTierBadge'),tier=ONL.pendingTier;
-  if(tier){tb.classList.remove('hidden');tb.textContent='الساحة '+tier.name+' · دخول '+toH(tier.fee)+' ذهب · ربح '+toH(tier.win);}else tb.classList.add('hidden');
+  if(tier){
+    const visual=TIERS.find(t=>t.key===tier.key);
+    tb.classList.remove('hidden');
+    tb.innerHTML='<div class="uiMatchTierHeading">'+(visual?'<img src="ui-art/tier-crest-'+visual.key+'-v349.svg" width="40" height="40" alt="" aria-hidden="true">':'')+'<b>'+esc(visual?.name||tier.name)+'</b></div><div class="uiMatchMoney"><span>الدخول <strong><bdi dir="ltr">'+toH(tier.fee)+'</bdi></strong> ذهب</span><span>صافي الفوز <strong><bdi dir="ltr">'+tierNetLabel(tier.fee,tier.win)+'</bdi></strong> ذهب</span></div>';
+  }else tb.classList.add('hidden');
   const assigned=QUICK_SEARCH.assigned;
   const lb=ONL.lobby||{};
   const seats=assigned?(ONL.seats||[]).map(pid=>({pid,name:(lb.names||{})[pid]||'لاعب',avatar:(lb.avatars||{})[pid]})):QUICK_SEARCH.seats;
   const you=assigned?ONL.you:QUICK_SEARCH.you;
   $('#mGrid').innerHTML=Array.from({length:4},(_,i)=>{
     const p=seats[i];
-    if(!p)return '<div class="mSlot empty"><div class="mAva">···</div><div class="mNm">بانتظار لاعب</div><div class="mTag">مقعد شاغر</div></div>';
-    const me=p.pid===you;
-    return '<div class="mSlot'+(me?' me':'')+'"><div class="mAva">'+avatarHTML(me?myAvatar():p.avatar,40)+'</div><div class="mNm">'+(me?'أنت':esc(p.name||'لاعب'))+'</div><div class="mTag">لاعب حقيقي</div></div>';
+    if(!p)return '<div class="mSlot empty"><div class="mAva">···</div><div class="mNm">بانتظار لاعب</div></div>';
+    const me=p.pid===you,bot=String(p.pid).startsWith('bot-');
+    return '<div class="mSlot'+(me?' me':'')+'"><div class="mAva">'+avatarHTML(me?myAvatar():p.avatar,40)+'</div><div class="mNm">'+(me?'أنت':esc(p.name||'لاعب'))+'</div><div class="mTag">'+(bot?'كمبيوتر':'جاهز للعب')+'</div></div>';
   }).join('');
   const closed=assigned&&ONL.status==='closed';
-  $('#mTitle').textContent=closed?'تعذّر اكتمال دخول الطاولة':QUICK_SEARCH.error||(assigned?'اكتملت المجموعة، ننتظر اتصال الجميع':'نبحث عن لاعبين لطاولتك');
-  $('#mSub').textContent='تبدأ المباراة بعد اكتمال أربعة لاعبين حقيقيين';
-  $('#uiMatchCount').textContent='اكتمل '+toH(Math.min(seats.length,4))+' من '+toH(4);
+  $('#mTitle').textContent=closed?'تعذّر اكتمال دخول الطاولة':QUICK_SEARCH.error||(assigned?(QUICK_SEARCH.botAssigned?'نجهّز مباراة الكمبيوتر':'اكتمل العدد، نجهّز المباراة'):QUICK_SEARCH.botPending?'نجهّز طاولتك مع الكمبيوتر':'جارٍ البحث عن منافسين');
+  $('#mSub').textContent=QUICK_SEARCH.botAssigned?'لاعبون: '+toH(QUICK_SEARCH.botHumanCount)+' · كمبيوتر: '+toH(4-QUICK_SEARCH.botHumanCount)+' · جماعي 2×2':'تبدأ المباراة عند اكتمال 4 لاعبين';
+  const botInput=$('#uiQuickAllowBots');botInput.checked=QUICK_SEARCH.allowBots;botInput.disabled=assigned;
+  document.querySelectorAll('.uiQuickBotLabel small').forEach(el=>{el.textContent=QUICK_SEARCH.botGroupSupported?'بعد دقيقتين أو مع مجموعة جاهزة':'اختياري بعد دقيقتين من البحث';});
+  quickBotCountdown();
+  const botNote=$('#uiQuickBotNote');
+  botNote.textContent=QUICK_SEARCH.botError||(assigned?'تم اختيار الطاولة. يمكنك إلغاء الدخول.':
+    !QUICK_SEARCH.botSupported?'نتحقق من إتاحة الخيار. البحث مستمر.':
+    !QUICK_SEARCH.allowBots?'البحث عن لاعبين حقيقيين فقط.':
+    !QUICK_SEARCH.botConfirmed?'جارٍ تفعيل الخيار…':
+    QUICK_SEARCH.botPending?'جارٍ التجهيز. أوقف الخيار لإلغاء دخول الكمبيوتر.':
+    QUICK_SEARCH.botGroupSupported?'نجمع المفعّلين عند انتهاء مهلة أحدهم، ويكمل الكمبيوتر المقاعد. نفس الرسوم والمكافآت.':
+    'إذا لم يكتمل العدد: مباراة مع 3 كمبيوتر، بنفس الرسوم والمكافآت.');
+  $('#uiMatchCount').textContent=toH(Math.min(seats.length,4))+' / '+toH(4)+' لاعبين';
   document.querySelectorAll('#uiMatchSteps i').forEach((step,i)=>step.classList.toggle('ready',i<seats.length));
-  $('#uiQuickRetry').classList.toggle('hidden',!QUICK_SEARCH.error&&!closed);
+  $('#uiQuickRetry').classList.toggle('hidden',!QUICK_SEARCH.error&&!QUICK_SEARCH.botError&&!closed);
 }
 
 
@@ -5633,6 +6008,7 @@ window._rebindWelcome=()=>{ try{
 
 // بعد نجاح أي تسجيل دخول: حمّل بيانات اللاعب من السحابة ثم ادخل الرئيسية
 async function afterAuth(user){
+  if(UI_COST.uid!==user.uid)uiCostReset(user.uid);
   FB.user=user;
   // اسم مبدئي من البريد أو حساب Google
   let nm=localStorage.getItem('wb-name');
@@ -5713,7 +6089,7 @@ async function afterAuth(user){
 // يبدأ الاستماع لدعوات اللعب الواردة (مرة واحدة)
 let _inviteListening=false;
 function startInviteListener(){
-  if(_inviteListening||!FB.ready||!FB.user)return;
+  if(_inviteListening||!FB.ready||!FB.user||document.hidden)return;
   _inviteListening=true;
   WBMsg.listenInvites(d=>{
     // لا تُظهر دعوة إن كنت داخل طاولة
@@ -5956,36 +6332,45 @@ async function doGoogle(){
     }else toast2(authErr(e));
   }
 }
-// v336 — recovery goes only to the signed-in account email, never to a profile being viewed.
-let UI_PROFILE_RESET={uid:null,pending:false,sent:false,message:''};
+// v347 — change only the current authenticated user's password; no recovery email.
+let UI_PROFILE_RESET={uid:null,pending:false,message:''};
+function uiClearProfilePassword(){
+ for(const id of ['pfNewPassword','pfConfirmPassword']){const el=document.getElementById(id);if(el)el.value='';}
+}
 function uiRenderProfileRecovery(reopen=false){
- const uid=FB.user?.uid||null;
- if(UI_PROFILE_RESET.uid!==uid)UI_PROFILE_RESET={uid,pending:false,sent:false,message:''};
+ const user=FB.user,uid=user?.uid||null;
+ if(UI_PROFILE_RESET.uid!==uid){uiClearProfilePassword();UI_PROFILE_RESET={uid,pending:false,message:''};}
  const m=UI_PROFILE_RESET,box=$('#pfRecovery'),button=$('#pfResetPassword');
  if(!box||!button)return;
- box.hidden=!!viewedProfile||!uid;
- if(box.hidden)return;
- if(reopen&&!m.pending){m.sent=false;m.message='';}
- const email=String(FB.user.email||'').trim();
- button.disabled=m.pending||m.sent||!email;
- button.textContent=m.pending?'جارٍ إرسال الرابط…':m.sent?'تم إرسال رابط إعادة الضبط':'إعادة ضبط كلمة المرور';
- $('#pfResetStatus').textContent=email?m.message:'هذا الحساب لا يحتوي بريدًا لاستعادة كلمة المرور. استخدم وسيلة الدخول المرتبطة به.';
+ box.hidden=!!viewedProfile||!uid||user.isAnonymous===true;
+ if(box.hidden){uiClearProfilePassword();return;}
+ if(reopen&&!m.pending){uiClearProfilePassword();m.message='';}
+ const eligible=!!user.email;
+ button.disabled=m.pending||!eligible;
+ button.textContent=m.pending?'جارٍ حفظ كلمة المرور…':'حفظ كلمة المرور';
+ for(const id of ['pfNewPassword','pfConfirmPassword'])document.getElementById(id).disabled=m.pending||!eligible;
+ $('#pfResetStatus').textContent=eligible?m.message:'إعادة تعيين كلمة المرور غير متاحة لهذا الحساب؛ استخدم وسيلة الدخول المرتبطة به.';
 }
 async function uiResetProfilePassword(){
- if(viewedProfile||!FB.user?.uid)return;
- uiRenderProfileRecovery();const m=UI_PROFILE_RESET,uid=FB.user.uid,email=String(FB.user.email||'').trim();
- if(m.pending||m.sent||!email)return;
+ const user=FB.user;
+ if(viewedProfile||!user?.uid||user.isAnonymous||!user.email)return;
+ uiRenderProfileRecovery();const m=UI_PROFILE_RESET,uid=user.uid;
+ if(m.pending)return;
+ const password=$('#pfNewPassword').value,confirmation=$('#pfConfirmPassword').value;
+ if(password.length<6||password.length>128){m.message='اكتب كلمة مرور من 6 إلى 128 حرفًا.';uiRenderProfileRecovery();return;}
+ if(password!==confirmation){m.message='كلمتا المرور غير متطابقتين.';uiRenderProfileRecovery();return;}
  m.pending=true;m.message='';uiRenderProfileRecovery();
  try{
-  if(!(await ensureFB()))throw new Error('تعذّر الاتصال بالخوادم — تحقّق من الإنترنت');
-  if(FB.user?.uid!==uid||UI_PROFILE_RESET!==m)return;
-  await FB.auth.sendPasswordResetEmail(email);
-  if(FB.user?.uid!==uid||UI_PROFILE_RESET!==m)return;
-  m.sent=true;m.message='أرسلنا رابط إعادة الضبط إلى بريد حسابك. تحقق أيضًا من الرسائل غير المرغوبة.';
- }catch(e){if(FB.user?.uid===uid&&UI_PROFILE_RESET===m)m.message=authErr(e);}
- finally{if(UI_PROFILE_RESET===m){m.pending=false;uiRenderProfileRecovery();}}
+  if(!(await ensureFB()))throw Error('تعذّر الاتصال');
+  if(FB.user!==user||FB.auth.currentUser?.uid!==uid||UI_PROFILE_RESET!==m)return;
+  await user.updatePassword(password);
+  if(FB.user!==user||UI_PROFILE_RESET!==m)return;
+  m.message='تم تغيير كلمة المرور بنجاح.';
+ }catch(e){
+  if(FB.user===user&&UI_PROFILE_RESET===m)m.message=e.code==='auth/requires-recent-login'?'لأمان حسابك، سجّل الدخول من جديد ثم أعد تعيين كلمة المرور.':e.code==='auth/weak-password'?'كلمة المرور لا تحقق متطلبات الأمان؛ اختر كلمة أقوى.':authErr(e);
+ }finally{if(UI_PROFILE_RESET===m){m.pending=false;uiClearProfilePassword();uiRenderProfileRecovery();}}
 }
-bindTap('pfResetPassword',uiResetProfilePassword);
+document.getElementById('pfPasswordForm').onsubmit=e=>{e.preventDefault();uiResetProfilePassword();};
 
 // استعادة كلمة المرور
 async function doForgot(){
@@ -6160,8 +6545,8 @@ function tierRankPtsPreview(tierIdx){ // REMOVED session — بقيت قاعدة
 }
 function openTiers(mode){
   tiersMode=mode||'online-team';
-  const label=tiersMode==='online-team'?'جلسة سريعة — أونلاين جماعي ٢×٢':tiersMode==='online'?'جلسة سريعة — أونلاين رباعي':tiersMode==='team'?'جلسة سريعة — جماعي ٢×٢':'جلسة سريعة — فردي';
-  $('#tiersSub').textContent=label+' — اختر رسوم الدخول';
+  const label=tiersMode==='online-team'?'لعب تنافسي — أونلاين جماعي ٢×٢':tiersMode==='online'?'لعب تنافسي — أونلاين رباعي':tiersMode==='team'?'لعب تنافسي — جماعي ٢×٢':'لعب تنافسي — فردي';
+  $('#tiersSub').textContent='اختر مستوى التحدّي';
   $('#tiersGold').textContent=ST.n('gold').toLocaleString('en');
   // REMOVED — منطق مبدّل فردي/جماعي (#tiersModeToggle) حُذف مع الطور الفردي الأونلاين
   renderTiers();
@@ -6188,29 +6573,23 @@ function renderTiers(){
     const goldOk=gold>=fee;
     const locked=!goldOk;               // القفل فقط لو الذهب لا يكفي رسوم الدخول
     const card=document.createElement('div');
-    card.style.cssText=`position:relative;height:92px;border-radius:22px;overflow:hidden;background:url('${t.banner}') center/cover;box-shadow:0 2px 8px rgba(60,45,30,.18);${t.key==='pro'?'box-shadow:0 0 0 2.5px var(--clay);':''}${locked?'filter:grayscale(.55) brightness(.68);':'cursor:pointer;'}`;
-    card.innerHTML=`
-      <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.1) 0%,rgba(0,0,0,.55) 58%,rgba(0,0,0,.72) 100%)"></div>
-      ${t.key==='pro'&&!locked?'<span style="position:absolute;top:9px;right:14px;font-size:10px;font-weight:800;color:#fff7ef;background:#d67f48;border-radius:999px;padding:2px 10px;z-index:2">الأكثر رواجاً</span>':''}
-      <button class="tierInfoBtn" data-tidx="${tIdx}" title="نقاط الرتبة" style="position:absolute;top:8px;left:8px;z-index:3;width:20px;height:20px;border-radius:50%;border:0;background:rgba(0,0,0,.5);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:var(--fb)">i</button>
-      <div style="position:absolute;top:0;bottom:0;left:14px;display:flex;align-items:center;gap:5px;height:30px;padding:0 11px;border-radius:999px;background:rgba(0,0,0,.55);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.15);color:#f6c14d;font-weight:800;font-size:13px;margin:auto 0"><i style="width:12px;height:12px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block"></i>${toH(fee)}</div>
-      <div style="position:absolute;top:0;bottom:0;right:14px;text-align:right;min-width:0;display:flex;flex-direction:column;justify-content:center">
-        <div style="display:flex;align-items:center;justify-content:flex-end;gap:7px"><b style="font-size:18px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7);white-space:nowrap">${t.name}</b>${locked?'<span style="font-size:9.5px;font-weight:800;color:#fff;background:rgba(0,0,0,.5);border-radius:999px;padding:1px 8px;white-space:nowrap">ذهب غير كافٍ</span>':''}</div>
-        <div style="font-size:12px;color:#e8e4da;font-weight:700;margin-top:3px;text-shadow:0 1px 4px rgba(0,0,0,.7);white-space:nowrap">هدف ${toH(tierVal(t,'goal'))} نقطة · ربح ${toH(win)} ${uiGoldCoin()}</div>
-        ${(tiersMode==='online'||tiersMode==='online-team')?'<div class="uiTierSearching" data-quick-tier="'+t.key+'">العدد غير متاح</div>':''}
-      </div>`;
+    card.className='uiTierCard'+(locked?' uiTierLocked':'');
+    card.style.setProperty('--ui-tier-art',`url('${t.banner}')`);
+    card.style.setProperty('--ui-tier-accent',t.color);
+    const pts=tierRankPtsPreview(tIdx);
+    card.innerHTML=`<div class="uiTierHeading"><div class="uiTierIdentity"><img class="uiTierCrest" src="ui-art/tier-crest-${t.key}-v349.svg" width="60" height="60" alt="" aria-hidden="true"><div><span class="uiTierEyebrow">لعب تنافسي</span><h3>${esc(t.name)}</h3></div></div><span class="uiTierGoal">الهدف <bdi dir="ltr">${toH(tierVal(t,'goal'))}</bdi></span></div>
+      <div class="uiTierDetails"><span>الدخول<b><bdi dir="ltr">${toH(fee)}</bdi> <small>ذهب</small></b></span><span class="uiTierNet">صافي الفوز<b><bdi dir="ltr">${tierNetLabel(fee,win)}</bdi> <small>ذهب</small></b></span></div>
+      <details class="uiTierBreakdown"><summary class="tierInfoBtn" data-tidx="${tIdx}">تفاصيل الجوائز</summary><div class="uiTierPayout"><p>صافي الفوز محسوب بعد رسوم الدخول.</p><dl><div><dt>جائزة الفوز الإجمالية</dt><dd><bdi dir="ltr">${toH(win)}</bdi> ذهب</dd></div><div><dt>صافي الخسارة</dt><dd><bdi dir="ltr">${Number(fee)>0?'-':''}${toH(fee)}</bdi> ذهب</dd></div><div><dt>نقاط الرتبة عند الفوز</dt><dd><bdi dir="ltr">+${toH(pts.win)}</bdi></dd></div><div><dt>نقاط الرتبة عند الخسارة</dt><dd><bdi dir="ltr">-${toH(pts.loss)}</bdi></dd></div></dl></div></details>
+      <div class="uiTierFooter">${(tiersMode==='online'||tiersMode==='online-team')?'<span class="uiTierSearching" data-quick-tier="'+t.key+'">جارٍ تحديث العدد</span>':'<span>مباراة جماعية</span>'}<button type="button" class="uiTierChoose" ${locked?'disabled':''}>${locked?'الذهب لا يكفي':'ابحث عن مباراة'}</button></div>`;
     if(!locked)card.onclick=()=>enterTier(t);
     else card.onclick=()=>toast2(`ذهبك لا يكفي — تحتاج ${toH(fee)} ذهب لدخول ${t.name}`);
     list.appendChild(card);
   }); // NEW CODE — إغلاق forEach
   quickCounts();
-  list.querySelectorAll('.tierInfoBtn').forEach(b=>{ // NEW CODE
-    b.onclick=(e)=>{ // NEW CODE
-      e.stopPropagation(); // NEW CODE — لا نفتح الطبقة نفسها، فقط نعرض تلميح النقاط
-      const pts=tierRankPtsPreview(Number(b.dataset.tidx)); // REMOVED session
-      toast2(`الفوز: +${toH(pts.win)} نقطة | الخسارة: -${toH(pts.loss)} نقطة`); // NEW CODE
-    }; // NEW CODE
-  }); // NEW CODE
+  // Native details remains keyboard-accessible; opening it must never join a queue.
+  list.querySelectorAll('.uiTierBreakdown').forEach(details=>{
+    details.onclick=e=>e.stopPropagation();
+  });
 }
 // NEW CODE (منقول من نسخة آيفون) — قراءة ذهب طازجة مضمونة مباشرة من الخادم، بمعزل عن أي مزامنة عامة أخرى جارية (لا تتأثر بعلم _pullingStats المشترك بـpullServerStats)
 async function freshGold(){
@@ -6233,8 +6612,8 @@ async function enterTier(t){
     if(g<fee){toast2(`ذهبك لا يكفي — تحتاج ${toH(fee)} ذهب`);return}
   }
   // رسم الدخول وربح الفوز يُحسمان ويُصرفان من طرف السيرفر مباشرة (موثوق)، مو من الجهاز — يظهران بعد لحظات من بدء/انتهاء الجولة
-  G_TIER={tier:t.key,mode:teamPlay?'team':'solo',fee,win,goal,name:isQuickOnline?'جلسة سريعة — '+t.name:t.name,online:isQuickOnline};
-  toast2(`دخلت ${G_TIER.name} — رسم الدخول ${toH(fee)} ذهب، الفوز يرجّع ${toH(win)}`);
+  G_TIER={tier:t.key,mode:teamPlay?'team':'solo',fee,win,goal,name:isQuickOnline?'لعب تنافسي — '+t.name:t.name,online:isQuickOnline};
+  toast2(`المستوى: ${t.name} — الدخول ${toH(fee)} ذهب، صافي الربح عند الفوز ${tierNetLabel(fee,win)} ذهب`);
   if(isQuickOnline){
     // أونلاين تنافسي: ابحث عن خصوم في غرفة عامة حسب الطبقة والوضع — الخادم يحسم الرهان مركزياً
     ONL.pendingTier={key:t.key,name:G_TIER.name,fee,win,goal}; // REMOVED session — لا بادئة session- بعد الآن
@@ -6305,7 +6684,9 @@ function myAvatar(){ return localStorage.getItem('wb-avatar')||'😎'; }
 function avatarHTML(av,size){
   size=size||46;
   if(av&&typeof av==='string'&&(av.startsWith('http://')||av.startsWith('https://')||av.startsWith('data:image')||av.startsWith('avatars/'))){
-    return `<img src="${esc(av)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block" loading="lazy">`;
+    const url=window.MajabeedImages?MajabeedImages.source(av,size):av;
+    const attr=window.MajabeedImages&&MajabeedImages.storageURL(url)?'data-mj-avatar':'src';
+    return `<img ${attr}="${esc(url)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block" loading="lazy">`;
   }
   try{
     const pro=AV_PRO.find(a=>a.id===av);
@@ -6332,9 +6713,37 @@ async function resizeImageToBlob(file,maxSize,quality){
 }
 async function uploadBlobToStorage(blob,uid){
   if(!FB.storage)throw new Error('Storage غير جاهز');
-  const ref=FB.storage.ref('avatars/'+uid+'.jpg');
-  await ref.put(blob,{contentType:'image/jpeg'});
-  return await ref.getDownloadURL();
+  // New immutable objects; upload rules for this owner-only prefix are supplied separately.
+  const version=Date.now().toString(36)+'-'+crypto.getRandomValues(new Uint32Array(1))[0].toString(36);
+  const base='avatars/'+uid+'/v339/'+version;
+  const metadata={contentType:'image/jpeg',cacheControl:'public, max-age=31536000, immutable'};
+  try{
+    const full=FB.storage.ref(base+'.jpg'),thumb=FB.storage.ref(base+'-128.jpg');
+    const small=await resizeImageToBlob(blob,128,0.78);
+    await full.put(blob,metadata);
+    const fullURL=await full.getDownloadURL();
+    try{
+      await thumb.put(small,metadata);
+      const thumbURL=await thumb.getDownloadURL();
+      return fullURL+'#mj-thumb='+encodeURIComponent(thumbURL);
+    }catch(e){console.warn('Avatar thumbnail upload unavailable',e.code);return fullURL;}
+  }catch(e){
+    if(e.code!=='storage/unauthorized')throw e;
+    // Compatibility until the existing production Storage rules are merged by the owner.
+    const ref=FB.storage.ref('avatars/'+uid+'.jpg');
+    await ref.put(blob,{contentType:'image/jpeg',cacheControl:'public, max-age=3600'});
+    return (await ref.getDownloadURL())+'&v='+version;
+  }
+}
+async function deleteOwnedAvatarVersions(uid){
+  if(!FB.storage)return;
+  const root=FB.storage.ref('avatars/'+uid+'/v339');
+  let pageToken;
+  do{
+    const page=await root.list({maxResults:100,...(pageToken?{pageToken}:{})});
+    for(let i=0;i<page.items.length;i+=4)await Promise.all(page.items.slice(i,i+4).map(ref=>ref.delete()));
+    pageToken=page.nextPageToken;
+  }while(pageToken);
 }
 function validateImageFile(file){
   if(!file.type||!file.type.startsWith('image/')){toast2('اختر ملف صورة صالح');return false}
@@ -6454,11 +6863,11 @@ function openProfile(){
   $('#stRate').textContent=rate+'%';
   $('#pfBar').querySelector('i').style.width=rate+'%';
   let hist=[]; try{hist=JSON.parse(localStorage.getItem('wb-history')||'[]')}catch(e){hist=[]}
-  const last5=hist.slice(-5);
+  const last5=hist.slice(-20).reverse();
   if(last5.length){
     $('#pfHistory').style.display='';
-    $('#pfHistoryRow').innerHTML=last5.map(w=>
-      `<span style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;background:${w?'var(--sage)':'var(--red)'}">${w?'✓':'✕'}</span>`
+    $('#pfHistoryRow').innerHTML=last5.map((w,i)=>
+      `<span style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;background:${w?'var(--sage)':'var(--red)'}">${i+1} · ${w?'فوز':'خسارة'}</span>`
     ).join('');
   }else{
     $('#pfHistory').style.display='none';
@@ -6517,6 +6926,9 @@ $('#pfDeleteAcc').onclick=async()=>{
   try{
     const uid=FB.user.uid;
     const username=localStorage.getItem('wb-username');
+    try{await deleteOwnedAvatarVersions(uid);}catch(e){
+      if(e.code!=='storage/unauthorized'||String(myAvatar()).includes('%2Fv339%2F'))throw e;
+    }
     if(username){ try{ await FB.db.collection('usernames').doc(username).delete(); }catch(e){} }
     try{
       const fl=await FB.db.collection('friends').doc(uid).collection('list').limit(500).get();
@@ -6610,21 +7022,16 @@ function stickToBottom(el, wasNearBottom){
 function chatListNearBottom(el){
   return (el.scrollHeight-el.scrollTop-el.clientHeight)<120;
 }
-function chatBubble(mine, name, text, ts, uid, ava, rank){
-  if(mine&&rank==null)rank=ST.n('rank'); // Personal rank display only.
-  const clickable = (!mine && uid);
-  const nameCol = rank!=null ? (rankFor(rank).textColor||rankFor(rank).color) : '#b2622d';
-  const nameRow = '<span class="uiChatIdentity" style="display:flex;align-items:center;gap:5px;margin-bottom:2px"><span style="font-size:10.5px;font-weight:800;color:'+nameCol+'">'+(mine?'أنت':esc(name))+'</span>'+(rank!=null?rankBadgeHTML(rank,8.5):'')+'</span>';
-  const avaHtml = !mine ? `<span ${clickable?'class="cbAva" data-puid="'+uid+'"':''} style="width:34px;height:34px;border-radius:999px;background:#f0e3cc;display:flex;align-items:center;justify-content:center;font-size:18px;flex:none;overflow:hidden${clickable?';cursor:pointer':''}">${avatarHTML(ava||'🎭',34)}</span>` : '';
-  const reportBtn = (!mine&&uid) ? `<button class="cbReport" data-ruid="${esc(uid)}" data-rname="${esc(name)}" data-rtext="${esc(text)}" style="background:none;border:none;color:#c9b49a;font-size:11px;padding:0 3px;cursor:pointer">⚑</button>` : '';
-  return `<div style="display:flex;gap:8px;align-items:flex-end;margin:4px 0;justify-content:${mine?'flex-end':'flex-start'}">
-    ${mine?'':avaHtml}
-    <div style="display:flex;flex-direction:column;align-items:${mine?'flex-end':'flex-start'};max-width:78%">
-      <div class="uiMessageText${mine?' uiMine':''}" style="padding:8px 14px;border-radius:18px;font-size:13.5px;font-weight:600;line-height:1.6;overflow-wrap:anywhere;word-break:break-word;min-width:0;${mine?'background:linear-gradient(#e2925c,#d67f48);color:#fff7ef;border-bottom-left-radius:5px':'background:#fff;color:#33302c;border-bottom-right-radius:5px'}">
-        ${nameRow}
-        <span style="overflow-wrap:anywhere;word-break:break-word">${esc(text)}</span>
-      </div>
-      <div style="font-size:10px;color:#b39a78;margin:2px 6px;font-weight:700;display:flex;align-items:center;gap:4px">${timeAr(ts)}${reportBtn}</div>
+function chatBubble(mine, name, text, ts, uid, ava, rank, showRank=true){
+  if(showRank&&mine&&rank==null)rank=ST.n('rank');
+  const badge=showRank&&rank!=null?rankBadgeHTML(rank,8.5):'';
+  const clickable=!mine&&!!uid;
+  const avatar=!mine?`<${clickable?'button':'span'} class="uiChatAvatar${clickable?' cbAva':''}"${clickable?' type="button" data-puid="'+esc(uid)+'" aria-label="ملف '+esc(name)+'"':''}><span>${avatarHTML(ava||'🎭',34)}</span></${clickable?'button':'span'}>`:'';
+  const report=!mine&&uid?`<button type="button" class="cbReport" data-ruid="${esc(uid)}" data-rname="${esc(name)}" data-rtext="${esc(text)}" aria-label="الإبلاغ عن رسالة ${esc(name)}" title="الإبلاغ عن الرسالة"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V4m0 0c4-3 8 3 12 0v10c-4 3-8-3-12 0"/></svg></button>`:'';
+  return `<div class="uiChatMessage${mine?' uiChatMessageMine':''}${showRank?'':' uiChatMessagePublic'}">
+    ${avatar}<div class="uiMessageText${mine?' uiMine':''}">
+      <div class="uiChatMessageHead"><span class="uiChatIdentity"><span>${mine?'أنت':esc(name||'لاعب')}</span>${badge}</span><time class="uiChatTime">${timeAr(ts)}</time>${report}</div>
+      <span class="uiChatCopy" dir="auto">${esc(text)}</span>
     </div>
   </div>`;
 }
@@ -6724,9 +7131,12 @@ function openChat(){
   show('chat'); mountNav('chat','chat');
 }
 function setChatTab(mode){
+  if(WBMsg.pubUnsub){WBMsg.pubUnsub();WBMsg.pubUnsub=null;}
   uiChatReset();
   CHAT_MODE=mode; CHAT_DM=null;
-  document.querySelectorAll('.chTab').forEach(t=>{const on=t.dataset.ct===mode;t.classList.toggle('on',on);
+  $('#chList').classList.toggle('uiChatContacts',mode==='friends');
+  if(typeof uiNoticesRender==='function'){uiNoticesRender();if(mode==='public')uiNoticesLoad();}
+  document.querySelectorAll('.chTab').forEach(t=>{const on=t.dataset.ct===mode;t.classList.toggle('on',on);t.setAttribute('aria-pressed',String(on));
     t.style.background=on?'linear-gradient(#e2925c,#d67f48)':'transparent'; t.style.color=on?'#fff7ef':'#b9caa2';});
   WBMsg.stopPrivate();
   const el=$('#chList'); el.innerHTML='';
@@ -6745,7 +7155,7 @@ function setChatTab(mode){
       // FIX — الإصلاح الأهم: نتخطى أي دعوة منتهية أصلاً وقت العرض، لا نعرضها ثم نحذفها لاحقاً — بدون هذا،
       // أي رسالة جديدة من أي أحد تُعيد رسم الدردشة العامة كاملة (listenPublic)، فتُعيد ظهور دعوات كانت
       // انحذفت محلياً فقط بمؤقّت، بما إن المستند نفسه لا يزال موجوداً بفايرستور (لم يُحذف من القاعدة)
-      msgs.forEach(m=>{ if(m.type==='invite'&&m.ts&&(Date.now()-m.ts)>=INVITE_TTL_MS)return; el.insertAdjacentHTML('beforeend', m.type==='invite'?inviteBubble(m):chatBubble(m.uid===WBMsg.myUid(), m.name, m.text, m.ts, m.uid, m.ava, m.rank)); }); // FIX
+      msgs.forEach(m=>{ if(m.type==='invite'&&m.ts&&(Date.now()-m.ts)>=INVITE_TTL_MS)return; el.insertAdjacentHTML('beforeend', m.type==='invite'?inviteBubble(m):chatBubble(m.uid===WBMsg.myUid(), m.name, m.text, m.ts, m.uid, m.ava, m.rank, false)); }); // FIX
       el.querySelectorAll('.cbAva[data-puid]').forEach(n=>n.onclick=()=>viewPublicProfile(n.dataset.puid));
       wireReportButtons(el);
       el.querySelectorAll('.invJoinBtn[data-room]').forEach(n=>n.onclick=()=>{
@@ -6756,7 +7166,8 @@ function setChatTab(mode){
     }));
   }else if(mode==='friends'){
     // قائمة الأصدقاء لفتح محادثة خاصة — بمعاينة آخر رسالة والوقت مطابقة للتصميم
-    const l=FR.list().filter(f=>f.uid);
+    const allFriends=FR.list().filter(f=>f.uid),l=allFriends.slice(UI_COST.chatOffset,UI_COST.chatOffset+20);
+    const generation=UI_COST.generation,chatOffset=UI_COST.chatOffset,me=FB.user?.uid;
     if(!l.length){ el.innerHTML='<div style="text-align:center;color:var(--mut);font-weight:700;font-size:13px;padding:30px 14px">أضف أصدقاءك أولاً — ثم تقدر تراسلهم هنا</div>'; return; }
     el.innerHTML='<div style="text-align:center;color:#b9caa2;font-weight:700;font-size:13px;padding:20px">جارٍ التحميل...</div>';
     (async()=>{
@@ -6764,57 +7175,60 @@ function setChatTab(mode){
       const rows=await Promise.all(l.map(async f=>{
         let last='اضغط للمحادثة', lastTs=0, rpts=0, lastFrom=null;
         try{
-          const id=WBMsg.dmId(FB.user.uid,f.uid);
-          const doc=await FB.db.collection('dms').doc(id).get();
+          const id=WBMsg.dmId(me,f.uid);
+          const doc=await uiCostDoc('dms/'+id);
           if(doc.exists){const d=doc.data(); last=d.last||last; lastTs=d.lastTs||0; lastFrom=d.lastFrom||null;}
         }catch(e){}
         try{
-          const pdoc=await FB.db.collection('players').doc(f.uid).get();
+          const pdoc=await uiCostDoc('players/'+f.uid);
           if(pdoc.exists) rpts=pdoc.data().rank||0;
         }catch(e){}
-        const unread=!!lastFrom&&lastFrom!==FB.user.uid&&lastTs>Number(localStorage.getItem('wb-dmread-'+f.uid)||0);
+        const unread=!!lastFrom&&lastFrom!==me&&lastTs>Number(localStorage.getItem('wb-dmread-'+f.uid)||0);
         return {f,last,lastTs,rpts,unread};
       }));
-      if(CHAT_MODE!=='friends')return;
+      if(CHAT_MODE!=='friends'||!uiCostChatVisible()||generation!==UI_COST.generation||chatOffset!==UI_COST.chatOffset)return;
       rows.sort((a,b)=>b.lastTs-a.lastTs);
       el.innerHTML='';
       for(const {f,last,lastTs,rpts,unread} of rows){
-        const row=document.createElement('button');
+        const row=document.createElement('div');
         row.className='chRow'+(unread?' uiUnreadConversation':'');
-        row.innerHTML=`<span class="cAva" style="overflow:hidden">${avatarHTML(f.ava||'🎭',46)}</span>
+        row.innerHTML=`<button type="button" class="uiChatOpen" aria-label="محادثة ${esc(f.name)}"><span class="cAva" style="overflow:hidden">${avatarHTML(f.ava||'🎭',46)}</span>
           <span class="cBody"><span style="display:flex;align-items:center;gap:5px"><b class="cNm">${esc(f.name)}</b>${rankBadgeHTML(rpts,8.5)}</span><div class="cMsg">${esc(last)}</div></span>
           <span class="cSide"><div class="cTime">${lastTs?timeAr(lastTs):''}</div>${unread?'<span class="uiUnreadLabel">جديدة</span>':''}</span>
-          <button class="cDelBtn" title="مسح المحادثة" style="background:none;border:none;color:#c9a98a;font-size:16px;padding:6px;cursor:pointer;flex:none">🗑️</button>`;
+          </button><button type="button" class="cDelBtn" title="مسح المحادثة" style="background:none;border:none;color:#c9a98a;font-size:16px;padding:6px;cursor:pointer;flex:none">🗑️</button>`;
         row.querySelector('.cDelBtn').onclick=async(ev)=>{
           ev.stopPropagation();
-          if(!confirm('تمسح كل رسائل هذي المحادثة؟ ما تقدر ترجعها'))return;
+          if(!confirm('تمسح أحدث رسائل المحادثة (حتى 499)؟ ما تقدر ترجعها'))return;
           const ok=await WBMsg.clearDM(f.uid);
           if(ok){ toast2('تم مسح المحادثة'); setChatTab('friends'); } else toast2('تعذّر المسح');
         };
-        row.onclick=()=>openDM(f.pid, f.name, f.uid, f.ava);
+        row.querySelector('.uiChatOpen').onclick=()=>openDM(f.pid, f.name, f.uid, f.ava);
         el.appendChild(row);
       }
+      uiCostChatPages(el,allFriends.length);
     })();
   }
 }
 // فتح محادثة خاصة مع صديق (يحتاج uid الصديق)
 async function updateDmBadge(){
+  if(Date.now()-UI_COST.badgeAt<60000)return;UI_COST.badgeAt=Date.now();
+  const generation=UI_COST.generation,me=FB.user?.uid;
   try{
     if(!(await ensureFB())||!FB.user)return;
-    const l=FR.list().filter(f=>f.uid);
+    const l=FR.list().filter(f=>f.uid).slice(UI_COST.chatOffset,UI_COST.chatOffset+20);
     if(!l.length){ setDmBadgeCount(0); return; }
     const results=await Promise.all(l.map(async f=>{
       try{
-        const id=WBMsg.dmId(FB.user.uid,f.uid);
-        const doc=await FB.db.collection('dms').doc(id).get();
+        const id=WBMsg.dmId(me,f.uid);
+        const doc=await uiCostDoc('dms/'+id);
         if(!doc.exists)return false;
         const d=doc.data();
-        if(!d.lastFrom||d.lastFrom===FB.user.uid)return false; // آخر رسالة مني أنا — مقروءة تلقائيًا
+        if(!d.lastFrom||d.lastFrom===me)return false; // آخر رسالة مني أنا — مقروءة تلقائيًا
         const readTs=parseInt(localStorage.getItem('wb-dmread-'+f.uid)||'0',10);
         return (d.lastTs||0)>readTs;
       }catch(e){ return false; }
     }));
-    setDmBadgeCount(results.filter(Boolean).length);
+    if(generation===UI_COST.generation)setDmBadgeCount(results.filter(Boolean).length);
   }catch(e){}
 }
 function setDmBadgeCount(n){
@@ -6822,13 +7236,16 @@ function setDmBadgeCount(n){
   if(n<=0)return;
   document.querySelectorAll('.chTab[data-ct="friends"]').forEach(t=>{
     t.style.position='relative';
-    t.insertAdjacentHTML('beforeend',`<span class="dmBadge" style="position:absolute;top:2px;left:6px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#e0473a;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #16281c">${n>9?'9+':n}</span>`);
+    t.insertAdjacentHTML('beforeend',`<span class="dmBadge" title="محادثات غير مقروءة في الصفحة الحالية" style="position:absolute;top:2px;left:6px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#e0473a;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #16281c">${n>9?'9+':n}</span>`);
   });
 }
 function openDM(pid, name, uid, ava){
+  if(WBMsg.pubUnsub){WBMsg.pubUnsub();WBMsg.pubUnsub=null;}
   if(!uid){ toast2('هذا الصديق يحتاج تحديث — العبوا جولة معاً أو أضفه من البحث'); return; }
   uiChatReset();
   CHAT_MODE='dm'; CHAT_DM={uid,name,ava};
+  $('#chList').classList.remove('uiChatContacts');
+  if(typeof uiNoticesRender==='function')uiNoticesRender();
   localStorage.setItem('wb-dmread-'+uid,String(Date.now())); // نعتبرها مقروءة فور الفتح
   updateDmBadge();
   $('#chTitle').textContent=name;
@@ -6840,7 +7257,7 @@ function openDM(pid, name, uid, ava){
   // NEW CODE — زر مسح المحادثة: يظهر بوضع DM فقط، يستخدم WBMsg.clearDM الموجودة أصلاً (نفس آلية قائمة الأصدقاء)
   $('#chClearBtn').classList.remove('hidden'); // NEW CODE
   $('#chClearBtn').onclick=async()=>{ // NEW CODE
-    if(!confirm('تمسح كل رسائل هذي المحادثة؟ ما تقدر ترجعها'))return; // NEW CODE
+    if(!confirm('تمسح أحدث رسائل المحادثة (حتى 499)؟ ما تقدر ترجعها'))return; // NEW CODE
     const ok=await WBMsg.clearDM(uid); // NEW CODE
     if(ok){ el.innerHTML=emptyHTML; toast2('تم مسح المحادثة'); } // NEW CODE — نفرّغ الواجهة فورًا؛ onSnapshot سيؤكدها فور وصول تحديث الحذف من فايرستور أيضًا
     else toast2('تعذّر المسح'); // NEW CODE
@@ -6879,7 +7296,7 @@ const FR={list:()=>FB_FRIENDS,
 // ابدأ مزامنة الأصدقاء من Firebase (مرة واحدة)
 let _friendsListening=false;
 function startFriendsSync(){
-  if(_friendsListening||!FB.ready||!FB.user)return;
+  if(_friendsListening||!FB.ready||!FB.user||document.hidden)return;
   _friendsListening=true;
   WBMsg.listenFriends(list=>{
     FB_FRIENDS=list.map(f=>({pid:'p-'+(f.uid||'').slice(0,10), name:f.name||'لاعب', uid:f.uid, username:f.user||'', ava:f.ava||'🎭', ts:f.ts||Date.now()}));
@@ -7028,7 +7445,7 @@ async function showOnlineFriendsPanel(){ // FIX — أعيد بناؤها ناف
   const ONLINE_STALE_MS=3*60*1000; // NEW CODE — نفس معيار لوحة التحكم بالضبط، للاتساق
   const now=Date.now(); // NEW CODE
   const results=await Promise.all(friends.map(async f=>{ // NEW CODE
-    try{ const doc=await FB.db.collection('players').doc(f.uid).get(); // NEW CODE
+    try{ const doc=await uiCostDoc('players/'+f.uid); // NEW CODE
       const since=doc.exists?(doc.data().activeSince||0):0; // NEW CODE
       return {...f, online:since&&(now-since)<ONLINE_STALE_MS}; // NEW CODE
     }catch(e){ return {...f, online:false}; } // NEW CODE
@@ -7101,7 +7518,7 @@ async function refreshFriendsActiveStatus(fl){
   const staleCutoff=Date.now()-3*60*60*1000; // نتجاهل جلسة عالقة أكثر من 3 ساعات (غالبًا أغلق التطبيق بدون خروج نظيف)
   await Promise.all(fl.filter(f=>f.uid).map(async f=>{
     try{
-      const doc=await FB.db.collection('players').doc(f.uid).get();
+      const doc=await uiCostDoc('players/'+f.uid);
       if(!doc.exists)return;
       const d=doc.data();
       const active=d.activeRoom&&!(d.activeSince&&d.activeSince<staleCutoff)?d.activeRoom:null;
@@ -7142,8 +7559,9 @@ function renderFriends(){
   }else if(fl.length){
     body.insertAdjacentHTML('beforeend','<div class="frSec">أصدقائي — '+fl.length+'</div>');
     for(const f of fl)body.insertAdjacentHTML('beforeend',frRow(f,null));
-    refreshFriendsActiveStatus(fl);
+    refreshFriendsActiveStatus(fl.slice(-50));
   }
+  uiCostMoreButton(body,'friends');uiCostMoreButton(body,'requests');
   body.querySelectorAll('[data-inv]').forEach(b=>b.onclick=()=>fbSendInvite(b.dataset.inv,b.dataset.nm,b.dataset.uid));
   body.querySelectorAll('[data-dm]').forEach(b=>b.onclick=()=>{ openChat(); setTimeout(()=>openDM(b.dataset.dm,b.dataset.nm,b.dataset.uid),100); });
   body.querySelectorAll('[data-facc]').forEach(b=>b.onclick=()=>acceptFbFriend(b.dataset.facc,b.dataset.nm,b.dataset.un));
@@ -7166,7 +7584,7 @@ function openFriends(){
 }
 let _freqListening=false;
 function startFriendReqListener(){
-  if(!FB.ready||!FB.user)return;
+  if(!FB.ready||!FB.user||document.hidden)return;
   if(_freqListening)return; _freqListening=true;
   WBMsg.listenFriendReqs(reqs=>{
     // لو الطلب من شخص هو صديقي أصلاً → اقبله تلقائياً (الطلب العكسي) ونظّفه
@@ -7436,6 +7854,7 @@ async function bootTo(){
       if(_redirectHandled)return; // already handled directly above — تجنّب التكرار
       await afterAuth(user);
     }else{
+      uiCostReset(null);FB.user=null;
       _appleHandledUid=null;
       if(GLOGIN){ if(_redirectChecked)showGloginPrompt(); return; } // FIX — بوضع الربط: شاشة الربط فقط (بعد حسم العودة)، لا ترحيب عادي ولا أي إطلاق تلقائي
       // غير مسجّل: أظهر شاشة الترحيب مع زر الدخول
@@ -7564,7 +7983,8 @@ fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
      يدوياً — مهم: غيّر اسمه لـ"firebase-auth-plugin.js" وقت النسخ (لا تسمّه plugin.js زي ما هو، لأن AdMob
      أيضاً عنده ملف بنفس الاسم بالضبط بمجلده — لو الاثنين اتسمّوا plugin.js بنفس مجلد www، الثاني يمحو الأول). -->
 <script src="firebase-auth-plugin.js"></script>
-<script src="ui-card-motion.js"></script>
+<script src="ui-card-motion.js?v=350"></script>
+<script src="ui-community.js"></script>
 <script src="ui-leagues.js"></script>
 </body>
 </html>

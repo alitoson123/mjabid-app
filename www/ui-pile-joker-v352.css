@@ -1,0 +1,57 @@
+/* v352 — depth belongs only to an actual player pile or contested stack, never to loose field cards. */
+#game .pileBox>.card.uiPileTop,
+#onl .pileBox>.card.uiPileTop,
+#myPile .card.uiPileTop,
+#oMyPile .card.uiPileTop{
+  box-shadow:var(--ui-pile-shadow,0 2px 5px rgba(25,20,12,.22))!important;
+  background-color:#fffdf6!important;
+  border:1px solid #e7e3d7;
+  border-radius:6px;
+}
+/* One compressed paper edge for the full real count. The visible face and center are unchanged. */
+#contested.uiBidStackPaper:not(:empty)::before,
+#oWaqfStack.uiBidStackPaper:not(:empty)::before{
+  width:var(--ui-bid-card-w,54px);
+  height:calc(var(--ui-bid-card-h,77px) + var(--ui-bid-stack-depth,0px));
+  top:calc(50% + var(--ui-bid-stack-depth,0px)/2);
+  background-image:repeating-linear-gradient(to bottom,#f3f0e6 0px,#f3f0e6 .8px,#c7c3b8 .8px,#c7c3b8 1.2px);
+  background-size:100% var(--ui-bid-stack-depth,0px);
+  background-repeat:no-repeat;background-position:bottom;
+  border-radius:6px;
+  box-shadow:0 3px 6px rgba(25,20,12,.24);
+  pointer-events:none;
+}
+#contested.uiBidStackPaper>.card,
+#oWaqfStack.uiBidStackPaper>.card{
+  border-color:#eeeade!important;
+  background-color:#fffdf6!important;
+  box-shadow:none!important;
+}
+/* Exact card count, not a multiplier or points total. Bidi isolation keeps 0–9 legible. */
+#game .uiPileCount,#onl .uiPileCount,#waqf .uiPileCount{
+  display:inline-flex;align-items:center;justify-content:center;gap:3px;
+  max-width:none;min-width:32px;min-height:22px;flex:none;
+  padding:2px 5px;border:1px solid #d6c28666;border-radius:7px;
+  background:#102e24;color:#f5dfa7;
+  font:800 11px/1.25 var(--fb);font-variant-numeric:tabular-nums;
+  text-shadow:none;white-space:nowrap;direction:ltr;unicode-bidi:isolate;
+  box-shadow:0 1px 3px #0002;
+}
+#game .uiPileCount svg,#onl .uiPileCount svg,#waqf .uiPileCount svg{
+  width:12px;height:14px;flex:none;fill:none;stroke:currentColor;
+  stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;opacity:.85;
+}
+#game .uiPileCount bdi,#onl .uiPileCount bdi,#waqf .uiPileCount bdi{font:inherit;direction:ltr;unicode-bidi:isolate}
+#myPile .cnt.uiPileCount{position:absolute;bottom:-5px;right:-8px;min-height:18px;font-size:10px;padding:1px 4px}
+#oSeat .pileBox>.uiPileCount,#seatT .pileBox>.uiPileCount{max-width:none;margin-top:3px}
+/* Keep the existing count ID beside the stack; replace its oversized floating numeral. */
+#onl #oWaqfCntL{
+  right:calc(50% + 43px);font-family:var(--fb);font-size:12px;font-weight:800;
+  line-height:1;text-shadow:none;pointer-events:none;
+}
+#onl #oWaqfCntL .uiPileCount{padding:5px 7px;min-height:28px;font-size:13px;gap:5px;border-radius:9px;background:#12362beF}
+#onl #oWaqfCntL .uiPileCount svg{width:14px;height:17px}
+#waqf .uiBidTotals{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;color:#e6dab8;font:700 13px/1.4 var(--fb)}
+#waqf .uiBidTotals>span:last-child{white-space:nowrap}
+/* The Joker face is a versioned production bitmap. It shares all card dimensions and interaction. */
+.card.jok:not(.back){background-color:#fffdf8}

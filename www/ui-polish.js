@@ -21,7 +21,7 @@
   for(const [id,name,label] of [
     ['hRules','book','قوانين اللعبة'],['hHelp','help','المساعدة'],
     ['hInbox','inbox','صندوق الوارد'],['hDaily','gift','المكافأة اليومية'],
-    ['hOnl','play','لعب سريع، جماعي اثنان ضد اثنين'],['hSessions','people','الجلسات النشطة'],
+    ['hOnl','play','لعب تنافسي، جماعي اثنان ضد اثنين'],['hSessions','people','الجلسات النشطة'],
     ['boardBtn','trophy','نتائج الطاولة']
   ]){
     const button=document.getElementById(id);if(!button)continue;

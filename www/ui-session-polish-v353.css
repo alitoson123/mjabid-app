@@ -1,0 +1,44 @@
+/* v353 — a single smooth paper edge under aligned bid faces. Loose field cards are untouched. */
+#contested.uiBidStackPaper:not(:empty)::before,
+#oWaqfStack.uiBidStackPaper:not(:empty)::before{
+  width:calc(var(--ui-bid-card-w,54px) - 1px);
+  height:calc(var(--ui-bid-card-h,77px) + var(--ui-bid-stack-depth,0px));
+  top:calc(50% + var(--ui-bid-stack-depth,0px)/2);
+  background:#e5e1d5;
+  border-radius:6px;
+  box-shadow:0 2px 5px rgba(25,20,12,.2);
+}
+/* The price belongs to the creator's existing start button. */
+#onlWait.uiLobbyCompact #lobbyStart{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  min-height:56px;padding:10px 14px;text-align:start;
+}
+#onlWait.uiLobbyCompact #lobbyStart.hidden{display:none!important}
+#onlWait.uiLobbyCompact #lobbyStart:disabled{cursor:wait;opacity:.72;box-shadow:0 1px 0 #796132}
+.uiSessionStartCost{display:flex;align-items:center;justify-content:center;gap:6px;flex:none;border-inline-start:1px solid #36592f33;padding-inline-start:12px;font:800 18px/1.25 var(--fb);direction:ltr}
+.uiSessionStartCost .uiGoldCoin{width:22px;height:22px}
+.uiSessionStartCost small{font:700 9px/1.25 var(--fb);direction:rtl}
+.uiSessionFeePaid{font:700 11px var(--fb);color:#365938;white-space:nowrap}
+#uiSessionFeeToast{
+  position:absolute;z-index:1400;top:42%;left:50%;width:max-content;max-width:86%;
+  padding:17px 25px;border:1px solid #d9bc77;border-radius:19px;
+  background:linear-gradient(145deg,#173f30f5,#092b22f5);color:#f1dfb4;
+  box-shadow:0 10px 28px #071c2355;pointer-events:none;text-align:center;
+  font:700 13px/1.6 var(--fb);transform:translate(-50%,-50%);
+  animation:uiSessionDebit 2.4s ease both;
+}
+#uiSessionFeeToast p{margin:0}
+#uiSessionFeeToast small{display:block;color:#c4d1b8;font-size:11px}
+.uiSessionDebitAmount{display:flex;align-items:center;justify-content:center;gap:7px;margin:4px 0 6px;color:#f5d586;font:800 32px/1.35 var(--fb);direction:ltr}
+.uiSessionDebitAmount .uiGoldCoin{width:34px;height:34px;animation:uiSessionCoin .65s ease-out both}
+@keyframes uiSessionDebit{
+  0%{opacity:0;transform:translate(-50%,calc(-50% + 14px)) scale(.96)}
+  15%,75%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,calc(-50% - 12px)) scale(1)}
+}
+@keyframes uiSessionCoin{from{transform:translateY(-8px) rotate(-18deg)}to{transform:translateY(0) rotate(0)}}
+@media(prefers-reduced-motion:reduce){
+  #uiSessionFeeToast{animation-name:uiSessionDebitStill}
+  .uiSessionDebitAmount .uiGoldCoin{animation:none}
+}
+@keyframes uiSessionDebitStill{0%,100%{opacity:0}15%,75%{opacity:1}}

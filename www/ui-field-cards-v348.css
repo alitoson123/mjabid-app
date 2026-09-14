@@ -1,0 +1,24 @@
+/* v348: a single opaque card face. Separate URL bypasses cached older depth rules.
+   Keep transparent pip artwork readable; do not change dimensions or transforms. */
+#field > .card:not(.back),
+#oField > .card:not(.back){
+  background-color:#fffdf6!important;
+  border-color:#fffdf6!important;
+  box-shadow:0 2px 4px rgba(0,0,0,.22)!important;
+}
+#field > .card.match:not(.back),
+#oField > .card.match:not(.back){
+  border-color:#ebc878!important;
+  box-shadow:0 0 0 1px #ebc878,0 2px 4px rgba(0,0,0,.22)!important;
+}
+#field > .card.match.dropHighlight:not(.back),
+#oField > .card.match.dropHighlight:not(.back){
+  outline:2px solid #ffe4a0;
+  outline-offset:2px;
+  box-shadow:0 0 0 1px #ebc878,0 2px 4px rgba(0,0,0,.22)!important;
+}
+.uiCardFlightLayer > .uiCardFlight:not(.back){
+  background-color:#fffdf6!important;
+  border-color:#fffdf6!important;
+  box-shadow:0 2px 5px rgba(0,0,0,.25)!important;
+}

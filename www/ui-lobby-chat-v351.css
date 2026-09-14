@@ -1,0 +1,118 @@
+/* v351: private lobby and social chat only. Existing outer safe-area padding is retained. */
+#onlWait .uiLobbyPanel[hidden]{display:none!important}
+#onlWait.uiLobbyCompact{overflow:hidden!important}
+#onlWait.uiLobbyCompact .uiLobbyShell{display:flex;flex-direction:column;gap:12px;width:100%;max-width:440px;height:100%;min-height:0;flex:1 1 auto}
+#onlWait.uiLobbyCompact .uiLobbyHeader{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:none;text-align:start}
+#onlWait.uiLobbyCompact .uiLobbyHeader>div{min-width:0}
+#onlWait.uiLobbyCompact .uiLobbyEyebrow{font-size:10px;font-weight:800;color:#bdcbb4}
+#onlWait.uiLobbyCompact h2{margin:3px 0;font-family:var(--fh);font-size:25px;line-height:1.2;color:#f6e4b9}
+#onlWait.uiLobbyCompact .sub{padding:0;margin:3px 0 0;text-align:start;font-size:11px;line-height:1.6;color:#b5c9b9}
+#onlWait.uiLobbyCompact #uiLobbyCount{display:flex;flex-direction:column;align-items:center;gap:1px;padding:9px 12px;border:1px solid #d8bd7940;border-radius:16px;background:#0a241d;color:#f3d793;flex:none}
+#uiLobbyCount bdi{font-size:20px;line-height:1.2;font-weight:800;font-variant-numeric:tabular-nums;direction:ltr}
+#uiLobbyCount small{font-size:9px;color:#b9cbb7}
+#onlWait.uiLobbyCompact #uiLobbyTabs{display:flex;gap:4px;flex:none;border-bottom:1px solid #c8bd8a33}
+#uiLobbyTabs button{position:relative;flex:1;min-height:44px;border:0;border-radius:10px 10px 0 0;padding:8px;background:transparent;color:#b4c6b4;font:800 13px var(--fb);cursor:pointer}
+#uiLobbyTabs button[aria-selected="true"]{color:#f1d590;background:linear-gradient(transparent,#e3c2760d)}
+#uiLobbyTabs button[aria-selected="true"]::after{content:'';position:absolute;bottom:-1px;left:24%;right:24%;height:3px;background:#e9cb88;border-radius:3px}
+#onlWait.uiLobbyCompact .uiLobbyPanel{display:flex;flex-direction:column;flex:1 1 0;min-height:0;gap:10px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:3px 2px}
+#onlWait.uiLobbyCompact .uiLobbyPanel>*{flex-shrink:0}
+#onlWait.uiLobbyCompact #lobbyPlayers{width:100%;max-width:none!important;margin:0!important;text-align:start}
+#onlWait.uiLobbyCompact #lobbyPlayers::before{content:none}
+#onlWait.uiLobbyCompact #lobbyPlayers .teamZone,#onlWait.uiLobbyCompact .uiLobbySoloSeats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:0;margin:0;border:0;border-radius:0;background:none;box-shadow:none}
+#onlWait.uiLobbyCompact #lobbyPlayers .teamZoneLabel{grid-column:1/-1;color:#bdcbb7;font-size:10px;line-height:1.4;letter-spacing:0;font-weight:700;padding:0 2px;margin:0;text-align:start}
+#onlWait.uiLobbyCompact #lobbyPlayers .teamZone.dropTarget .lobbyRow{border-color:#eacf8c}
+#onlWait.uiLobbyCompact .uiLobbyVersus{display:flex;align-items:center;justify-content:center;gap:10px;margin:7px 0 3px;color:#d8c184;font:700 9px var(--fb);letter-spacing:1px}
+#onlWait.uiLobbyCompact .uiLobbyVersus::before,#onlWait.uiLobbyCompact .uiLobbyVersus::after{content:'';height:1px;width:26px;background:#d8c18438}
+#onlWait.uiLobbyCompact #lobbyPlayers .lobbyRow{display:grid;position:relative;grid-template-columns:52px minmax(0,1fr);grid-template-rows:1fr auto;align-items:center;align-content:center;gap:4px 9px;min-height:106px;padding:12px 10px;margin:0;border:1px solid #b0c1a62b;border-radius:18px;background:linear-gradient(140deg,#274c3d,#143b30);box-shadow:0 3px 7px #001b1322;text-align:start}
+#onlWait.uiLobbyCompact #lobbyPlayers .uiLobbyOwnSeat{border-color:#e4c580;box-shadow:inset 0 0 0 1px #e6c88022;background:linear-gradient(140deg,#325343,#183e31)}
+#onlWait.uiLobbyCompact #lobbyPlayers .lr-ava{grid-row:1/3;width:52px;height:52px;overflow:hidden;box-shadow:0 0 0 2px #c6b1735c;background:#e9dfc7;font-size:22px;pointer-events:none}
+#onlWait.uiLobbyCompact #lobbyPlayers .lr-ava>svg{width:100%;height:100%}
+#onlWait.uiLobbyCompact #lobbyPlayers .lr-nm{min-width:0;font-size:12px;line-height:1.5;color:#fff2d7;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;align-self:end}
+#onlWait.uiLobbyCompact #lobbyPlayers .lr-nm small{display:inline-block;font:700 9px var(--fb);color:#e8d39b;margin-inline-start:4px;white-space:nowrap}
+#onlWait.uiLobbyCompact #lobbyPlayers .lr-tag{max-width:none;font-size:9px;line-height:1.35;color:#c1d0bc;align-self:start}
+#onlWait.uiLobbyCompact #lobbyPlayers .uiLobbyEmptySeat{background:#0c2b222e;border-style:dashed;box-shadow:none}
+#onlWait.uiLobbyCompact #lobbyPlayers .uiLobbyEmptySeat .lr-ava{box-shadow:none;border:1px dashed #bec8a444;background:#0d2c23;color:#adc2ae}
+#onlWait.uiLobbyCompact #lobbyPlayers .uiLobbyEmptySeat svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round}
+#onlWait.uiLobbyCompact #lobbyPlayers .uiLobbyEmptySeat .lr-nm{color:#b9cbb7}
+#onlWait.uiLobbyCompact #uiLobbySeatHelp{font-size:10px;line-height:1.6;color:#b5c9b5;margin:0 2px;text-align:center}
+#onlWait.uiLobbyCompact .uiLobbyInvites{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px}
+#onlWait.uiLobbyCompact .uiLobbyInvites button{display:flex;align-items:center;justify-content:center;gap:7px;min-height:44px;min-width:0;width:100%;padding:8px;border:1px solid #bcbd8e44;border-radius:12px;background:#244737;color:#ebddb5;font:800 11px var(--fb);cursor:pointer}
+#onlWait.uiLobbyCompact .uiLobbyInvites button:disabled{opacity:.6;cursor:default}
+#onlWait.uiLobbyCompact .uiLobbyInvites svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
+#onlWait.uiLobbyCompact .uiLobbySettingsNote{margin:0 2px;color:#bdcbb5;font-size:11px;text-align:start}
+#onlWait.uiLobbyCompact #lobbyMode,#onlWait.uiLobbyCompact #lobbyGoal,#onlWait.uiLobbyCompact #lobbyPublic{display:flex;width:100%;max-width:none!important;margin:0!important;padding:12px!important;border:1px solid #bdc8aa28;border-radius:16px!important;background:#0b2a20;gap:6px!important;flex-wrap:wrap}
+#onlWait.uiLobbyCompact #lobbyMode::before,#onlWait.uiLobbyCompact #lobbyGoal::before,#onlWait.uiLobbyCompact #lobbyPublic::before{font-size:11px;text-align:start;color:#b9cbb5;margin:0 2px 3px}
+#onlWait.uiLobbyCompact .lmBtn{min-height:44px;height:auto;font-size:12px!important;padding:7px 4px;border-radius:10px!important;background:#ffffff05;color:#afc4b1}
+#onlWait.uiLobbyCompact .lmBtn.on{background:#dfc589!important;color:#14392a!important;box-shadow:none}
+#onlWait.uiLobbyCompact .lmBtn:disabled{opacity:.7}
+#onlWait.uiLobbyCompact #lobbyTierTag{margin:0!important;padding:10px!important;display:flex;flex-wrap:wrap;gap:5px!important;border-radius:13px!important;background:#294633!important;color:#f4e3b3!important;font:700 11px/1.8 var(--fb)!important}
+#onlWait.uiLobbyCompact .uiLobbyFooter{flex:none;border-top:1px solid #c8bd8a26;padding-top:10px;width:100%;margin-top:auto}
+#onlWait.uiLobbyCompact #lobbyStart{width:100%;max-width:none!important;min-height:48px;margin:0!important;padding:10px;border:1px solid #e9d18f;border-radius:14px;background:linear-gradient(115deg,#eedaa0,#dcb874);color:#153a2b;font:800 17px var(--fb);box-shadow:0 3px 0 #796132;cursor:pointer}
+#onlWait.uiLobbyCompact #lobbyHint{margin:7px 0 0!important;max-width:none;font-size:10px!important;line-height:1.6;color:#b7cbb1!important}
+#onlWait.uiLobbyCompact button:focus-visible,#chat button:focus-visible{outline:2px solid #f2d18a;outline-offset:2px}
+/* League waiting keeps its existing read-only renderer and automatic start behavior. */
+#onlWait:not(.uiLobbyCompact) .uiLobbyShell,#onlWait:not(.uiLobbyCompact) .uiLobbyHeader,#onlWait:not(.uiLobbyCompact) .uiLobbyHeader>div,#onlWait:not(.uiLobbyCompact) #uiLobbySeatsPanel,#onlWait:not(.uiLobbyCompact) .uiLobbyFooter{display:contents}
+#onlWait:not(.uiLobbyCompact) #uiLobbyTabs,#onlWait:not(.uiLobbyCompact) #uiLobbyCount,#onlWait:not(.uiLobbyCompact) .uiLobbyEyebrow,#onlWait:not(.uiLobbyCompact) #uiLobbySeatHelp,#onlWait:not(.uiLobbyCompact) .uiLobbyInvites,#onlWait:not(.uiLobbyCompact) #uiLobbySettingsPanel{display:none!important}
+/* Compact social chat: public messages contain identity and time, without rank badges. */
+#chat #chHead{gap:9px;flex-shrink:0}
+#chat #chHead .t{font-size:22px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#chat #chBack{min-width:44px;min-height:44px}
+#chat #chTabs{align-self:center;width:220px;max-width:100%;gap:2px;padding:2px!important;margin:7px 0 3px!important;border:1px solid #d3cb9830;border-radius:13px!important;box-shadow:none;background:#092a20!important}
+#chat #chTabs .chTab{flex:1;min-height:44px;height:44px;font-size:12px!important;border-radius:10px!important;background:transparent!important;color:#b6cab8!important;box-shadow:none}
+#chat #chTabs .chTab.on{background:#2c4f3b!important;color:#f4d999!important;box-shadow:inset 0 -2px #dbbd73}
+#chat #chList{gap:6px;padding-top:10px;scroll-padding:8px;overflow-anchor:none}
+#chat #chList.uiChatContacts{padding-bottom:calc(90px + var(--ui-safe-bottom))}
+#chat .uiChatMessage{display:flex;align-items:flex-start;gap:5px;margin:0;flex:none;min-width:0;width:100%;justify-content:flex-start}
+#chat .uiChatMessageMine{justify-content:flex-end}
+#chat .uiChatAvatar{display:flex;align-items:center;justify-content:center;flex:none;width:40px;height:44px;padding:3px;border:0;border-radius:50%;background:none;color:inherit;cursor:pointer}
+#chat .uiChatAvatar>span{display:flex;align-items:center;justify-content:center;width:34px;height:34px;overflow:hidden;border-radius:50%;background:#ebdfbf;box-shadow:0 0 0 1px #d6c28b44}
+#chat .uiChatAvatar svg{width:100%;height:100%}
+#chat .uiChatMessage .uiMessageText{min-width:0;max-width:calc(100% - 49px);width:fit-content;padding:6px 10px 8px;border-radius:5px 13px 13px 13px;border:1px solid #b5cbb125;box-shadow:none;font:500 14px/1.5 var(--fb)!important;color:#f2efdf!important;background:#234b3c!important}
+#chat .uiChatMessageMine .uiMessageText{max-width:85%;border-radius:13px 5px 13px 13px;border-color:#d9c787;background:#e8d59b!important;color:#1d3a2c!important}
+#chat .uiChatMessageHead{display:flex;align-items:center;gap:8px;min-width:0;margin:0 0 1px}
+#chat .uiChatIdentity{display:flex;align-items:center;gap:5px!important;min-width:0;flex:1;flex-wrap:wrap;margin:0!important;padding:0;border:0;line-height:1.35}
+#chat .uiChatIdentity>span:first-child{font-size:11px!important;font-weight:800;line-height:1.35;color:#d9e3b8!important;overflow-wrap:anywhere}
+#chat .uiMine .uiChatIdentity>span:first-child{color:#476338!important}
+#chat .uiChatTime{flex:none;white-space:nowrap;font:500 9px/1.5 var(--fb);color:#b7c9b5;font-variant-numeric:tabular-nums}
+#chat .uiMine .uiChatTime{color:#5d6d4a}
+#chat .uiChatCopy{display:block;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;min-width:0}
+#chat .cbReport{display:grid;place-items:center;align-self:flex-start;flex:none;width:28px;height:28px;min-width:28px;min-height:28px;margin:-3px -5px -3px 0;padding:5px;border:0;border-radius:7px;background:transparent;color:#b2c6b0;cursor:pointer}
+#chat .cbReport svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+#chat .cbReport:hover{background:#ffffff0e;color:#f3dfad}
+#chat #chInput{padding-top:8px;gap:7px}
+#chat #chInput input{height:44px;border-radius:13px;font-size:16px;padding-inline:12px;box-shadow:0 0 0 1px #c4cbaa}
+#chat #chSend{width:44px;height:44px;border-radius:13px;box-shadow:none}
+#chat #uiChatNotice{margin-top:5px;padding:8px 10px;max-height:120px;border-radius:12px}
+#chat #uiChatNotice small{font-size:9px}
+#chat #uiChatNotice h3{font-size:12px;margin:2px 0}
+#chat #uiChatNotice p{font-size:11px;line-height:1.6}
+#chat #chList>.chRow{min-height:72px;margin:0;padding:8px;gap:5px;border-radius:13px;box-shadow:none}
+#chat .uiChatOpen{display:flex;align-items:center;gap:9px;flex:1;min-width:0;border:0;border-radius:9px;background:none;padding:0;text-align:start;color:inherit;font:inherit;cursor:pointer}
+#chat .uiChatOpen .cAva{width:38px;height:38px}
+#chat .uiChatOpen .cNm{font-size:13px;line-height:1.4}
+#chat .uiChatOpen .cMsg{font-size:11px;line-height:1.5;-webkit-line-clamp:1}
+#chat .uiChatOpen .cTime{font-size:9px}
+#chat .uiChatOpen .cSide{min-width:34px}
+#chat .inviteMsgRow{margin:3px 0!important}
+#chat .inviteMsgRow>div{width:100%!important;max-width:340px!important;border:1px solid #d6bf7b55;border-radius:14px!important;background:#31513b!important;box-shadow:none!important}
+#chat .inviteMsgRow>div>div{padding:9px 11px 6px!important}
+#chat .inviteMsgRow .invJoinBtn{min-height:44px;padding:7px!important;margin-bottom:8px!important;border-radius:10px!important;font-size:13px!important;box-shadow:none!important}
+@media(max-width:370px){
+  #onlWait.uiLobbyCompact #lobbyPlayers .lobbyRow{grid-template-columns:42px minmax(0,1fr);padding:10px 7px;gap:3px 6px}
+  #onlWait.uiLobbyCompact #lobbyPlayers .lr-ava{width:42px;height:42px}
+  #onlWait.uiLobbyCompact #lobbyPlayers .lr-nm{font-size:11px}
+  #chat .uiChatMessage .uiMessageText{font-size:13px!important;padding-inline:8px}
+  #chat .uiChatMessageHead{gap:5px}
+}
+@media(max-height:760px){
+  #onlWait.uiLobbyCompact .uiLobbyShell{gap:8px}
+  #onlWait.uiLobbyCompact h2{font-size:22px}
+  #onlWait.uiLobbyCompact #lobbyPlayers .lobbyRow{min-height:85px;padding-block:8px}
+  #onlWait.uiLobbyCompact .uiLobbyPanel{gap:8px}
+  #onlWait.uiLobbyCompact .uiLobbyFooter{padding-top:7px}
+}
+@media(max-height:620px){
+  #onlWait.uiLobbyCompact .uiLobbyEyebrow{display:none}
+  #onlWait.uiLobbyCompact #lobbyPlayers .lobbyRow{min-height:72px}
+  #onlWait.uiLobbyCompact #lobbyPlayers .lr-ava{width:40px;height:40px}
+}

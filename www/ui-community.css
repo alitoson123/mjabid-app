@@ -1,0 +1,45 @@
+/* v347 — original safe-area expressions stay in ui-polish.css. */
+#profile #pfShell{overflow:hidden!important}
+#profile #pfHead{padding-bottom:15px;border-radius:0 0 24px 24px}
+#profile #pfAva{width:64px;height:64px;margin:44px auto 8px}
+#profile #pfName{font-size:23px;margin-bottom:5px}
+#profile #pfMeta{gap:5px}
+#pfTabs{display:flex;gap:4px;margin:12px 12px 0;padding:4px;background:#dce4d5;border:1px solid #c6d1bd;border-radius:14px;flex:none}
+#pfTabs button{flex:1;min-width:0;min-height:44px;border:0;border-radius:10px;background:transparent;color:#52634b;font:700 12px/1.5 var(--fb);cursor:pointer}
+#pfTabs button[aria-selected="true"]{background:#173d2d;color:#ffe8b3;box-shadow:0 2px 6px #08291a22}
+#pfTabs button:focus-visible{outline:2px solid #a77c36;outline-offset:1px}
+#pfTabs button[hidden],#pfPages [role="tabpanel"][hidden]{display:none!important}
+#profile #pfPages{flex:1 1 0;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:12px}
+#pfPages [role="tabpanel"]{padding-bottom:12px;animation:pfPageIn 140ms ease-out}
+.pfPageTitle{font:800 19px/1.5 var(--fb);color:#1d4432;margin:18px 18px 8px}
+.pfPageEmpty{font:500 13px/1.8 var(--fb);color:#697860;margin:18px}
+#pfHistoryRow{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px!important}
+#pfHistoryRow>span{width:auto!important;min-height:46px;font-size:13px!important;padding:8px}
+#pfPanelAchievements .lg-profile{margin:16px}
+#pfProfileActions[hidden]{display:none}
+#pfRecovery{margin-top:12px}
+#pfPasswordForm h3{font:800 17px/1.5 var(--fb);margin:0 0 14px}
+#pfPasswordForm label{display:block;margin:10px 0 6px;font:700 12px var(--fb)}
+#pfPasswordForm input{width:100%;height:48px;border:1px solid #bbc9ad;border-radius:12px;background:#fffdf6;color:#183c2b;padding:10px 12px;font:500 16px var(--fb);direction:ltr}
+#pfPasswordForm input:focus{outline:2px solid #c09d5b;outline-offset:1px}
+#pfResetPassword{margin-top:15px;min-height:46px}
+.uiNotice{display:flex;align-items:flex-start;gap:11px;border:1px solid #d9b87380;border-radius:17px;padding:12px 14px;background:linear-gradient(120deg,#244c3b,#102f25);color:#f9eac7;text-align:right}
+.uiNotice[hidden]{display:none!important}
+.uiNotice>div{min-width:0;flex:1}
+.uiNoticeMark{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:11px;background:#e9cd8524;color:#f6d991;font-size:24px}
+.uiNotice small{display:block;font:600 10px/1.5 var(--fb);color:#d3bc88}
+.uiNotice h3{margin:3px 0;font:800 15px/1.5 var(--fb);overflow-wrap:anywhere}
+.uiNotice p{margin:0;font:500 12px/1.7 var(--fb);color:#d8e0cb;white-space:pre-wrap;overflow-wrap:anywhere}
+.uiNotice a{display:inline-flex;margin-top:8px;min-height:36px;align-items:center;padding:5px 13px;border-radius:9px;background:#eacb86;color:#183c2b;font:800 12px/1.5 var(--fb);text-decoration:none}
+.uiNotice a[hidden]{display:none}
+#home .hMenu{overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch}
+#home .uiHomeNotice{flex-shrink:0;min-height:80px;margin-bottom:2px;box-shadow:0 3px 10px #001c1733}
+#uiChatNotice{flex-shrink:0;margin-top:9px;max-height:180px;overflow-y:auto}
+#uiChatNotice .uiNoticeMark{width:26px;height:26px;font-size:17px}
+#uiChatNotice h3{font-size:13px}
+#uiChatNotice p{font-size:11px}
+@keyframes pfPageIn{from{opacity:.4;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){#pfPages [role="tabpanel"]{animation:none}}
+@media(max-height:600px){#profile #pfAva{width:44px;height:44px;margin-top:35px}#profile #pfName{font-size:18px}#pfTabs{margin-top:7px}#profile #pfHead{padding-bottom:8px}}
+
+#home .hMenu.uiHasNotice{grid-template-rows:auto minmax(84px,1.2fr) minmax(52px,.72fr) minmax(88px,1.1fr) minmax(64px,.8fr)}

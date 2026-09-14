@@ -1,0 +1,14 @@
+/* v355 — real card edges below the top face, with a centered, lighter contact shadow.
+ * The single shadow follows the bottom visible card. Older cards add only a bounded smooth edge.
+ * Loaded after v353; no loose field cards, hands, player piles or session-fee styles are overridden.
+ */
+#contested.uiBidStackPaper:not(:empty)::before,
+#oWaqfStack.uiBidStackPaper:not(:empty)::before{
+  width:var(--ui-bid-card-w,54px);
+  height:calc(var(--ui-bid-card-h,77px) + var(--ui-bid-stack-depth,0px));
+  left:50%;
+  top:calc(50% + var(--ui-bid-stack-y,0px) + var(--ui-bid-stack-depth,0px)/2);
+  background:#e5e1d5;
+  border-radius:6px;
+  box-shadow:0 2px 4px rgba(25,20,12,.14);
+}

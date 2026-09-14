@@ -1,0 +1,57 @@
+/* v350 — approved flat card presentation. Loaded after earlier depth styles. */
+#field > .card:not(.back),
+#oField > .card:not(.back){
+  background-color:#fffdf6!important;
+  border-color:#fffdf6!important;
+  border-radius:6px;
+  box-shadow:0 1px 3px rgba(34,22,12,.18)!important;
+}
+#field > .card.match:not(.back),
+#oField > .card.match:not(.back){
+  border-color:#ebc878!important;
+  box-shadow:0 0 0 1px #ebc878,0 1px 3px rgba(34,22,12,.18)!important;
+  animation:none;
+}
+#field > .card.match.dropHighlight:not(.back),
+#oField > .card.match.dropHighlight:not(.back){
+  outline:2px solid #ffe4a0;
+  outline-offset:2px;
+  box-shadow:0 0 0 1px #ebc878,0 1px 3px rgba(34,22,12,.18)!important;
+}
+/* One fixed-size shadow per contested stack, regardless of the real card count. */
+#contested.uiBidStackFlat{min-width:var(--ui-bid-card-w,54px)}
+#contested.uiBidStackFlat:not(:empty)::before,
+#oWaqfStack.uiBidStackFlat:not(:empty)::before{
+  content:"";
+  position:absolute;
+  left:50%;top:50%;
+  width:var(--ui-bid-card-w,54px);
+  height:var(--ui-bid-card-h,77px);
+  transform:translate(-50%,-50%);
+  border-radius:6px;
+  box-shadow:0 2px 5px rgba(36,20,9,.23);
+  pointer-events:none;
+  z-index:0;
+}
+#contested.uiBidStackFlat > .card,
+#oWaqfStack.uiBidStackFlat > .card{
+  background-color:#fffdf6!important;
+  border-color:#fffdf6!important;
+  border-radius:6px;
+  box-shadow:none!important;
+  filter:none;
+}
+.uiCardFlightLayer > .uiCardFlight:not(.back){
+  background-color:#fffdf6!important;
+  border-color:#fffdf6!important;
+  border-radius:6px;
+  box-shadow:0 2px 5px rgba(36,20,9,.23)!important;
+}
+/* Merging layers never darken one another; the top card / stack owns the shadow. */
+.uiCardFlightLayer > .uiCardFlight.uiCardFlightMerged:not(.back),
+.uiCardFlightLayer > .uiCardFlight[data-motion-kind="capture"]:not(.back){
+  box-shadow:none!important;
+}
+.uiEatLayer .uiEatCaption{
+  box-shadow:0 2px 5px rgba(0,20,14,.22);
+}

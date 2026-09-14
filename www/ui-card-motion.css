@@ -3,3 +3,63 @@
 .uiCardFlightLayer .uiCardFlight{position:absolute!important;left:0!important;top:0!important;margin:0!important;pointer-events:none!important;transform-origin:center center;will-change:transform;transition:none!important;animation:none!important;box-shadow:0 8px 16px rgba(0,0,0,.32);backface-visibility:hidden}
 .uiCardFlightTarget{visibility:hidden!important}
 @media(prefers-reduced-motion:reduce){.uiCardFlightLayer{display:none}.uiCardFlightTarget{visibility:visible!important}}
+
+/* v346 — one card silhouette, soft shadow; no offset solid thickness. */
+#field .card,#oField .card{
+  border-color:#e7ddc7;
+  background-color:#fffdf6;
+  box-shadow:0 2px 5px #001b1640,0 6px 12px -4px #001b1673;
+}
+#field .card.match,#oField .card.match{
+  box-shadow:0 0 0 2px #f5d48e,0 5px 12px -3px #001b1680;
+}
+#field .card.match.dropHighlight,#oField .card.match.dropHighlight{
+  outline:2px solid #fff0bf;outline-offset:3px;
+  box-shadow:0 0 0 2px #f5d48e,0 6px 14px -3px #001b1680!important;
+}
+.uiCardFlightLayer .uiCardFlight{
+  border-color:#e7ddc7;
+  box-shadow:0 5px 12px -2px #001b1673;
+}
+.uiEatLayer .uiEatCaption{
+  top:6px;left:50%;display:flex;align-items:center;justify-content:center;gap:9px;
+  padding:7px 13px;min-width:106px;max-width:95%;border-radius:13px;
+  background:linear-gradient(135deg,#fff2cd,#e8c580);border:1px solid #fff1c2;
+  color:#183a2c;text-shadow:none;box-shadow:0 3px 0 #7c6136,0 7px 16px #001b1659;
+  font-family:var(--fb);line-height:1.25;direction:rtl;
+  animation:uiCaptureCaption 1300ms var(--ui-ease) both;
+}
+.uiEatCaption .uiEatAmount{font-family:var(--fb);font-size:25px;font-weight:900;font-variant-numeric:tabular-nums;unicode-bidi:isolate;line-height:1}
+.uiEatCaption .uiEatLabel{font-family:var(--fb);font-size:11px;font-weight:800;white-space:nowrap;color:#3e5138}
+.uiEatLayer .eatFxRing{opacity:.65;box-shadow:none;border-width:1px}
+@keyframes uiCaptureCaption{
+  0%{opacity:0;transform:translate(-50%,8px) scale(.94)}
+  18%,76%{opacity:1;transform:translate(-50%,0) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-10px) scale(1)}
+}
+/* These IDs are retained; JS measures their actual seat and the available table space. */
+#game .uiTableSpeech,#onl .uiTableSpeech,#onl #oChatBubble.uiTableSpeech:not(.hidden){
+  position:absolute;inset:auto;bottom:auto;right:auto;margin:0;
+  width:max-content;min-width:42px;max-width:164px;max-height:86px;
+  padding:8px 11px;border:1px solid #cdb47d;border-radius:13px;
+  background:linear-gradient(150deg,#fffaf0,#f0e7d2);color:#233f33;
+  box-shadow:0 2px 0 #92764b55,0 5px 13px #001b1659;
+  font-family:var(--fb);font-size:12px;font-weight:700;line-height:1.65;
+  text-align:center;direction:rtl;unicode-bidi:plaintext;white-space:normal;overflow-wrap:anywhere;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;
+  pointer-events:none;z-index:29;transform:none;animation:uiSpeechAppear 180ms ease-out both;
+}
+#game .uiTableSpeech.hidden,#onl .uiTableSpeech.hidden{display:none!important}
+#game .uiTableSpeech::after,#onl .uiTableSpeech::after{
+  content:"";position:absolute;width:5px;height:5px;background:#a27e3d;border-radius:50%;opacity:.7;
+}
+.uiTableSpeech[data-ui-tail="bottom"]::after{bottom:1px;left:var(--ui-speech-tail,50%)}
+.uiTableSpeech[data-ui-tail="top"]::after{top:1px;left:var(--ui-speech-tail,50%)}
+.uiTableSpeech[data-ui-tail="left"]::after{left:1px;top:var(--ui-speech-tail,50%)}
+.uiTableSpeech[data-ui-tail="right"]::after{right:1px;top:var(--ui-speech-tail,50%)}
+#onl .uiTableSpeech.reactBubble{display:block;-webkit-line-clamp:unset;padding:5px 9px;font-size:11px}
+@keyframes uiSpeechAppear{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){
+  .uiEatLayer .uiEatCaption{animation:none!important;opacity:1;transform:translateX(-50%)}
+  #game .uiTableSpeech,#onl .uiTableSpeech,#onl #oChatBubble.uiTableSpeech:not(.hidden){animation:none!important}
+}

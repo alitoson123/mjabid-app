@@ -1,4 +1,6 @@
 /* v329: visual copies only; the original table layout remains authoritative. */
+/* v356: only the action's leading face casts a light shadow; merged/captured layers keep no shadow. */
+.uiCardFlightLayer > .uiCardFlight.uiCardFlightAction:not(.uiCardFlightMerged):not([data-motion-kind="capture"]){box-shadow:0 2px 5px rgba(25,20,12,.16)!important}
 .uiCardFlightLayer{position:fixed;inset:0;pointer-events:none;z-index:390;overflow:visible;contain:layout style}
 .uiCardFlightLayer .uiCardFlight{position:absolute!important;left:0!important;top:0!important;margin:0!important;pointer-events:none!important;transform-origin:center center;will-change:transform;transition:none!important;animation:none!important;box-shadow:0 8px 16px rgba(0,0,0,.32);backface-visibility:hidden}
 .uiCardFlightTarget{visibility:hidden!important}

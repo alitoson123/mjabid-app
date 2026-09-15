@@ -1,0 +1,111 @@
+/* v357 — one printed paper face per card. No new bitmap, dimensions, positions or safe-area rules.
+ * Card faces are existing background images. The non-interactive surface stays inside that same face;
+ * ::after remains available for the existing hand labels and all card-back artwork is preserved.
+ */
+#game .card:not(.back),
+#onl .card:not(.back),
+#waqf .card:not(.back),
+.uiCardFlightLayer > .uiCardFlight:not(.back){
+  background-color:#fffdf5!important;
+  border-color:#e5dece;
+}
+#game .card:not(.back)::before,
+#onl .card:not(.back)::before,
+#waqf .card:not(.back)::before,
+.uiCardFlightLayer > .uiCardFlight:not(.back)::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background-image:linear-gradient(125deg,rgba(255,255,255,.2),rgba(255,255,255,0) 38%,rgba(111,89,46,.035)),radial-gradient(rgba(91,73,40,.025) .45px,transparent .65px);
+  background-size:100% 100%,4px 4px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.65),inset 0 -1px 1px rgba(108,91,59,.065);
+}
+/* Loose field cards have one thin rim and a contact shadow, never an offset paper layer. */
+#field > .card:not(.back),
+#oField > .card:not(.back){
+  border-color:#e5dece!important;
+  box-shadow:0 1px 3px rgba(35,25,13,.17)!important;
+}
+#field > .card.match:not(.back),
+#oField > .card.match:not(.back){
+  border-color:#e8c67c!important;
+  box-shadow:0 0 0 1px #e8c67c,0 1px 3px rgba(35,25,13,.17)!important;
+}
+/* The spread consists entirely of real card faces: remove the earlier synthetic stacked base. */
+#contested.uiBidStackNatural:not(:empty)::before,
+#oWaqfStack.uiBidStackNatural:not(:empty)::before{
+  content:none;
+  display:none;
+}
+#contested.uiBidStackNatural > .card:not(.back),
+#oWaqfStack.uiBidStackNatural > .card:not(.back){
+  background-color:#fffdf5!important;
+  border-color:#ded7c8!important;
+  box-shadow:0 1px 2px rgba(35,25,13,.14),0 3px 5px rgba(35,25,13,.065)!important;
+}
+.uiCardFlightLayer > .uiCardFlight.uiCardFlightAction:not(.uiCardFlightMerged):not([data-motion-kind="capture"]){
+  border-color:#e5dece!important;
+  box-shadow:0 2px 4px rgba(35,25,13,.16)!important;
+}
+/* A contested opponent pile remains at its original seat, with a quiet, unambiguous gold outline. */
+.pileBox.uiPileTarget > .card.uiPileTop,
+#myPile .uiPileTarget .card.uiPileTop,
+#oMyPile .uiPileTarget .card.uiPileTop{
+  outline:2px solid #e5c77e;
+  outline-offset:3px;
+}
+
+.uiPileTarget .uiAuctionTargetLabel{
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  margin-top:7px;
+  padding:2px 5px;
+  border:1px solid rgba(229,199,126,.38);
+  border-radius:5px;
+  background:#15392d;
+  color:#f1dba2;
+  font:700 9px/1.35 var(--fb);
+  white-space:nowrap;
+  pointer-events:none;
+  z-index:4;
+}
+/* v360 — keep the top-seat status inside its card row, away from the count and table HUD.
+ * The pile column is 54px wide with a 44×62px card cell; the 50px badge stays inside that column.
+ * Its lower edge stops 14px above the card bottom so the lower rank corner remains visible.
+ */
+#seatT .pileBox.uiPileTarget > .uiAuctionTargetLabel,
+#oSeat .pileBox.uiPileTarget > .uiAuctionTargetLabel{
+  position:absolute;
+  grid-column:1 / 2;
+  grid-row:1 / 2;
+  top:auto;
+  bottom:14px;
+  left:50%;
+  transform:translateX(-50%);
+  width:50px;
+  box-sizing:border-box;
+  margin:0;
+  padding:1px 3px;
+  font-size:9px;
+  line-height:1.3;
+  white-space:normal;
+  overflow-wrap:normal;
+  text-align:center;
+  direction:rtl;
+}
+/* Preserve the source pile and its mark through the local auction overlay. */
+#waqf.uiAuctionOverlay{
+  background:rgba(9,7,4,.28);
+}
+.uiPileTarget{
+  position:relative;
+}
+
+/* A captured run moves as one real packet only after settlement. */
+.uiCardFlightLayer > .uiCardFlight.uiCardFlightAction.uiCardFlightPacket{
+  box-shadow:var(--ui-pile-shadow,0 2px 4px rgba(35,25,13,.16))!important;
+}

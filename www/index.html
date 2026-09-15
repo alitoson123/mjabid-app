@@ -657,12 +657,6 @@ img,.card,.suAv,.avatarImg{image-rendering:auto;image-rendering:high-quality;bac
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 /* شريط التنقّل الموحّد الثابت */
-.navBar{position:absolute;bottom:0;left:0;right:0;height:calc(74px + env(safe-area-inset-bottom, 20px));background:linear-gradient(#182a1c,#101c12);border-top:1.5px solid rgba(246,193,77,.28);display:flex;padding:8px 10px calc(12px + env(safe-area-inset-bottom, 20px));gap:4px;z-index:40;box-shadow:0 -8px 24px rgba(0,0,0,.45);box-sizing:border-box}
-.navBtn{flex:1;background:none;border:none;font-family:var(--fb);font-weight:800;font-size:10.5px;color:#8a9b6c;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0;border-radius:16px;transition:color .15s,background .15s}
-.navBtn .ic{display:block;transition:transform .15s}
-.navBtn.on{color:#ffc6a5;background:rgba(214,127,72,.22)}
-.navBtn.on .ic{transform:translateY(-1px) scale(1.08)}
-.navBtn:active{transform:scale(.92)}
 /* نقرات على كل الأزرار */
 button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transform .08s}
 .hBig,.qBtn,.navBtn{transition:transform .12s,box-shadow .12s,background .15s,color .15s}
@@ -695,11 +689,15 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script src="image-cache.js"></script>
-<link rel="stylesheet" href="ui-polish.css">
-<script defer src="ui-results-store.js"></script>
+<link rel="stylesheet" href="ui-polish.css?v=364">
+<script defer src="ui-theme-rentals.js?v=363"></script>
+<script defer src="ui-results-store.js?v=363"></script>
 <script defer src="ui-polish.js"></script>
+<script defer src="ui-navigation.js?v=364"></script>
+<script defer src="ui-player-panels.js?v=365"></script>
+<script defer src="ui-table-view.js?v=365"></script>
 <link rel="stylesheet" href="ui-leagues.css">
-<link rel="stylesheet" href="ui-card-motion.css">
+<link rel="stylesheet" href="ui-card-motion.css?v=357">
 <link rel="stylesheet" href="ui-community.css">
 <link rel="stylesheet" href="ui-field-cards-v348.css">
 <link rel="stylesheet" href="ui-match-tiers-v349.css">
@@ -708,6 +706,10 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 <link rel="stylesheet" href="ui-pile-joker-v352.css">
 <link rel="stylesheet" href="ui-session-polish-v353.css">
 <link rel="stylesheet" href="ui-bid-stack-v355.css">
+<link rel="stylesheet" href="ui-real-cards-v357.css?v=360">
+<link rel="stylesheet" href="ui-navigation.css?v=364">
+<link rel="stylesheet" href="ui-player-panels.css?v=365">
+<link rel="stylesheet" href="ui-table-view.css?v=365">
 </head>
 <body>
 <div id="frame">
@@ -888,7 +890,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 
 
   <!-- الأونلاين -->
-  <div class="screen hidden" id="onl">
+  <div class="screen hidden uiSpectating" id="onl">
     <div id="quitConfirm" class="hidden" style="position:absolute;inset:0;z-index:80;background:rgba(10,18,12,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center">
       <div style="font-size:38px;margin-bottom:6px">🚪</div>
       <div style="font-family:var(--fh);font-size:20px;color:#fff;margin-bottom:6px">تبي تخرج من الجولة؟</div>
@@ -979,6 +981,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
         </div>
       </div>
     </div>
+    <div id="uiSpectatorBar" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg><span>مشاهدة مباشرة</span></div>
     <div id="onlWait" class="hidden uiLobbyCompact">
       <div class="uiLobbyShell">
         <header class="uiLobbyHeader">
@@ -1183,6 +1186,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
       </div>
       <div id="pfWin"><div class="row"><span id="stRate">0%</span><span>نسبة الفوز</span></div><div id="pfBar"><i style="width:0%"></i></div></div>
       <!-- NEW CODE — تفاصيل تقدم الرتبة -->
+      <p id="uiThemeStatus" class="uiThemeAccountStatus"></p>
       <div id="pfRankProgress" style="margin:14px 16px 0;background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:14px 16px">
         <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px">
           <span id="pfRankPtsNum" style="font-family:var(--fh);font-size:22px;color:var(--ink)">0</span>
@@ -1276,7 +1280,8 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
       <div class="uiStoreScroll">
         <section id="uiThemesPanel" role="tabpanel" aria-labelledby="uiThemesTab">
           <div class="uiStoreIntro"><span>على ذوقك</span><h2>كل طاولة… لها جوّها</h2><p>خلفياتك المجانية والمميزة، في مكان واحد.</p></div>
-          <div id="uiShopShowcase"><div id="uiShopScene"></div><div class="uiSceneDetails"><div><h3 id="uiShopSceneName"></h3><p id="uiShopSceneNote"></p></div><button id="uiShopActivate" type="button"></button></div></div>
+          <div id="uiShopShowcase"><div id="uiShopScene"></div><div class="uiSceneDetails"><div><h3 id="uiShopSceneName"></h3><p id="uiShopSceneNote"></p></div><p id="uiThemeServiceNote" class="uiThemeServiceNote" role="status" hidden></p>
+          <button id="uiShopActivate" type="button"></button><p class="uiRentalTerms">الإيجار لا يتجدد تلقائيًا.</p></div></div>
           <div class="uiCatalogHeading"><h3>اختر خلفيتك</h3><span>عاينها قبل التفعيل</span></div>
           <div id="shopList"></div>
         </section>
@@ -1513,7 +1518,7 @@ const $=s=>document.querySelector(s);
 // ⚠️ الصق مفاتيح مشروعك هنا (من إعدادات Firebase → تطبيق الويب).
 // هذه المفاتيح آمنة للنشر في كود الواجهة (مصمّمة لذلك).
 // رقم إصدار التطبيق — يُحدَّث يدويًا مع كل نسخة تُرفع للمتاجر (مو نفس رقم كاش الـSW)
-const APP_VERSION='1.4.0'; // iOS: keep Ali's Xcode marketing version.
+const APP_VERSION='1.2.0'; // iOS: keep Ali's Xcode marketing version.
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCZZrU2tip4efYEfYhUi9F_DNfuRZ22adU",
   authDomain: "jops-e508d.firebaseapp.com",
@@ -1589,14 +1594,17 @@ const CLOUD_KEYS=['gold','level','games','wins','best','avatar','av-owned','owne
 async function fbLoadProfile(uid){
   try{
     const doc=await FB.db.collection('players').doc(uid).get();
+    if(FB.user?.uid!==uid)return null;
     if(doc.exists){
       const d=doc.data();
+      if(!d['eq-theme'])localStorage.setItem('wb-eq-theme','theme-midnight');
       for(const k of CLOUD_KEYS){
         if(d[k]!==undefined&&d[k]!==null){
           localStorage.setItem('wb-'+k, typeof d[k]==='object'?JSON.stringify(d[k]):String(d[k]));
         }
       }
       if(d.name)localStorage.setItem('wb-name',d.name);
+      if(typeof uiPlayerPanelsProfileLoaded==='function')uiPlayerPanelsProfileLoaded(uid,d);
       return d;
     }
   }catch(e){ console.warn('load profile failed',e); }
@@ -1628,7 +1636,7 @@ async function _fbSaveProfileNow(){ // FIX — التنفيذ الفعلي، م�
   if(!FB.ready||!FB.user)return;
   const data=_buildProfileData();
   // These fields are server-owned under the supplied production Firestore rules.
-  for(const key of ['gold','weekPts','dayPts','monthPts','rank','level','daily-last','daily-streak','lastAdRewardTime','games','wins','best'])delete data[key];
+  for(const key of ['gold','weekPts','dayPts','monthPts','rank','level','daily-last','daily-streak','lastAdRewardTime','games','wins','best','owned'])delete data[key];
   const ref=FB.db.collection('players').doc(FB.user.uid);
   const cosmetic={name:data.name, updated:data.updated}; // FIX
   for(const k of PROFILE_COSMETIC_KEYS)if(data[k]!==undefined)cosmetic[k]=data[k]; // FIX
@@ -1654,6 +1662,8 @@ function uiCostStop(){
   _inviteListening=false;_freqListening=false;_friendsListening=false;
 }
 function uiCostReset(uid){
+  if(typeof uiPlayerPanelsReset==='function')uiPlayerPanelsReset(uid);
+  if(typeof uiNavReset==='function')uiNavReset();
   uiCostStop();UI_COST.uid=uid;UI_COST.generation++;UI_COST.docs.clear();UI_COST.pages={};UI_COST.deleting.clear();
   UI_COST.chatOffset=0;UI_COST.statsAt=0;UI_COST.badgeAt=0;
   FB_FRIENDS=[];FB_FREQS=[];WBMsg._pubCallback=null;WBMsg._prvCallback=null;
@@ -2144,6 +2154,7 @@ function buildChatPanel(panelId, onSend){
 }
 // يعرض فقاعة كلام مؤقتة فوق أفاتار اللاعب ويشغّل الصوت المرافق
 function sendQuickPhrase(ph, bubbleId, panelId){
+  if(bubbleId==='oChatBubble'&&!uiOnlineCanPlay())return;
   playVoice(ph.v);
   const bub=$('#'+bubbleId);
   if(bub){
@@ -2154,7 +2165,7 @@ function sendQuickPhrase(ph, bubbleId, panelId){
   $('#'+panelId).classList.add('hidden');
   if(ONL.active&&ONL.ws&&ONL.ws.readyState===1)oSend({type:'chat',phraseId:ph.v});
 }
-function toggleChatPanel(panelId){ $('#'+panelId).classList.toggle('hidden'); }
+function toggleChatPanel(panelId){ if(panelId==='oChatPanel'&&!uiOnlineCanPlay())return;$('#'+panelId).classList.toggle('hidden'); }
 // NEW CODE — إغلاق تلقائي لصندوقي المحادثة معاً (الفردي والأونلاين، أيهما مفتوح فعلاً). دالة مساعدة واحدة
 // تُستدعى من ٤ مواضع: فتح نافذة وقّف (الفردي والأونلاين)، وتحديد ورقة بدور عادي (الفردي والأونلاين) —
 // تحل تعارض z-index بين الكروت المضيئة (.waqfPlayable ٢٠٠، .sel ٩٩) وصندوق المحادثة (٦٠) بلا لمس أي منهما.
@@ -2228,6 +2239,7 @@ document.querySelectorAll('.oChatTab').forEach(tb=>{ // FIX
 }); // FIX
 // FIX — إرسال نص حر: زر الإرسال أو مفتاح Enter — متاحة فقط بالجلسات الودية (يتحقق السيرفر نفسه أيضاً، هذا فقط لتجربة استخدام أوضح)
 function sendFreeChatText(){ // FIX
+  if(!uiOnlineCanPlay())return;
   const inp=$('#oChatInput'); const text=(inp.value||'').trim(); if(!text)return; // FIX
   if(!(ONL.active&&ONL.ws&&ONL.ws.readyState===1)){ toast2('الدردشة متاحة أونلاين فقط'); return; } // FIX
   oSend({type:'chat',text}); // FIX
@@ -2461,6 +2473,7 @@ function throwAllowed(pIdx,card){
 /* ================= تنفيذ الحركات ================= */
 async function doEat(pIdx,card,targetRank,stealFrom){
   const p=G.players[pIdx]; G.busy=true; G.passStreak=0; stopTurnTimer(); const pileVictims=[];
+  const capturePiles=[]; // v357: keep the public pile source available through the existing pre-auction delay.
   G.lastEater=pIdx; // لتحديد اتجاه طيران الورق المأكول بالأنيميشن (نحو مقعد الآكل)
   p.hand=p.hand.filter(c=>c.id!==card.id);
   GameSoundManager.playActionSound(); // NEW CODE — أكل الميدان أو سرقة الكومة (فردي) — صوت الحركة المتبادل، فوري
@@ -2469,6 +2482,7 @@ async function doEat(pIdx,card,targetRank,stealFrom){
   if(stealFrom!=null){ // سرقة كل المكشوف المتتالي أعلى الكومة
     const q=G.players[stealFrom];
     taken=takeTopRun(q.pile);
+    capturePiles.push({pid:q.i,ids:taken.map(c=>c.id)});
     targetRank=taken[0].rank;
     pileVictims.push(q.name);
   }
@@ -2481,13 +2495,18 @@ async function doEat(pIdx,card,targetRank,stealFrom){
       if(q.i===pIdx||q.i===stealFrom)continue;
       if(G.opts.mode==='team'&&!isOpp(pIdx,q.i))continue;
       const t=pileTop(q);
-      if(t&&t.rank===targetRank){pileVictims.push(q.name);taken.push(...takeTopRun(q.pile))}
+      if(t&&t.rank===targetRank){
+        const run=takeTopRun(q.pile);
+        capturePiles.push({pid:q.i,ids:run.map(c=>c.id)});
+        pileVictims.push(q.name);taken.push(...run);
+      }
     }
   }
   if(stealFrom!=null)toast(`${p.name} أكل كومة ${G.players[stealFrom].name}${fromField?' ومعها ورق الميدان':''}`);
   const contested=[...taken,card];
   contested.forEach(c=>{ if(c.by==null)c.by=pIdx; }); // لتحديد اتجاه الدخول بعرض كومة الوقف (نفس فكرة by بالأونلاين)
   const v=contested.reduce((s,c)=>s+cardVal(c),0);
+  G._captureView={contested,capturePiles};
   render();
   showEatFx('#field',v);
   toast(`أكلة ${p.name} — ${toH(v)} نقطة`);
@@ -2496,7 +2515,7 @@ async function doEat(pIdx,card,targetRank,stealFrom){
   let src;
   if(stealFrom!=null)src=`أكل كومة ${pileVictims.join(' و')}`+(fromField?' ومعها ورق الميدان':'');
   else src=pileVictims.length?`أكل من الميدان وكومة ${pileVictims.join(' و')}`:'أكل من الميدان';
-  await runWaqf(contested,targetRank,pIdx,src);
+  await runWaqf(contested,targetRank,pIdx,src,capturePiles);
   afterMove(false); // الآكل يواصل دوره حتى يرمي
 }
 function doThrow(pIdx,card){
@@ -2515,10 +2534,14 @@ function passTurn(pIdx){
     G.passStreak=0;
     if(G.deck.length){
       let guard=G.deck.length;
-      while(guard-->0&&G.deck[0].rank===JOKER)G.deck.push(G.deck.shift()); // الجوكر لا يُقلب للميدان
-      if(G.deck[0]&&G.deck[0].rank!==JOKER){const c=G.deck.shift();G.field.push(c);toast('انقلبت ورقة من الرزمة للميدان')}
+      while(guard-- > 0 && G.deck[0]?.rank===JOKER) G.deck.push(G.deck.shift()); 
+      const c=G.deck.shift();
+      G.field.push(c);
+      toast('انقلبت ورقة من الرزمة للميدان');
+    } else {
+      endRound();
+      return;
     }
-    else{endRound();return}
   }
   afterMove(true);
 }
@@ -2571,10 +2594,10 @@ function eligibleBidders(rank,holder){
     return q.hand.some(c=>c.rank===rank||c.rank===JOKER);
   }).map(q=>q.i);
 }
-function runWaqf(contested,rank,holder,src){
+function runWaqf(contested,rank,holder,src,capturePiles=[]){
   return new Promise(resolve=>{
-    const st={contested,rank,holder,src:src||'',lastGrab:'',t:5.0,done:false,endgame:isEndgame(),onlyBidder:isEndgame()?(holder+1)%4:null};
-    G.phase='waqf'; G.waqf=st;
+    const st={contested,rank,holder,capturePiles,src:src||'',lastGrab:'',t:5.0,done:false,endgame:isEndgame(),onlyBidder:isEndgame()?(holder+1)%4:null};
+    G.phase='waqf'; G.waqf=st; G._captureView=null;
     show('waqf',true); renderWaqf(); // نافذة وقّف تفتح بعد كل أكلة — دائماً
     closeChatPanels(); // NEW CODE — تعارض z-index بين الكروت وصندوق المحادثة المفتوح
     SFX.waqfOpen();
@@ -2975,6 +2998,8 @@ function show(id,overlay){
   else{$('#waqf').classList.add('hidden');$('#results').classList.add('hidden')}
   $('#'+id).classList.remove('hidden');
   if(!overlay&&typeof uiCommunityRoute==='function')uiCommunityRoute(id);
+  if(!overlay&&typeof uiThemeRoute==='function')uiThemeRoute(id);
+  if(typeof uiNavRoute==='function')uiNavRoute(id,overlay);
   quickScreen(id,overlay); // QUICK-MATCH — فتح/غلق مراقبة العدد عند التنقل فقط
   if(typeof lgAutoWake==='function')lgAutoWake(); // v331: navigation explicitly wakes/stops home admission.
 }
@@ -3065,6 +3090,33 @@ function uiPlayerName(v,pid){
   const name=String(v.names[pid]||'لاعب');
   return v.autoControlled&&v.autoControlled[pid]?name.replace(/ · تحكم تلقائي$/,''):name;
 }
+// v357 — presentation of disputed piles; authoritative ownership and scoring stay in game state.
+function uiAuctionSources(w){
+  const available=new Set((w?.contested||[]).map(c=>String(c.id))),seen=new Set();
+  return (Array.isArray(w?.capturePiles)?w.capturePiles:[]).flatMap(source=>{
+    if(source?.pid==null||!Array.isArray(source.ids))return [];
+    const ids=source.ids.filter(id=>{const key=String(id);if(!available.has(key)||seen.has(key))return false;seen.add(key);return true;});
+    return ids.length?[{pid:source.pid,ids}]:[];
+  });
+}
+function uiAuctionCards(w){
+  const held=new Set(uiAuctionSources(w).flatMap(source=>source.ids.map(String)));
+  return (w?.contested||[]).filter(c=>!held.has(String(c.id)));
+}
+function uiAuctionPile(w,pid,pile){
+  const source=uiAuctionSources(w).find(source=>String(source.pid)===String(pid));
+  if(!source)return {...pile,pendingCount:0};
+  const top=(w.contested||[]).find(c=>String(c.id)===String(source.ids[0]));
+  return {...pile,count:(pile.count||0)+source.ids.length,top,pendingCount:source.ids.length};
+}
+function uiMarkAuctionPile(el,pile){
+  el.classList.toggle('uiPileTarget',pile.pendingCount>0);
+  if(pile.pendingCount>0){
+    const label=document.createElement('span');label.className='uiAuctionTargetLabel';label.textContent='قيد المزايدة';
+    label.setAttribute('title',String(pile.pendingCount)+' ورقة محل المزايدة');el.appendChild(label);
+  }
+}
+
 // v352 — presentation metrics derived from the authoritative count; never written to game state.
 function uiPileMetrics(total){
   const value=Number(total),count=Number.isFinite(value)?Math.max(0,Math.floor(value)):0;
@@ -3178,6 +3230,7 @@ function renderDeck(){
   }
   if(!layers){const ph=document.createElement('div');ph.className='card sm';ph.style.opacity='.25';ds.appendChild(ph)}
   ds.insertAdjacentHTML('beforeend',`<div class="cnt">${toH(n)}</div>`);
+  if(typeof uiScheduleDrawStock==='function')uiScheduleDrawStock(false);
 }
 function renderBoard(){
   const b=$('#board');
@@ -3297,32 +3350,56 @@ function renderScatterField(container,fieldArr,opts){
 const STACK_DIR_UNIT={0:{x:0,y:1},1:{x:1,y:0},2:{x:0,y:-1},3:{x:-1,y:0}};
 const STACK_ENTER_DIST=42; // مسافة انطلاق الورقة من جهة صاحبها قبل ما تصل مركز الكومة
 
-/** v355: vertical card layers, each exposing its lower edge only.
- * Earlier cards add bounded paper thickness. The newest face stays centered; one contact shadow only.
+/** v361: a card keeps its own seat axis and repeatable, varied landing pose.
+ * Only the next two real table cards contribute a small retained contact shift.
+ * Rebuilding the same auction reconstructs the same overlap without stored offsets.
  */
+function uiBidPoseHash(card,index){
+  const text=String(card&&card.id!=null?card.id:'')+'|'+Math.max(0,Math.floor(Number(index)||0));
+  let hash=2166136261;
+  for(let i=0;i<text.length;i++)hash=Math.imul(hash^text.charCodeAt(i),16777619)>>>0;
+  hash=Math.imul(hash^(hash>>>16),2246822507)>>>0;
+  return (hash^(hash>>>13))>>>0;
+}
+function uiBidCardPose(card,index,direction={x:0,y:1},cards=[],directionForCard=null){
+  const n=Math.max(0,Math.floor(Number(index)||0)),hash=uiBidPoseHash(card,n);
+  const dx=Number(direction?.x)||0,dy=Number(direction?.y)||0;
+  const side=Math.abs(dx)>Math.abs(dy),sign=(side?dx:dy)<0?-1:1;
+  const tilt=(hash&1?-1:1)*(5+(hash>>>4)%10);
+  const pose=side?{x:sign*3+(hash>>>9)%3-1,y:(hash>>>12)%7-3,angle:(sign<0?90:-90)+tilt}
+    :{x:(hash>>>9)%9-4,y:sign*20+(hash>>>12)%7-3,angle:tilt};
+  for(let step=1;step<=2;step++){
+    const next=cards[n+step];if(!next)break;
+    const h=uiBidPoseHash(next,n+step),weight=step===1?1:.45;
+    const axis=(typeof directionForCard==='function'?directionForCard(next):null)||direction||{x:0,y:1};
+    const ax=Number(axis.x)||0,ay=Number(axis.y)||0,length=Math.hypot(ax,ay)||1;
+    const push=1.5+(h>>>5)%5*.12,cross=((h>>>11)%5-2)*.15;
+    pose.x+=(-ax/length*push-ay/length*cross)*weight;
+    pose.y+=(-ay/length*push+ax/length*cross)*weight;
+    pose.angle+=(h&1?-1:1)*(1.1+(h>>>16)%5*.09)*weight;
+  }
+  return pose;
+}
 function renderBidStack(container,cards,opts){
   const {prevIds,dirForCard,size={w:54,h:77}}=opts;
-  const shown=cards.slice(-8),metrics=uiPileMetrics(cards.length);
-  const layers=Math.max(0,shown.length-1),hidden=Math.max(0,metrics.count-shown.length);
-  const depth=hidden?Math.min(5,Math.log2(hidden+1)):0;
-  container.classList.add('uiBidStackFlat','uiBidStackPaper');
+  const shown=cards.slice(-8),metrics=uiPileMetrics(cards.length),start=cards.length-shown.length;
+  container.classList.add('uiBidStackFlat','uiBidStackPaper','uiBidStackNatural');
   container.dataset.pileCount=String(metrics.count);
   container.style.setProperty('--ui-bid-card-w',size.w+'px');
   container.style.setProperty('--ui-bid-card-h',size.h+'px');
   container.style.setProperty('--ui-bid-stack-x','0px');
-  container.style.setProperty('--ui-bid-stack-y',(layers*3)+'px');
-  container.style.setProperty('--ui-bid-stack-depth',(+depth.toFixed(2))+'px');
+  container.style.setProperty('--ui-bid-stack-y','0px');
+  container.style.setProperty('--ui-bid-stack-depth','0px');
   shown.forEach((c,i)=>{
-    const el=cardEl(c,'sm'),back=shown.length-1-i,dx=0,dy=back*3;
+    const ax=dirForCard(c)||{x:0,y:1},el=cardEl(c,'sm'),pose=uiBidCardPose(c,start+i,ax,cards,dirForCard),dx=pose.x,dy=pose.y;
     el.style.width=size.w+'px';el.style.height=size.h+'px';
     el.style.position='absolute';el.style.zIndex=i+1;
     el.style.transformOrigin='center center';el.style.left='50%';el.style.top='50%';
-    const finalT=`translate(-50%,-50%) translate(${dx}px,${dy}px)`;
-    el.style.transform=finalT;el.style.transition='none';el.style.boxShadow='none';
+    const finalT=`translate(-50%,-50%) translate(${dx}px,${dy}px) rotate(${pose.angle}deg)`;
+    el.style.transform=finalT;el.style.transition='none';
     if(!window.UICardFlow&&!prevIds.has(c.id)){
-      const ax=dirForCard(c);
       uiCardMotion(el,[
-        {transform:`translate(-50%,-50%) translate(${dx+ax.x*STACK_ENTER_DIST}px,${dy+ax.y*STACK_ENTER_DIST}px)`,opacity:1},
+        {transform:`translate(-50%,-50%) translate(${dx+ax.x*STACK_ENTER_DIST}px,${dy+ax.y*STACK_ENTER_DIST}px) rotate(${pose.angle-ax.x*7+ax.y*3}deg) scale(1.06)`,opacity:1},
         {transform:finalT,opacity:1}
       ],{duration:300,easing:'cubic-bezier(.22,.7,.26,1)'});
     }
@@ -3342,6 +3419,7 @@ function applyHandSpacing(handEl,count){
 
 function render(){
   if(!G.players)return;
+  if(typeof uiPlayerPanelsRoom==='function')uiPlayerPanelsRoom('local');
   renderDeck(); renderBoard();
   if(!G.waqf)$('#meWaqfBtn').disabled=true;
   $('#meWaqfBtn').classList.toggle('hidden',G.opts.mode==='solo');
@@ -3351,8 +3429,9 @@ function render(){
     const p=G.players[i], el=$('#'+SEAT_IDS[i]), turn=G.turn===i&&G.phase==='turn';
     const isHolder=G.waqf&&!G.waqf.done&&G.waqf.holder===p.i;
     const holderVal=isHolder?G.waqf.contested.reduce((s,c)=>s+cardVal(c),0):0;
-    const run=topRunLen(p.pile);
-    renderSeatCard(el,{
+    const shown=uiAuctionPile(G.waqf||G._captureView,p.i,{top:pileTop(p),count:p.pile.length});
+    const run=shown.pendingCount||topRunLen(p.pile);
+    const pb=renderSeatCard(el,{
       turn,
       holderBadgeHtml:isHolder?`<div class="holderVal">${toH(holderVal)}</div>`:'',
       avaHtml:p.ava,
@@ -3360,9 +3439,11 @@ function render(){
       handCount:toH(p.hand.length),
       pts:toH(teamPts(p)), // FIX — كان pilePts(p): بالجماعي يعرض الآن مجموع الفريق (يطابق نسبة التعبئة)
       pct:goalPct(teamPts(p),G.tierGoal), teamScore:G.opts.mode==='team',
-      pileTopCard:pileTop(p),pileCount:p.pile.length,
-      pileBadgeHtml:(run>1?`<div class="runB">×${toH(run)}</div>`:'')+uiPileCountHTML(p.pile.length,'cnt')
+      pileTopCard:shown.top,pileCount:shown.count,
+      pileBadgeHtml:(run>1?`<div class="runB">×${toH(run)}</div>`:'')+uiPileCountHTML(shown.count,'cnt')
     });
+    uiMarkAuctionPile(pb,shown);
+    if(typeof uiPaintPlayerPanel==='function')uiPaintPlayerPanel(el,{tone:i,bot:true});
   }
   // أنا
   const me=G.players[0],myTurn=G.turn===0&&G.phase==='turn'&&!G.busy;
@@ -3370,13 +3451,15 @@ function render(){
   id.classList.toggle('turnGlow',myTurn);
   const _av=myAvatar();const _avTxt=AV_PRO.find(a=>a.id===_av)?'🛡️':_av;
   id.innerHTML=`${myTurn?'<div class="bubble">دورك</div>':''}<div class="nm">${me.name}${me.team!=null?' 🤝':''}</div><div class="ava">${_avTxt}</div>`;
+  if(typeof uiPaintPlayerPanel==='function')uiPaintPlayerPanel(id,{tone:0,uid:FB.user?.uid,self:true});
   const mp=$('#myPile');mp.innerHTML=`<span class="pts"><i class="ptsFill" style="width:${goalPct(teamPts(me),G.tierGoal)}%"></i><b>${toH(teamPts(me))} <small>${G.opts.mode==='team'?'للفريق':'نقطة'}</small></b></span>`; // FIX — كان pilePts(me) بلا تعبئة
-  const mt=pileTop(me);
-  if(mt){const w=document.createElement('div');w.style.position='relative';w.appendChild(uiPileCard(mt,me.pile.length));
-    const myRun=topRunLen(me.pile);
+  const shownMine=uiAuctionPile(G.waqf||G._captureView,0,{top:pileTop(me),count:me.pile.length});
+  const mt=shownMine.top;
+  if(mt){const w=document.createElement('div');w.style.position='relative';w.appendChild(uiPileCard(mt,shownMine.count));
+    const myRun=shownMine.pendingCount||topRunLen(me.pile);
     if(myRun>1)w.insertAdjacentHTML('beforeend',`<div class="runB">×${toH(myRun)}</div>`);
-    w.insertAdjacentHTML('beforeend',uiPileCountHTML(me.pile.length,'cnt'));
-    mp.appendChild(w)}
+    w.insertAdjacentHTML('beforeend',uiPileCountHTML(shownMine.count,'cnt'));
+    uiMarkAuctionPile(w,shownMine);mp.appendChild(w)}
   // الميدان — تدخل الورقة من اتجاه من رماها وتطير بتجاه من أكلها (منطق مشترك مع الأونلاين عبر renderScatterField)
   const fld=$('#field');
   const flbl=$('#fieldLbl'); if(flbl)flbl.textContent=G.field.length?`الميدان · ${toH(G.field.length)} ورقة`:'الميدان فاضي';
@@ -3468,6 +3551,7 @@ function humanSteal(qi){
 /* ---- واجهة وقّف ---- */
 function renderWaqf(){
   const st=G.waqf;if(!st)return;
+  $('#waqf').classList.add('uiAuctionOverlay');
   const nmStyle='color:var(--peach2);font-size:22px';
   const verb=st.holder===0?(st.src||'أكل').replace(/^أكل/,'أكلت'):(st.src||'أكل');
   const srcLine=st.lastGrab?st.lastGrab:`<b style="${nmStyle}">${G.players[st.holder].name}</b> ${verb}`;
@@ -3475,7 +3559,7 @@ function renderWaqf(){
   $('#waqfWho').innerHTML=`${endgameBadge}${srcLine} — ${rankAr(st.rank)}<br><span style="font-size:14px;opacity:.85">آخر من يقول «وقّف» قبل نهاية العدّ يفوز بها</span>`;
   const ct=$('#contested');ct.innerHTML='';
   G._stackJitter=G._stackJitter||new Map(); // إزاحة/ميلان عشوائي ثابت لكل ورقة — يُحسب مرة واحدة فقط عشان الكومة ما تهتز بإعادة الرسم
-  G._lastContestedIds=renderBidStack(ct,st.contested,{
+  G._lastContestedIds=renderBidStack(ct,uiAuctionCards(st),{
     jitterMap:G._stackJitter,
     prevIds:G._lastContestedIds||new Set(),
     dirForCard:c=>STACK_DIR_UNIT[c.by!=null?c.by:0]
@@ -3707,7 +3791,10 @@ async function switchToPoll(){
   while(ONL.queue.length)oPost(ONL.queue.shift()); // فرّغ ما تراكم أثناء محاولات ws
   oPollLoop();
 }
-function oAction(a){ ONL.lastSent=a.t; oSend({type:'action',action:a}); }
+function oAction(a){
+  if(['eat','steal','throw','bid','pass'].includes(a.t)&&!uiOnlineCanPlay())return;
+  ONL.lastSent=a.t;oSend({type:'action',action:a});
+}
 function enterOnline(){
   ac();
   // ملاحظة: تصفير pendingTier لا يتم هنا — هذي الدالة مشتركة ويستدعيها مسار البحث عن مباراة نفسه بعد ضبط الطبقة مباشرة.
@@ -3716,7 +3803,9 @@ function enterOnline(){
   let room=params.get('room');
   if(!room){room=Math.random().toString(36).slice(2,8);params.set('room',room);
     history.replaceState(null,'',location.pathname+'?'+params.toString());}
-  ONL.room=room; ONL.active=true; ONL.sel=null; ONL.namedSent=false; ONL.transport='ws'; ONL.wsFails=0; ONL.queue=[]; ONL.pollSeq=0; ONL.status=null;
+  ONL.room=room; ONL.active=true; ONL.sel=null; ONL.namedSent=false; ONL.transport='ws'; ONL.wsFails=0; ONL.queue=[]; ONL.pollSeq=0; ONL.status=null; ONL.view=null; ONL.you=null;
+  if(typeof uiPlayerPanelsRoom==='function')uiPlayerPanelsRoom('online:'+room);
+  if(typeof uiSyncOnlineAudience==='function')uiSyncOnlineAudience();
   uiSessionStartReset();
   ONL.spectateOnly=params.get('spectate')==='1'; // NEW CODE — نقرأها طازجة بكل دخول (لا نعتمد على حالة سابقة قد تكون باقية من زيارة تانية)
   let pid=localStorage.getItem('wb-player-id')||sessionStorage.getItem('wb-player-id');
@@ -3829,6 +3918,8 @@ function leaveOnline(){
   if(ONL.iv){clearInterval(ONL.iv);ONL.iv=null}
   if(ONL.ws){try{if(ONL.ws.readyState===1)ONL.ws.send(JSON.stringify({type:'leave'}));}catch(e){} try{ONL.ws.onclose=null;ONL.ws.close()}catch(e){}} // NEW CODE — أضفنا إرسال leave قبل الإغلاق: يفعّل عقوبة السيرفر الفورية بدل انتظار مهلة الحضور
   ONL.ws=null;ONL.view=null;ONL.status=null;ONL.pollGen++;ONL.transport='ws';
+  if(typeof uiSyncOnlineAudience==='function')uiSyncOnlineAudience();
+  if(typeof uiPlayerPanelsRoom==='function')uiPlayerPanelsRoom('');
   if(ONL.hbIv){clearInterval(ONL.hbIv);ONL.hbIv=null} // NEW CODE — إيقاف النبضة عند مغادرة الطاولة فعلياً
   if(FB.ready&&FB.user){ try{ FB.db.collection('players').doc(FB.user.uid).set({activeRoom:null},{merge:true}); }catch(e){} }
   history.replaceState(null,'',location.pathname);
@@ -3946,6 +4037,7 @@ function expressionArt(r){
   return `<i class="expressionArt" aria-hidden="true" style="background-position:${(r.sprite%4)*100/3}% ${Math.floor(r.sprite/4)*100}%"></i>`;
 }
 function openReactionsPanel(){
+  if(!uiOnlineCanPlay())return;
   if(document.getElementById('reactBackdrop'))return;
   const sc=$('#onl');
   const wrap=document.createElement('div');wrap.id='reactBackdrop';
@@ -3983,6 +4075,7 @@ function openReactionsPanel(){
   wrap.querySelector('.expressionClose').focus();
 }
 function sendReaction(reactId,targetPid){
+  if(!uiOnlineCanPlay())return;
   if(!ONL.view||!ONL.view.seats.includes(targetPid)||targetPid===ONL.you)return;
   if(!EXPRESSIONS.some(r=>r.id===reactId))return;
   if(!(ONL.active&&ONL.ws&&ONL.ws.readyState===1)){oToast('التعبيرات متاحة أثناء الاتصال بالطاولة');return;}
@@ -4229,7 +4322,9 @@ function attachHandCardDrag(el,c,isMyTurnNow,opts){
   el.addEventListener('pointercancel',finish);
 }
 function renderOnl(){
+  if(typeof uiSyncOnlineAudience==='function')uiSyncOnlineAudience();
   if(!ONL.active)return;
+  if(typeof uiPlayerPanelsRoom==='function')uiPlayerPanelsRoom('online:'+ONL.room);
   const st=ONL.status;
   if(st==='lobby'||st==='waiting'){renderLobby();return}
   $('#onlWait').classList.add('hidden');
@@ -4291,7 +4386,7 @@ function renderOnl(){
   }else if(ONL._holdUntil){
     ONL._holdUntil=0; // خلصت المهلة، ارجع للحالة الحقيقية الحالية
   }
-  const seated=v.me===ONL.you&&v.seats.includes(ONL.you);
+  const seated=uiOnlineCanPlay();
   uiRenderSpectatorStatus(v,seated);
   ONL.viaInviteJoin=false;
   oSfxFromLog(v.log);
@@ -4316,9 +4411,9 @@ function renderOnl(){
   // مقاعد الخصوم الثلاثة (منطق مشترك مع الفردي عبر renderSeatCard)
   for(const k of [1,2,3]){
     const pid=seatAt(k), el=seatEls[k];
-    const p=v.piles[pid];
+    const p=uiAuctionPile(v.waqf,pid,v.piles[pid]);
     const hisTurn=v.phase==='turn'&&v.turn===pid;
-    const mate=(v.mode==='team'&&teamOf(pid)===teamOf(me));
+    const mate=seated&&(v.mode==='team'&&teamOf(pid)===teamOf(me));
     const isHolder=v.phase==='waqf'&&v.waqf&&v.waqf.holder===pid;
     const holderVal=isHolder?v.waqf.contested.reduce((s,c)=>s+cardVal(c),0):0;
     const seatUid=isBot(pid)?null:(v.uids&&v.uids[pid]); // NEW CODE — نحلّه وقت البناء، لا وقت النقر لاحقاً (نفس نمط addFriendBtnHTML الحالي)
@@ -4336,6 +4431,8 @@ function renderOnl(){
       pileBadgeHtml:uiPileCountHTML(p.count),
       onAvaClick:seatUid?(()=>MiniProfile.open(seatUid,seatName,seatAva)):null // NEW CODE — بوت أو بلا uid موثّق = بلا تفاعل إطلاقاً
     });
+    uiMarkAuctionPile(pb,p);
+    if(typeof uiPaintPlayerPanel==='function')uiPaintPlayerPanel(el,{tone:v.seats.indexOf(pid),uid:seatUid,bot:isBot(pid),self:pid===ONL.you});
     // سرقة هذه الكومة؟
     pb.classList.remove('stealable');pb.onclick=null;
     if(myTurn&&ONL.sel&&p.top){
@@ -4354,6 +4451,7 @@ function renderOnl(){
   for(let i=0;i<layers;i++){const bk=cardEl(null,'sm');bk.style.position='absolute';bk.style.top=(-i*2.5)+'px';bk.style.right=(i*2)+'px';ds.appendChild(bk)}
   if(!layers){const ph=document.createElement('div');ph.className='card sm';ph.style.opacity='.25';ds.appendChild(ph)}
   ds.insertAdjacentHTML('beforeend',`<div class="cnt">${v.deckCount}</div>`);
+  if(typeof uiScheduleDrawStock==='function')uiScheduleDrawStock(true);
   // الميدان — أثناء معركة وقّف نعرض التكديس بدل الأوراق المبعثرة العادية
   const fld=$('#oField');
   const waqfActive=v.phase==='waqf'&&v.waqf;
@@ -4376,8 +4474,7 @@ function renderOnl(){
     clearTimeout(ONL._fieldHideTimeout); // FIX
     ONL._lastFieldMap=new Map(); // FIX
     const stk=$('#oWaqfStack');stk.innerHTML='';
-    const all=v.waqf.contested; // v354 — retain the full count; show up to eight distinct real card edges.
-    const settling=!!ONL._settleInfo;
+    const all=uiAuctionCards(v.waqf); // v357 — targeted pile cards remain at their owners until settlement.
     ONL._stackJitter=ONL._stackJitter||new Map(); // إزاحة/ميلان عشوائي لكل ورقة يُحسب مرة واحدة فقط ويُحفظ — بدونه كانت الكومة ستهتز بعشوائية جديدة بكل رسم
     // v350 — نفس حجم الكومة المسطحة في المحلي والأونلاين، مع حفظ اتجاه المزايدة والحسم.
     ONL._lastStackIds=renderBidStack(stk,all,{
@@ -4385,7 +4482,7 @@ function renderOnl(){
       prevIds:ONL._lastStackIds||new Set(),
       size:{w:54,h:77}, // v350 — حجم الكومة المعتمد في المعاينة
       dirForCard:c=>{
-        const targetPid=settling?v.waqf.holder:(c.by!=null?c.by:v.waqf.holder);
+        const targetPid=c.by!=null?c.by:v.waqf.holder;
         return STACK_DIR_UNIT[kOf(targetPid)];
       }
     });
@@ -4402,23 +4499,25 @@ function renderOnl(){
   });
   }
   // أنا (أو، لو أنا مشاهد، أعرض أول لاعب فعلي بدل بيانات فارغة باسم "أنت")
-  const bottomPid=seated?me:v.seats[0];
+  const bottomPid=seatAt(0); // v365 — preserve the same perspective as card motion, expressions and timer rings.
   const id=$('#oIdent');
-  id.classList.toggle('turnGlow',myTurn);
+  const bottomTurn=v.phase==='turn'&&v.turn===bottomPid;
+  id.classList.toggle('turnGlow',bottomTurn);
   const auto=!!(v.autoControlled&&v.autoControlled[bottomPid]);
   const resume=seated&&auto&&v.canResumeControl===true;
-  id.innerHTML=`${myTurn?'<div class="bubble">دورك</div>':''}<div class="uiSelfName"><div class="nm">${esc(uiPlayerName(v,bottomPid))}</div>${resume?'<button id="uiResumeControl" type="button" title="إلغاء التحكم التلقائي والعودة للعب اليدوي">أستعيد التحكم</button>':auto?'<span class="uiAutoText">تحكم تلقائي</span>':''}</div><div class="ava">${seated?avatarHTML(myAvatar(),52):avatarHTML(v.avatars&&v.avatars[bottomPid],52)}</div>`;
+  id.innerHTML=`${bottomTurn?'<div class="bubble">'+(seated?'دورك':'دوره')+'</div>':''}<div class="uiSelfName"><div class="nm">${esc(uiPlayerName(v,bottomPid))}</div>${resume?'<button id="uiResumeControl" type="button" title="إلغاء التحكم التلقائي والعودة للعب اليدوي">أستعيد التحكم</button>':auto?'<span class="uiAutoText">تحكم تلقائي</span>':''}</div><div class="ava">${seated?avatarHTML(myAvatar(),52):avatarHTML(v.avatars&&v.avatars[bottomPid],52)}</div>`;
+  if(typeof uiPaintPlayerPanel==='function')uiPaintPlayerPanel(id,{tone:v.seats.indexOf(bottomPid),uid:v.uids&&v.uids[bottomPid],bot:isBot(bottomPid),self:seated});
   syncTargetExpressions();
   if(resume)$('#uiResumeControl').onclick=()=>{
     if(ONL.transport!=='poll'&&(!ONL.ws||ONL.ws.readyState!==1)){oToast('انتظر عودة الاتصال لاستعادة التحكم');return;}
     oSend({type:'resume-control'});
     $('#uiResumeControl').textContent='جارٍ الاستعادة…';
   };
-  const myPile=v.piles[bottomPid]||{points:0,count:0,top:null};
+  const myPile=uiAuctionPile(v.waqf,bottomPid,v.piles[bottomPid]||{points:0,count:0,top:null});
   const myDisplayPts=v.piles[bottomPid]?teamCombinedPts(bottomPid):0; // FIX — كان myPile.points فقط: بالجماعي يعرض الآن مجموع الفريق
   const mp=$('#oMyPile');mp.innerHTML=`<span class="pts"><i class="ptsFill" style="width:${goalPct(myDisplayPts,v.tierGoal)}%"></i><b>${toH(myDisplayPts)} <small>${v.mode==='team'?'للفريق':'نقطة'}</small></b></span>`;
   if(myPile.top){const w2=document.createElement('div');w2.style.cssText='display:flex;align-items:center;gap:4px';w2.appendChild(uiPileCard(myPile.top,myPile.count));
-    w2.insertAdjacentHTML('beforeend',uiPileCountHTML(myPile.count));mp.appendChild(w2)}
+    w2.insertAdjacentHTML('beforeend',uiPileCountHTML(myPile.count));uiMarkAuctionPile(w2,myPile);mp.appendChild(w2)}
   // يدي — تباعد ديناميكي يملأ الشاشة (نفس الفردي)
   const hd=$('#oHand');
   const anyTop=k=>{const pid=seatAt(k);const t=v.piles[pid].top;if(!t)return false;
@@ -4439,11 +4538,7 @@ function renderOnl(){
     for(let k=1;k<=3;k++){const t=anyTop(k);if(t&&(c.rank===JOKER||t.rank===c.rank))out.push({t:'steal',cardId:c.id,from:seatAt(k)});}
     return out;
   };
-  if(!seated){
-    // مشاهد: ما يشوف وجوه الورق (نفس أي خصم)، بس يشوف عددها — ظهر كومة مغلقة بعدد بطاقات بوتومPid
-    const cnt=v.handCounts[bottomPid]||0;
-    hd.insertAdjacentHTML('beforeend',`<div style="display:flex;align-items:center;justify-content:center;height:100%;gap:8px;color:var(--sand);font-weight:800;font-size:15px"><span style="font-size:22px">🂠</span> ${cnt} ورقة بيده</div>`);
-  }else{
+  if(seated){ // v365 — spectator has a dedicated viewing footer, never a participant hand.
   const mh=sortHandPriority(v.myHand||[]); // نفس منطق الفردي: جوكر، متكرر كمجموعة، ثم فريد
   applyHandSpacing(hd,mh.length); // REVERT
   for(const [i,c] of mh.entries()){
@@ -4924,28 +5019,20 @@ $('#oSnd').onclick=()=>{muted=!muted;uiSoundButtons();if(!muted){ac();SFX.tick()
 // طاولات: تغيّر تدرّج خلفية الطاولة. ظهر الورق: يغيّر تدرّج ظهر البطاقة.
 const BGV='?v64'; // FIX — استبدلت صورة ثيم المجلس الشعبي بالصورة المتّفق عليها فعلياً (كانت الموقعة تعرض صورة أقدم من قبل هذا الاتفاق) // FIX — كسر كاش صورة المجلس الشعبي: أُعيدت بدقتها الأصلية بلا تكبير مصطنع (كان يسبب بكسلة/تنعيماً) // FIX — صورة المجلس الشعبي الجديدة (بالنوافذ الظاهرة) // كسر كاش الصور — حدّثه مع كل تغيير لملفات bg
 const SHOP_THEMES=[
-  {id:'theme-emerald',name:'النادي الزمردي',price:0,bg:'ui-art/room-emerald.svg',preview:'ui-art/room-emerald.svg',table:'ui-art/table-emerald.svg'},
-  {id:'theme-midnight',name:'الليلة الكحلية',price:0,bg:'ui-art/room-midnight.svg',preview:'ui-art/room-midnight.svg',table:'ui-art/table-midnight.svg'},
-  {id:'theme-royal',name:'المجلس الملكي',price:0,bg:'ui-art/room-royal.svg',preview:'ui-art/room-royal.svg',table:'ui-art/table-royal.svg'},
-  {id:'theme-popular', name:'المجلس الشعبي', icon:'🏺', price:10000, grad:'radial-gradient(130% 90% at 50% 30%, #6e3a20 0%, #3a2012 85%)', bg:'ui-art/majlis-popular-realistic.png', preview:'ui-art/majlis-popular-realistic.png', table:'ui-art/table-popular.svg'}, // NEW CODE — لم تعد مجانية، صار للسجاد الفارسي هذا الدور
-  // FIX — حُذفت الديوانية والنفود والواحة والنادي: بقي المجلس الشعبي والسجّاد الفارسي فقط بطلبك
-  {id:'theme-persian',name:'السجّاد الفارسي', icon:'🪆', price:0, grad:'radial-gradient(130% 90% at 50% 30%, #6b2a22 0%, #2a1010 85%)', bg:'bg/majlis-persian.jpg'+BGV, preview:'bg/majlis-persian-preview.jpg'+BGV}, // NEW CODE — صارت الخلفية المجانية الافتراضية الجديدة بدل المجلس الشعبي، بطاولة table-center الافتراضية
+  {id:'theme-emerald',name:'ديوانية الرفاق',price:2000,bg:'ui-art/rooms-v362/diwaniya-room.webp',preview:'ui-art/rooms-v362/diwaniya-room.webp',table:'ui-art/rooms-v362/diwaniya-table.webp'},
+  {id:'theme-midnight',name:'قهوة الأولين',price:0,bg:'ui-art/rooms-v362/cafe-room.webp',preview:'ui-art/rooms-v362/cafe-room.webp',table:'ui-art/rooms-v362/cafe-table.webp'},
+  {id:'theme-royal',name:'كشتة البر',price:2000,bg:'ui-art/rooms-v362/camp-room.webp',preview:'ui-art/rooms-v362/camp-room.webp',table:'ui-art/rooms-v362/camp-table.webp'},
+  {id:'theme-popular', name:'بيت الشعر', icon:'🏺', price:2000, grad:'radial-gradient(130% 90% at 50% 30%, #6e3a20 0%, #3a2012 85%)', bg:'ui-art/rooms-v362/sadu-room.webp', preview:'ui-art/rooms-v362/sadu-room.webp', table:'ui-art/rooms-v362/sadu-table.webp'},
+  {id:'theme-persian',name:'السجّاد الفارسي', icon:'🪆', price:2000, grad:'radial-gradient(130% 90% at 50% 30%, #6b2a22 0%, #2a1010 85%)', bg:'bg/majlis-persian.jpg'+BGV, preview:'bg/majlis-persian-preview.jpg'+BGV},
 ];
 // NEW CODE — حُذفت مصفوفة SHOP_BACKS بالكامل (كانت هنا) — قسم "ظهر الورق" أُلغي نهائياً من المتجر
 // حُذفت مصفوفة SHOP_EFFECTS (كانت هنا) — نظام تأثيرات الإشعارات أُلغي بالكامل
 function shopOwned(){
-  let o; try{ o=JSON.parse(localStorage.getItem('wb-owned')||'["theme-persian","back-default"]'); }catch(e){ o=['theme-persian','back-default']; }
-  if(!Array.isArray(o))o=['theme-persian','back-default'];
-  // ترحيل: كانت "الديوانية" مجانية وصارت مدفوعة — أي لاعب مفعّل عليها حالياً يحتفظ بملكيتها تلقائياً (لا يُطالَب بالشراء رجعياً لشي كان يملكه فعلياً وهو مجاني)
-  // FIX — ترحيل الديوانية القديم حُذف (الثيم نفسه أُلغي) — التطبيع الدفاعي صار داخل applyTheme
-  // NEW CODE — ترحيل: السجّاد الفارسي صار الخلفية المجانية الجديدة للجميع (حتى اللاعبين الحاليين اللي انحفظت بياناتهم قبل وجوده)
-  if(!o.includes('theme-persian')){
-    o=[...o,'theme-persian']; try{localStorage.setItem('wb-owned',JSON.stringify(o));}catch(e){}
-  }
-  return o;
+  return SHOP_THEMES.filter(t=>uiThemeAccess(t.id).active).map(t=>t.id);
 }
+
 function shopEquipped(kind){
-  const dflt=kind==='theme'?'theme-persian':'back-default'; // NEW CODE — الافتراضي الجديد للاعبين اللي ما اختاروا ثيم صراحة
+  const dflt=kind==='theme'?'theme-midnight':'back-default'; // NEW CODE — الافتراضي الجديد للاعبين اللي ما اختاروا ثيم صراحة
   try{return localStorage.getItem('wb-eq-'+kind)||dflt}catch(e){return dflt}
 }
 // NEW CODE (توحيد نسخة آيفون) — علم إظهار المتجر: كان ثابتاً يدوياً (SHOW_STORE=false) بنسخة آيفون فقط لإخفاء المتجر (باقات Paymob
@@ -4991,29 +5078,23 @@ function checkPaymentReturn(){ // NEW CODE
 function applyEquippedTheme(uiThemeOverride){
   try{
     uiMigrateThemeChoice();
-    let th=SHOP_THEMES.find(t=>t.id===shopEquipped('theme'));
-    if(!th){ th=SHOP_THEMES.find(t=>t.id==='theme-persian'); try{localStorage.setItem('wb-eq-theme','theme-persian');}catch(e){} } // FIX — أي ثيم محذوف مركَّباً يُثبَّت على الفارسي بالتخزين نفسه
+    let th=SHOP_THEMES.find(t=>t.id===uiThemeResolve());
+    if(!th){ th=SHOP_THEMES.find(t=>t.id==='theme-midnight'); try{localStorage.setItem('wb-eq-theme','theme-midnight');}catch(e){} } // FIX — أي ثيم محذوف مركَّباً يُثبَّت على الفارسي بالتخزين نفسه
     if(!th)return;
     const bgVal=th.bg?`url('${th.bg}') center/cover no-repeat`:th.grad;
     const g=$('#game'),o=$('#onl');
-    if(g)g.style.background=bgVal;
-    if(o)o.style.background=bgVal;
+    const illustratedRoom=!!th.bg&&th.bg.startsWith('ui-art/rooms-v362/');
+    for(const el of [g,o]){
+      if(!el)continue;
+      el.style.background=bgVal;
+      // v362 — keep the selected room paired with its table during league matches too.
+      if(illustratedRoom)el.style.setProperty('background-image',`url('${th.bg}')`,'important');
+    }
     const tableUrl=th.table||'bg/table-center.png'+(typeof BGV!=='undefined'?BGV:''); // NEW CODE — طاولة الثيم الخاصة، أو الافتراضية
     document.querySelectorAll('.tableWood').forEach(el=>{el.style.backgroundImage=`url('${tableUrl}')`});
   }catch(e){}
 }
 /* ================= الصدارة ================= */
-// بلا خادم اقتصادي: نعرض اللاعب ضمن ترتيب أبطال افتراضيين (ثابتين) حسب ذهبه
-const LB_CHAMPIONS=[
-  {name:'أبو سلطان', ava:'🦅', gold:184500, lv:47, rpts:11200},
-  {name:'نمر القصيم', ava:'🐯', gold:97200, lv:38, rpts:8400},
-  {name:'صقر نجد',   ava:'🦉', gold:61800, lv:31, rpts:6600},
-  {name:'الفارس',    ava:'🏇', gold:38400, lv:26, rpts:4300},
-  {name:'أم فهد',    ava:'🌙', gold:24900, lv:22, rpts:3100},
-  {name:'بو ناصر',   ava:'⚔️', gold:15300, lv:18, rpts:2200},
-  {name:'ريمة',      ava:'🦌', gold:9600,  lv:14, rpts:1400},
-  {name:'خالد',      ava:'🎯', gold:5200,  lv:11, rpts:650},
-];
 let viewedProfile=null;
 let uiProfileReturn='home';
 function uiRememberProfileOrigin(){
@@ -5227,49 +5308,7 @@ function openAwards(){
 
 
 /* ================= شريط التنقّل الموحّد ================= */
-const NAV_ITEMS=[
-  {k:'home',   label:'الرئيسية', svg:'<path d="M3 11l9-8 9 8"></path><path d="M5 10v10h14V10"></path>', go:()=>goHome()},
-  {k:'chat',   label:'الدردشة',  svg:'<path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"></path>', go:()=>openChat()},
-  ...(SHOW_STORE?[{k:'shop',   label:'المتجر',   svg:'<path d="M6 8h12l1 12H5z"></path><path d="M9 8V6a3 3 0 016 0v2"></path>', go:()=>openShop()}]:[]), // NEW CODE — يُستثنى كلياً من شريط التنقّل لما SHOW_STORE=false (iOS)
-  {k:'board',  label:'الصدارة',  svg:'<path d="M7 4h10v5a5 5 0 01-10 0z"></path><path d="M7 6H4v2a3 3 0 003 3M17 6h3v2a3 3 0 01-3 3"></path><path d="M12 14v3M8 21h8M10 21v-2a2 2 0 014 0v2"></path>', go:()=>openBoard()},
-  {k:'friends',label:'الأصدقاء', svg:'<circle cx="9" cy="8" r="3.5"></circle><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"></path><circle cx="17" cy="9" r="2.5"></circle><path d="M21 20c0-2.8-1.8-5-4.5-5"></path>', go:()=>openFriends()},
-];
-function showPageLoader(label,then){
-  const el=$('#pageLoader'); if(!el){then();return}
-  $('#pageLoaderTxt').textContent='فتح '+label+'...';
-  el.classList.remove('hidden'); el.style.opacity='1';
-  setTimeout(()=>{
-    then();
-    el.style.opacity='0';
-    setTimeout(()=>el.classList.add('hidden'),260);
-  },650); /* FIX — رُفعت من 420 بطلبك: مدة أطول تغطي تحميل البيانات (الصدارة مثلاً) — والشاشة تحتها تفتح وتتعبى بالخلفية خلالها */
-}
-function navHTML(active){
-  return `<div class="navBar" role="navigation" aria-label="القائمة الرئيسية">`+NAV_ITEMS.map(it=>
-    `<button class="navBtn${it.k===active?' on':''}" data-nav="${it.k}" aria-label="${it.label}"${it.k===active?' aria-current="page"':''}><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round">${it.svg}</svg>${it.label}</button>`
-  ).join('')+`</div>`;
-}
-function mountNav(screenId,active){
-  const sc=document.getElementById(screenId);if(!sc)return;
-  let bar=sc.querySelector('.navBar');
-  const holder=screenId==='home'?sc:(sc.querySelector('[data-navholder]')||sc);
-  if(!bar){
-    const wrap=document.createElement('div');wrap.innerHTML=navHTML(active);
-    bar=wrap.firstElementChild;
-    holder.appendChild(bar);
-  }
-  if(bar.parentElement!==holder)holder.appendChild(bar);
-  bar.querySelectorAll('.navBtn').forEach(b=>{
-    b.classList.toggle('on',b.dataset.nav===active);
-      if(b.dataset.nav===active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
-    b.onclick=()=>{
-      const it=NAV_ITEMS.find(x=>x.k===b.dataset.nav);
-      if(!it||b.dataset.nav===active)return;
-      SFX.tick();
-      if(it.k==='home')it.go(); else showPageLoader(it.label,it.go); // FIX — أنميشن الانتقال رجع بطلبك (بمدة أطول شوي) — ومع فتح الشاشات الفوري تحته، يغطي فترة التحميل بسلاسة بدل ما تشوف قائمة نص متعبّية
-    };
-  });
-}
+// v364 — navigation lives in ui-navigation.js; destinations retain their existing data flows.
 
 function refreshHome(){
   $('#hName').textContent=localStorage.getItem('wb-name')||'ضيف';
@@ -5293,6 +5332,7 @@ function getInbox(){ // NEW CODE
 function saveInbox(list){ try{ localStorage.setItem('wb-inbox',JSON.stringify(list)); }catch(e){} } // NEW CODE
 function refreshInboxBadge(){ // NEW CODE
   const n=getInbox().length; // NEW CODE
+  if(typeof uiNavSetBadge==='function')uiNavSetBadge('inbox',n);
   const b=$('#hInboxBadge'); if(!b)return; // NEW CODE
   b.textContent=toH(n>99?99:n); // NEW CODE
   b.classList.toggle('hidden',n===0); // NEW CODE
@@ -5421,6 +5461,7 @@ async function pullServerStats(retriesLeft){
           localStorage.setItem('wb-'+k,String(d[k])); changed=true;
         }
       }
+      if(typeof uiPlayerPanelsProfileLoaded==='function')uiPlayerPanelsProfileLoaded(statsUid,d);
       if(changed){
         $('#hRankBadge').innerHTML=rankBadgeHTML(ST.n('rank'),12); // NEW CODE — نفس تنظيف refreshHome
         $('#hGold').textContent=ST.n('gold').toLocaleString('en');
@@ -6010,11 +6051,13 @@ window._rebindWelcome=()=>{ try{
 async function afterAuth(user){
   if(UI_COST.uid!==user.uid)uiCostReset(user.uid);
   FB.user=user;
+  if(typeof uiThemeSetAccount==='function')uiThemeSetAccount(user.uid);
   // اسم مبدئي من البريد أو حساب Google
   let nm=localStorage.getItem('wb-name');
   if(!nm){ nm=(user.displayName||(user.email||'لاعب').split('@')[0]).slice(0,14); localStorage.setItem('wb-name',nm); }
   // حمّل من Firestore (يغلب المحفوظ سحابياً على المحلي)
   const cloud=await fbLoadProfile(user.uid);
+  if(FB.user?.uid!==user.uid)return;
   if(cloud&&cloud.banned){
     toast2(cloud.banReason?('هذا الحساب محظور: '+cloud.banReason):'هذا الحساب محظور — تواصل مع الدعم'); // NEW CODE — يعرض سبب الحظر المحدَّد لو أدخله الأدمن
     await FB.auth.signOut();
@@ -6034,6 +6077,8 @@ async function afterAuth(user){
   } else if(cloud.name_lc===undefined){ // NEW CODE — ترحيل مشابه: أي حساب موجود قبل إضافة بحث الأصدقاء بالاسم يُحفَظ فوراً عند أول دخول بعد التحديث، فيتوفّر للبحث من نفس الجلسة
     fbSaveProfile();
   }
+  // v363 — no recurring reads: refresh cosmetic entitlements once after this profile load.
+  if(typeof uiThemeSync==='function'){if(cloud)uiThemeSync(true);else fbSaveProfile(true).then(()=>uiThemeSync(true));}
   // FIX — إعادة اتصال ذاتية تلقائية: activeRoom كانت تُسجَّل وتُقرأ فقط لعرض حالة الأصدقاء ("يلعب الآن")،
   // لا لإعادة اتصال اللاعب بنفسه إطلاقاً — لو انقطع (بوت أخذ مكانه بالطاولة) ثم أعاد فتح التطبيق من جديد
   // (لا مجرد إعادة اتصال ws أثناء بقاء التطبيق مفتوحاً، بل إغلاق/فتح كامل)، ما كان فيه أي طريقة يرجع بيها
@@ -7232,6 +7277,7 @@ async function updateDmBadge(){
   }catch(e){}
 }
 function setDmBadgeCount(n){
+  if(typeof uiNavSetBadge==='function')uiNavSetBadge('chat',n);
   document.querySelectorAll('.chTab[data-ct="friends"] .dmBadge').forEach(b=>b.remove());
   if(n<=0)return;
   document.querySelectorAll('.chTab[data-ct="friends"]').forEach(t=>{
@@ -7592,6 +7638,7 @@ function startFriendReqListener(){
     let auto=false;
     reqs.forEach(r=>{ if(myFriends.some(f=>f.uid===r.fromUid)){ WBMsg.clearFriendReq(r.fromUid); auto=true; } });
     FB_FREQS=reqs.filter(r=>!myFriends.some(f=>f.uid===r.fromUid));
+    if(typeof uiNavSetBadge==='function')uiNavSetBadge('friends',FB_FREQS.length);
     if(!document.querySelector('#friends').classList.contains('hidden'))renderFriends();
     // إشعار لو في طلب جديد
     if(FB_FREQS.length&&!auto){ try{SFX.tick&&SFX.tick()}catch(e){} }
@@ -7855,6 +7902,7 @@ async function bootTo(){
       await afterAuth(user);
     }else{
       uiCostReset(null);FB.user=null;
+      if(typeof uiThemeSetAccount==='function')uiThemeSetAccount(null);
       _appleHandledUid=null;
       if(GLOGIN){ if(_redirectChecked)showGloginPrompt(); return; } // FIX — بوضع الربط: شاشة الربط فقط (بعد حسم العودة)، لا ترحيب عادي ولا أي إطلاق تلقائي
       // غير مسجّل: أظهر شاشة الترحيب مع زر الدخول
@@ -7983,7 +8031,7 @@ fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
      يدوياً — مهم: غيّر اسمه لـ"firebase-auth-plugin.js" وقت النسخ (لا تسمّه plugin.js زي ما هو، لأن AdMob
      أيضاً عنده ملف بنفس الاسم بالضبط بمجلده — لو الاثنين اتسمّوا plugin.js بنفس مجلد www، الثاني يمحو الأول). -->
 <script src="firebase-auth-plugin.js"></script>
-<script src="ui-card-motion.js?v=350"></script>
+<script src="ui-card-motion.js?v=361"></script>
 <script src="ui-community.js"></script>
 <script src="ui-leagues.js"></script>
 </body>

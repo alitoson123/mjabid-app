@@ -205,8 +205,8 @@ function uiMigrateThemeChoice(){
   const legacy=localStorage.getItem('wb-ui-table'),equipped=localStorage.getItem('wb-eq-theme');
   let next=equipped;
   if(['emerald','midnight','royal'].includes(legacy))next='theme-'+legacy;
-  else if(!legacy&&!equipped)next='theme-emerald';
-  if(!SHOP_THEMES.some(t=>t.id===next))next='theme-emerald';
+  else if(!legacy&&!equipped)next=UI_FREE_THEME;
+  if(!SHOP_THEMES.some(t=>t.id===next))next=UI_FREE_THEME;
   localStorage.setItem('wb-eq-theme',next);
   localStorage.setItem('wb-ui-table','original');
   localStorage.setItem('wb-theme-catalog-v320','1');
@@ -221,22 +221,23 @@ function uiSelectShopTab(tab){
   UI_SHOP.tab=tab==='gold'?'gold':'themes';uiRenderShop();
 }
 function uiRenderThemePreview(){
-  const theme=SHOP_THEMES.find(t=>t.id===UI_SHOP.preview)||SHOP_THEMES[0];
-  const owned=theme.price===0||shopOwned().includes(theme.id),active=shopEquipped('theme')===theme.id;
+  const theme=SHOP_THEMES.find(t=>t.id===UI_SHOP.preview)||SHOP_THEMES.find(t=>t.id===UI_FREE_THEME);
+  const access=uiThemeAccess(theme.id),active=uiThemeResolve()===theme.id;
   const scene=document.getElementById('uiShopScene');
+  scene.classList.toggle('uiIllustratedRoom',!!theme.bg&&theme.bg.startsWith('ui-art/rooms-v362/'));
   scene.style.backgroundImage=`linear-gradient(0deg,#071c17aa,transparent 75%),url("${theme.preview||theme.bg}")`;
-  scene.innerHTML='<img class="uiPreviewTable" src="'+(theme.table||'bg/table-center.png'+BGV)+'" alt=""><div class="uiPreviewCards" aria-hidden="true"><i>♦</i><i>♣</i><i>♥</i></div><span class="uiSceneBadge">'+(active?'خلفيتك الحالية':owned?'ضمن مجموعتك':'تُشترى بذهب اللعبة')+'</span>';
+  scene.innerHTML='<img class="uiPreviewTable" src="'+(theme.table||'bg/table-center.png'+BGV)+'" alt=""><div class="uiPreviewCards" aria-hidden="true"><i>♦</i><i>♣</i><i>♥</i></div><span class="uiSceneBadge">'+(active?'خلفيتك الحالية':access.source==='free'?'المجانية الأساسية':access.permanent?'ملكية سابقة':access.active?'جاهزة للتفعيل':'إيجار لمدة 7 أيام')+'</span>';
   document.getElementById('uiShopSceneName').textContent=theme.name;
-  document.getElementById('uiShopSceneNote').textContent=theme.price===0?'مجانية · اختر جوّك المفضل':owned?'مملوكة · جاهزة لطاولتك':'تفاصيل من المجلس، على طاولتك';
+  const note=document.getElementById('uiShopSceneNote');note.dataset.themeRemaining=theme.id;note.textContent=uiThemeAccessText(theme.id);
   const button=document.getElementById('uiShopActivate');
   button.disabled=active||UI_SHOP.busy;
-  button.textContent=UI_SHOP.busy?'جارٍ التفعيل…':active?'مُفعّلة ✓':owned?'استخدم الخلفية':'شراء وتفعيل · '+toH(theme.price)+' ذهب';
+  button.textContent=UI_SHOP.busy?'جارٍ التحقق…':active?'مُفعّلة ✓':access.active?'استخدم الخلفية':'استئجار وتفعيل · 2000 كوينز / 7 أيام';
   button.onclick=()=>uiActivateTheme(theme.id);
 }
 function uiRenderShop(){
   if(!SHOW_STORE)return;
   uiMigrateThemeChoice();
-  const gold=UI_SHOP.tab==='gold',eq=shopEquipped('theme'),owned=shopOwned();
+  const gold=UI_SHOP.tab==='gold',eq=uiThemeResolve();
   if(!UI_SHOP.preview)UI_SHOP.preview=eq;
   document.getElementById('shopGold').textContent=toH(ST.n('gold'));
   for(const name of ['themes','gold']){
@@ -248,33 +249,31 @@ function uiRenderShop(){
   document.getElementById('uiGoldPanel').classList.toggle('hidden',!gold);
   const list=document.getElementById('shopList');list.innerHTML='';
   for(const theme of SHOP_THEMES){
-    const isOwned=owned.includes(theme.id)||theme.price===0,isEq=eq===theme.id;
+    const access=uiThemeAccess(theme.id),isEq=eq===theme.id;
     const card=document.createElement('button');card.type='button';card.className='uiCatalogCard';card.dataset.theme=theme.id;
     card.setAttribute('aria-pressed',String(UI_SHOP.preview===theme.id));
-    card.innerHTML='<span class="uiCatalogImage" style="background-image:url(\''+(theme.preview||theme.bg)+'\')"><span class="uiCatalogStatus">'+(isEq?'مُفعّلة':isOwned?(theme.price===0?'مجانية':'مملوكة'):'مميزة')+'</span></span><span class="uiCatalogName">'+esc(theme.name)+'</span><small>'+(isEq?'على طاولتك الآن':isOwned?'معاينة وتفعيل':toH(theme.price)+' ذهب')+'</small>';
+    card.innerHTML='<span class="uiCatalogImage" style="background-image:url(\''+(theme.preview||theme.bg)+'\')">'+(theme.table?'<img src="'+esc(theme.table)+'" alt="" aria-hidden="true" loading="lazy" decoding="async">':'')+'<span class="uiCatalogStatus">'+(isEq?'مُفعّلة':access.source==='free'?'مجانية':access.permanent?'ملكية سابقة':access.active?'متاحة':'7 أيام')+'</span></span><span class="uiCatalogName">'+esc(theme.name)+'</span><small data-theme-remaining="'+theme.id+'">'+esc(uiThemeAccessText(theme.id))+'</small>';
     card.onclick=()=>{UI_SHOP.preview=theme.id;uiRenderShop();document.getElementById('uiShopShowcase').scrollIntoView({block:'nearest',behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});};
     list.appendChild(card);
   }
-  uiRenderThemePreview();
+  uiRenderThemePreview();uiThemeRenderStatus();
   if(gold)renderGoldPackages();
 }
 async function uiActivateTheme(id){
   if(!SHOW_STORE||UI_SHOP.busy)return;
   const theme=SHOP_THEMES.find(t=>t.id===id);if(!theme)return;
+  if(FB.user)uiThemeSetAccount(FB.user.uid);
+  const uid=FB.user?.uid||null,generation=UI_THEME_RENTALS.generation;
   UI_SHOP.busy=true;uiRenderThemePreview();
   try{
-    const owned=shopOwned();
-    if(theme.price>0&&!owned.includes(id)){
-      if(ST.n('gold')<theme.price){toast2('ذهبك لا يكفي لهذه الخلفية');return;}
-      // Keep the existing theme purchase amount and account-saving path.
-      ST.set('gold',ST.n('gold')-theme.price);
-      owned.push(id);localStorage.setItem('wb-owned',JSON.stringify(owned));
-    }
+    if(!uiThemeAccess(id).active&&!(await uiThemeRent(id)))return;
     localStorage.setItem('wb-eq-theme',id);localStorage.setItem('wb-ui-table','original');
     try{fbSaveProfile()}catch(_){}
-    applyEquippedTheme();refreshHome();toast2('تم تفعيل '+theme.name);
-  }finally{UI_SHOP.busy=false;uiRenderShop();}
+    applyEquippedTheme();refreshHome();uiThemeRenderStatus();uiThemePlan();toast2('تم تفعيل '+theme.name);
+  }catch(e){if((FB.user?.uid||null)===uid&&UI_THEME_RENTALS.generation===generation){UI_THEME_RENTALS.error=e.message;toast2(e.message||'تعذّر تفعيل الخلفية');}}
+  finally{if(UI_THEME_RENTALS.generation===generation){UI_SHOP.busy=false;uiRenderShop();}}
 }
+
 function uiRenderGoldPackages(){
   const wrap=document.getElementById('goldPkgList');if(!wrap)return;wrap.innerHTML='';if(!SHOW_STORE)return;
   const names=['حفنة ذهب','رصّة ذهب','كيس المجلس','صندوق الذهب','خزنة المجلس'];

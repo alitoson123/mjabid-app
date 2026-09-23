@@ -1,0 +1,58 @@
+/* v369: paid friendly gold only. Legacy friendly and spectators retain their hidden reward panels. */
+#oOver[data-kind="friendly"][data-financial="true"] #oMyStats:not(.hidden){
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr);
+}
+#oOver[data-kind="friendly"][data-financial="true"] #oFeeWinLine{
+  flex-wrap:wrap;
+  line-height:1.8;
+}
+#uiFriendlyEntry [hidden],#uiFriendlyLobbyEconomy[hidden]{display:none!important;}
+
+/* v370: scoped entry dialog controls; no global button overrides. */
+#uiFriendlyEntry, #uiFriendlyEntry * { box-sizing:border-box; }
+#uiFriendlyEntry { overflow-y:auto; }
+#uiFriendlyEntry > div { max-height:100%; overflow-y:auto; }
+#uiFriendlyEntry > div > div { flex-direction:column; align-items:stretch; }
+#uiFriendlyEntry button {
+  -webkit-appearance:none;
+  appearance:none;
+  display:block;
+  width:100%;
+  min-height:48px;
+  margin:0;
+  padding:12px 18px;
+  border:1px solid rgba(232,202,133,.55);
+  border-radius:14px;
+  background:#194c3c;
+  color:#f8edcf;
+  font:inherit;
+  font-size:16px;
+  font-weight:700;
+  line-height:1.5;
+  text-align:center;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  cursor:pointer;
+  touch-action:manipulation;
+  transition:transform .12s ease, filter .12s ease;
+}
+#uiFriendlyEntry #uiFriendlyEntryPlay {
+  border-color:#f3d995;
+  background:linear-gradient(135deg,#f7dfa0,#d9ae59);
+  color:#123a2d;
+  box-shadow:0 3px 0 #987431,0 6px 14px #0002;
+}
+#uiFriendlyEntry #uiFriendlyEntryWatch { background:#194c3c; }
+#uiFriendlyEntry #uiFriendlyEntryBack {
+  border-color:transparent;
+  background:transparent;
+  color:#d0daca;
+  box-shadow:none;
+}
+#uiFriendlyEntry button:focus-visible { outline:3px solid #fff1bb; outline-offset:3px; }
+#uiFriendlyEntry button:active:not(:disabled) { transform:translateY(1px); filter:brightness(.96); }
+#uiFriendlyEntry button:disabled { opacity:.55; cursor:wait; }
+@media (prefers-reduced-motion:reduce) {
+  #uiFriendlyEntry button { transition:none; }
+}

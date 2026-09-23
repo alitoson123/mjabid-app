@@ -690,8 +690,9 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script src="image-cache.js"></script>
 <link rel="stylesheet" href="ui-polish.css?v=364">
+<link rel="stylesheet" href="ui-friendly-v369.css?v=370">
 <script defer src="ui-theme-rentals.js?v=363"></script>
-<script defer src="ui-results-store.js?v=363"></script>
+<script defer src="ui-results-store.js?v=369"></script>
 <script defer src="ui-polish.js"></script>
 <script defer src="ui-navigation.js?v=364"></script>
 <script defer src="ui-player-panels.js?v=365"></script>
@@ -710,6 +711,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 <link rel="stylesheet" href="ui-navigation.css?v=364">
 <link rel="stylesheet" href="ui-player-panels.css?v=365">
 <link rel="stylesheet" href="ui-table-view.css?v=365">
+<link rel="stylesheet" href="ui-auth-v369.css?v=369">
 </head>
 <body>
 <div id="frame">
@@ -1089,20 +1091,21 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
     <div id="lgWrap">
       <svg class="saduSvg" width="100%" height="40" viewBox="0 0 390 40" preserveAspectRatio="none" style="opacity:.55"><defs><pattern id="sdLogin" width="30" height="40" patternUnits="userSpaceOnUse"><path d="M15 5l10 15-10 15L5 20z" fill="none" stroke="#d67f48" stroke-width="2.5"></path><path d="M15 14l5 6-5 6-5-6z" fill="#8fa073"></path></pattern></defs><rect width="390" height="40" fill="url(#sdLogin)"></rect></svg>
       <div id="lgTopRow"><button id="lgBack" class="qBtn" type="button" aria-label="العودة للبداية"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span class="uiEntryWordmark" aria-hidden="true">مجابيد <i>♠</i></span></div>
-      <div id="lgHead"><span class="t">أهلاً من جديد</span><span class="sub">سجّل دخولك، وكمّل جولاتك مع الربع</span></div>
-      <div id="lgAva"></div>
+      <div id="lgAva" aria-hidden="true"><span class="uiAuthCard" data-suit="♦">♦</span><span class="uiAuthCard" data-suit="♠">♠</span><span class="uiAuthCard" data-suit="♣">♣</span></div>
+      <div id="lgHead"><span class="t">حيّاك في مجابيد</span><span class="sub">سجّل دخولك وارجع للميدان.</span></div>
+      <div class="uiAuthPanel">
       <div id="lgFields">
         <div>
           <label class="lgLbl" for="lgEmail">البريد الإلكتروني</label>
-          <div class="lgField"><input id="lgEmail" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" placeholder="you@example.com"><span class="fic" aria-hidden="true">✉</span></div>
+          <div class="lgField"><input id="lgEmail" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" placeholder="you@example.com"><span class="fic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg></span></div>
         </div>
         <div>
           <label class="lgLbl" for="lgPass">كلمة المرور</label>
-          <div class="lgField"><input id="lgPass" type="password" autocomplete="current-password" placeholder="••••••••"><span class="fic" aria-hidden="true">🔒</span></div>
+          <div class="lgField"><input id="lgPass" type="password" autocomplete="current-password" placeholder="••••••••"><span class="fic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/></svg></span></div>
         </div>
         <button id="lgForgot" type="button">نسيت كلمة المرور؟</button>
-        <button id="lgGo">دخول</button>
-        <div class="lgOr">أو</div>
+        <button id="lgGo" type="button">تسجيل الدخول</button>
+        <div class="lgOr">أو تابع باستخدام</div>
         <div class="lgSoc">
           <button id="lgGoogle"><svg width="19" height="19" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.2 6 29.4 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"></path><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.2 6 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"></path><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"></path><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.1 5.7l6.2 5.2C36.9 40.4 44 35 44 24c0-1.3-.1-2.6-.4-3.9z"></path></svg>المتابعة بحساب Google</button>
           <!-- NEW CODE — زر Apple: يظهر على iOS فقط (يُفعَّل بجافاسكربت وقت الجاهزية — راجع isIOS/doApple)، بتصميم أبل الرسمي (خلفية سوداء + الشعار الحرفي) -->
@@ -1111,8 +1114,9 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
         <button id="lgNew">إنشاء حساب جديد</button>
       </div>
       <div id="lgBottom">
-        <button id="lgSignupLink" type="button">جديد في المجلس؟ أنشئ حسابك</button>
-        <div id="lgTerms">بدخولك أنت توافق على <a href="https://mjabid.com/terms.html" target="_blank" style="color:inherit;text-decoration:underline">شروط الاستخدام</a> و<a href="https://mjabid.com/privacy.html" target="_blank" style="color:inherit;text-decoration:underline">سياسة الخصوصية</a></div>
+        <button id="lgSignupLink" type="button">ما عندك حساب؟ <b>أنشئ حسابًا</b></button>
+        <div id="lgTerms">بالمتابعة، توافق على <a href="https://mjabid.com/terms.html" target="_blank" style="color:inherit;text-decoration:underline">شروط الاستخدام</a> و<a href="https://mjabid.com/privacy.html" target="_blank" style="color:inherit;text-decoration:underline">سياسة الخصوصية</a></div>
+      </div>
       </div>
     </div>
   </div>
@@ -1128,7 +1132,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
       <label class="lgLbl" for="suEmail">البريد الإلكتروني</label>
       <div class="lgField"><input id="suEmail" autocapitalize="none" spellcheck="false" inputmode="email" autocomplete="email" type="email" placeholder="you@example.com" style="direction:ltr;text-align:left;padding-left:40px"><span aria-hidden="true" class="fic">✉</span></div>
       <label class="lgLbl" for="suPass">كلمة المرور</label>
-      <div class="lgField"><input id="suPass" autocomplete="new-password" type="password" placeholder="٦ أحرف على الأقل" style="direction:ltr;text-align:left;padding-left:40px"><span aria-hidden="true" class="fic">🔒</span></div>
+      <div class="lgField"><input id="suPass" autocomplete="new-password" type="password" placeholder="6 أحرف على الأقل" style="direction:ltr;text-align:left;padding-left:40px"><span aria-hidden="true" class="fic">🔒</span></div>
       <label class="lgLbl" for="suPass2">تأكيد كلمة المرور</label>
       <div class="lgField"><input id="suPass2" autocomplete="new-password" type="password" placeholder="أعد كتابة كلمة المرور" style="direction:ltr;text-align:left;padding-left:40px"><span aria-hidden="true" class="fic">🔒</span></div>
       <details class="uiEntryAvatarPicker">
@@ -1350,7 +1354,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
           <span class="hAva" id="hAvaWrap"><span id="hAvaContent">😎</span></span>
           <span><span class="hNm" id="hName">ضيف</span> <span id="hRankBadge"></span></span>
         </button>
-        <button class="hGold" id="hGoldBtn"><i></i><span id="hGold">0</span><b>+</b></button>
+        <button class="hGold" id="hGoldBtn" style="position:relative"><i></i><span id="hGold">0</span><b>+</b><small id="hWalletPending" role="status" aria-live="polite" hidden style="position:absolute;top:calc(100% + 3px);left:0;right:auto;text-align:left;width:max-content;max-width:170px;font-family:var(--fb);font-size:10px;line-height:1.4;color:#f6e7c6;text-shadow:0 1px 3px #071c17;pointer-events:none"></small></button>
       </div>
       <div class="hSide">
         <button class="hSideBtn" id="hRules" title="قوانين اللعبة"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7c-1.5-1.5-4-2-7-2v13c3 0 5.5.5 7 2 1.5-1.5 4-2 7-2V5c-3 0-5.5.5-7 2z"></path><path d="M12 7v13"></path></svg></button>
@@ -1402,7 +1406,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
           <button class="hBig grp" id="hGroup">
             <img src="cards/JS.png" alt="" style="position:absolute;left:14px;bottom:8px;width:44px;border-radius:6px;opacity:.32;pointer-events:none;background:#fdfcf8">
             <b style="font-size:18px;margin-top:4px">أنشئ مجموعة</b>
-            <span>مع أصدقائك — 800 <img class="uiGoldCoin" src="ui-art/gold-coin.svg" alt="ذهب" width="32" height="32"></span><!-- FIX — سعر إنشاء الجلسة الخاصة ظاهر من البداية (رُفع من 400) -->
+            <span>مع أصدقائك — 500 <img class="uiGoldCoin" src="ui-art/gold-coin.svg" alt="ذهب" width="32" height="32"></span><!-- v369: creation includes the creator's seat, once per session. -->
           </button>
 
         </div>
@@ -1518,7 +1522,7 @@ const $=s=>document.querySelector(s);
 // ⚠️ الصق مفاتيح مشروعك هنا (من إعدادات Firebase → تطبيق الويب).
 // هذه المفاتيح آمنة للنشر في كود الواجهة (مصمّمة لذلك).
 // رقم إصدار التطبيق — يُحدَّث يدويًا مع كل نسخة تُرفع للمتاجر (مو نفس رقم كاش الـSW)
-const APP_VERSION='1.5.0'; // iOS: keep Ali's Xcode marketing version.
+const APP_VERSION='1.6.0'; // iOS: keep Ali's Xcode marketing version.
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCZZrU2tip4efYEfYhUi9F_DNfuRZ22adU",
   authDomain: "jops-e508d.firebaseapp.com",
@@ -1592,6 +1596,7 @@ async function ensureFB(){
 const CLOUD_KEYS=['gold','level','games','wins','best','avatar','av-owned','owned','eq-theme','eq-back','daily-last','daily-streak','username','rank','dayPts','weekPts','monthPts','achievement','achievementDate','lastAdRewardTime']; // NEW CODE — أضفنا achievement/achievementDate: كانا يعتمدان فقط على pullServerStats اللاحقة (غير مضمونة التوقيت)، صارا يُحمَّلان فورًا وقت تسجيل الدخول مثل rank تمامًا. FIX — أضفنا lastAdRewardTime لعرض حالة تبريد إعلان المكافأة الصحيحة فور فتح المتجر
 // حمّل بيانات اللاعب من Firestore إلى localStorage
 async function fbLoadProfile(uid){
+  const walletRevision=uiWalletForAccount(uid),readStartedAt=Date.now();
   try{
     const doc=await FB.db.collection('players').doc(uid).get();
     if(FB.user?.uid!==uid)return null;
@@ -1599,10 +1604,12 @@ async function fbLoadProfile(uid){
       const d=doc.data();
       if(!d['eq-theme'])localStorage.setItem('wb-eq-theme','theme-midnight');
       for(const k of CLOUD_KEYS){
+        if(['gold','rank'].includes(k)&&(walletRevision!==UI_WALLET.revision||doc.metadata?.fromCache))continue;
         if(d[k]!==undefined&&d[k]!==null){
           localStorage.setItem('wb-'+k, typeof d[k]==='object'?JSON.stringify(d[k]):String(d[k]));
         }
       }
+      if(walletRevision===UI_WALLET.revision&&!doc.metadata?.fromCache)uiWalletRememberProfile(readStartedAt);
       if(d.name)localStorage.setItem('wb-name',d.name);
       if(typeof uiPlayerPanelsProfileLoaded==='function')uiPlayerPanelsProfileLoaded(uid,d);
       return d;
@@ -1612,12 +1619,30 @@ async function fbLoadProfile(uid){
 }
 // احفظ بيانات اللاعب من localStorage إلى Firestore
 let _fbSaveTimer=null;
-// FIX — حقول "الملف الشخصي التجميلي" (اسم/صورة/ثيم/خلفية): تُكتب بعملية مستقلة قبل الكتابة الكاملة. السبب: الكتابة
-// الكاملة تشمل حقول الاقتصاد (gold/rank/games...) بنفس مستند الكتابة، وقواعد Firestore تتحقق منها (فرق محدود
-// للذهب...) — لو رُفضت الكتابة لأي سبب اقتصادي (رصيد محلي متأخر عن السيرفر مثلاً)، تُرفض بالكامل ذرّياً، فيضيع
-// تغيير الاسم/الصورة بصمت ثم يعود القديم من السحابة عند التحميل التالي ("غيّرت وترجع نفس ما هي"). الآن الجانب
-// التجميلي ما يكون رهينة للتحقق الاقتصادي أبداً.
+// v369 — نتذكر الحفظ المؤكد لهذه الجلسة فقط؛ لا نغيّر حفظ الاقتصاد أو الحضور بالسيرفر.
+// عند فشل الحمولة الكاملة تبقى محاولة حفظ الاسم/الصورة/الثيم/الخلفية مستقلة.
 const PROFILE_COSMETIC_KEYS=['avatar','eq-theme','eq-back']; // FIX
+let _fbProfileSaveSession=null;
+const _fbProfileSavePending=new Map(); // Client RAM only; pending writes stay ordered for the same UID across auth generations.
+function _fbProfileSaveCurrent(session){
+  return !!session&&FB.ready&&FB.db===session.db&&FB.user===session.user&&FB.user?.uid===session.uid
+    &&(!FB.auth||FB.auth.currentUser?.uid===session.uid)&&UI_COST.generation===session.generation;
+}
+function _fbProfileSaveAccount(){
+  if(!FB.ready||!FB.user?.uid||!FB.db||(FB.auth&&FB.auth.currentUser?.uid!==FB.user.uid)){
+    _fbProfileSaveSession=null;return null;
+  }
+  if(!_fbProfileSaveCurrent(_fbProfileSaveSession)){
+    _fbProfileSaveSession={user:FB.user,uid:FB.user.uid,db:FB.db,generation:UI_COST.generation,
+      fullKey:null,cosmeticKey:null};
+  }
+  return _fbProfileSaveSession;
+}
+function _fbProfileSaveKey(data){
+  const stable={};
+  for(const key of Object.keys(data).sort())if(key!=='updated')stable[key]=data[key];
+  return JSON.stringify(stable);
+}
 function _buildProfileData(){ // FIX — بناء البيانات مرة واحدة (DRY) — تُستعمل للكتابتين
   const data={name:localStorage.getItem('wb-name')||'لاعب', updated:Date.now(), email:FB.user.email||''};
   data.name_lc=data.name.normalize('NFKC').toLowerCase().replace(/\s+/g,' ').trim(); // NEW CODE — أساس بحث الأصدقاء بالاسم (جنب username_lc الموجود)
@@ -1632,23 +1657,45 @@ function _buildProfileData(){ // FIX — بناء البيانات مرة واح
   }
   return data;
 }
-async function _fbSaveProfileNow(){ // FIX — التنفيذ الفعلي، منفصل عن المؤقت كي يمكن استدعاؤه فورياً (تسجيل الخروج)
-  if(!FB.ready||!FB.user)return;
+async function _fbSaveProfileNow(session=_fbProfileSaveAccount()){ // Immediate saves also wait for preceding changes before sign-out.
+  if(!_fbProfileSaveCurrent(session))return;
   const data=_buildProfileData();
   // These fields are server-owned under the supplied production Firestore rules.
   for(const key of ['gold','weekPts','dayPts','monthPts','rank','level','daily-last','daily-streak','lastAdRewardTime','games','wins','best','owned'])delete data[key];
-  const ref=FB.db.collection('players').doc(FB.user.uid);
+  const ref=session.db.collection('players').doc(session.uid);
   const cosmetic={name:data.name, updated:data.updated}; // FIX
   for(const k of PROFILE_COSMETIC_KEYS)if(data[k]!==undefined)cosmetic[k]=data[k]; // FIX
-  try{ await ref.set(data,{merge:true}); }catch(e){
-    try{await ref.set(cosmetic,{merge:true});}catch(err){console.warn('save profile failed',err);}
-  }
+  const fullKey=_fbProfileSaveKey(data),cosmeticKey=_fbProfileSaveKey(cosmetic);
+  // Share only the last queued payload: A → B → A must still end with A.
+  const pending=_fbProfileSavePending.get(session.uid);
+  if(pending?.session===session&&pending.fullKey===fullKey)return pending.task;
+  const previous=pending?.task||Promise.resolve();
+  const task=previous.then(async()=>{
+    if(!_fbProfileSaveCurrent(session)||session.fullKey===fullKey)return;
+    session.fullKey=null; // A rejected write may have an uncertain remote outcome; allow retry.
+    if(session.cosmeticKey!==cosmeticKey)session.cosmeticKey=null;
+    try{
+      await ref.set(data,{merge:true});
+      if(_fbProfileSaveCurrent(session)){session.fullKey=fullKey;session.cosmeticKey=cosmeticKey;}
+    }catch(e){
+      if(!_fbProfileSaveCurrent(session)||session.cosmeticKey===cosmeticKey)return;
+      try{
+        await ref.set(cosmetic,{merge:true});
+        if(_fbProfileSaveCurrent(session))session.cosmeticKey=cosmeticKey;
+      }catch(err){console.warn('save profile failed',err);}
+    }
+  });
+  const entry={session,fullKey,task};_fbProfileSavePending.set(session.uid,entry);
+  try{return await task;}
+  finally{if(_fbProfileSavePending.get(session.uid)===entry)_fbProfileSavePending.delete(session.uid);}
 }
 function fbSaveProfile(immediate){ // FIX — immediate=true: تنفيذ فوري وإرجاع Promise (لا انتظار ٨٠٠مل) — يُستخدم قبل تسجيل الخروج
-  if(!FB.ready||!FB.user)return Promise.resolve();
   clearTimeout(_fbSaveTimer);
-  if(immediate)return _fbSaveProfileNow();
-  _fbSaveTimer=setTimeout(_fbSaveProfileNow,800);
+  _fbSaveTimer=null;
+  const session=_fbProfileSaveAccount();
+  if(!session)return Promise.resolve();
+  if(immediate)return _fbSaveProfileNow(session);
+  _fbSaveTimer=setTimeout(()=>{_fbSaveTimer=null;_fbSaveProfileNow(session);},800);
   return Promise.resolve();
 }
 
@@ -1662,6 +1709,7 @@ function uiCostStop(){
   _inviteListening=false;_freqListening=false;_friendsListening=false;
 }
 function uiCostReset(uid){
+  if(typeof UI_HOME_WALLET!=='undefined')uiHomeWalletAccount(uid);
   if(typeof uiPlayerPanelsReset==='function')uiPlayerPanelsReset(uid);
   if(typeof uiNavReset==='function')uiNavReset();
   uiCostStop();UI_COST.uid=uid;UI_COST.generation++;UI_COST.docs.clear();UI_COST.pages={};UI_COST.deleting.clear();
@@ -3652,9 +3700,233 @@ $('#exitBtn').onclick=()=>{G.timers.forEach(clearTimeout);stopTurnTimer();goHome
 
 
 /* ================= الأونلاين — مبارزة 1v1 ================= */
+function uiFriendlyEconomy(value){
+  return value&&value.version===369&&value.ranked===false&&value.chargeUnit==='session'&&value.rewardUnit==='round'&&['creatorFee','entryFee','winGold'].every(key=>Number.isSafeInteger(value[key])&&value[key]>=0)?value:null;
+}
+// A read-only quote precedes every new paid participation intent, including invitation links.
+const UI_FRIENDLY_ENTRY={serial:0,controller:null,approval:null};
+function uiFriendlyEntryCancel(clearRoom=false){
+  UI_FRIENDLY_ENTRY.serial++;UI_FRIENDLY_ENTRY.controller?.abort();UI_FRIENDLY_ENTRY.controller=null;UI_FRIENDLY_ENTRY.approval=null;
+  const modal=document.getElementById('uiFriendlyEntry');const room=modal?.dataset.room;modal?.remove();
+  if(clearRoom&&new URLSearchParams(location.search).get('room')===room)history.replaceState(null,'',location.pathname);
+}
+function uiFriendlyEntryAllowed(room,spectate){
+  if(spectate||/^(pub-|lg-|cup-)/.test(room)){UI_FRIENDLY_ENTRY.approval=null;ONL.friendlyEconomyVersion=null;ONL.friendlyJoinIntent=null;return true;}
+  const approval=UI_FRIENDLY_ENTRY.approval;
+  if(approval?.room===room&&approval.uid===FB.user?.uid&&approval.playerId===localStorage.getItem('wb-player-id')){ONL.friendlyEconomyVersion=approval.version||null;ONL.friendlyJoinIntent=approval.policy?{...approval,sent:false}:null;UI_FRIENDLY_ENTRY.approval=null;return true;}
+  return false;
+}
+async function uiFriendlyEntryOpen(room){
+  uiFriendlyEntryCancel();
+  const user=FB.user;if(!user){toast2('سجّل الدخول للانضمام إلى الجلسة');return;}
+  let playerId=localStorage.getItem('wb-player-id')||sessionStorage.getItem('wb-player-id');
+  if(!playerId)playerId='p-'+Math.random().toString(36).slice(2,10);
+  localStorage.setItem('wb-player-id',playerId);
+  const serial=UI_FRIENDLY_ENTRY.serial,uid=user.uid,controller=new AbortController();UI_FRIENDLY_ENTRY.controller=controller;
+  const modal=document.createElement('div');modal.id='uiFriendlyEntry';modal.dataset.room=room;modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label','المشاركة في الجلسة');
+  modal.style.cssText='position:fixed;inset:0;z-index:9998;background:rgba(5,22,17,.82);display:flex;align-items:center;justify-content:center;padding:24px;direction:rtl';
+  modal.innerHTML='<div style="width:min(100%,360px);border:1px solid #d8bf7b;border-radius:24px;background:#123a2d;color:#f8edcf;padding:24px;text-align:center;box-shadow:0 18px 60px #0005"><h3 style="margin:0 0 14px">طاولة الأصدقاء</h3><p id="uiFriendlyEntryText" role="status" style="line-height:1.9;margin:0 0 18px">جارٍ التحقق من رسوم الجلسة…</p><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button id="uiFriendlyEntryPlay" class="btn primary" hidden>المشاركة</button><button id="uiFriendlyEntryWatch" class="btn" hidden>مشاهدة مجانًا</button><button id="uiFriendlyEntryBack" class="btn">رجوع</button></div></div>';
+  document.body.appendChild(modal);
+  document.getElementById('uiFriendlyEntryBack').onclick=()=>uiFriendlyEntryCancel(true);
+  const current=()=>UI_FRIENDLY_ENTRY.serial===serial&&FB.user?.uid===uid&&new URLSearchParams(location.search).get('room')===room&&!controller.signal.aborted;
+  let quotedPolicy=null,quotedMatchId=null,quotedParticipationId=null;
+  const enter=spectate=>{
+    if(!current())return;
+    uiFriendlyEntryCancel();
+    const params=new URLSearchParams(location.search);if(spectate)params.set('spectate','1');else params.delete('spectate');
+    history.replaceState(null,'',location.pathname+'?'+params.toString());
+    UI_FRIENDLY_ENTRY.approval=spectate?null:{uid,room,playerId,version:quotedPolicy?.version,policy:quotedPolicy,matchId:quotedMatchId,participationId:quotedParticipationId};enterOnline();
+  };
+  let timer,abort;
+  try{
+    const operation=(async()=>{const idToken=await user.getIdToken();if(!current())return null;const response=await fetch('https://'+GAME_SRV+'/friendly-entry-info',{method:'POST',headers:{'content-type':'application/json'},signal:controller.signal,body:JSON.stringify({idToken,room,playerId})});const data=await response.json();if(!response.ok)throw Error('entry info failed');return data;})();
+    const info=await Promise.race([operation,new Promise((_,reject)=>{abort=()=>reject(Error('entry info aborted'));controller.signal.addEventListener('abort',abort,{once:true});timer=setTimeout(()=>controller.abort(),15000);})]);
+    if(!current())return;
+    if(!info?.ok||info.room!==room||typeof info.exists!=='boolean'||!Number.isSafeInteger(info.entryAmount)||info.entryAmount<0)throw Error('invalid entry info');
+    if(!info.exists||info.status==='closed'){document.getElementById('uiFriendlyEntryText').textContent='هذه الجلسة غير متاحة الآن. اطلب دعوة جديدة من منشئها.';return;}
+    const policy=uiFriendlyEconomy(info.friendlyEconomy);if(info.friendlyEconomy&&(!policy||typeof info.friendlyMatchId!=='string'||!info.friendlyMatchId||info.friendlyMatchId.length>240||typeof info.friendlyParticipationId!=='string'||!/^[-A-Za-z0-9_]{1,160}$/.test(info.friendlyParticipationId)))throw Error('unsupported session policy');quotedPolicy=policy;quotedMatchId=policy?info.friendlyMatchId:null;quotedParticipationId=policy?info.friendlyParticipationId:null;
+    if(!policy||info.paid===true){enter(false);return;}
+    document.getElementById('uiFriendlyEntryText').innerHTML='رسوم '+(info.creator?'إنشاء الجلسة':'مشاركتك')+' <bdi dir="ltr" style="font-weight:900">'+toH(info.entryAmount)+'</bdi> ذهب، مرة واحدة للجلسة.<br><small>تُخصم عند أول مشاركة. مكافأة كل فائز <bdi dir="ltr">'+toH(policy.winGold)+'</bdi> ذهب لكل جولة، دون نقاط تنافسية.</small>';
+    const play=document.getElementById('uiFriendlyEntryPlay');play.hidden=false;play.textContent='المشاركة · '+toH(info.entryAmount)+' ذهب';play.onclick=()=>enter(false);
+    const watch=document.getElementById('uiFriendlyEntryWatch');watch.hidden=false;watch.onclick=()=>enter(true);
+  }catch(_){if(UI_FRIENDLY_ENTRY.serial===serial&&FB.user?.uid===uid){const text=document.getElementById('uiFriendlyEntryText');if(text)text.textContent='تعذّر التحقق من رسوم الجلسة. ارجع وحاول مجددًا.';}}
+  finally{clearTimeout(timer);if(abort)controller.signal.removeEventListener('abort',abort);if(UI_FRIENDLY_ENTRY.serial===serial)UI_FRIENDLY_ENTRY.controller=null;}
+}
 const ONL={ws:null,room:null,view:null,status:null,you:null,seats:[],result:null,transport:'ws',wsFails:0,queue:[],pollSeq:0,pollGen:0,
-           offset:0,sel:null,iv:null,active:false,joined:false,namedSent:false,
+           offset:0,sel:null,iv:null,active:false,joined:false,namedSent:false,generation:0,paymentPending:false,
            lastAuto:{settle:0,timeout:0},lastLog:''};
+// v367: only the currently selected room/transport may change the online UI.
+const UI_WALLET={uid:null,version:'',revision:0,lastSnapshot:null,refreshKey:null,profileStartedAt:0,expectedGold:null,expectedRank:null};
+const UI_WALLET_SYNC={key:null,timer:null,attempt:0,sentAt:0};
+function uiWalletTimestamp(value){
+  const m=typeof value==='string'&&value.match(/^(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)(?:\.(\d{1,9}))?Z$/);
+  return m&&Number.isFinite(Date.parse(value))?m[1]+'.'+(m[2]||'').padEnd(9,'0')+'Z':'';
+}
+function uiWalletForAccount(uid){
+  if(UI_WALLET.uid!==uid){UI_WALLET.uid=uid;UI_WALLET.version='';UI_WALLET.revision++;UI_WALLET.lastSnapshot=null;UI_WALLET.refreshKey=null;UI_WALLET.profileStartedAt=0;UI_WALLET.expectedGold=null;UI_WALLET.expectedRank=null;}
+  return UI_WALLET.revision;
+}
+function uiWalletRememberProfile(startedAt){UI_WALLET.profileStartedAt=startedAt;UI_WALLET.expectedGold=ST.n('gold');UI_WALLET.expectedRank=ST.n('rank');UI_WALLET.lastSnapshot=null;}
+function uiWalletRender(){
+  for(const id of ['hGold','shopGold','tiersGold']){const el=document.getElementById(id);if(el)el.textContent=ST.n('gold').toLocaleString('en');}
+  const rank=document.getElementById('hRankBadge');if(rank)rank.innerHTML=rankBadgeHTML(ST.n('rank'),12);
+  refreshRankCard();
+}
+function uiReceiveWallet(wallet,freshRead){
+  const uid=FB.user?.uid,version=uiWalletTimestamp(wallet?.updatedAt);
+  if(!uid||wallet?.uid!==uid||!version||!Number.isSafeInteger(wallet.gold)||wallet.gold<0||!Number.isSafeInteger(wallet.rank)||wallet.rank<0)return false;
+  uiWalletForAccount(uid);
+  const fresh=!!(freshRead&&wallet.source==='server-read'&&freshRead.uid===uid);
+  if(fresh&&(freshRead.revision!==UI_WALLET.revision||freshRead.gold!==ST.n('gold')||freshRead.rank!==ST.n('rank')))return false;
+  if(version<UI_WALLET.version||(!fresh&&version===UI_WALLET.version))return false;
+  UI_WALLET.version=version;UI_WALLET.revision++;
+  // Durable receipt replays may predate unrelated purchases. Refresh once instead of painting an old total.
+  const age=Number(wallet.serverNow)-Date.parse(wallet.updatedAt);
+  const newerProfile=UI_WALLET.profileStartedAt>0&&age>=Math.max(0,Date.now()-UI_WALLET.profileStartedAt);
+  const externalChange=UI_WALLET.expectedGold!==null&&(UI_WALLET.expectedGold!==ST.n('gold')||UI_WALLET.expectedRank!==ST.n('rank'));
+  if(!fresh&&(!Number.isFinite(age)||age>10000||age< -1000||newerProfile||externalChange)){
+    UI_WALLET.lastSnapshot=null;
+    if(UI_WALLET.refreshKey!==version){UI_WALLET.refreshKey=version;queueMicrotask(()=>{if(FB.user?.uid===uid)pullServerStats(0);});}
+    return false;
+  }
+  UI_WALLET.lastSnapshot=wallet;
+  localStorage.setItem('wb-gold',String(wallet.gold));localStorage.setItem('wb-rank',String(wallet.rank));
+  UI_WALLET.expectedGold=wallet.gold;UI_WALLET.expectedRank=wallet.rank;
+  if(fresh)UI_WALLET.profileStartedAt=freshRead.startedAt;
+  uiWalletRender();
+  if(typeof uiResultWallet==='function')uiResultWallet(wallet);
+  return true;
+}
+// v368: an explicit departure leaves a small, account-bound financial follow-up, never a game connection.
+const UI_HOME_WALLET={uid:null,generation:0,items:[],timer:null,controller:null,inflight:null,paused:false};
+function uiHomeWalletValid(item,uid){
+  const roomPattern=item?.kind==='friendly'?/^(?!pub-)[A-Za-z0-9_-]{1,160}$/:/^pub-[A-Za-z0-9_-]{1,160}$/;
+  if(item?.kind==='friendly'&&(typeof item.participationId!=='string'||!/^[-A-Za-z0-9_]{1,160}$/.test(item.participationId)))return false;
+  return !!(item&&(!item.kind||item.kind==='competitive'||item.kind==='friendly')&&item.uid===uid&&typeof item.room==='string'&&roomPattern.test(item.room)&&typeof item.playerId==='string'&&/^p-[A-Za-z0-9_-]{1,60}$/.test(item.playerId)&&typeof item.matchId==='string'&&item.matchId.length>0&&item.matchId.length<=240&&Number.isFinite(item.at));
+}
+function uiHomeWalletSave(){
+  const h=UI_HOME_WALLET;if(!h.uid)return;
+  try{
+    const key='wb-competitive-wallet-pending-'+h.uid;
+    if(h.items.length)localStorage.setItem(key,JSON.stringify(h.items.map(({uid,room,playerId,matchId,at,kind,participationId})=>({uid,room,playerId,matchId,at,...(kind?{kind}:{}),...(participationId?{participationId}:{})}))));
+    else localStorage.removeItem(key);
+  }catch(_){}
+}
+function uiHomeWalletPause(){
+  const h=UI_HOME_WALLET;clearTimeout(h.timer);h.timer=null;h.generation++;h.paused=true;
+  if(h.controller)h.controller.abort();h.controller=null;h.inflight=null;
+  uiHomeWalletRender();
+}
+function uiHomeWalletAccount(uid){
+  const h=UI_HOME_WALLET;if(h.uid===uid)return;
+  uiHomeWalletPause();h.uid=uid||null;h.items=[];h.paused=false;
+  if(uid){try{const saved=JSON.parse(localStorage.getItem('wb-competitive-wallet-pending-'+uid)||'[]');if(Array.isArray(saved))h.items=saved.filter(x=>uiHomeWalletValid(x,uid)).map(x=>({...x,attempt:0,nextAt:0}));}catch(_){}}
+  uiHomeWalletRender();
+}
+function uiHomeWalletLeavingRoom(room){return !!(FB.user?.uid&&UI_HOME_WALLET.uid===FB.user.uid&&UI_HOME_WALLET.items.some(item=>item.room===room));}
+function uiHomeWalletHasPending(){return !!(FB.user?.uid&&UI_HOME_WALLET.uid===FB.user.uid&&UI_HOME_WALLET.items.length);}
+function uiHomeWalletRender(){
+  const status=document.getElementById('hWalletPending'),button=document.getElementById('hGoldBtn');if(!status||!button)return;
+  const pending=uiHomeWalletHasPending();status.hidden=!pending;
+  if(pending){
+    status.textContent=UI_HOME_WALLET.inflight?'جارٍ تأكيد الرصيد…':UI_HOME_WALLET.items.every(x=>x.attempt>=4)?'تأكيد الرصيد معلّق · تحديث':'الرصيد قيد التحقق · تحديث';
+    button.setAttribute('aria-label','الرصيد قيد التحقق بعد المباراة؛ اضغط لتحديثه');
+  }else button.removeAttribute('aria-label');
+}
+function uiHomeWalletTrackLeave(){
+  const uid=FB.user?.uid;
+  const friendly=!!uiFriendlyEconomy(ONL.friendlyEconomy),matchId=friendly?ONL.friendlyMatchId:ONL.competitiveMatchId;
+  if(!ONL.active||!uid||ONL.league||ONL.tournament||ONL.spectateOnly||!matchId)return false;
+  const shown=typeof UI_RESULT!=='undefined'?UI_RESULT.online:null,snapshot=UI_WALLET.lastSnapshot;
+  const displayed=!!ONL.reward?.key&&((snapshot&&snapshot.resultKey===ONL.reward.key&&snapshot.uid===uid&&snapshot.gold===ST.n('gold')&&snapshot.rank===ST.n('rank'))||
+    (shown?.synced&&shown.uid===uid&&shown.rewardKey===ONL.reward?.key&&shown.current.gold===ST.n('gold')&&shown.current.rank===ST.n('rank')));
+  if(ONL.status==='over'&&ONL.reward?.status==='confirmed'&&!ONL.paymentPending&&displayed)return false;
+  const localStart=friendly&&ONL.status==='lobby'&&typeof UI_SESSION_START!=='undefined'&&(UI_SESSION_START.pending===true||UI_SESSION_START.requested===true);
+  const joining=friendly&&ONL.status===null&&ONL.friendlyJoinIntent?.sent===true&&ONL.friendlyJoinIntent.uid===uid&&ONL.friendlyJoinIntent.room===ONL.room;
+  const own=joining||localStart||ONL.paymentPending||ONL.seats?.includes(ONL.you)||ONL.result?.scores?.[ONL.you]||ONL.reward?.entry||ONL.room?.startsWith('pub-live-');
+  if(!own||(!joining&&!['playing','over','closed'].includes(ONL.status)&&!(friendly&&ONL.status==='lobby'&&(ONL.paymentPending||localStart))))return false;
+  const item={uid,room:ONL.room,playerId:ONL.pid,matchId,kind:friendly?'friendly':'competitive',...(friendly?{participationId:ONL.friendlyParticipationId}:{}),at:Date.now(),attempt:0,nextAt:0};
+  if(!uiHomeWalletValid(item,uid))return false;
+  uiHomeWalletAccount(uid);
+  if(!UI_HOME_WALLET.items.some(x=>x.room===item.room&&x.matchId===item.matchId&&x.participationId===item.participationId))UI_HOME_WALLET.items.push(item);
+  uiHomeWalletSave();uiHomeWalletRender();return true;
+}
+function uiHomeWalletResume(retry=false){
+  const h=UI_HOME_WALLET;uiHomeWalletAccount(FB.user?.uid||null);
+  if(!h.uid||!h.items.length||document.hidden||navigator.onLine===false){uiHomeWalletRender();return;}
+  const restart=retry||h.paused;h.paused=false;
+  if(restart){clearTimeout(h.timer);h.timer=null;for(const item of h.items){item.attempt=0;item.nextAt=0;}}
+  if(h.inflight||h.timer)return;
+  const item=h.items.filter(x=>x.attempt<4).sort((a,b)=>a.nextAt-b.nextAt||a.at-b.at)[0];
+  if(!item){uiHomeWalletRender();return;}
+  const wait=Math.max(0,item.nextAt-Date.now());
+  if(wait){h.timer=setTimeout(()=>{h.timer=null;uiHomeWalletResume();},wait);return;}
+  uiHomeWalletRequest(item);
+}
+async function uiHomeWalletRequest(item){
+  const h=UI_HOME_WALLET,user=FB.user;
+  if(h.inflight||!user||h.uid!==user.uid||!h.items.includes(item)||document.hidden||navigator.onLine===false)return;
+  const generation=h.generation,uid=user.uid,revision=uiWalletForAccount(uid),startedAt=Date.now();
+  const read={uid,revision,startedAt,gold:ST.n('gold'),rank:ST.n('rank')};
+  const controller=new AbortController();h.controller=controller;h.inflight=item;item.attempt++;uiHomeWalletRender();
+  const current=()=>h.generation===generation&&h.uid===uid&&FB.user?.uid===uid&&h.items.includes(item)&&h.inflight===item;
+  let timer,abort;
+  try{
+    const operation=(async()=>{
+      const idToken=await user.getIdToken();
+      if(!current()||controller.signal.aborted)return null;
+      const response=await fetch('https://'+GAME_SRV+(item.kind==='friendly'?'/friendly-wallet-sync':'/competitive-wallet-sync'),{method:'POST',headers:{'content-type':'application/json'},signal:controller.signal,body:JSON.stringify({idToken,room:item.room,playerId:item.playerId,matchId:item.matchId,leave:true,...(item.kind==='friendly'?{friendlyParticipationId:item.participationId}:{})})});
+      const data=await response.json();if(!response.ok)throw Error('wallet follow-up failed');return data;
+    })();
+    const data=await Promise.race([operation,new Promise((_,reject)=>{abort=()=>reject(Error('wallet follow-up aborted'));controller.signal.addEventListener('abort',abort,{once:true});timer=setTimeout(()=>controller.abort(),20000);})]);
+    if(!current()||controller.signal.aborted)return;
+    if(!data?.ok||typeof data.pending!=='boolean'||data.room!==item.room||data.matchId!==item.matchId||(item.kind==='friendly'&&data.friendlyParticipationId!==item.participationId)||data.wallet?.uid!==uid||data.wallet.source!=='server-read'||!uiWalletTimestamp(data.wallet.updatedAt)||!Number.isSafeInteger(data.wallet.gold)||data.wallet.gold<0||!Number.isSafeInteger(data.wallet.rank)||data.wallet.rank<0)throw Error('invalid wallet follow-up');
+    const applied=uiReceiveWallet(data.wallet,read),accepted=UI_WALLET.lastSnapshot;
+    const newerAccepted=accepted?.uid===uid&&uiWalletTimestamp(accepted.updatedAt)>=uiWalletTimestamp(data.wallet.updatedAt)&&accepted.gold===ST.n('gold')&&accepted.rank===ST.n('rank');
+    // A finance ACK alone is not proof that the displayed total is current; retry a rejected stale read.
+    if(!data.pending&&(applied||newerAccepted)){h.items=h.items.filter(x=>x!==item);uiHomeWalletSave();}
+  }catch(_){/* Keep the persisted intent and the visible retry; never invent a completed balance. */}
+  finally{
+    clearTimeout(timer);if(abort)controller.signal.removeEventListener('abort',abort);
+    if(h.generation===generation&&h.inflight===item){
+      h.inflight=null;h.controller=null;
+      if(h.items.includes(item)&&item.attempt<4)item.nextAt=Date.now()+[2000,5000,10000][item.attempt-1];
+      uiHomeWalletRender();uiHomeWalletResume();
+    }
+  }
+}
+window.addEventListener('online',()=>uiHomeWalletResume());
+window.addEventListener('offline',()=>uiHomeWalletPause());
+window.addEventListener('pagehide',()=>uiHomeWalletPause());
+window.addEventListener('pageshow',()=>uiHomeWalletResume());
+document.addEventListener('visibilitychange',()=>document.hidden?uiHomeWalletPause():uiHomeWalletResume());
+function uiWalletSyncStop(){clearTimeout(UI_WALLET_SYNC.timer);UI_WALLET_SYNC.timer=null;UI_WALLET_SYNC.key=null;UI_WALLET_SYNC.attempt=0;}
+function uiRequestWalletSync(){
+  if(!ONL.active||Date.now()-UI_WALLET_SYNC.sentAt<1000)return;
+  UI_WALLET_SYNC.sentAt=Date.now();oSend({type:'wallet-sync'});
+}
+function uiWalletSyncPlan(){
+  const pending=ONL.paymentPending||ONL.reward?.status==='pending';
+  if(!ONL.active||!pending){uiWalletSyncStop();return;}
+  const key=ONL.generation+'|'+ONL.room+'|'+(ONL.reward?.key||'entry');
+  if(UI_WALLET_SYNC.key!==key){uiWalletSyncStop();UI_WALLET_SYNC.key=key;}
+  if(UI_WALLET_SYNC.timer||UI_WALLET_SYNC.attempt>=3)return;
+  const generation=ONL.generation,room=ONL.room;
+  UI_WALLET_SYNC.timer=setTimeout(()=>{
+    UI_WALLET_SYNC.timer=null;
+    if(!oSessionCurrent(generation,room)||UI_WALLET_SYNC.key!==key)return;
+    UI_WALLET_SYNC.attempt++;uiRequestWalletSync();uiWalletSyncPlan();
+  },[2000,5000,10000][UI_WALLET_SYNC.attempt]);
+}
+function oSessionCurrent(generation,room){return ONL.active&&ONL.generation===generation&&ONL.room===room;}
+function oDisconnectTransport(){
+  ONL.generation++;ONL.pollGen++;
+  if(ONL._pollWake){ONL._pollWake();ONL._pollWake=null;}
+  clearTimeout(ONL.reconnectTimer);ONL.reconnectTimer=null;
+  const ws=ONL.ws;ONL.ws=null;
+  if(ws){ws.onopen=null;ws.onmessage=null;ws.onclose=null;ws.onerror=null;try{ws.close();}catch(_){}}
+  uiWalletSyncStop();
+}
 function oToast(txt){
   const el=$('#oToastTxt');el.textContent=txt;el.classList.add('show');
   clearTimeout(oToast._t);oToast._t=setTimeout(()=>el.classList.remove('show'),2400);
@@ -3696,12 +3968,14 @@ async function claimAdRewardClient(){ // FIX
 let sessionGamesPlayed=0; // FIX
 // FIX — تغليف بدء المطابقة لـ"لعب سريع" تحديداً (لا الجلسة الكاملة): أول جولة بالجلسة تبدأ فوراً بلا إعلان،
 // أي جولة تالية تعرض إعلاناً خلالياً أولاً، ولا تبدأ المطابقة إلا بعد إغلاقه فعلياً — بالضبط كما طُلب
-function enterMatchWithInterstitial(tierKey, mode){ // FIX
-  const isFirst=(sessionGamesPlayed===0); // FIX
-  sessionGamesPlayed++; // FIX
-  if(isFirst){ enterMatch(tierKey,mode); } // FIX
-  else{ toast2('جاري تحميل الإعلان...'); showInterstitialAd().then(()=>enterMatch(tierKey,mode)); } // FIX — أضفنا مؤشر التحميل، كان مفقوداً هنا تحديداً بعكس زر المتجر
-} // FIX
+async function enterMatchWithInterstitial(tierKey,mode,intent){
+  const isFirst=sessionGamesPlayed===0;
+  sessionGamesPlayed++;
+  if(!isFirst){toast2('جاري تحميل الإعلان...');await showInterstitialAd();}
+  if(intent!==undefined&&intent!==TIER_ENTRY.generation)return;
+  if(MATCH.on||QUICK_SEARCH.assigned||ONL.active)return;
+  enterMatch(tierKey,mode);
+}
 // FIX — عرض/تحديث زر إعلان المكافأة: عداد تنازلي حي مبني على lastAdRewardTime المُزامَن سحابياً (CLOUD_KEYS)،
 // بلا أي استدعاء سيرفر إضافي فقط للفحص — التحقق الملزم الحقيقي يبقى دائماً بالسيرفر عند الصرف الفعلي
 let _adRewardTimer=null; // FIX
@@ -3747,19 +4021,21 @@ function onSrvHost(){ return location.host===GAME_SRV; }
 function oBase(){ return (onSrvHost()?location.pathname.replace(/\/+$/,''):'https://'+GAME_SRV)+'/ws/'+ONL.room; }
 async function oLeagueHeaders(){return ONL.room?.startsWith('lg-')&&FB.user?{authorization:'Bearer '+await FB.user.getIdToken()}:{};}
 async function oPost(obj){
+  const generation=ONL.generation,room=ONL.room,url=oBase()+'?send=1&pid='+encodeURIComponent(ONL.pid);
   try{
-    const r=await fetch(oBase()+'?send=1&pid='+encodeURIComponent(ONL.pid),
-      {method:'POST',headers:await oLeagueHeaders(),body:JSON.stringify(obj)});
-    const d=await r.json();
+    const headers=await oLeagueHeaders();if(!oSessionCurrent(generation,room))return;
+    if(obj.type==='join'&&!obj.spectate&&ONL.friendlyJoinIntent)ONL.friendlyJoinIntent.sent=true;
+    const r=await fetch(url,{method:'POST',headers,body:JSON.stringify(obj)});
+    const d=await r.json();if(!oSessionCurrent(generation,room))return;
     if(d&&d.type==='error'){
       if(obj.type==='start')uiSessionStartFailed();
       if(ONL.lastSent==='settle'||ONL.lastSent==='timeout'){ONL.lastSent=null;return}
       oToast(d.error);
     }
-  }catch(e){if(obj.type==='start'){uiSessionStartFailed();oToast('تعذّر تأكيد البدء؛ تحقق من الاتصال');}}
+  }catch(e){if(oSessionCurrent(generation,room)&&obj.type==='start'){uiSessionStartFailed();oToast('تعذّر تأكيد البدء؛ تحقق من الاتصال');}}
 }
 async function oPollLoop(){
-  const my=++ONL.pollGen;
+  const my=++ONL.pollGen,generation=ONL.generation,room=ONL.room;
   // FIX — استطلاع بلا إمساك: كل طلب يُرَدّ عليه فوراً (nowait=1) والإيقاع صار عندنا هنا — 2.5ث والتبويب
   // ظاهر، 15ث وهو مخفي (أقل من مهلة الحضور 20ث بهامش)، و250مل أثناء تدفق تحديثات متتابعة (سلاسة داخل
   // اللعب)، مع استطلاع فوري لحظة رجوع التبويب للواجهة — يقص "مدة بقاء الكائن نشطاً" المحاسَبة جذرياً.
@@ -3771,10 +4047,12 @@ async function oPollLoop(){
     try{
       const r=await fetch(oBase()+'?poll=1&nowait=1&since='+ONL.pollSeq+'&pid='+encodeURIComponent(ONL.pid),{headers:await oLeagueHeaders()}); // FIX — أضفنا nowait=1
       const d=await r.json();
+      if(!oSessionCurrent(generation,room)||ONL.transport!=='poll'||ONL.pollGen!==my)break;
       $('#connDot').classList.remove('off');
       if(typeof d.seq==='number')ONL.pollSeq=d.seq;
       if(d.msg){oHandle(d.msg);gotMsg=true;} // FIX
     }catch(e){
+      if(!oSessionCurrent(generation,room)||ONL.pollGen!==my)break;
       $('#connDot').classList.add('off');
     }
     if(!(ONL.active&&ONL.transport==='poll'&&ONL.pollGen===my))break; // FIX
@@ -3784,15 +4062,19 @@ async function oPollLoop(){
   }
 }
 async function switchToPoll(){
-  if(ONL.transport==='poll')return;
+  if(!ONL.active||ONL.transport==='poll')return;
+  const generation=ONL.generation,room=ONL.room;
   ONL.transport='poll';
-  if(ONL.ws){try{ONL.ws.onclose=null;ONL.ws.close()}catch(e){}}
-  oPost(await withIdToken({type:'join',playerId:ONL.pid,name:(($('#lobbyName')&&$('#lobbyName').value)||$('#nameIn').value||localStorage.getItem('wb-name')||'').trim(),avatar:myAvatar(),tier:ONL.pendingTier||undefined,mode:ONL.pendingTier?(ONL.pendingMode||'solo'):undefined,spectate:ONL.spectateOnly||undefined})); // NEW CODE — أضفنا spectate
-  while(ONL.queue.length)oPost(ONL.queue.shift()); // فرّغ ما تراكم أثناء محاولات ws
+  if(ONL.ws){ONL.ws.onopen=null;ONL.ws.onmessage=null;ONL.ws.onclose=null;try{ONL.ws.close();}catch(_){}ONL.ws=null;}
+  const join=await withIdToken({type:'join',playerId:ONL.pid,name:(($('#lobbyName')&&$('#lobbyName').value)||$('#nameIn').value||localStorage.getItem('wb-name')||'').trim(),avatar:myAvatar(),tier:ONL.pendingTier||undefined,mode:ONL.pendingTier?(ONL.pendingMode||'solo'):undefined,spectate:ONL.spectateOnly||undefined,friendlyEconomyVersion:ONL.friendlyEconomyVersion||undefined,friendlyParticipationId:ONL.friendlyParticipationId||undefined});
+  if(!oSessionCurrent(generation,room)||ONL.transport!=='poll')return;
+  await oPost(join);
+  if(!oSessionCurrent(generation,room)||ONL.transport!=='poll')return;
+  while(ONL.queue.length)oPost(ONL.queue.shift());
   oPollLoop();
 }
 function oAction(a){
-  if(['eat','steal','throw','bid','pass'].includes(a.t)&&!uiOnlineCanPlay())return;
+  if(['eat','steal','throw','bid','pass'].includes(a.t)&&(ONL.paymentPending||!uiOnlineCanPlay()))return;
   ONL.lastSent=a.t;oSend({type:'action',action:a});
 }
 function enterOnline(){
@@ -3800,9 +4082,23 @@ function enterOnline(){
   // ملاحظة: تصفير pendingTier لا يتم هنا — هذي الدالة مشتركة ويستدعيها مسار البحث عن مباراة نفسه بعد ضبط الطبقة مباشرة.
   // التصفير يتم عند نقاط الدخول التي تبدأ حرة فعلاً (إنشاء مجموعة، رابط غرفة، دعوة).
   const params=new URLSearchParams(location.search);
-  let room=params.get('room');
+  let room=params.get('room');const existingRoom=!!room;if(!existingRoom){ONL.friendlyEconomyVersion=null;ONL.friendlyJoinIntent=null;}
   if(!room){room=Math.random().toString(36).slice(2,8);params.set('room',room);
     history.replaceState(null,'',location.pathname+'?'+params.toString());}
+  if(ONL.active&&ONL.room===room&&ONL.spectateOnly===(params.get('spectate')==='1')){show('onl');return true;}
+  if(ONL.active&&ONL.room!==room&&!['over','closed'].includes(ONL.status)){
+    const activeParams=new URLSearchParams();activeParams.set('room',ONL.room);
+    if(ONL.spectateOnly)activeParams.set('spectate','1');
+    history.replaceState(null,'',location.pathname+'?'+activeParams.toString());
+    toast2('أنت متصل بطاولة بالفعل؛ اخرج منها قبل دخول طاولة أخرى');show('onl');return false;
+  }
+  if(existingRoom&&params.get('spectate')!=='1'&&!/^(pub-|lg-|cup-)/.test(room)&&uiHomeWalletLeavingRoom(room)){
+    uiFriendlyEntryCancel();uiHomeWalletResume(true);toast2('جارٍ تأكيد رصيد الجلسة السابقة؛ بعد اكتماله يمكنك الانضمام مجددًا');return false;
+  }
+  if(existingRoom&&!uiFriendlyEntryAllowed(room,params.get('spectate')==='1')){uiFriendlyEntryOpen(room);return false;}
+  oDisconnectTransport();
+  const generation=ONL.generation;
+  ONL.paymentPending=false;ONL.reward=null;ONL.wallet=null;ONL.competitiveMatchId=null;ONL.friendlyMatchId=ONL.friendlyJoinIntent?.matchId||null;ONL.friendlyEconomy=ONL.friendlyJoinIntent?.policy||null;ONL.friendlyParticipationId=ONL.friendlyJoinIntent?.participationId||null;
   ONL.room=room; ONL.active=true; ONL.sel=null; ONL.namedSent=false; ONL.transport='ws'; ONL.wsFails=0; ONL.queue=[]; ONL.pollSeq=0; ONL.status=null; ONL.view=null; ONL.you=null;
   if(typeof uiPlayerPanelsRoom==='function')uiPlayerPanelsRoom('online:'+room);
   if(typeof uiSyncOnlineAudience==='function')uiSyncOnlineAudience();
@@ -3811,7 +4107,7 @@ function enterOnline(){
   let pid=localStorage.getItem('wb-player-id')||sessionStorage.getItem('wb-player-id');
   if(!pid){pid='p-'+Math.random().toString(36).slice(2,10);}
   localStorage.setItem('wb-player-id',pid);
-  ONL.pid=room.startsWith('lg-')&&FB.user?'lp-'+FB.user.uid:pid;
+  ONL.pid=room.startsWith('lg-')&&FB.user?'lp-'+FB.user.uid:ONL.assignmentPid?.room===room?ONL.assignmentPid.pid:pid;
   // FIX — كان هنا $('#inviteLink').value=location.href؛ العنصر أُزيل من اللوبي (رابط غير محتاج)، فحذفنا هذا السطر معه
   // اسم اللاعب: من الإعداد أو المحفوظ سابقاً
   const savedNm=($('#nameIn').value||'').trim()||localStorage.getItem('wb-name')||'';
@@ -3820,7 +4116,7 @@ function enterOnline(){
   $('#pageLoaderTxt').textContent='جاري الدخول للطاولة...'; // NEW CODE
   $('#pageLoader').classList.remove('hidden'); $('#pageLoader').style.opacity='1'; // NEW CODE
   setTimeout(()=>{ // NEW CODE — شبكة أمان: لو تعثّر الاتصال كليًا (شبكة سيئة/خادم لا يرد)، ما نحبس المستخدم بشاشة تحميل للأبد — بعد ١٠ ثواني نكشف الشاشة تحتها (فيها مؤشراتها الخاصة لحالة الانقطاع أصلاً)
-    if(!ONL._loaderHiddenOnce){ ONL._loaderHiddenOnce=true; const pl=$('#pageLoader'); if(pl){ pl.style.opacity='0'; setTimeout(()=>pl.classList.add('hidden'),260); } } // NEW CODE
+    if(oSessionCurrent(generation,room)&&!ONL._loaderHiddenOnce){ ONL._loaderHiddenOnce=true; const pl=$('#pageLoader'); if(pl){ pl.style.opacity='0'; setTimeout(()=>pl.classList.add('hidden'),260); } } // NEW CODE
   },10000); // NEW CODE
   show('onl');
   uiLobbySetTab('seats');$('#onlWait').classList.add('uiLobbyCompact');
@@ -3835,6 +4131,7 @@ function enterOnline(){
   ONL.hbIv=setInterval(()=>{
     if(FB.ready&&FB.user&&ONL.active){ try{ FB.db.collection('players').doc(FB.user.uid).set({activeSince:Date.now()},{merge:true}); }catch(e){} }
   },60000);
+  return true;
 }
 // NEW CODE ================= قائمة الجلسات النشطة =================
 // استماع حي واحد طوال عمر الصفحة (لا يُعاد كل فتح نافذة) — يحدّث شارة الزر بالرئيسية دائمًا، ويحدّث
@@ -3867,6 +4164,8 @@ function sessionCardHTML(roomId,d){ // NEW CODE
   const humanCount=seats.filter(s=>s&&!s.isBot).length; // NEW CODE — بشر فقط، يستثني أي مقعد isBot (البوتات صارت تُبَث بصورها الحقيقية لا null)
   const canJoin=humanCount<4; // NEW CODE — متاحة بغض النظر عن lobby/playing؛ السيرفر يدعم drop-in فعليًا الآن (_tryDropIn)
   const statusLine=d.status==='lobby'?'بانتظار اللاعبين':((tier?tier.name+' • ':'')+agoAr(d.startedAt||Date.now())); // NEW CODE — agoAr موجودة أصلاً بالملف (تنسيق وقت نسبي)
+  const friendlyPolicy=uiFriendlyEconomy(d.friendlyEconomy);
+  const feeLine=friendlyPolicy?'<div style="font-size:12px;line-height:1.7;color:var(--mut);margin-bottom:10px">المشاركة <bdi>'+toH(friendlyPolicy.entryFee)+'</bdi> ذهب مرة للجلسة · مكافأة كل فائز <bdi>'+toH(friendlyPolicy.winGold)+'</bdi> ذهب للجولة</div>':'';
   const avaRow=seats.map(seat=>seat // NEW CODE
     ?`<span class="avaFilled">${avatarHTML(seat.avatar,26)}</span>` // NEW CODE
     :`<span class="avaEmpty">+</span>`).join(''); // NEW CODE
@@ -3882,6 +4181,7 @@ function sessionCardHTML(roomId,d){ // NEW CODE
       <div class="avaRow">${avaRow}</div>
     </div>
     <div style="font-size:12px;color:var(--mut);font-family:var(--fb);margin-bottom:10px">${esc(statusLine)}</div>
+    ${feeLine}
     <div style="display:flex;align-items:center;justify-content:flex-end">
       ${btnHTML}
     </div>
@@ -3907,6 +4207,8 @@ function joinActiveSession(roomId,spectate){ // NEW CODE — spectate=true تح�
 $('#hSessions').onclick=()=>{ startActiveSessionsListener(true); SFX.tick(); $('#sessionsModal').classList.remove('hidden'); renderSessionsList(); }; // NEW CODE
 $('#sessionsClose').onclick=()=>$('#sessionsModal').classList.add('hidden'); // NEW CODE
 function leaveOnline(){
+  const leaveMessage={type:'leave',...(ONL.competitiveMatchId?{competitiveMatchId:ONL.competitiveMatchId}:{}),...(ONL.friendlyMatchId?{friendlyMatchId:ONL.friendlyMatchId,friendlyParticipationId:ONL.friendlyParticipationId}:{})};
+  uiHomeWalletTrackLeave();
   uiSessionStartReset();
   if(typeof uiCancelResultPreparation==='function')uiCancelResultPreparation();
   $('#pageLoaderTxt').textContent='جاري الخروج...'; // NEW CODE
@@ -3914,10 +4216,15 @@ function leaveOnline(){
   $('#quitConfirm').classList.add('hidden');
   $('#specNotice').classList.add('hidden');
   ONL._specNoticeKey=null;ONL._specDismissedKey=null;
+  if(ONL.active&&ONL.transport==='poll'){
+    const leaveUrl=oBase()+'?send=1&pid='+encodeURIComponent(ONL.pid),headers=oLeagueHeaders();
+    Promise.resolve(headers).then(value=>fetch(leaveUrl,{method:'POST',headers:value,body:JSON.stringify(leaveMessage),keepalive:true})).catch(()=>{});
+  }
   ONL.active=false;
   if(ONL.iv){clearInterval(ONL.iv);ONL.iv=null}
-  if(ONL.ws){try{if(ONL.ws.readyState===1)ONL.ws.send(JSON.stringify({type:'leave'}));}catch(e){} try{ONL.ws.onclose=null;ONL.ws.close()}catch(e){}} // NEW CODE — أضفنا إرسال leave قبل الإغلاق: يفعّل عقوبة السيرفر الفورية بدل انتظار مهلة الحضور
-  ONL.ws=null;ONL.view=null;ONL.status=null;ONL.pollGen++;ONL.transport='ws';
+  if(ONL.ws){try{if(ONL.ws.readyState===1)ONL.ws.send(JSON.stringify(leaveMessage));}catch(e){} try{ONL.ws.onclose=null;ONL.ws.close()}catch(e){}} // NEW CODE — أضفنا إرسال leave قبل الإغلاق: يفعّل عقوبة السيرفر الفورية بدل انتظار مهلة الحضور
+  oDisconnectTransport();
+  ONL.assignmentPid=null;ONL.paymentPending=false;ONL.friendlyJoinIntent=null;ONL.view=null;ONL.status=null;ONL.transport='ws';
   if(typeof uiSyncOnlineAudience==='function')uiSyncOnlineAudience();
   if(typeof uiPlayerPanelsRoom==='function')uiPlayerPanelsRoom('');
   if(ONL.hbIv){clearInterval(ONL.hbIv);ONL.hbIv=null} // NEW CODE — إيقاف النبضة عند مغادرة الطاولة فعلياً
@@ -3935,7 +4242,11 @@ function oHandle(msg){
     const pl=$('#pageLoader'); // NEW CODE
     if(pl){ pl.style.opacity='0'; setTimeout(()=>pl.classList.add('hidden'),260); } // NEW CODE — نفس مدة التلاشي (٢٦٠مل) المستخدمة أصلاً بـshowPageLoader لثبات بصري
   } // NEW CODE
-  ONL.league=msg.league||null;ONL.reward=msg.reward||null;
+  ONL.league=msg.league||null;ONL.reward=msg.reward||null;ONL.paymentPending=msg.paymentPending===true;ONL.wallet=msg.wallet||null;ONL.competitiveMatchId=typeof msg.competitiveMatchId==='string'?msg.competitiveMatchId:null;
+  ONL.friendlyEconomy=uiFriendlyEconomy(msg.friendlyEconomy||msg.lobby?.friendlyEconomy);ONL.friendlyMatchId=typeof msg.friendlyMatchId==='string'?msg.friendlyMatchId:null;
+  ONL.friendlyParticipationId=typeof msg.friendlyParticipationId==='string'?msg.friendlyParticipationId:null;
+  ONL.friendlyJoinIntent=null;
+  if(msg.wallet)uiReceiveWallet(msg.wallet);
   document.getElementById('onl').dataset.tournament=msg.tournament?'true':'false';ONL.tournament=msg.tournament||null;ONL.status=msg.status;ONL.seats=msg.seats||[];ONL.you=msg.you;ONL.view=msg.view;ONL.result=msg.result;ONL.lobby=msg.lobby||null;ONL.spectators=msg.spectators||0;
   // FIX — إصلاح جذري: السيرفر يرسل uids كحقل شقيق لـview (server.js: uids:this._safeUidsMap())، لكن هنا كنا
   // نسند ONL.view=msg.view مباشرة بلا دمج uids فيها إطلاقاً — يعني ONL.view.uids كانت undefined دائماً بكل
@@ -3955,32 +4266,47 @@ function oHandle(msg){
   renderOnl();
   if(typeof uiLeagueState==='function')uiLeagueState(msg);
   if(MATCH.on)renderMatch(); // QUICK-MATCH — تحديث البحث عند وصول حالة فعلية، بلا interval
+  uiWalletSyncPlan();
+  if(ONL.paymentPending){
+    const hint=$('#oHint');hint.textContent='جارٍ تأكيد رسوم الدخول… لا تبدأ مهلة اللعب حتى اكتمال التأكيد.';
+    const retry=document.createElement('button');retry.type='button';retry.className='btn sm';retry.textContent='إعادة التحقق';retry.onclick=uiRequestWalletSync;hint.appendChild(retry);
+    $('#oThrow').disabled=true;
+  }
 }
 function oConnect(){
-  if(ONL.transport==='poll'){oPollLoop();return}
-  const url=onSrvHost()?((location.protocol==='https:'?'wss://':'ws://')+location.host+location.pathname.replace(/\/+$/,'')+'/ws/'+ONL.room):('wss://'+GAME_SRV+'/ws/'+ONL.room);
-  const ws=new WebSocket(url);
-  ONL.ws=ws;
-  ws.onopen=async()=>{ $('#connDot').classList.remove('off'); ONL.wsFails=0;
-    // نفس مسار withIdToken المستخدم بـoPost بالضبط (idToken حقيقي موقّع من Firebase، السيرفر يتحقق من التوقيع
-    // بنفسه) — كان هذا منطقاً مكرراً يدويًا هنا، حُذف واستُبدل باستدعاء الدالة الموحّدة (راجعها أعلاه)
-    const joinMsg=await withIdToken({type:'join',playerId:ONL.pid,name:(($('#lobbyName')&&$('#lobbyName').value)||$('#nameIn').value||localStorage.getItem('wb-name')||'').trim(),avatar:myAvatar(),tier:ONL.pendingTier||undefined,mode:ONL.pendingTier?(ONL.pendingMode||'solo'):undefined,spectate:ONL.spectateOnly||undefined}); // NEW CODE — أضفنا spectate
-    ws.send(JSON.stringify(joinMsg));
-    while(ONL.queue.length)ws.send(JSON.stringify(ONL.queue.shift())); };
-  ws.onclose=()=>{ if(!ONL.active)return; uiSessionStartFailed(); $('#connDot').classList.add('off');
-    ONL.wsFails++;
-    if(ONL.wsFails>=2&&ONL.status===null){ switchToPoll(); return; } // المتصفح يرفض ws؟ انتقل للاستطلاع
+  if(!ONL.active)return;
+  if(ONL.transport==='poll'){oPollLoop();return;}
+  const generation=ONL.generation,room=ONL.room,uid=FB.user?.uid;
+  const url=onSrvHost()?((location.protocol==='https:'?'wss://':'ws://')+location.host+location.pathname.replace(/\/+$/,'')+'/ws/'+room):('wss://'+GAME_SRV+'/ws/'+room);
+  const ws=new WebSocket(url);ONL.ws=ws;
+  const current=()=>oSessionCurrent(generation,room)&&ONL.transport==='ws'&&ONL.ws===ws&&FB.user?.uid===uid;
+  ws.onopen=async()=>{
+    if(!current())return;
+    $('#connDot').classList.remove('off');ONL.wsFails=0;
+    const joinMsg=await withIdToken({type:'join',playerId:ONL.pid,name:(($('#lobbyName')&&$('#lobbyName').value)||$('#nameIn').value||localStorage.getItem('wb-name')||'').trim(),avatar:myAvatar(),tier:ONL.pendingTier||undefined,mode:ONL.pendingTier?(ONL.pendingMode||'solo'):undefined,spectate:ONL.spectateOnly||undefined,friendlyEconomyVersion:ONL.friendlyEconomyVersion||undefined,friendlyParticipationId:ONL.friendlyParticipationId||undefined});
+    if(!current()||ws.readyState!==1)return;
+    ws.send(JSON.stringify(joinMsg));if(!joinMsg.spectate&&ONL.friendlyJoinIntent)ONL.friendlyJoinIntent.sent=true;
+    while(ONL.queue.length&&current())ws.send(JSON.stringify(ONL.queue.shift()));
+  };
+  ws.onclose=()=>{
+    if(!current())return;
+    uiSessionStartFailed();$('#connDot').classList.add('off');ONL.wsFails++;
+    if(ONL.wsFails>=2&&ONL.status===null){switchToPoll();return;}
     $('#oHint').innerHTML=ONL.status?'انقطع الاتصال — إعادة المحاولة...':'';
-    setTimeout(()=>{if(ONL.active&&ONL.transport==='ws')oConnect()},1200); };
+    clearTimeout(ONL.reconnectTimer);
+    ONL.reconnectTimer=setTimeout(()=>{if(current())oConnect();},1200);
+  };
   ws.onmessage=e=>{
-    let msg;try{msg=JSON.parse(e.data)}catch(err){return}
+    if(!current())return;
+    let msg;try{msg=JSON.parse(e.data);}catch(_){return;}
     if(msg.type==='error'){
       uiSessionStartFailed();
-      if(ONL.lastSent==='settle'||ONL.lastSent==='timeout'){ONL.lastSent=null;return}
+      if(ONL.lastSent==='settle'||ONL.lastSent==='timeout'){ONL.lastSent=null;return;}
       oToast(msg.error);return;
     }
-    if(msg.type==='chat'){oReceiveChat(msg);return}
-    if(msg.type==='react'){oReceiveReact(msg);return}
+    if(msg.type==='wallet'){uiReceiveWallet(msg.wallet||msg);return;}
+    if(msg.type==='chat'){oReceiveChat(msg);return;}
+    if(msg.type==='react'){oReceiveReact(msg);return;}
     if(msg.type==='state')oHandle(msg);
   };
 }
@@ -4401,7 +4727,7 @@ function renderOnl(){
   else specEl.classList.add('hidden');
   $('#oGoalBanner').classList.add('hidden'); // الهدف صار شارة بجانب العنوان فوق، ما نحتاج شريط منفصل تحته
   const me=ONL.you;
-  const myTurn=seated&&v.phase==='turn'&&v.turn===me&&st==='playing';
+  const myTurn=!ONL.paymentPending&&seated&&v.phase==='turn'&&v.turn===me&&st==='playing';
   const myIdx=v.seats.indexOf(me)>=0?v.seats.indexOf(me):0;
   const seatAt=k=>v.seats[(myIdx+k)%4]; // 1=يمين 2=أعلى 3=يسار (عكس عقارب الساعة)
   const seatEls={1:$('#oSeatR'),2:$('#oSeat'),3:$('#oSeatL')};
@@ -4673,15 +4999,17 @@ function uiLobbySeatsHTML(lb,seats,you){
   return pairs.map((pair,team)=>`<div class="teamZone" data-team="${team}"><div class="teamZoneLabel">${mine<0?'شراكة':mine===team?'فريقك':'المنافسون'}</div>${pair.map(seatRow).join('')}</div>`).join('<span class="uiLobbyVersus" aria-label="مواجهة">VS</span>');
 }
 // v353 — display a creation debit only after a matching, confirmed server receipt.
-var UI_SESSION_START={room:null,pending:false,awaitingDebit:false,seen:null};
+var UI_SESSION_START={room:null,pending:false,awaitingDebit:false,requested:false,seen:null};
 function uiSessionStartReset(){
-  UI_SESSION_START={room:ONL.room||null,pending:false,awaitingDebit:false,seen:null};
+  UI_SESSION_START={room:ONL.room||null,pending:false,awaitingDebit:false,requested:false,seen:null};
   document.getElementById('uiSessionFeeToast')?.remove();
 }
 function uiSessionFeeModel(lb){
   if(!ONL.room||ONL.room.startsWith('pub-')||ONL.league||ONL.tournament||lb?.tier?.fee)return null;
   const fee=lb?.creationFee;
   if(fee&&Number.isSafeInteger(fee.amount)&&fee.amount>=0)return {amount:fee.amount,paid:fee.paid===true};
+  const policy=uiFriendlyEconomy(lb?.friendlyEconomy||ONL.friendlyEconomy);
+  if(policy)return {amount:policy.creatorFee,paid:false};
   // Older servers use the same 800 creation fee but do not expose their paid flag.
   return {amount:800,paid:false};
 }
@@ -4701,7 +5029,9 @@ function uiSessionStart(){
   const fee=uiSessionFeeModel(ONL.lobby);
   UI_SESSION_START.pending=true;UI_SESSION_START.awaitingDebit=!!fee&&!fee.paid&&fee.amount>0;
   uiSessionRenderStart(ONL.lobby);
-  try{oSend({type:'start'});}catch(_){uiSessionStartFailed();oToast('تعذّر إرسال البدء؛ حاول مرة أخرى');}
+  const friendlyEconomyVersion=uiFriendlyEconomy(ONL.lobby?.friendlyEconomy||ONL.friendlyEconomy)?.version;
+  if(friendlyEconomyVersion)ONL.friendlyEconomyVersion=friendlyEconomyVersion;
+  try{oSend({type:'start',...(friendlyEconomyVersion?{friendlyEconomyVersion}:{})});UI_SESSION_START.requested=!!friendlyEconomyVersion;}catch(_){uiSessionStartFailed();oToast('تعذّر إرسال البدء؛ حاول مرة أخرى');}
 }
 function uiSessionStartFailed(){
   UI_SESSION_START.pending=false;UI_SESSION_START.awaitingDebit=false;
@@ -4722,14 +5052,16 @@ function uiSessionHandleReceipt(msg){
     Number.isSafeInteger(r.before)&&Number.isSafeInteger(r.after)&&r.after>=0&&r.before-r.after===r.amount&&UI_SESSION_START.seen!==r.id){
     UI_SESSION_START.seen=r.id;
     if(UI_SESSION_START.pending&&UI_SESSION_START.awaitingDebit){
-      // Store the confirmed total, never subtract the fee from a cached balance.
-      try{localStorage.setItem('wb-gold',String(r.after));}catch(_){}
-      const gold=document.getElementById('hGold');if(gold)gold.textContent=toH(r.after);
+      // New friendly receipts animate the debit; only the ordered wallet snapshot changes the live total.
+      if(!uiFriendlyEconomy(ONL.friendlyEconomy)){
+        try{localStorage.setItem('wb-gold',String(r.after));}catch(_){}
+        const gold=document.getElementById('hGold');if(gold)gold.textContent=toH(r.after);
+      }
       if(!document.hidden)uiSessionShowDebit(r);
       UI_SESSION_START.awaitingDebit=false;
     }
   }
-  if(msg.status!=='lobby'){UI_SESSION_START.pending=false;UI_SESSION_START.awaitingDebit=false;}
+  if(msg.status!=='lobby'){UI_SESSION_START.pending=false;UI_SESSION_START.awaitingDebit=false;UI_SESSION_START.requested=false;}
 }
 document.addEventListener('visibilitychange',()=>{if(document.hidden)document.getElementById('uiSessionFeeToast')?.remove();});
 
@@ -4737,6 +5069,7 @@ function renderLobby(){
   $('#onlWait').classList.remove('hidden');
   $('#oOver').classList.add('hidden');$('#oWaqf').classList.add('hidden');
   const wait=$('#onlWait');wait.classList.toggle('uiLobbyCompact',!ONL.league);
+  const paidNotice=document.getElementById('uiFriendlyLobbyEconomy');if(paidNotice)paidNotice.hidden=true;
   if(ONL.league&&typeof lgRenderLobby==='function'){$('#lobbyPlayers')._uiSeatFingerprint='';uiLobbySetTab('seats');lgRenderLobby(ONL);return;}
   if(wait.dataset.uiLobbyRoom!==ONL.room){wait.dataset.uiLobbyRoom=ONL.room||'';uiLobbySetTab('seats');}
   const lb=ONL.lobby||{mode:'solo',creator:null,names:{}};
@@ -4765,6 +5098,12 @@ function renderLobby(){
     tb.innerHTML=`🎯 الهدف: ${toH(lb.tier.goal)} نقطة`;
     tb.style.display='flex';
   }else{const tb=$('#lobbyTierTag');if(tb)tb.style.display='none';}
+  let economy=document.getElementById('uiFriendlyLobbyEconomy');
+  const friendlyPolicy=!ONL.league&&!ONL.tournament&&!lb.tier?.fee&&uiFriendlyEconomy(lb.friendlyEconomy||ONL.friendlyEconomy);
+  if(friendlyPolicy){
+    if(!economy){economy=document.createElement('div');economy.id='uiFriendlyLobbyEconomy';economy.style.cssText='padding:12px 14px;margin:10px 0;border:1px solid #d5ba7455;border-radius:16px;background:#082c24;color:#f7e7ba;font-size:12px;line-height:1.9;text-align:center';const start=document.getElementById('lobbyStart');start.parentNode.insertBefore(economy,start);}
+    economy.innerHTML='<b>رسوم الجلسة مرة واحدة</b><br>المنشئ <bdi>'+toH(friendlyPolicy.creatorFee)+'</bdi> ذهب وتشمل مقعده · كل لاعب آخر <bdi>'+toH(friendlyPolicy.entryFee)+'</bdi> ذهب<br><small>تُخصم عند أول مشاركة. لكل فائز <bdi>'+toH(friendlyPolicy.winGold)+'</bdi> ذهب في كل جولة · بلا نقاط تنافسية</small>';economy.hidden=false;
+  }else if(economy)economy.hidden=true;
   // أزرار الوضع
   for(const b of document.querySelectorAll('#lobbyMode .lmBtn')){
     b.classList.toggle('on',b.dataset.m===lb.mode);
@@ -4821,7 +5160,7 @@ $('#lobbyName').addEventListener('input',()=>{
     if(!nm)return;
     localStorage.setItem('wb-name',nm);
     try{fbSaveProfile()}catch(e){} // FIX — تغيير الاسم من اللوبي كان يوصل السيرفر (الطاولة) بس ما يوصل السحابة، فيرجع القديم بعد إعادة الدخول
-    oSend({type:'join',playerId:ONL.pid,name:nm,avatar:myAvatar()});
+    oSend({type:'join',playerId:ONL.pid,name:nm,avatar:myAvatar(),friendlyEconomyVersion:ONL.friendlyEconomyVersion||undefined,friendlyParticipationId:ONL.friendlyParticipationId||undefined});
   },450);
 });
 function renderOver(){
@@ -4840,7 +5179,7 @@ function renderOver(){
   uiBeginOnlineResult(r,seated,rFingerprint);
   uiPrepareOnlineResult();
   $('#oOver').classList.remove('hidden');
-  if(competitive&&seated&&ONL._statsPulledForResult!==rFingerprint){ // Competitive result balances only; league/friendly results need no competitive refresh.
+  if(UI_RESULT.online?.financial&&seated&&!UI_RESULT.online?.synced&&ONL._statsPulledForResult!==rFingerprint){ // Paid modes only; league and legacy friendly results keep their existing flow.
     ONL._statsPulledForResult=rFingerprint; // FIX
     pullServerStats(); // FIX
   } // FIX
@@ -4930,7 +5269,7 @@ function animateResultsScreenCounters(oldGold,newGold,oldRank,newRank,resultRead
   uiResultServerStats(newGold,newRank,resultRead);
 }
 function oTick(){ // مزامنة المهل مع الخادم وإرسال الحسم/المهلة تلقائياً
-  if(!ONL.active||!ONL.view||ONL.status!=='playing')return;
+  if(!ONL.active||!ONL.view||ONL.status!=='playing'||ONL.paymentPending)return;
   const v=ONL.view;
   // خريطة لاعب → عنصر الصورة الشخصية (لتحديث الحلقة الدائرية)
   const myIdxT=v.seats.indexOf(ONL.you)>=0?v.seats.indexOf(ONL.you):0;
@@ -5311,6 +5650,7 @@ function openAwards(){
 // v364 — navigation lives in ui-navigation.js; destinations retain their existing data flows.
 
 function refreshHome(){
+  uiHomeWalletResume();
   $('#hName').textContent=localStorage.getItem('wb-name')||'ضيف';
   const ha=document.querySelector('#hAvaContent');if(ha)ha.innerHTML=avatarHTML(myAvatar(),50);
   $('#hRankBadge').innerHTML=rankBadgeHTML(ST.n('rank'),12); // NEW CODE — المعيار الوحيد الآن؛ رفعنا الحجم شوي (كان ١٠.٥) بما إنه صار وحيداً بمكان شارة المستوى المحذوفة
@@ -5321,7 +5661,7 @@ function refreshHome(){
   try{$('#hDailyBadge').classList.toggle('hidden',!(checkDaily().due||_adReadyH));}catch(e){}
   refreshInboxBadge(); // NEW CODE
   refreshRankCard();
-  if(FB.user&&Date.now()-(UI_COST.statsAt||0)>30000){UI_COST.statsAt=Date.now();pullServerStats(0);} // Result confirmation retains its independent reads/retries.
+  if(!uiHomeWalletHasPending()&&FB.user&&Date.now()-(UI_COST.statsAt||0)>30000){UI_COST.statsAt=Date.now();pullServerStats(0);} // Result confirmation retains its independent reads/retries.
 }
 // NEW CODE ================= صندوق الوارد =================
 // يبدأ فارغاً فعليًا لكل لاعب. الرسائل الحقيقية تصل عبر syncSystemMessages (تقرأ من Firestore، تكتبها لوحة
@@ -5435,7 +5775,7 @@ async function syncSystemMessages(force){
     syncSystemMessages._at=Date.now();rebuild();
   }).catch(e=>console.warn('inbox read failed',e)).finally(()=>{if(generation===UI_COST.generation)syncSystemMessages._pending=null;});
 }
-let _pullingStats=false;
+let _pullingStats=false,_statsQueued=false;
 // FIX — الإصلاح الجذري لـ"إشعار الرتبة متأخر/لا يظهر" و"الذهب لا يتحدّث بالرئيسية إلا بإعادة تحميل الصفحة":
 // معالجة نتيجة المباراة بالسيرفر صارت متعددة الخطوات المتتالية (رتبة + نقاط أسبوعية + games/wins/best، كل
 // وحدة طلب شبكة منفصل)، وقد تستغرق أطول من المهلة القصيرة اللي كانت مضروبة سابقاً (فحص فوري + محاولة وحيدة
@@ -5443,17 +5783,18 @@ let _pullingStats=false;
 // تعيد المحاولة داخلياً حتى تكتشف تغيّراً فعلياً أو تنفد محاولاتها — أي مستدعٍ (شاشة النتيجة أو الرئيسية)
 // يستفيد من هذي الموثوقية تلقائياً بلا أي تنسيق يدوي من جهته
 async function pullServerStats(retriesLeft){
+  if(uiHomeWalletHasPending()){uiHomeWalletResume();return;}
   if(retriesLeft===undefined)retriesLeft=3; // FIX — محاولة فورية + ٣ إعادات (تقريباً ١+٢+٤=٧ث تغطية إجمالية)
-  if(_pullingStats)return; _pullingStats=true;
-  const statsUid=FB.user?.uid,resultRead=typeof uiResultReadToken==='function'?uiResultReadToken():null;
+  if(_pullingStats){_statsQueued=true;return;} _pullingStats=true;
+  const readStartedAt=Date.now(),statsUid=FB.user?.uid,walletRevision=uiWalletForAccount(statsUid),resultRead=typeof uiResultReadToken==='function'?uiResultReadToken():null;
   const oldRank=ST.n('rank'); // NEW CODE — نلتقطها قبل أي تحديث، عشان نقارن ونشغّل التوست لو تغيّرت فعلياً
   const oldGold=ST.n('gold'); // NEW CODE — نفس الفكرة، لتحريك عدّاد الذهب بشاشة النتيجة لو مفتوحة
   let changed=false,readAgain=false,profileTimer=null; // FIX
   try{
-    const profileRead=(async()=>{if(!(await ensureFB())||!FB.user||FB.user.uid!==statsUid)return null;return FB.db.collection('players').doc(statsUid).get();})();
+    const profileRead=(async()=>{if(!(await ensureFB())||!FB.user||FB.user.uid!==statsUid)return null;return FB.db.collection('players').doc(statsUid).get({source:'server'});})();
     const doc=await Promise.race([profileRead,new Promise((_,reject)=>{profileTimer=setTimeout(()=>reject(Error('profile timeout')),7000);})]);
     if(!doc)return;
-    if(FB.user?.uid!==statsUid)return;
+    if(FB.user?.uid!==statsUid||walletRevision!==UI_WALLET.revision||doc.metadata?.fromCache)return;
     if(doc.exists){
       const d=doc.data();
       for(const k of ['gold','level','xp','rank','achievement','achievementDate']){ // NEW CODE — أضفنا achievement/achievementDate
@@ -5462,6 +5803,7 @@ async function pullServerStats(retriesLeft){
         }
       }
       if(typeof uiPlayerPanelsProfileLoaded==='function')uiPlayerPanelsProfileLoaded(statsUid,d);
+      uiWalletRememberProfile(readStartedAt); // A fresh profile supersedes earlier transaction totals.
       if(changed){
         $('#hRankBadge').innerHTML=rankBadgeHTML(ST.n('rank'),12); // NEW CODE — نفس تنظيف refreshHome
         $('#hGold').textContent=ST.n('gold').toLocaleString('en');
@@ -5472,7 +5814,7 @@ async function pullServerStats(retriesLeft){
       if(d.gold!==undefined&&d.rank!==undefined&&!(doc.metadata&&doc.metadata.fromCache))animateResultsScreenCounters(oldGold,ST.n('gold'),oldRank,ST.n('rank'),resultRead);
     }
   }catch(e){}
-  finally{clearTimeout(profileTimer);_pullingStats=false;if(typeof uiResultReadFinished==='function')uiResultReadFinished(resultRead);readAgain=typeof uiResultNeedsRead==='function'&&uiResultNeedsRead();if(readAgain)queueMicrotask(()=>pullServerStats(0));}
+  finally{clearTimeout(profileTimer);_pullingStats=false;if(typeof uiResultReadFinished==='function')uiResultReadFinished(resultRead);readAgain=_statsQueued||(typeof uiResultNeedsRead==='function'&&uiResultNeedsRead());_statsQueued=false;if(readAgain)queueMicrotask(()=>{if(FB.user?.uid===statsUid)pullServerStats(0);});}
   if(readAgain)return;
   // FIX — لو ما تغيّر شي وبعدنا عندنا محاولات، أعد المحاولة بعد مهلة متصاعدة (السيرفر قد لا يكون خلص المعالجة بعد)
   if(!changed&&retriesLeft>0)setTimeout(()=>{if(FB.user?.uid===statsUid&&(!resultRead||UI_RESULT.online?.key===resultRead.key))pullServerStats(retriesLeft-1);},(4-retriesLeft)*1000); // FIX
@@ -5806,13 +6148,14 @@ $('#awardsBack').onclick=()=>goHome();
 // تبويبات المتجر
 // ربط نقر .shopTab محذوف — شريط التبويبات نفسه اتحذف من الـHTML
 $('#hGroup').onclick=()=>{ // FIX — تحقق الذهب قبل الدخول للوبي أصلاً (كان يدخل بحرّية ويُرفض لاحقاً لحظة الضغط على "ابدأ" فقط)
-  if(ST.n('gold')<800){toast2('ذهبك لا يكفي — إنشاء جلسة خاصة يحتاج 800 ذهب');return}
+  if(ST.n('gold')<500){toast2('إنشاء الجلسة يحتاج 500 ذهب عند البدء، ويشمل مقعدك');return}
   SFX.tick(); history.replaceState(null,'',location.pathname); ONL.pendingTier=null; ONL.pendingMode=null; enterOnline();
 };
 
 /* ---- QUICK-MATCH: بحث حقيقي تدفع تحديثاته أحداث WebSocket فقط ---- */
+const TIER_ENTRY={generation:0,busy:false};
 let MATCH={on:false,iv:null};
-var QUICK_SEARCH={ws:null,wanted:false,tier:null,counts:null,seats:[],you:null,assigned:false,error:'',generation:0,allowBots:false,botSupported:false,botConfirmed:false,botDeadline:0,botTimer:null,botDisplayTimer:null,botPending:null,botError:'',botAssigned:false,botGroupSupported:false,botGroupToken:null,botHumanCount:0};
+var QUICK_SEARCH={ws:null,wanted:false,tier:null,counts:null,seats:[],you:null,assigned:false,error:'',generation:0,joinIntent:0,allowBots:false,botSupported:false,botConfirmed:false,botDeadline:0,botTimer:null,botDisplayTimer:null,botPending:null,botError:'',botAssigned:false,botGroupSupported:false,botGroupToken:null,botHumanCount:0};
 function quickCounts(){
   if(!QUICK_SEARCH)return;
   const counts=QUICK_SEARCH.counts,total=counts?Object.values(counts).reduce((a,b)=>a+b,0):null;
@@ -5890,6 +6233,7 @@ function quickClose(){
 }
 function quickScreen(id,overlay){
   if(!QUICK_SEARCH||overlay)return;
+  if(TIER_ENTRY.busy&&!['tiers','match'].includes(id)){TIER_ENTRY.generation++;TIER_ENTRY.busy=false;}
   if(id!=='match'&&MATCH.on&&!QUICK_SEARCH.assigned){MATCH.on=false;QUICK_SEARCH.tier=null;quickClose();}
   QUICK_SEARCH.wanted=['home','tiers','match'].includes(id)&&!QUICK_SEARCH.assigned;
   if(QUICK_SEARCH.wanted)quickConnect();else quickClose();
@@ -5916,21 +6260,28 @@ function quickConnect(){
       if(msg.tier)QUICK_SEARCH.error='';
       quickCounts();if(MATCH.on)renderMatch();
     }else if(msg.type==='quick-match'){
-      if(!MATCH.on||msg.tier!==QUICK_SEARCH.tier||!/^pub-live-(beginner|amateur|pro|elite|legend)-[a-f0-9-]{36}$/.test(msg.room))return;
+      if(!MATCH.on||QUICK_SEARCH.assigned||(msg.tier!==QUICK_SEARCH.tier&&msg.assignmentResume!==true)||!/^pub-live-(beginner|amateur|pro|elite|legend)-[a-f0-9-]{36}$/.test(msg.room))return;
+      if(msg.playerId!==undefined&&!/^p-[A-Za-z0-9_-]{1,60}$/.test(msg.playerId))return;
       const groupAccepted=msg.botGrouped===true&&QUICK_SEARCH.botGroupSupported&&QUICK_SEARCH.botConfirmed&&!!QUICK_SEARCH.botGroupToken&&
         msg.botGroupToken===QUICK_SEARCH.botGroupToken&&Number.isInteger(msg.humanCount)&&msg.humanCount>=1&&msg.humanCount<=3;
-      if(msg.botFallback===true&&(document.hidden||!QUICK_SEARCH.allowBots||
+      if(msg.assignmentResume!==true&&msg.botFallback===true&&(document.hidden||!QUICK_SEARCH.allowBots||
         (msg.botGrouped===true?!groupAccepted:!QUICK_SEARCH.botPending||msg.requestId!==QUICK_SEARCH.botPending))){
         // User disabled the option or hid the app during setup. Never enter that bot room.
         QUICK_SEARCH.botPending=null;QUICK_SEARCH.botDeadline=0;QUICK_SEARCH.botConfirmed=false;
-        quickJoin();return;
+        QUICK_SEARCH.error='لديك طاولة محجوزة؛ أعد المحاولة للتحقق منها';QUICK_SEARCH.tier=null;quickClose();renderMatch();return;
       }
+      if(msg.assignmentResume===true){
+        const t=TIERS.find(x=>x.key===msg.tier);
+        if(t)ONL.pendingTier={key:t.key,name:'لعب تنافسي — '+t.name,fee:tierVal(t,'teamFee'),win:tierVal(t,'teamWin'),goal:tierVal(t,'goal')};
+        ONL.pendingMode='team';toast2('لديك مباراة جارية؛ نعيدك إلى مقعدك');
+      }
+      if(msg.playerId)ONL.assignmentPid={room:msg.room,pid:msg.playerId};
       QUICK_SEARCH.botAssigned=msg.botFallback===true;
       QUICK_SEARCH.botHumanCount=QUICK_SEARCH.botAssigned?(groupAccepted?msg.humanCount:1):0;
       QUICK_SEARCH.assigned=true;QUICK_SEARCH.tier=null;quickClose();
       const params=new URLSearchParams();params.set('room',msg.room);
       history.replaceState(null,'',location.pathname+'?'+params.toString());
-      enterOnline();show('match');renderMatch();
+      if(enterOnline()===false){MATCH.on=false;QUICK_SEARCH.assigned=false;return;}show('match');renderMatch();
     }else if(msg.type==='quick-bot-wait'){
       if(msg.requestId!==QUICK_SEARCH.botPending)return;
       QUICK_SEARCH.botPending=null;
@@ -5953,20 +6304,21 @@ function quickConnect(){
   ws.onclose=disconnected;ws.onerror=disconnected;
 }
 async function quickJoin(){
-  const ws=QUICK_SEARCH.ws,tier=QUICK_SEARCH.tier,generation=QUICK_SEARCH.generation;
+  const ws=QUICK_SEARCH.ws,tier=QUICK_SEARCH.tier,generation=QUICK_SEARCH.generation,joinIntent=++QUICK_SEARCH.joinIntent,uid=FB.user?.uid;
   if(!ws||ws.readyState!==1||!tier)return;
   let pid=localStorage.getItem('wb-player-id')||sessionStorage.getItem('wb-player-id');
   if(!pid){pid='p-'+crypto.randomUUID();localStorage.setItem('wb-player-id',pid);}
   const msg=await withIdToken({type:'quick-join',tier,playerId:pid,
     name:localStorage.getItem('wb-name')||'لاعب',avatar:myAvatar()});
-  if(ws!==QUICK_SEARCH.ws||generation!==QUICK_SEARCH.generation||tier!==QUICK_SEARCH.tier||!MATCH.on)return;
+  if(ws!==QUICK_SEARCH.ws||generation!==QUICK_SEARCH.generation||joinIntent!==QUICK_SEARCH.joinIntent||tier!==QUICK_SEARCH.tier||!MATCH.on||QUICK_SEARCH.assigned||FB.user?.uid!==uid)return;
   if(!msg.idToken){QUICK_SEARCH.error='سجّل الدخول للبحث عن مباراة';QUICK_SEARCH.tier=null;renderMatch();return;}
   if(QUICK_SEARCH.allowBots&&!QUICK_SEARCH.botGroupToken)QUICK_SEARCH.botGroupToken=crypto.randomUUID();
   msg.allowBots=QUICK_SEARCH.allowBots;
-  msg.botGroupVersion=1;msg.botGroupToken=QUICK_SEARCH.botGroupToken;msg.visible=!document.hidden;
+  msg.assignmentVersion=1;msg.botGroupVersion=1;msg.botGroupToken=QUICK_SEARCH.botGroupToken;msg.visible=!document.hidden;
   try{ws.send(JSON.stringify(msg));}catch(_){QUICK_SEARCH.error='تعذّر إرسال البحث';quickClose();renderMatch();}
 }
 function cancelQuickMatch(changeTier){
+  TIER_ENTRY.generation++;TIER_ENTRY.busy=false;
   const assigned=QUICK_SEARCH.assigned;
   MATCH.on=false;QUICK_SEARCH.tier=null;QUICK_SEARCH.wanted=false;quickClose();
   if(assigned&&ONL.active)leaveOnline();
@@ -5988,6 +6340,7 @@ window.addEventListener('pagehide',()=>quickClose());
 window.addEventListener('pageshow',()=>{if(QUICK_SEARCH.wanted)quickConnect();});
 document.addEventListener('visibilitychange',()=>{quickBotPresence();if(document.hidden)quickBotStop();else if(QUICK_SEARCH.wanted){quickConnect();quickBotPlan();}});
 function enterMatch(tierKey,mode){
+  if(MATCH.on||QUICK_SEARCH.assigned||ONL.active)return;
   if(mode!=='team'){toast2('اللعب التنافسي متاح جماعي 2×2');return;}
   if(!['beginner','amateur','pro','elite','legend'].includes(tierKey))return;
   quickBotStop();QUICK_SEARCH.botPending=null;QUICK_SEARCH.botDeadline=0;QUICK_SEARCH.botConfirmed=false;QUICK_SEARCH.botError='';QUICK_SEARCH.botAssigned=false;QUICK_SEARCH.allowBots=false;QUICK_SEARCH.botGroupToken=null;QUICK_SEARCH.botHumanCount=0;
@@ -6051,11 +6404,13 @@ window._rebindWelcome=()=>{ try{
 async function afterAuth(user){
   if(UI_COST.uid!==user.uid)uiCostReset(user.uid);
   FB.user=user;
+  uiHomeWalletAccount(user.uid);
   if(typeof uiThemeSetAccount==='function')uiThemeSetAccount(user.uid);
   // اسم مبدئي من البريد أو حساب Google
   let nm=localStorage.getItem('wb-name');
   if(!nm){ nm=(user.displayName||(user.email||'لاعب').split('@')[0]).slice(0,14); localStorage.setItem('wb-name',nm); }
   // حمّل من Firestore (يغلب المحفوظ سحابياً على المحلي)
+  const authRoomGeneration=ONL.generation;
   const cloud=await fbLoadProfile(user.uid);
   if(FB.user?.uid!==user.uid)return;
   if(cloud&&cloud.banned){
@@ -6090,10 +6445,11 @@ async function afterAuth(user){
     const r=await fetch('https://'+GAME_SRV+'/claim-welcome',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({idToken:idt})}).then(x=>x.json()); // NEW CODE
     if(r&&r.ok&&r.granted>0){ localStorage.setItem('wb-gold',String(r.gold)); try{refreshHome()}catch(_){ } toast2('🎁 هدية ترحيبية: '+r.granted+' قطعة ذهبية!'); } // NEW CODE
   }catch(e){ console.log('[TRACE] claim-welcome:',e&&e.message); } })(); // NEW CODE
-  if(cloud&&cloud.activeRoom&&!(cloud.activeSince&&cloud.activeSince<Date.now()-3*60*60*1000)){ // FIX
+  if(ONL.active||MATCH.on||ONL.generation!==authRoomGeneration)return; // Never let a late auth/profile restore replace a newer match.
+  if(cloud&&cloud.activeRoom&&!uiHomeWalletLeavingRoom(cloud.activeRoom)&&!(cloud.activeSince&&cloud.activeSince<Date.now()-3*60*60*1000)){ // FIX
     console.log("[TRACE] afterAuth: جلسة نشطة مسجَّلة — إعادة اتصال تلقائية لغرفة",cloud.activeRoom); // FIX
     const params=new URLSearchParams(location.search); // FIX
-    params.set('room',cloud.activeRoom); // FIX
+    params.set('room',cloud.activeRoom);params.delete('spectate'); // Restore participation, never an unrelated stale viewing intent.
     history.replaceState(null,'',location.pathname+'?'+params.toString()); // FIX
     enterOnline(); // FIX
     return; // FIX — نتجاوز أي منطق افتراضي آخر لشاشة البدء (شاشة الترحيب/الرئيسية)، ندخل الطاولة مباشرة
@@ -6125,7 +6481,7 @@ async function afterAuth(user){
   const n=$('#nameIn'); if(n)n.value=localStorage.getItem('wb-name')||nm;
   recordVisit();
   try{updateDmBadge()}catch(e){}
-  if(_room0){ONL.pendingTier=null;ONL.pendingMode=null;enterOnline();return}
+  if(_room0&&!uiHomeWalletLeavingRoom(_room0)){ONL.pendingTier=null;ONL.pendingMode=null;enterOnline();return}
   goHome();
   try{ startInviteListener(); }catch(e){}
   setTimeout(()=>{try{showDailyReward()}catch(e){}},500);
@@ -6638,14 +6994,21 @@ function renderTiers(){
 }
 // NEW CODE (منقول من نسخة آيفون) — قراءة ذهب طازجة مضمونة مباشرة من الخادم، بمعزل عن أي مزامنة عامة أخرى جارية (لا تتأثر بعلم _pullingStats المشترك بـpullServerStats)
 async function freshGold(){
+  const uid=FB.user?.uid,revision=uiWalletForAccount(uid),readStartedAt=Date.now();
   try{
-    if(!(await ensureFB())||!FB.user)return ST.n('gold'); // بلا حساب مسجَّل — القيمة المحلية كافية هنا (لا يدخل تنافسياً أصلاً بلا حساب)
-    const doc=await FB.db.collection('players').doc(FB.user.uid).get();
-    if(doc.exists&&doc.data().gold!=null){ const g=doc.data().gold; localStorage.setItem('wb-gold',String(g)); return g; }
-  }catch(e){}
-  return ST.n('gold'); // فشل السحب (شبكة مثلاً) — رجوع للمحلي كحل احتياطي بدل منع اللاعب كليًا بخلل عابر
+    if(!(await ensureFB())||!uid||FB.user?.uid!==uid)return ST.n('gold');
+    const doc=await FB.db.collection('players').doc(uid).get({source:'server'});
+    if(FB.user?.uid!==uid||revision!==UI_WALLET.revision)return ST.n('gold');
+    if(doc.exists&&!doc.metadata?.fromCache&&Number.isSafeInteger(doc.data().gold)){
+      const gold=doc.data().gold;localStorage.setItem('wb-gold',String(gold));uiWalletRememberProfile(readStartedAt);uiWalletRender();return gold;
+    }
+  }catch(_){}
+  return ST.n('gold'); // Display fallback only; the server still authorizes every charge.
 }
 async function enterTier(t){
+  if(TIER_ENTRY.busy||MATCH.on||QUICK_SEARCH.assigned||ONL.active)return;
+  TIER_ENTRY.busy=true;const intent=++TIER_ENTRY.generation,uid=FB.user?.uid;
+  try{
   const isQuickOnline=tiersMode==='online'||tiersMode==='online-team'; // REMOVED session — اللعب السريع الأونلاين هو المسار الأونلاين الوحيد
   const teamPlay=tierTeamPlay();
   const fee=teamPlay?tierVal(t,'teamFee'):tierVal(t,'soloFee');
@@ -6654,6 +7017,7 @@ async function enterTier(t){
   if(fee>0){ // FIX (منقول من آيفون) — تحقق طازج فقط للطبقات المدفوعة؛ كان الفحص يعتمد على رصيد محلي مخبّأ فقط، فلاعب رصيده الحقيقي تغيّر
     // (إنفاق بجهاز/تبويب ثانٍ، أو تأخر تزامن) يدخل بثقة زائفة ويُطرد لاحقاً وقت خصم السيرفر — ولو تصادف مع أكثر من لاعب بنفس الغرفة يُطردون معاً. هذا يمنعه من جذره.
     const g=await freshGold();
+    if(intent!==TIER_ENTRY.generation||FB.user?.uid!==uid||ONL.active||MATCH.on)return;
     if(g<fee){toast2(`ذهبك لا يكفي — تحتاج ${toH(fee)} ذهب`);return}
   }
   // رسم الدخول وربح الفوز يُحسمان ويُصرفان من طرف السيرفر مباشرة (موثوق)، مو من الجهاز — يظهران بعد لحظات من بدء/انتهاء الجولة
@@ -6663,10 +7027,11 @@ async function enterTier(t){
     // أونلاين تنافسي: ابحث عن خصوم في غرفة عامة حسب الطبقة والوضع — الخادم يحسم الرهان مركزياً
     ONL.pendingTier={key:t.key,name:G_TIER.name,fee,win,goal}; // REMOVED session — لا بادئة session- بعد الآن
     ONL.pendingMode=teamPlay?'team':'solo';
-    enterMatchWithInterstitial(ONL.pendingTier.key, teamPlay?'team':'solo'); // الإعلان الخلالي يخص اللعب السريع
+    await enterMatchWithInterstitial(ONL.pendingTier.key,teamPlay?'team':'solo',intent); // الإعلان الخلالي يخص اللعب السريع
   }else{
     newGame({mode:'solo',diff: t.lvMax<=9?'easy':t.lvMax<=16?'med':'hard', name:localStorage.getItem('wb-name')||'أنت', tierGoal:t.goal,tierKey:t.key});
   }
+  }finally{if(intent===TIER_ENTRY.generation)TIER_ENTRY.busy=false;}
 }
 let G_TIER=null; // الطبقة النشطة للجولة الحالية
 
@@ -7769,7 +8134,7 @@ document.querySelectorAll('.afTab').forEach(t=>t.onclick=()=>{
 $('#hProfBtn').onclick=()=>openProfile();
 // NEW CODE — حذفنا $('#hChat').onclick — الزر نفسه اتحذف من الترويسة العلوية، الدردشة صارت بالشريط السفلي فقط
 $('#hDaily').onclick=()=>{SFX.tick();showRewardChoice()};
-$('#hGoldBtn').onclick=()=>{SFX.tick();openShop('gold')};
+$('#hGoldBtn').onclick=()=>{SFX.tick();if(uiHomeWalletHasPending()){uiHomeWalletResume(true);return;}openShop('gold')};
 if(!SHOW_STORE){ const plus=document.querySelector('#hGoldBtn b'); if(plus)plus.style.display='none'; } // NEW CODE — يخفي إشارة "+" (تلمّح لعملية شراء) طالما المتجر مقفل — لا يترك زراً يبدو تفاعلياً بلا وظيفة
 $('#setupBack').onclick=()=>goHome();
 

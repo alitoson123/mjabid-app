@@ -1,0 +1,49 @@
+/* v369 — login presentation only. Existing auth handlers, provider visibility,
+   scrolling and safe-area calculations stay in their original files. */
+#login{background-image:radial-gradient(ellipse at 50% 8%,#3e655341,transparent 55%),linear-gradient(155deg,#173f32,#09251d 80%)}
+#login::before{inset:10px;border-color:#dfc38c12;border-radius:30px}
+#login #lgWrap{overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#b5a07955 transparent}
+#login .saduSvg{opacity:.16!important}
+#login #lgTopRow{padding-inline:22px}
+#login #lgBack{background:#061c1740;border-color:#dcc59124;border-radius:15px}
+#login .uiEntryWordmark{font-size:25px;color:var(--ui-gold-bright)}
+#login .uiEntryWordmark i{font-size:14px;opacity:.7}
+#login #lgAva{position:relative;display:block;flex:none;width:150px;height:91px;margin:13px auto 0;isolation:isolate;pointer-events:none}
+#login #lgAva::before{content:'';position:absolute;inset:5px -10px -10px;border-radius:50%;background:radial-gradient(ellipse,#dbbd7024,transparent 67%);z-index:-1}
+#login .uiAuthCard{position:absolute;display:grid;place-items:center;left:48px;top:0;width:55px;height:77px;border:1px solid #dac9a5;border-radius:9px;background:linear-gradient(135deg,#fffdf7,#f2e8d2);color:#214334;font:40px/1 Georgia,serif;box-shadow:0 6px 14px #0003,inset 0 1px 0 #fff;transform-origin:50% 85%}
+#login .uiAuthCard::before{content:attr(data-suit);position:absolute;top:5px;left:5px;font-size:10px}
+#login .uiAuthCard::after{content:attr(data-suit);position:absolute;right:5px;bottom:5px;font-size:10px;transform:rotate(180deg)}
+#login .uiAuthCard:nth-child(1){transform:translate(-32px,10px) rotate(-19deg);color:#9e4135;z-index:1}
+#login .uiAuthCard:nth-child(2){transform:translate(32px,10px) rotate(19deg);z-index:1}
+#login .uiAuthCard:nth-child(3){transform:rotate(-3deg);z-index:2}
+#login #lgHead{padding:10px 22px 0}
+#login #lgHead .t{font-size:32px;line-height:1.4;color:var(--ui-gold-bright);text-shadow:0 3px 14px #0003}
+#login #lgHead .sub{font-size:13px;line-height:1.9;color:#bdcec3;margin-top:2px;font-weight:500}
+#login .uiAuthPanel{flex:none;min-width:0;margin:19px 20px 24px;border:1px solid #e6d9b6;border-radius:25px;background:var(--ui-paper);color:var(--ui-text);box-shadow:0 14px 32px #03160f33,inset 0 1px 0 #fff}
+#login #lgFields{padding:21px 20px 0;gap:12px}
+#login .lgLbl{margin:0 2px 5px;font-size:12px;font-weight:700;color:var(--ui-text)}
+#login .lgField input{min-height:49px;padding-block:9px!important;border-color:#d7ded2;border-radius:12px;background:#fffefb;color:var(--ui-text);font-size:16px;line-height:1.7}
+#login .lgField input::placeholder{color:#7c897d;opacity:1}
+#login .lgField input:focus{border-color:#6d9276;box-shadow:0 0 0 3px #426b4118;background:#fff}
+#login .lgField .fic{color:#70846f;display:flex;align-items:center;justify-content:center}
+#login .lgField .fic svg{display:block;width:18px;height:18px;stroke-width:1.6}
+#login #lgForgot{color:#42624b;margin:-8px 0 -5px;min-height:44px;padding:10px 2px;font-size:12px;font-weight:600}
+#login #lgGo{min-height:52px;border-radius:13px!important;font-size:16px;margin-top:0;background:linear-gradient(120deg,#f5d895,#e5bd6b)!important;border-color:#d9b768;box-shadow:0 3px 0 #b1955a,0 5px 13px #b29a5b20!important;transition:transform .15s,filter .15s}
+#login #lgGo:active{transform:translateY(2px);box-shadow:0 1px 0 #b1955a!important}
+#login #lgGo:disabled{opacity:.65;transform:none}
+#login .lgOr{color:#7d8977;margin:3px 0 0;font-size:11px;font-weight:500;gap:12px}
+#login .lgOr::before,#login .lgOr::after{background:#dce2d5}
+#login .lgSoc{gap:9px}
+#login .lgSoc button{min-height:49px;padding:9px 12px;border-radius:12px;border-color:#d8dfd3;background:#fffefb;color:var(--ui-text);font-size:13px;font-weight:600;line-height:1.8;gap:10px;transition:background .15s,transform .15s}
+#login .lgSoc button:active{transform:translateY(1px);box-shadow:none}
+#login #lgApple{background:#000;color:#fff}
+#login #lgBottom{margin-top:0;padding-top:13px;padding-inline:20px}
+#login #lgSignupLink{color:#60725f;font-size:13px;font-weight:500;padding:8px 4px;min-height:44px}
+#login #lgSignupLink b{color:#254b35;font-weight:800;margin-inline-start:4px;border-bottom:1px solid #708d733d}
+#login #lgTerms{font-size:10px;line-height:1.9;color:#72806c;max-width:260px;margin-top:5px}
+#login button:focus-visible{outline:3px solid #76965e;outline-offset:3px}
+@media(hover:hover){#login #lgGo:hover{filter:brightness(1.025)}#login #lgGoogle:hover{background:#f0f3e9}#login #lgSignupLink:hover b{border-bottom-color:currentColor}}
+@media(max-width:350px){#login .uiAuthPanel{margin-inline:14px;border-radius:21px}#login #lgTopRow{padding-inline:17px}#login #lgFields{padding-inline:17px}#login #lgBottom{padding-inline:17px}#login #lgHead .t{font-size:29px}#login #lgHead .sub{font-size:12px}}
+@media(max-height:740px){#login #lgAva{height:70px;margin-top:8px;transform:scale(.8);transform-origin:50% 0}#login #lgHead{padding-top:3px}#login #lgHead .t{font-size:29px}#login .uiAuthPanel{margin-top:14px}#login #lgFields{padding-top:18px;gap:10px}#login #lgBottom{padding-top:9px}}
+@media(max-height:520px){#login #lgAva{display:none}#login #lgHead{padding-top:9px}#login #lgHead .t{font-size:25px}#login .uiAuthPanel{margin-top:12px}}
+@media(prefers-reduced-motion:reduce){#login button,#login .lgField input{transition:none!important}}

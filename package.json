@@ -1,6 +1,6 @@
 {
   "name": "majabeed-app",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Majabeed iOS App wrapped in Capacitor",
   "scripts": {
     "postinstall": "node copy-plugins.js",

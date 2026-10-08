@@ -288,12 +288,4 @@ async function uiActivateTheme(id){
   finally{if(UI_THEME_RENTALS.generation===generation){UI_SHOP.busy=false;uiRenderShop();}}
 }
 
-function uiRenderGoldPackages(){
-  const wrap=document.getElementById('goldPkgList');if(!wrap)return;wrap.innerHTML='';if(!SHOW_STORE)return;
-  const names=['حفنة ذهب','رصّة ذهب','كيس المجلس','صندوق الذهب','خزنة المجلس'];
-  GOLD_PACKAGES_DISPLAY.forEach((pkg,i)=>{
-    const card=document.createElement('button');card.type='button';card.className='uiGoldPackage';card.dataset.package=pkg.key;
-    card.innerHTML=uiGoldArt(i)+'<span class="uiGoldPackageName">'+names[i]+'</span><strong>'+pkg.label.replace(/ ذهب$/,'')+' <small>ذهب</small></strong><span class="uiGoldPackagePrice">'+toH(pkg.sar)+' ر.س</span>';
-    card.onclick=()=>buyGoldPackage(pkg.key);wrap.appendChild(card);
-  });
-}
+function uiRenderGoldPackages(){window.GoldShop?.render();}

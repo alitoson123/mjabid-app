@@ -10,7 +10,7 @@ workflows:
       app_store_connect: "mjabid app"
       
     environment:
-      node: latest
+      node: 22
       xcode: latest
       cocoapods: default
       ios_signing:
@@ -29,21 +29,28 @@ workflows:
         - push
       branch_patterns:
         - pattern: main
+        - pattern: codex/revenuecat-v375
         
     scripts:
       - name: Install npm dependencies
         script: |
-          npm install
+          npm ci
           
+      - name: Verify purchase UI and assets
+        script: |
+          npm run test:purchases
+          node scripts/verify-purchases-build.cjs
+
       - name: Sync Capacitor project (copy web assets and update plugins)
         script: |
           chmod +x node_modules/.bin/cap
           npx cap sync ios
+          node scripts/verify-purchases-build.cjs --copied
           
       - name: Set up build number
         script: |
           cd ios/App
-          agvtool new-version -all $(($BUILD_NUMBER + 1))
+          agvtool new-version -all $((48 + ${BUILD_NUMBER:-0}))
           
       - name: Install Pods
         script: |

@@ -31,7 +31,7 @@ function uiNavActions(){return [
  ...(SHOW_STORE?[{k:'shop',label:'المتجر',go:()=>openShop()}]:[]),
  {k:'sessions',label:'الجلسات النشطة',go:()=>document.getElementById('hSessions')?.click(),modal:'sessionsModal'},
  {k:'inbox',label:'صندوق الوارد',go:()=>document.getElementById('hInbox')?.click(),modal:'inboxModal'},
- {k:'awards',label:'الأوسمة',go:()=>openAwards()},
+ {k:'awards',label:'الإنجازات',go:()=>openAwards()},
  {k:'rules',label:'تعليمات اللعب',go:()=>document.getElementById('hRules')?.click(),modal:'rules'},
  {k:'help',label:'المساعدة',go:()=>document.getElementById('hHelp')?.click(),modal:'helpModal'}
 ];}

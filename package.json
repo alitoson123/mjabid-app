@@ -1,19 +1,24 @@
 {
   "name": "majabeed-app",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Majabeed iOS App wrapped in Capacitor",
   "scripts": {
-    "postinstall": "node copy-plugins.js",
+    "postinstall": "node copy-plugins.js && npm run build:purchases",
     "copy-plugins": "node copy-plugins.js",
-    "sync": "npx cap sync"
+    "sync": "npm run build:purchases && cap sync",
+    "build:purchases": "node scripts/build-purchases.cjs",
+    "test:purchases": "node scripts/test-purchases.cjs"
   },
   "dependencies": {
     "@capacitor-community/admob": "^6.0.0",
     "@capacitor-firebase/authentication": "^6.0.0",
     "@capacitor/core": "^6.0.0",
-    "@capacitor/ios": "^6.0.0"
+    "@capacitor/ios": "^6.0.0",
+    "@revenuecat/purchases-capacitor": "9.2.2"
   },
   "devDependencies": {
-    "@capacitor/cli": "^8.5.0"
+    "@capacitor/cli": "6.2.1",
+    "esbuild": "0.25.12",
+    "jsdom": "26.1.0"
   }
 }

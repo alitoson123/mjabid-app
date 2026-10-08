@@ -692,9 +692,14 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 <link rel="stylesheet" href="ui-polish.css?v=364">
 <link rel="stylesheet" href="ui-friendly-v369.css?v=370">
 <script defer src="ui-theme-rentals.js?v=363"></script>
-<script defer src="ui-results-store.js?v=369"></script>
+<script defer src="ui-results-store.js?v=373"></script>
+<script defer src="native-shop.js?v=375"></script>
+<script defer src="ui-commerce.js?v=375"></script>
+<script defer src="ui-vip.js?v=375"></script>
+<link rel="stylesheet" href="ui-vip.css?v=375">
+<link rel="stylesheet" href="ui-commerce.css?v=373">
 <script defer src="ui-polish.js"></script>
-<script defer src="ui-navigation.js?v=364"></script>
+<script defer src="ui-navigation.js?v=372"></script>
 <script defer src="ui-player-panels.js?v=365"></script>
 <script defer src="ui-table-view.js?v=365"></script>
 <link rel="stylesheet" href="ui-leagues.css">
@@ -1292,6 +1297,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
         <section id="uiGoldPanel" class="hidden" role="tabpanel" aria-labelledby="uiGoldTab">
           <div class="uiStoreIntro"><span>ذهب المجلس</span><h2>اختر زادك للجولة</h2><p>اختر الكمية المناسبة لك. يُحدّث رصيدك بعد تأكيد الدفع.</p></div>
           <button id="adRewardBtn" class="uiStoreAd" type="button"><span class="uiAdPlay" aria-hidden="true">▷</span><span id="adRewardBtnTxt">احصل على 300 ذهبة مجاناً</span><span aria-hidden="true">←</span></button>
+          <button type="button" class="vipProfileButton" onclick="VipClient.open()">اكتشف عضوية VIP</button>
           <div id="goldPkgList"></div>
         </section>
       </div>
@@ -1324,7 +1330,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
     <div data-navholder style="position:absolute;inset:0;display:flex;flex-direction:column;background:radial-gradient(130% 90% at 50% 22%,#2f5138 0%,#16281c 85%)">
       <div style="display:flex;align-items:center;gap:10px;padding:calc(18px + env(safe-area-inset-top, 47px)) 16px 0">
         <button class="qBtn" id="awardsBack" style="width:40px;height:40px;border-radius:999px;border:0;background:rgba(0,0,0,.32);color:#ffc6a5;display:flex;align-items:center;justify-content:center;flex:none;font-size:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></button>
-        <span style="font-family:var(--fh);font-size:25px;color:#ffc6a5;text-shadow:0 2px 0 rgba(0,0,0,.35)">الأوسمة</span>
+        <span style="font-family:var(--fh);font-size:25px;color:#ffc6a5;text-shadow:0 2px 0 rgba(0,0,0,.35)">الإنجازات</span>
       </div>
       <div style="padding:6px 20px 0">
         <div id="awardsProg" style="font-size:13px;font-weight:700;color:#b9caa2;margin-top:2px"></div>
@@ -1406,7 +1412,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
           <button class="hBig grp" id="hGroup">
             <img src="cards/JS.png" alt="" style="position:absolute;left:14px;bottom:8px;width:44px;border-radius:6px;opacity:.32;pointer-events:none;background:#fdfcf8">
             <b style="font-size:18px;margin-top:4px">أنشئ مجموعة</b>
-            <span>مع أصدقائك — 500 <img class="uiGoldCoin" src="ui-art/gold-coin.svg" alt="ذهب" width="32" height="32"></span><!-- v369: creation includes the creator's seat, once per session. -->
+            <span>مع أصدقائك — <bdi id="uiCreationPrice">…</bdi> <img class="uiGoldCoin" src="ui-art/gold-coin.svg" alt="ذهب" width="32" height="32"></span><!-- v369: creation includes the creator's seat, once per session. -->
           </button>
 
         </div>
@@ -1522,7 +1528,7 @@ const $=s=>document.querySelector(s);
 // ⚠️ الصق مفاتيح مشروعك هنا (من إعدادات Firebase → تطبيق الويب).
 // هذه المفاتيح آمنة للنشر في كود الواجهة (مصمّمة لذلك).
 // رقم إصدار التطبيق — يُحدَّث يدويًا مع كل نسخة تُرفع للمتاجر (مو نفس رقم كاش الـSW)
-const APP_VERSION='1.6.0'; // iOS: keep Ali's Xcode marketing version.
+const APP_VERSION='1.7.0'; // iOS: keep Ali's Xcode marketing version.
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCZZrU2tip4efYEfYhUi9F_DNfuRZ22adU",
   authDomain: "jops-e508d.firebaseapp.com",
@@ -3971,7 +3977,8 @@ let sessionGamesPlayed=0; // FIX
 async function enterMatchWithInterstitial(tierKey,mode,intent){
   const isFirst=sessionGamesPlayed===0;
   sessionGamesPlayed++;
-  if(!isFirst){toast2('جاري تحميل الإعلان...');await showInterstitialAd();}
+  let vip=false;try{vip=await window.VipClient?.checkActive();}catch(_){vip=true;} // Membership service outage skips the ad without blocking gameplay.
+  if(!isFirst&&!vip){toast2('جاري تحميل الإعلان...');await showInterstitialAd();}
   if(intent!==undefined&&intent!==TIER_ENTRY.generation)return;
   if(MATCH.on||QUICK_SEARCH.assigned||ONL.active)return;
   enterMatch(tierKey,mode);
@@ -4370,7 +4377,7 @@ function openReactionsPanel(){
   wrap.innerHTML=`<div id="reactSheet" role="dialog" aria-modal="true" aria-labelledby="expressionTitle" dir="rtl">
     <header class="expressionHeader"><div><h3 id="expressionTitle">التعبيرات</h3><p>مزح وتشجيع على الطاولة</p></div><button class="expressionClose" aria-label="إغلاق">×</button></header>
     <div id="reactGrid">${EXPRESSIONS.map(r=>`<button class="reactBtn" data-id="${r.id}" aria-pressed="false">${expressionArt(r)}<span>${r.t}</span></button>`).join('')}</div>
-    <footer class="expressionFooter"><p class="expressionPreview" aria-live="polite">اختر التعبير ثم اسم اللاعب</p><button class="expressionSend" disabled>إرسال <span class="expressionCost"><bdi>${toH(REACT_COST)}</bdi><span>ذهب</span>${uiGoldCoin()}</span></button></footer>
+    <footer class="expressionFooter"><p class="expressionPreview" aria-live="polite">اختر التعبير ثم اسم اللاعب</p><button class="expressionSend" disabled>إرسال <span class="expressionCost"><bdi>${window.VipClient?.active()?'VIP · مجانًا':toH(REACT_COST)}</bdi><span>ذهب</span>${uiGoldCoin()}</span></button></footer>
   </div>`;
   sc.appendChild(wrap);
   const close=()=>{wrap.remove();document.getElementById('oReactBtn')?.focus();};
@@ -5377,7 +5384,7 @@ function shopEquipped(kind){
 // NEW CODE (توحيد نسخة آيفون) — علم إظهار المتجر: كان ثابتاً يدوياً (SHOW_STORE=false) بنسخة آيفون فقط لإخفاء المتجر (باقات Paymob
 // + الثيمات) عن App Store، لأن آبل تمنع أي دفع خارجي لعناصر داخل التطبيق وتشترط IAP الرسمي. بملف واحد للمنصات كلها يصير
 // العلم بالمنصة: ظاهر على الويب/أندرويد، مخفي على iOS تلقائياً — بلا أي تعديل يدوي عند كل رفعة.
-const SHOW_STORE=!(window.Capacitor&&window.Capacitor.getPlatform&&window.Capacitor.getPlatform()==='ios');
+const SHOW_STORE=true; // Native gold purchases stay disabled until the store SDK is configured.
 function openShop(tab){uiOpenShop(tab);}
 function renderShop(){uiRenderShop();}
 // ═══ NEW CODE — باقات شراء الذهب (Paymob): عرض فقط هنا (الأسعار الحقيقية والحاسمة تعيش بالسيرفر
@@ -5390,29 +5397,8 @@ const GOLD_PACKAGES_DISPLAY=[
   {key:'tier5',sar:100,label:'14,000 ذهب'},
 ];
 function renderGoldPackages(){uiRenderGoldPackages();}
-async function buyGoldPackage(tierKey){ // NEW CODE — يبدأ عملية الدفع الفعلية عبر Paymob
-  if(!SHOW_STORE)return;
-  if(!FB.ready||!FB.user){ toast2('سجّل دخولك بحساب أولاً لشراء الذهب'); return; } // NEW CODE
-  try{ // NEW CODE
-    toast2('جارٍ التحويل لصفحة الدفع...'); // NEW CODE
-    const idToken=await FB.user.getIdToken(); // NEW CODE
-    const r=await fetch('https://'+GAME_SRV+'/paymob/create-payment',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({idToken,tierKey})}).then(x=>x.json()); // NEW CODE
-    if(!r||!r.ok||!r.checkoutUrl){ toast2(r&&r.error?r.error:'تعذّر بدء عملية الدفع'); return; } // NEW CODE
-    location.href=r.checkoutUrl; // NEW CODE — تحويل كامل الصفحة لبوابة Paymob (لا نافذة منبثقة — أوثق على الجوال)
-  }catch(e){ toast2('تعذّر بدء عملية الدفع — تحقق من اتصالك'); } // NEW CODE
-} // NEW CODE
-// NEW CODE — استقبال العودة من Paymob بعد الدفع: الإضافة الفعلية للذهب تمت سيرفرياً عبر الـWebhook مسبقاً
-// (أو لم تتم لو فشل الدفع) — هذا فقط يُطمئن اللاعب ويحدّث عرض رصيده من السيرفر، لا يضيف أي ذهب بنفسه إطلاقاً
-function checkPaymentReturn(){ // NEW CODE
-  try{ // NEW CODE
-    const params=new URLSearchParams(location.search); // NEW CODE
-    if(params.get('payment')==='return'){ // NEW CODE
-      history.replaceState(null,'',location.pathname); // NEW CODE — تنظيف الرابط فوراً كي لا يتكرر عند أي تحديث لاحق للصفحة
-      toast2('نتحقق من نتيجة الدفع...'); // NEW CODE
-      setTimeout(()=>{ try{refreshHome()}catch(e){} },2500); // NEW CODE — مهلة قصيرة تعطي الـWebhook فرصة يصل قبل تحديث الرصيد المعروض
-    } // NEW CODE
-  }catch(e){} // NEW CODE
-} // NEW CODE
+function buyGoldPackage(tierKey){window.GoldShop?.open(tierKey);}
+function checkPaymentReturn(){document.addEventListener('DOMContentLoaded',()=>window.GoldShop?.resume(),{once:true});}
 // تطبيق الطاولة المفعّلة على شاشتي اللعب
 function applyEquippedTheme(uiThemeOverride){
   try{
@@ -5454,6 +5440,7 @@ function viewProfile(player){
   $('#pfAva').style.cursor='default';$('#pfAva').onclick=null;
   applyRankColor($('#pfAva'),player.rpts||0); // NEW CODE — لون الحلقة حسب رتبة اللاعب المعروض
   $('#pfName').textContent=player.name||'لاعب';
+  window.VipClient?.profile(player.uid);
   $('#pfRankBadge').innerHTML=rankBadgeHTML(player.rpts||0,12); // NEW CODE — المعيار الوحيد الآن، رفعنا الحجم شوي (كان ١٠.٥)
   $('#pfCode').textContent=player.code?('#'+player.code):'';
   const hasRealStats=player.games!=null;
@@ -5626,7 +5613,7 @@ const AWARDS=[
 ];
 function openAwards(){
   const unlocked=AWARDS.filter(a=>ST.n(a.stat)>=a.need).length;
-  $('#awardsProg').textContent=`أنجزت ${toH(unlocked)} من ${toH(AWARDS.length)} أوسمة`;
+  $('#awardsProg').textContent=`أكملت ${toH(unlocked)} من أصل ${toH(AWARDS.length)} إنجازًا`;
   $('#awardsBar').style.width=Math.round(unlocked/AWARDS.length*100)+'%';
   const grid=$('#awardsGrid');grid.innerHTML='';
   for(const a of AWARDS){
@@ -6148,7 +6135,7 @@ $('#awardsBack').onclick=()=>goHome();
 // تبويبات المتجر
 // ربط نقر .shopTab محذوف — شريط التبويبات نفسه اتحذف من الـHTML
 $('#hGroup').onclick=()=>{ // FIX — تحقق الذهب قبل الدخول للوبي أصلاً (كان يدخل بحرّية ويُرفض لاحقاً لحظة الضغط على "ابدأ" فقط)
-  if(ST.n('gold')<500){toast2('إنشاء الجلسة يحتاج 500 ذهب عند البدء، ويشمل مقعدك');return}
+  if(!FB.user){toast2('سجّل الدخول لإنشاء الجلسة');return;} // The lobby quotes the server's frozen session price before Start.
   SFX.tick(); history.replaceState(null,'',location.pathname); ONL.pendingTier=null; ONL.pendingMode=null; enterOnline();
 };
 
@@ -6404,6 +6391,7 @@ window._rebindWelcome=()=>{ try{
 async function afterAuth(user){
   if(UI_COST.uid!==user.uid)uiCostReset(user.uid);
   FB.user=user;
+  window.NativeShop?.resume();
   uiHomeWalletAccount(user.uid);
   if(typeof uiThemeSetAccount==='function')uiThemeSetAccount(user.uid);
   // اسم مبدئي من البريد أو حساب Google
@@ -7250,6 +7238,7 @@ function openProfile(){
   $('#pfEdit').style.display='';
   $('#pfOut').style.display='';
   $('#pfName').textContent=localStorage.getItem('wb-name')||'ضيف';
+  window.VipClient?.profile(FB.user?.uid);
   $('#pfRankBadge').innerHTML=rankBadgeHTML(ST.n('rank'),12); // NEW CODE — المعيار الوحيد الآن
   { // NEW CODE — قسم تقدم الرتبة التفصيلي
     const info=rankProgressInfo(ST.n('rank')); // NEW CODE
@@ -8258,6 +8247,8 @@ async function bootTo(){
   }).catch(e=>{ _redirectChecked=true; if(GLOGIN&&!(FB.auth&&FB.auth.currentUser))showGloginPrompt(); try{toast2(authErr(e))}catch(x){} }); // FIX
   // راقب حالة الدخول: لا رئيسية إلا بحساب مسجّل (لا ضيف)
   FB.auth.onAuthStateChanged(async(user)=>{
+    window.GoldShop?.close();window.VipClient?.reset();
+    setTimeout(()=>{if(FB.user?.uid===user?.uid)window.GoldShop?.resume();},0);
     FB._resolveAuthReady(user||null); // أول ردّ فعلي من Firebase عن حالة الدخول — أي كود منتظر يتحرر الآن بغضّ النظر عن afterAuth أدناه
     if(user){
       const gp=document.getElementById('gloginPrompt'); if(gp)gp.remove(); // FIX — دخل فعلاً: أزل شاشة الربط تحت شاشة "✓ تم"
@@ -8265,6 +8256,7 @@ async function bootTo(){
       if(_appleSignInBusy||_appleHandledUid===user.uid)return; // Apple already owns this profile load.
       if(_redirectHandled)return; // already handled directly above — تجنّب التكرار
       await afterAuth(user);
+      window.VipClient?.refresh().catch(()=>{});
     }else{
       uiCostReset(null);FB.user=null;
       if(typeof uiThemeSetAccount==='function')uiThemeSetAccount(null);
@@ -8351,6 +8343,7 @@ fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
   // FIX — Promise<boolean>: true فقط لو حدث "Rewarded" فعلياً قبل الإغلاق (Dismissed لا يعني المكافأة تحققت،
   // يُطلَق بكلتا الحالتين حسب توثيق الإضافة الصريح — لازم الاستماع لحدث Rewarded تحديداً كإثبات)
   window.showRewardedAd=async function(){ // FIX
+    try{if(await window.VipClient?.checkActive())return false;}catch(_){return false;}
     const AdMob=getAdMob(); if(!AdMob){ console.warn('[AdMob] غير متوفرة عند الاستدعاء'); return false; } // FIX
     return new Promise(async (resolve)=>{ // FIX
       let rewarded=false; // FIX
@@ -8368,7 +8361,8 @@ fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
     }); // FIX
   }; // FIX
   // FIX — Promise<void>: يُحل فور إغلاق الإعلان فعلياً، أو فوراً لو تعذّر العرض أصلاً
-  window.showInterstitialAd=async function(){ // FIX
+  window.showInterstitialAd=async function(){
+    try{if(await window.VipClient?.checkActive())return;}catch(_){return;} // Skip ads if VIP cannot be verified.
     const AdMob=getAdMob(); if(!AdMob){ console.warn('[AdMob] غير متوفرة عند الاستدعاء'); return; } // FIX
     return new Promise(async (resolve)=>{ // FIX
       const dismissedListener=await AdMob.addListener(EV_INTERSTITIAL_DISMISSED, ()=>{ // FIX

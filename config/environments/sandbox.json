@@ -1,0 +1,18 @@
+{
+  "environment": "SANDBOX",
+  "productionFirebaseProject": "jops-e508d",
+  "firebase": {
+    "apiKey": "AIzaSyCHL_DN4ExFouBpg9aaR8IzbBI8tdEKNV4",
+    "authDomain": "majabeed-sandbox.firebaseapp.com",
+    "projectId": "majabeed-sandbox",
+    "storageBucket": "majabeed-sandbox.firebasestorage.app",
+    "messagingSenderId": "1052647251911",
+    "appId": "1:1052647251911:web:eb102672851c08571a43e2"
+  },
+  "workerHost": "majabeed-sandbox.samisalimhdmaol.workers.dev",
+  "revenueCatAppleAppId": "app982617add5",
+  "state": "READY_FOR_TESTFLIGHT_BUILD_LIVE_PURCHASE_TEST_PENDING",
+  "plannedWorkerName": "majabeed-sandbox",
+  "workerHostVerified": true,
+  "purchaseSetupVerified": true
+}

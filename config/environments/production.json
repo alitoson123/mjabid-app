@@ -1,0 +1,12 @@
+{
+  "environment": "PRODUCTION",
+  "firebase": {
+    "apiKey": "AIzaSyCZZrU2tip4efYEfYhUi9F_DNfuRZ22adU",
+    "authDomain": "jops-e508d.firebaseapp.com",
+    "projectId": "jops-e508d",
+    "storageBucket": "jops-e508d.firebasestorage.app",
+    "messagingSenderId": "918859951453",
+    "appId": "1:918859951453:web:4985d5ebfa6428ee51ccb4"
+  },
+  "workerHost": "waggif-baloot.samisalimhdmaol.workers.dev"
+}

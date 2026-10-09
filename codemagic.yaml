@@ -3,7 +3,7 @@
 
 workflows:
   capacitor-ios-workflow:
-    name: Capacitor iOS Build
+    name: Majabeed Sandbox TestFlight (manual only)
     max_build_duration: 120
     instance_type: mac_mini_m1
     integrations:
@@ -29,9 +29,12 @@ workflows:
         - push
       branch_patterns:
         - pattern: main
-        - pattern: codex/revenuecat-v375
-        
+
     scripts:
+      - name: Require verified Sandbox configuration
+        script: |
+          node scripts/select-environment.cjs sandbox
+
       - name: Install npm dependencies
         script: |
           npm ci
@@ -50,7 +53,7 @@ workflows:
       - name: Set up build number
         script: |
           cd ios/App
-          agvtool new-version -all $((48 + ${BUILD_NUMBER:-0}))
+          agvtool new-version -all $((49 + ${BUILD_NUMBER:-0}))
           
       - name: Install Pods
         script: |

@@ -1214,3 +1214,12 @@ body{position:fixed;inset:0;width:100%;overscroll-behavior:none}
 #uiThemeServiceNote[hidden]{display:none}
 .uiThemeAccountStatus{margin:14px 16px 0;padding:12px 14px;border:1px solid var(--ui-paper-line);border-radius:14px;background:var(--ui-paper);color:var(--ui-text);font:700 12px/1.8 var(--fb);font-variant-numeric:tabular-nums}
 #profile.uiOtherProfile .uiThemeAccountStatus{display:none}
+
+/* v377: compact free-gold availability beside the rewarded-ad square. */
+#goldPkgList[hidden],.uiAdCountdown[hidden]{display:none!important}
+.uiAdCopy{display:flex;flex:1;min-width:0;flex-direction:column;gap:5px}
+.uiAdAvailability{display:flex;align-items:center;flex-wrap:wrap;gap:7px;font-size:11px;font-weight:600}
+.uiAdAvailability small{font:inherit}
+.uiAdCountdown{display:inline-block;min-width:42px;text-align:center;padding:2px 6px;border-radius:7px;background:#dabb7926;font-variant-numeric:tabular-nums;white-space:nowrap}
+.uiStoreAd:disabled,#rwAd:disabled{cursor:default;opacity:.7}
+#rwAd .uiAdAvailability{color:#735733}

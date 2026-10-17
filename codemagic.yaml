@@ -3,7 +3,7 @@
 
 workflows:
   capacitor-ios-workflow:
-    name: Majabeed Sandbox TestFlight (manual only)
+    name: Capacitor iOS Build
     max_build_duration: 120
     instance_type: mac_mini_m1
     integrations:
@@ -31,24 +31,14 @@ workflows:
         - pattern: main
 
     scripts:
-      - name: Require verified Sandbox configuration
-        script: |
-          node scripts/select-environment.cjs sandbox
-
       - name: Install npm dependencies
         script: |
-          npm ci
+          npm install
           
-      - name: Verify purchase UI and assets
-        script: |
-          npm run test:purchases
-          node scripts/verify-purchases-build.cjs
-
       - name: Sync Capacitor project (copy web assets and update plugins)
         script: |
           chmod +x node_modules/.bin/cap
           npx cap sync ios
-          node scripts/verify-purchases-build.cjs --copied
           
       - name: Set up build number
         script: |

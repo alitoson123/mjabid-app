@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"><!-- FIX (من نسخة آيفون) — viewport-fit=cover إلزامي وإلا env(safe-area-inset-*) = 0 على iOS -->
 <title>مجابيد</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400;500;600;700;800&family=Lalezar&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400;500;600;700;800&family=Lalezar&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
 :root{
   --sand:#f9f4ed; --sand2:#fff2eb; --peach:#ffe1d0; --peach2:#ffc6a5;
@@ -684,19 +684,19 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 
 </style>
 <!-- Firebase SDK (compat — يعمل مع السكربتات الكلاسيكية) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script src="image-cache.js"></script>
 <link rel="stylesheet" href="ui-polish.css?v=377">
 <link rel="stylesheet" href="ui-friendly-v369.css?v=370">
 <script defer src="ui-theme-rentals.js?v=363"></script>
-<script defer src="ui-results-store.js?v=377"></script>
+<script defer src="ui-results-store.js?v=382"></script>
 <script defer src="ui-polish.js"></script>
 <script defer src="ui-navigation.js?v=364"></script>
 <script defer src="ui-player-panels.js?v=365"></script>
-<script defer src="ui-table-view.js?v=365"></script>
+<script defer src="ui-table-view.js?v=386"></script>
 <link rel="stylesheet" href="ui-leagues.css">
 <link rel="stylesheet" href="ui-card-motion.css?v=357">
 <link rel="stylesheet" href="ui-community.css">
@@ -712,6 +712,14 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 <link rel="stylesheet" href="ui-player-panels.css?v=365">
 <link rel="stylesheet" href="ui-table-view.css?v=365">
 <link rel="stylesheet" href="ui-auth-v369.css?v=369">
+<link rel="stylesheet" href="ui-entry-v380.css">
+<script src="ui-entry-v380.js"></script>
+<script src="ui-session-ads-v380.js"></script>
+<link rel="stylesheet" href="ui-fixes-v381.css">
+<script defer src="ui-vip.js?v=383"></script>
+<link rel="stylesheet" href="ui-vip.css?v=383">
+<link rel="stylesheet" href="ui-six-v388.css">
+<link rel="stylesheet" href="ui-table-hud-v389.css">
 </head>
 <body>
 <div id="frame">
@@ -798,22 +806,11 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
   </div>
   <div id="pageLoader" class="hidden">
     <div class="uiEntryBrand" aria-hidden="true">مجابيد</div>
-    <div id="plCards" aria-hidden="true">
-      <img src="cards/KH.png" alt="">
-      <img src="cards/AS.png" alt="">
-      <img src="cards/QD.png" alt="">
-    </div>
+    <div class="entryLoaderSub">كل جولة لها حكاية</div>
+    <div id="plCards" aria-hidden="true"><img src="cards/KH.png" alt=""><img src="cards/AS.png" alt=""><img src="cards/QD.png" alt=""></div>
     <div id="pageLoaderTxt" role="status" aria-live="polite">نجهّز جلستك…</div>
     <span class="uiEntryRail" aria-hidden="true"></span>
-    <div class="uiEntryTips">
-        <span class="uiEntryTipsTitle" aria-hidden="true">من سوالف المجلس</span>
-        <div class="uiEntryTipsText" aria-hidden="true">
-          <span>راقب الميدان قبل ما تختار ورقتك.</span>
-          <span>العب بهدوء؛ كل ورقة ممكن تغيّر الجولة.</span>
-          <span>تقدر تغيّر اسمك وصورتك من ملفك الشخصي.</span>
-        </div>
-        <span class="uiEntrySr">نصيحة: راقب الميدان قبل ما تختار ورقتك.</span>
-      </div>
+    <div class="entryLoaderNote">راقب الميدان… والعب ورقتك بوقتها</div>
   </div>
 
   <!-- الإعداد -->
@@ -1051,41 +1048,36 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 
 
   <!-- الترحيب -->
-  <div class="screen" id="welcome">
+  <div class="screen" id="welcome" data-boot-stage="prepare">
     <div id="wWrap">
-      <svg class="saduSvg" width="100%" height="46" viewBox="0 0 390 46" preserveAspectRatio="none"><defs><pattern id="sdWelcome" width="32" height="46" patternUnits="userSpaceOnUse"><rect width="32" height="46" fill="#273322"></rect><path d="M16 6l11 17-11 17L5 23z" fill="none" stroke="#d67f48" stroke-width="2.5"></path><path d="M16 16l6 7-6 7-6-7z" fill="#8fa073"></path></pattern></defs><rect width="390" height="46" fill="url(#sdWelcome)"></rect></svg>
+      <div class="entryTop" aria-hidden="true">MAJABEED</div>
       <div id="wMid">
-        <div class="uiEntryEyebrow" lang="en" dir="ltr">MAJABEED · CARD CLUB</div>
-        <div id="wCards" aria-hidden="true">
-          <img src="court_K.png" alt="">
-          <img src="court_Q.png" alt="">
-          <img src="court_J.png" alt="">
-          <img src="court_JOKER_v352.png" alt="">
-        </div>
         <div id="wTitle">مجابيد</div>
         <div id="wSub">ورق المجالس… كِل ولا تنكِل</div>
-      </div>
-      <div class="uiEntryTips">
-        <span class="uiEntryTipsTitle" aria-hidden="true">من سوالف المجلس</span>
-        <div class="uiEntryTipsText" aria-hidden="true">
-          <span>راقب الميدان قبل ما تختار ورقتك.</span>
-          <span>العب بهدوء؛ كل ورقة ممكن تغيّر الجولة.</span>
-          <span>تقدر تغيّر اسمك وصورتك من ملفك الشخصي.</span>
+        <div id="wCards" aria-hidden="true">
+          <img src="cards/KH.png" alt="" width="100" height="146">
+          <img src="cards/QD.png" alt="" width="100" height="146">
+          <img src="cards/AS.png" alt="" width="100" height="146">
         </div>
-        <span class="uiEntrySr">نصيحة: راقب الميدان قبل ما تختار ورقتك.</span>
+        <div class="entryWelcome">حيّاك في مجلسك</div>
+        <div class="entryTagline">ورقة تجمعنا، وجولة تحلّي اللمّة</div>
       </div>
       <div id="wBtns">
-        <button id="wLogin" style="display:none">تسجيل الدخول</button>
-        <div id="wLoading" role="status" aria-live="polite">
-          <span class="wSpinner" aria-hidden="true"></span>
-          <span>نجهّز جلستك…</span>
-          <span class="uiEntryRail" aria-hidden="true"></span>
+        <div id="wLoading" role="status" aria-live="polite" aria-atomic="true">
+          <div class="entryStatusRow"><i class="entryPulse" aria-hidden="true"></i><span id="entryStatus">نجهّز لك المجلس</span></div>
+          <div id="entryDetail">لحظات وتبدأ الحكاية</div>
+          <div class="entrySteps" aria-hidden="true">
+            <span class="entryStep current">تهيئة اللعبة</span><span class="entryStep">الاتصال</span><span class="entryStep">حسابك</span>
+          </div>
         </div>
+        <button id="entryRetry" type="button" hidden>إعادة المحاولة</button>
+        <button id="wLogin" type="button" style="display:none">تسجيل الدخول</button>
       </div>
-      <div id="wVer">النسخة 1.0 — بيتا</div>
-      <div id="buildTag" style="position:absolute;bottom:4px;left:8px;font-size:9px;color:rgba(184,157,120,.55);font-weight:700"></div>
+      <div id="wVer">لعبة ورق بروح المجالس</div>
+      <div id="buildTag" hidden></div>
     </div>
   </div>
+  <script>window.MajabeedBoot.init();</script>
   <!-- تسجيل الدخول -->
   <div class="screen hidden" id="login">
     <div id="lgWrap">
@@ -1279,7 +1271,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
       </div>
       <div class="uiStoreTabs" role="tablist" aria-label="أقسام المتجر">
         <button id="uiThemesTab" type="button" role="tab" aria-controls="uiThemesPanel" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="m12 7 3 5-3 5-3-5 3-5Z"/></svg>خلفيات الطاولة</button>
-        <button id="uiGoldTab" type="button" role="tab" aria-controls="uiGoldPanel" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><ellipse cx="12" cy="7" rx="8" ry="4"/><path d="M4 7v5c0 2 4 4 8 4s8-2 8-4V7M4 12v5c0 2 4 4 8 4s8-2 8-4v-5"/></svg>الذهب</button>
+        <button id="uiGoldTab" type="button" role="tab" aria-controls="uiGoldPanel" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><ellipse cx="12" cy="7" rx="8" ry="4"/><path d="M4 7v5c0 2 4 4 8 4s8-2 8-4V7M4 12v5c0 2 4 4 8 4s8-2 8-4v-5"/></svg>البلس والمكافآت</button>
       </div>
       <div class="uiStoreScroll">
         <section id="uiThemesPanel" role="tabpanel" aria-labelledby="uiThemesTab">
@@ -1290,7 +1282,8 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
           <div id="shopList"></div>
         </section>
         <section id="uiGoldPanel" class="hidden" role="tabpanel" aria-labelledby="uiGoldTab">
-          <div class="uiStoreIntro"><span>ذهب المجلس</span><h2>اكسب ذهباً مجاناً</h2><p>شاهد إعلاناً كاملاً واكسب 200 قطعة ذهبية كل 15 دقيقة.</p></div>
+          <div class="uiStoreIntro"><span>مزايا مجلسك</span><h2>بلس ومكافآت</h2><p>فعّل البلس من رصيد الذهب، أو اكسب ذهبًا بمشاهدة إعلان.</p></div>
+          <button type="button" class="vipProfileButton uiPlusStoreCard" onclick="VipClient.open()"><span aria-hidden="true">♛</span><span><strong>مجابيد بلس</strong><small id="uiPlusStoreStatus">يومي، شهري أو سنوي من رصيد الذهب</small></span><span aria-hidden="true">←</span></button>
           <button id="adRewardBtn" class="uiStoreAd" type="button"><span class="uiAdPlay" aria-hidden="true">▷</span><span class="uiAdCopy"><span id="adRewardBtnTxt">شاهد إعلاناً واكسب 200 ذهب</span><span class="uiAdAvailability"><small id="adRewardStatus">اكسب ذهب الآن</small><span id="adRewardCountdown" class="uiAdCountdown" dir="ltr" hidden></span></span></span><span aria-hidden="true">←</span></button>
           <div id="goldPkgList" hidden></div>
         </section>
@@ -1306,14 +1299,16 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
       </div>
       <div id="lbTabs" style="display:flex;background:rgba(0,0,0,.28);border-radius:999px;padding:3px;margin:14px 16px 0;flex-shrink:0">
         <button type="button" class="lbTab" data-lbp="week" style="flex:1;text-align:center;padding:8px 0;border-radius:999px;border:0;background:none;font-family:var(--fb);font-size:12.5px;font-weight:800;color:rgba(255,255,255,.55);cursor:pointer">الأسبوعي</button>
-        <button type="button" class="lbTab" data-lbp="rank" style="flex:1;text-align:center;padding:8px 0;border-radius:999px;border:0;background:none;font-family:var(--fb);font-size:12.5px;font-weight:800;color:rgba(255,255,255,.55);cursor:pointer">العام</button>
+        <button type="button" class="lbTab" data-lbp="month" style="flex:1;text-align:center;padding:8px 0;border-radius:999px;border:0;background:none;font-family:var(--fb);font-size:12.5px;font-weight:800;color:rgba(255,255,255,.55);cursor:pointer">الشهري</button>
       </div>
       <div id="uiLeaderboardScroll">
       <div id="lbPrizeBanner" style="margin:14px 16px 0;padding:11px 14px;border-radius:16px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0">
         <span style="font-size:16px">🏆</span>
-        <span style="font-size:12px;font-weight:800;color:#ffe3cc">توزيع جوائز الأسبوع خلال</span>
+        <span id="lbPeriodLabel" style="font-size:12px;font-weight:800;color:#ffe3cc">جوائز الشهر خلال</span>
         <span id="lbCountdown" style="font-family:var(--fh);font-size:15px;color:#f6c14d">--</span>
       </div>
+      <p id="lbPrizeSummary" style="margin:10px 16px 4px;text-align:center;color:#f6c14d;font-size:13px;font-weight:800"></p>
+      <p id="lbResetNote" style="margin:4px 16px;text-align:center;color:#c0ccb2;font-size:11px"></p>
       <div id="lbPodium" style="display:flex;align-items:flex-end;justify-content:center;gap:14px;padding:24px 20px 4px;flex-shrink:0;position:relative;z-index:2"></div>
       <div id="lbList" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 18px 78px;display:flex;flex-direction:column;gap:9px;position:relative;z-index:1"></div>
       </div>
@@ -1366,7 +1361,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12l-6.5 4.5a2 2 0 01-2.3 0L6.7 12"></path><rect x="3" y="6" width="18" height="14" rx="2"></rect></svg>
           <span class="badge hidden" id="hInboxBadge">0</span>
         </button>
-        <button class="hSideBtn daily" id="hDaily" title="المكافأة اليومية"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4"></rect><path d="M5 12v8h14v-8M12 8v12M12 8s-4 0-4-3a2 2 0 014 0M12 8s4 0 4-3a2 2 0 00-4 0"></path></svg><span class="badge hidden" id="hDailyBadge">1</span></button>
+        <button class="hSideBtn daily" id="hDaily" title="المكافأة اليومية"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4"></rect><path d="M5 12v8h14v-8M12 8v12M12 8s-4 0-4-3a2 2 0 014 0M12 8s4 0 4-3a2 2 0 00-4 0"></path></svg><span class="badge hidden" id="hDailyBadge">1</span><span class="uiHomeAdClock" aria-hidden="true"><small>إعلان</small><span id="hAdCountdown" dir="ltr">جاهز</span></span></button>
       </div>
       <div class="hLogo">
         <div class="hLogoCards">
@@ -1522,7 +1517,7 @@ const $=s=>document.querySelector(s);
 // ⚠️ الصق مفاتيح مشروعك هنا (من إعدادات Firebase → تطبيق الويب).
 // هذه المفاتيح آمنة للنشر في كود الواجهة (مصمّمة لذلك).
 // رقم إصدار التطبيق — يُحدَّث يدويًا مع كل نسخة تُرفع للمتاجر (مو نفس رقم كاش الـSW)
-const APP_VERSION='1.7.0'; // iOS: keep Ali's Xcode marketing version.
+const APP_VERSION='2.1.4'; // V389: unified Android/iOS release for mandatory updates.
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCZZrU2tip4efYEfYhUi9F_DNfuRZ22adU",
   authDomain: "jops-e508d.firebaseapp.com",
@@ -1709,6 +1704,8 @@ function uiCostStop(){
   _inviteListening=false;_freqListening=false;_friendsListening=false;
 }
 function uiCostReset(uid){
+  window.VipClient?.reset();
+  if(document.getElementById('uiFriendlyEntry'))uiFriendlyEntryCancel(true);
   if(typeof UI_HOME_WALLET!=='undefined')uiHomeWalletAccount(uid);
   if(typeof uiPlayerPanelsReset==='function')uiPlayerPanelsReset(uid);
   if(typeof uiNavReset==='function')uiNavReset();
@@ -2580,15 +2577,12 @@ function passTurn(pIdx){
   toast(`${G.players[pIdx].name} ما عنده حركة — تجاوز`);
   if(G.passStreak>=4){ // الكل محبوس (جوكرات بلا هدف)
     G.passStreak=0;
-    const idx=G.deck.findIndex(c=>c&&c.rank!==JOKER);
-    if(idx>=0){
-      const c=G.deck.splice(idx,1)[0];
-      G.field.push(c);
-      toast('انقلبت ورقة من الرزمة للميدان');
-    }else{
-      endRound();
-      return;
+    if(G.deck.length){
+      let guard=G.deck.length;
+      while(guard-->0&&G.deck[0].rank===JOKER)G.deck.push(G.deck.shift()); // الجوكر لا يُقلب للميدان
+      if(G.deck[0]&&G.deck[0].rank!==JOKER){const c=G.deck.shift();G.field.push(c);toast('انقلبت ورقة من الرزمة للميدان')}
     }
+    else{endRound();return}
   }
   afterMove(true);
 }
@@ -3040,6 +3034,7 @@ function confetti(){
 
 /* ================= الواجهة ================= */
 function show(id,overlay){
+  if(!overlay&&document.getElementById('uiFriendlyEntry'))uiFriendlyEntryCancel(true);
   if(!overlay)uiCostRoute(id);
   if(!overlay){for(const s of['setup','game','waqf','results','onl','login','signup','gcomplete','home','match','welcome','profile','chat','friends','addfr','tiers','shop','lboard','awardsScr'])$('#'+s).classList.add('hidden')}
   else{$('#waqf').classList.add('hidden');$('#results').classList.add('hidden')}
@@ -3349,7 +3344,7 @@ function renderScatterField(container,fieldArr,opts){
   for(const child of [...container.children])if(!child.classList.contains('card')||!curIds.has(Number(child.dataset.id)))child.remove();
   const newMap=new Map(),counts={};
   for(const f of fieldArr)counts[f.rank]=(counts[f.rank]||0)+1;
-  const layout=fieldLayout(fieldArr.length,container.clientWidth||286,container.clientHeight||234);
+  const layout=(container.id==='oField'&&window.MajabeedSix?.active()&&window.UITableHUD?UITableHUD.fieldLayout:fieldLayout)(fieldArr.length,container.clientWidth||286,container.clientHeight||234);
   fieldArr.forEach((f,i)=>{
     const el=existing.get(String(f.id))||cardEl(f,'sm');
     const p=layout[i],match=!!(sel&&(sel.rank===f.rank||sel.rank===JOKER)&&myTurn);
@@ -3458,6 +3453,7 @@ function renderBidStack(container,cards,opts){
 /** يحسب ويطبّق التباعد الديناميكي بين أوراق اليد بحيث تملأ عرض الشاشة بالكامل (نفس المنطق بين الفردي والأونلاين) */
 // REVERT — رجعنا للتخطيط المسطّح الأصلي بطلب صريح؛ الكرت 72px (كان 64px، صار 76px بجولة سابقة، الآن -5% من الحالي)
 function applyHandSpacing(handEl,count){
+  if(handEl.id==='oHand'&&window.UITableHUD?.handSpacing(handEl,count))return;
   const cardW=72, avail=(handEl.clientWidth||Math.min(430,window.innerWidth||390))-12;
   let step=count>1?(avail-cardW)/(count-1):cardW;
   step=Math.max(26,Math.min(cardW+12,step));
@@ -3703,21 +3699,51 @@ function uiFriendlyEconomy(value){
   return value&&value.version===369&&value.ranked===false&&value.chargeUnit==='session'&&value.rewardUnit==='round'&&['creatorFee','entryFee','winGold'].every(key=>Number.isSafeInteger(value[key])&&value[key]>=0)?value:null;
 }
 // A read-only quote precedes every new paid participation intent, including invitation links.
-const UI_FRIENDLY_ENTRY={serial:0,controller:null,approval:null};
-function uiFriendlyEntryCancel(clearRoom=false){
-  UI_FRIENDLY_ENTRY.serial++;UI_FRIENDLY_ENTRY.controller?.abort();UI_FRIENDLY_ENTRY.controller=null;UI_FRIENDLY_ENTRY.approval=null;
-  const modal=document.getElementById('uiFriendlyEntry');const room=modal?.dataset.room;modal?.remove();
-  if(clearRoom&&new URLSearchParams(location.search).get('room')===room)history.replaceState(null,'',location.pathname);
+const UI_FRIENDLY_ENTRY={serial:0,controller:null,approval:null,room:null};
+// V381: account-bound resume preference; never an authorization or fee receipt.
+function uiRoomPreference(room){
+  try{const value=JSON.parse(localStorage.getItem('wb-room-resume-v381-'+FB.user?.uid)||'null');
+    return value&&value.room===room&&Date.now()-value.at<3*60*60*1000?value:null;
+  }catch(_){return null;}
 }
+function uiRememberRoom(room,mode){
+  if(!FB.user?.uid||!room)return;
+  try{localStorage.setItem('wb-room-resume-v381-'+FB.user.uid,JSON.stringify({room,mode,at:Date.now()}));}catch(_){}
+}
+function uiFriendlyEntryCancel(clearRoom=false){
+  const state=UI_FRIENDLY_ENTRY,room=state.room;
+  state.serial++;state.controller?.abort();state.controller=null;state.approval=null;state.room=null;
+  document.getElementById('uiFriendlyEntry')?.remove();
+  if(clearRoom&&room){
+    uiRememberRoom(room,'dismissed');
+    const params=new URLSearchParams(location.search);
+    if(params.get('room')===room){params.delete('room');params.delete('spectate');history.replaceState(null,'',location.pathname+(params.size?'?'+params.toString():'')+location.hash);}
+  }
+}
+function uiFriendlyEntryExit(){
+  uiFriendlyEntryCancel(true);
+  if(!ONL.active&&!MATCH.on){
+    document.getElementById('pageLoader')?.classList.add('hidden');
+    if(FB.user)goHome();else show('welcome');
+  }
+}
+// An unfinished choice is not a joined table. Discard it when leaving the app.
+function uiFriendlyEntryBackground(){if(document.getElementById('uiFriendlyEntry'))uiFriendlyEntryExit();}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)uiFriendlyEntryBackground();});
+window.addEventListener('pagehide',uiFriendlyEntryBackground);
+window.addEventListener('pageshow',()=>{if(document.getElementById('uiFriendlyEntry')&&new URLSearchParams(location.search).get('room')!==UI_FRIENDLY_ENTRY.room)uiFriendlyEntryExit();});
+window.addEventListener('popstate',()=>{if(document.getElementById('uiFriendlyEntry'))uiFriendlyEntryExit();});
 function uiFriendlyEntryAllowed(room,spectate){
   if(spectate||/^(pub-|lg-|cup-)/.test(room)){UI_FRIENDLY_ENTRY.approval=null;ONL.friendlyEconomyVersion=null;ONL.friendlyJoinIntent=null;return true;}
   const approval=UI_FRIENDLY_ENTRY.approval;
   if(approval?.room===room&&approval.uid===FB.user?.uid&&approval.playerId===localStorage.getItem('wb-player-id')){ONL.friendlyEconomyVersion=approval.version||null;ONL.friendlyJoinIntent=approval.policy?{...approval,sent:false}:null;UI_FRIENDLY_ENTRY.approval=null;return true;}
   return false;
 }
-async function uiFriendlyEntryOpen(room){
+async function uiFriendlyEntryOpen(room,{restore=false}={}){
   uiFriendlyEntryCancel();
   const user=FB.user;if(!user){toast2('سجّل الدخول للانضمام إلى الجلسة');return;}
+  goHome();
+  UI_FRIENDLY_ENTRY.room=room;
   let playerId=localStorage.getItem('wb-player-id')||sessionStorage.getItem('wb-player-id');
   if(!playerId)playerId='p-'+Math.random().toString(36).slice(2,10);
   localStorage.setItem('wb-player-id',playerId);
@@ -3726,11 +3752,11 @@ async function uiFriendlyEntryOpen(room){
   modal.style.cssText='position:fixed;inset:0;z-index:9998;background:rgba(5,22,17,.82);display:flex;align-items:center;justify-content:center;padding:24px;direction:rtl';
   modal.innerHTML='<div style="width:min(100%,360px);border:1px solid #d8bf7b;border-radius:24px;background:#123a2d;color:#f8edcf;padding:24px;text-align:center;box-shadow:0 18px 60px #0005"><h3 style="margin:0 0 14px">طاولة الأصدقاء</h3><p id="uiFriendlyEntryText" role="status" style="line-height:1.9;margin:0 0 18px">جارٍ التحقق من رسوم الجلسة…</p><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button id="uiFriendlyEntryPlay" class="btn primary" hidden>المشاركة</button><button id="uiFriendlyEntryWatch" class="btn" hidden>مشاهدة مجانًا</button><button id="uiFriendlyEntryBack" class="btn">رجوع</button></div></div>';
   document.body.appendChild(modal);
-  document.getElementById('uiFriendlyEntryBack').onclick=()=>uiFriendlyEntryCancel(true);
+  document.getElementById('uiFriendlyEntryBack').onclick=uiFriendlyEntryExit;
   const current=()=>UI_FRIENDLY_ENTRY.serial===serial&&FB.user?.uid===uid&&new URLSearchParams(location.search).get('room')===room&&!controller.signal.aborted;
   let quotedPolicy=null,quotedMatchId=null,quotedParticipationId=null;
   const enter=spectate=>{
-    if(!current())return;
+    if(!current()){if(UI_FRIENDLY_ENTRY.serial===serial)uiFriendlyEntryExit();return;}
     uiFriendlyEntryCancel();
     const params=new URLSearchParams(location.search);if(spectate)params.set('spectate','1');else params.delete('spectate');
     history.replaceState(null,'',location.pathname+'?'+params.toString());
@@ -3742,13 +3768,14 @@ async function uiFriendlyEntryOpen(room){
     const info=await Promise.race([operation,new Promise((_,reject)=>{abort=()=>reject(Error('entry info aborted'));controller.signal.addEventListener('abort',abort,{once:true});timer=setTimeout(()=>controller.abort(),15000);})]);
     if(!current())return;
     if(!info?.ok||info.room!==room||typeof info.exists!=='boolean'||!Number.isSafeInteger(info.entryAmount)||info.entryAmount<0)throw Error('invalid entry info');
-    if(!info.exists||info.status==='closed'){document.getElementById('uiFriendlyEntryText').textContent='هذه الجلسة غير متاحة الآن. اطلب دعوة جديدة من منشئها.';return;}
+    if(!info.exists||info.status==='closed'){uiFriendlyEntryExit();toast2('هذه الجلسة غير متاحة الآن؛ اختر جلسة جديدة');return;}
     const policy=uiFriendlyEconomy(info.friendlyEconomy);if(info.friendlyEconomy&&(!policy||typeof info.friendlyMatchId!=='string'||!info.friendlyMatchId||info.friendlyMatchId.length>240||typeof info.friendlyParticipationId!=='string'||!/^[-A-Za-z0-9_]{1,160}$/.test(info.friendlyParticipationId)))throw Error('unsupported session policy');quotedPolicy=policy;quotedMatchId=policy?info.friendlyMatchId:null;quotedParticipationId=policy?info.friendlyParticipationId:null;
+    if(restore&&policy&&info.paid!==true){uiFriendlyEntryExit();return;}
     if(!policy||info.paid===true){enter(false);return;}
     document.getElementById('uiFriendlyEntryText').innerHTML='رسوم '+(info.creator?'إنشاء الجلسة':'مشاركتك')+' <bdi dir="ltr" style="font-weight:900">'+toH(info.entryAmount)+'</bdi> ذهب، مرة واحدة للجلسة.<br><small>تُخصم عند أول مشاركة. مكافأة كل فائز <bdi dir="ltr">'+toH(policy.winGold)+'</bdi> ذهب لكل جولة، دون نقاط تنافسية.</small>';
     const play=document.getElementById('uiFriendlyEntryPlay');play.hidden=false;play.textContent='المشاركة · '+toH(info.entryAmount)+' ذهب';play.onclick=()=>enter(false);
     const watch=document.getElementById('uiFriendlyEntryWatch');watch.hidden=false;watch.onclick=()=>enter(true);
-  }catch(_){if(UI_FRIENDLY_ENTRY.serial===serial&&FB.user?.uid===uid){const text=document.getElementById('uiFriendlyEntryText');if(text)text.textContent='تعذّر التحقق من رسوم الجلسة. ارجع وحاول مجددًا.';}}
+  }catch(_){if(UI_FRIENDLY_ENTRY.serial===serial&&FB.user?.uid===uid){if(restore){uiFriendlyEntryExit();toast2('تعذّرت استعادة الجلسة؛ يمكنك فتحها من الجلسات النشطة');}else{const text=document.getElementById('uiFriendlyEntryText');if(text)text.textContent='تعذّر التحقق من رسوم الجلسة. ارجع وحاول مجددًا.';}}}
   finally{clearTimeout(timer);if(abort)controller.signal.removeEventListener('abort',abort);if(UI_FRIENDLY_ENTRY.serial===serial)UI_FRIENDLY_ENTRY.controller=null;}
 }
 const ONL={ws:null,room:null,view:null,status:null,you:null,seats:[],result:null,transport:'ws',wsFails:0,queue:[],pollSeq:0,pollGen:0,
@@ -3988,7 +4015,7 @@ const AD_REWARD_COOLDOWN_MS=15*60*1000;
 let _adRewardTimer=null, _adRewardBusy=false;
 function adRewardRemainingMs(){
   const lastTime=Number(localStorage.getItem('wb-lastAdRewardTime'))||0;
-  return Math.max(0,AD_REWARD_COOLDOWN_MS-(Date.now()-lastTime));
+  return lastTime>0?Math.max(0,Math.min(AD_REWARD_COOLDOWN_MS,AD_REWARD_COOLDOWN_MS-(Date.now()-lastTime))):0;
 }
 function updateAdRewardDisplay(){
   const remaining=adRewardRemainingMs(),seconds=Math.ceil(remaining/1000);
@@ -4010,6 +4037,10 @@ function updateAdRewardDisplay(){
     el.textContent=remaining>0?countdown:'';
     el.setAttribute('aria-label','إعادة مشاهدة الإعلان بعد '+Math.floor(seconds/60)+' دقيقة و'+seconds%60+' ثانية');
   }
+  const homeClock=document.getElementById('hAdCountdown');
+  if(homeClock)homeClock.textContent=_adRewardBusy?'جارٍ العرض':remaining>0?countdown:'جاهز';
+  const gift=document.getElementById('hDaily');
+  if(gift)gift.setAttribute('aria-label',remaining>0?'الهدايا؛ إعلان المكافأة بعد '+Math.floor(seconds/60)+' دقيقة و'+seconds%60+' ثانية':'الهدايا؛ إعلان المكافأة جاهز');
   const badge=document.getElementById('hDailyBadge');
   if(badge)badge.classList.toggle('hidden',!(checkDaily().due||remaining<=0));
   if(remaining<=0&&!_adRewardBusy){clearInterval(_adRewardTimer);_adRewardTimer=null;}
@@ -4045,14 +4076,16 @@ async function watchAdForGold(){
   finally{_adRewardBusy=false;renderAdRewardBtn();}
 }
 $('#adRewardBtn').onclick=watchAdForGold;
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderAdRewardBtn();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderAdRewardBtn();else{clearInterval(_adRewardTimer);_adRewardTimer=null;}});
+window.addEventListener('pageshow',renderAdRewardBtn);
+window.addEventListener('storage',event=>{if(event.key==='wb-lastAdRewardTime')renderAdRewardBtn();});
 // حين ننشر على Cloudflare، الخادم منفصل عن الواجهة دائماً (نطاق مختلف)، فلا onSrvHost.
 // إن كانت الواجهة على نفس نطاق الـWorker (نادر) نكتشفه؛ وإلا نتصل بالعنوان المطلق.
 function onSrvHost(){ return location.host===GAME_SRV; }
 function oBase(){ return (onSrvHost()?location.pathname.replace(/\/+$/,''):'https://'+GAME_SRV)+'/ws/'+ONL.room; }
 async function oLeagueHeaders(){return ONL.room?.startsWith('lg-')&&FB.user?{authorization:'Bearer '+await FB.user.getIdToken()}:{};}
 async function oPost(obj){
-  const generation=ONL.generation,room=ONL.room,url=oBase()+'?send=1&pid='+encodeURIComponent(ONL.pid);
+  const generation=ONL.generation,room=ONL.room,url=oBase()+'?send=1&pid='+encodeURIComponent(ONL.pid)+(ONL.room?.startsWith('f6-')?'&tableProtocol=385':'');
   try{
     const headers=await oLeagueHeaders();if(!oSessionCurrent(generation,room))return;
     if(obj.type==='join'&&!obj.spectate&&ONL.friendlyJoinIntent)ONL.friendlyJoinIntent.sent=true;
@@ -4076,7 +4109,7 @@ async function oPollLoop(){
   while(ONL.active&&ONL.transport==='poll'&&ONL.pollGen===my){
     let gotMsg=false; // FIX
     try{
-      const r=await fetch(oBase()+'?poll=1&nowait=1&since='+ONL.pollSeq+'&pid='+encodeURIComponent(ONL.pid),{headers:await oLeagueHeaders()}); // FIX — أضفنا nowait=1
+      const r=await fetch(oBase()+'?poll=1&nowait=1&since='+ONL.pollSeq+'&pid='+encodeURIComponent(ONL.pid)+(ONL.room?.startsWith('f6-')?'&tableProtocol=385':''),{headers:await oLeagueHeaders()}); // FIX — أضفنا nowait=1
       const d=await r.json();
       if(!oSessionCurrent(generation,room)||ONL.transport!=='poll'||ONL.pollGen!==my)break;
       $('#connDot').classList.remove('off');
@@ -4097,7 +4130,7 @@ async function switchToPoll(){
   const generation=ONL.generation,room=ONL.room;
   ONL.transport='poll';
   if(ONL.ws){ONL.ws.onopen=null;ONL.ws.onmessage=null;ONL.ws.onclose=null;try{ONL.ws.close();}catch(_){}ONL.ws=null;}
-  const join=await withIdToken({type:'join',playerId:ONL.pid,name:(($('#lobbyName')&&$('#lobbyName').value)||$('#nameIn').value||localStorage.getItem('wb-name')||'').trim(),avatar:myAvatar(),tier:ONL.pendingTier||undefined,mode:ONL.pendingTier?(ONL.pendingMode||'solo'):undefined,spectate:ONL.spectateOnly||undefined,friendlyEconomyVersion:ONL.friendlyEconomyVersion||undefined,friendlyParticipationId:ONL.friendlyParticipationId||undefined});
+  const join=await withIdToken({type:'join',tableProtocol:ONL.room?.startsWith('f6-')?385:undefined,playerId:ONL.pid,name:(($('#lobbyName')&&$('#lobbyName').value)||$('#nameIn').value||localStorage.getItem('wb-name')||'').trim(),avatar:myAvatar(),tier:ONL.pendingTier||undefined,mode:ONL.pendingTier?(ONL.pendingMode||'solo'):undefined,spectate:ONL.spectateOnly||undefined,friendlyEconomyVersion:ONL.friendlyEconomyVersion||undefined,friendlyParticipationId:ONL.friendlyParticipationId||undefined});
   if(!oSessionCurrent(generation,room)||ONL.transport!=='poll')return;
   await oPost(join);
   if(!oSessionCurrent(generation,room)||ONL.transport!=='poll')return;
@@ -4108,13 +4141,13 @@ function oAction(a){
   if(['eat','steal','throw','bid','pass'].includes(a.t)&&(ONL.paymentPending||!uiOnlineCanPlay()))return;
   ONL.lastSent=a.t;oSend({type:'action',action:a});
 }
-function enterOnline(){
+function enterOnline({restore=false,createSix=false}={}){
   ac();
   // ملاحظة: تصفير pendingTier لا يتم هنا — هذي الدالة مشتركة ويستدعيها مسار البحث عن مباراة نفسه بعد ضبط الطبقة مباشرة.
   // التصفير يتم عند نقاط الدخول التي تبدأ حرة فعلاً (إنشاء مجموعة، رابط غرفة، دعوة).
   const params=new URLSearchParams(location.search);
   let room=params.get('room');const existingRoom=!!room;if(!existingRoom){ONL.friendlyEconomyVersion=null;ONL.friendlyJoinIntent=null;}
-  if(!room){room=Math.random().toString(36).slice(2,8);params.set('room',room);
+  if(!room){room=(createSix?'f6-':'')+Math.random().toString(36).slice(2,8);params.set('room',room);
     history.replaceState(null,'',location.pathname+'?'+params.toString());}
   if(ONL.active&&ONL.room===room&&ONL.spectateOnly===(params.get('spectate')==='1')){show('onl');return true;}
   if(ONL.active&&ONL.room!==room&&!['over','closed'].includes(ONL.status)){
@@ -4126,7 +4159,7 @@ function enterOnline(){
   if(existingRoom&&params.get('spectate')!=='1'&&!/^(pub-|lg-|cup-)/.test(room)&&uiHomeWalletLeavingRoom(room)){
     uiFriendlyEntryCancel();uiHomeWalletResume(true);toast2('جارٍ تأكيد رصيد الجلسة السابقة؛ بعد اكتماله يمكنك الانضمام مجددًا');return false;
   }
-  if(existingRoom&&!uiFriendlyEntryAllowed(room,params.get('spectate')==='1')){uiFriendlyEntryOpen(room);return false;}
+  if(existingRoom&&!uiFriendlyEntryAllowed(room,params.get('spectate')==='1')){uiFriendlyEntryOpen(room,{restore});return false;}
   oDisconnectTransport();
   const generation=ONL.generation;
   ONL.paymentPending=false;ONL.reward=null;ONL.wallet=null;ONL.competitiveMatchId=null;ONL.friendlyMatchId=ONL.friendlyJoinIntent?.matchId||null;ONL.friendlyEconomy=ONL.friendlyJoinIntent?.policy||null;ONL.friendlyParticipationId=ONL.friendlyJoinIntent?.participationId||null;
@@ -4134,7 +4167,8 @@ function enterOnline(){
   if(typeof uiPlayerPanelsRoom==='function')uiPlayerPanelsRoom('online:'+room);
   if(typeof uiSyncOnlineAudience==='function')uiSyncOnlineAudience();
   uiSessionStartReset();
-  ONL.spectateOnly=params.get('spectate')==='1'; // NEW CODE — نقرأها طازجة بكل دخول (لا نعتمد على حالة سابقة قد تكون باقية من زيارة تانية)
+  ONL.spectateOnly=params.get('spectate')==='1';
+  uiRememberRoom(room,ONL.spectateOnly?'watch':'play'); // NEW CODE — نقرأها طازجة بكل دخول (لا نعتمد على حالة سابقة قد تكون باقية من زيارة تانية)
   let pid=localStorage.getItem('wb-player-id')||sessionStorage.getItem('wb-player-id');
   if(!pid){pid='p-'+Math.random().toString(36).slice(2,10);}
   localStorage.setItem('wb-player-id',pid);
@@ -4190,10 +4224,10 @@ function uiWatchIcon(){return '<svg class="uiWatchIcon" viewBox="0 0 24 24" widt
 function sessionCardHTML(roomId,d){ // NEW CODE
   const bareTierKey=(d.tierKey||'').replace(/^session-/,''); // NEW CODE — "جلسة كاملة" تسبق مفتاح الطبقة بـsession- أصلاً (راجع enterTier بالعميل)
   const tier=TIERS.find(t=>t.key===bareTierKey); // NEW CODE
-  const modeLabel=d.mode==='team'?'جماعي 2×2':'فردي'; // NEW CODE
+  const modeLabel=d.tableFormat==='3v3'?'جماعي 3×3':d.mode==='team'?'جماعي 2×2':'فردي'; // NEW CODE
   const seats=d.seats||[null,null,null,null]; // NEW CODE
   const humanCount=seats.filter(s=>s&&!s.isBot).length; // NEW CODE — بشر فقط، يستثني أي مقعد isBot (البوتات صارت تُبَث بصورها الحقيقية لا null)
-  const canJoin=humanCount<4; // NEW CODE — متاحة بغض النظر عن lobby/playing؛ السيرفر يدعم drop-in فعليًا الآن (_tryDropIn)
+  const canJoin=humanCount<(d.tableFormat==='3v3'?6:4); // NEW CODE — متاحة بغض النظر عن lobby/playing؛ السيرفر يدعم drop-in فعليًا الآن (_tryDropIn)
   const statusLine=d.status==='lobby'?'بانتظار اللاعبين':((tier?tier.name+' • ':'')+agoAr(d.startedAt||Date.now())); // NEW CODE — agoAr موجودة أصلاً بالملف (تنسيق وقت نسبي)
   const friendlyPolicy=uiFriendlyEconomy(d.friendlyEconomy);
   const feeLine=friendlyPolicy?'<div style="font-size:12px;line-height:1.7;color:var(--mut);margin-bottom:10px">المشاركة <bdi>'+toH(friendlyPolicy.entryFee)+'</bdi> ذهب مرة للجلسة · مكافأة كل فائز <bdi>'+toH(friendlyPolicy.winGold)+'</bdi> ذهب للجولة</div>':'';
@@ -4201,7 +4235,7 @@ function sessionCardHTML(roomId,d){ // NEW CODE
     ?`<span class="avaFilled">${avatarHTML(seat.avatar,26)}</span>` // NEW CODE
     :`<span class="avaEmpty">+</span>`).join(''); // NEW CODE
   const btnHTML=canJoin // NEW CODE
-    ?`<button class="sessJoinBtn" data-room="${esc(roomId)}">اقعد — متاح ${toH(4-humanCount)}</button>` // NEW CODE
+    ?`<button class="sessJoinBtn" data-room="${esc(roomId)}">اقعد — متاح ${toH((d.tableFormat==='3v3'?6:4)-humanCount)}</button>` // NEW CODE
     :`<button class="sessSpecBtn" data-room="${esc(roomId)}">${uiWatchIcon()}<span>مشاهدة المباراة</span></button>`; // NEW CODE
   return `<div class="sessCard">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px">
@@ -4235,9 +4269,17 @@ function joinActiveSession(roomId,spectate){ // NEW CODE — spectate=true تح�
   $('#sessionsModal').classList.add('hidden'); // NEW CODE
   enterOnline(); // NEW CODE
 } // NEW CODE
-$('#hSessions').onclick=()=>{ startActiveSessionsListener(true); SFX.tick(); $('#sessionsModal').classList.remove('hidden'); renderSessionsList(); }; // NEW CODE
+// V380: count accepted native visits only; never count a rapid duplicate tap.
+$('#hSessions').onclick=window.MajabeedSessionAds.create({
+  button:$('#hSessions'),
+  canOpen:()=>$('#sessionsModal').classList.contains('hidden')&&!ONL.active&&!MATCH.on&&$('#game').classList.contains('hidden'),
+  showAd:()=>window.showInterstitialAd?.(),
+  open:()=>{ startActiveSessionsListener(true); SFX.tick(); $('#sessionsModal').classList.remove('hidden'); renderSessionsList(); }
+});
 $('#sessionsClose').onclick=()=>$('#sessionsModal').classList.add('hidden'); // NEW CODE
 function leaveOnline(){
+  uiRememberRoom(ONL.room,'dismissed');
+  uiFriendlyEntryCancel();
   const leaveMessage={type:'leave',...(ONL.competitiveMatchId?{competitiveMatchId:ONL.competitiveMatchId}:{}),...(ONL.friendlyMatchId?{friendlyMatchId:ONL.friendlyMatchId,friendlyParticipationId:ONL.friendlyParticipationId}:{})};
   uiHomeWalletTrackLeave();
   uiSessionStartReset();
@@ -4267,6 +4309,7 @@ function leaveOnline(){
   },500); // NEW CODE
 }
 function oHandle(msg){
+  if(msg.type==='state'&&ONL.room?.startsWith('f6-')&&msg.tableFormat!=='3v3'){oDisconnectTransport();ONL.active=false;show('home');toast2('يجب تحديث السيرفر لدعم جلسات 3 ضد 3');return;}
   if(msg.type==='state'){let note=document.getElementById('cupTableNotice');if(!note){note=document.createElement('div');note.id='cupTableNotice';document.getElementById('onl').appendChild(note);}note.textContent=msg.tournament?.paused?'مقعد شاغر · ننتظر دخول البديل':'';note.classList.toggle('hidden',!msg.tournament?.paused);}
   if(!ONL._loaderHiddenOnce){ // NEW CODE — أول حالة حقيقية توصل من السيرفر (عبر WebSocket أو الاستطلاع البديل، الدالة مشتركة بينهما) — الاتصال اكتمل فعليًا الآن
     ONL._loaderHiddenOnce=true; // NEW CODE
@@ -4314,7 +4357,7 @@ function oConnect(){
   ws.onopen=async()=>{
     if(!current())return;
     $('#connDot').classList.remove('off');ONL.wsFails=0;
-    const joinMsg=await withIdToken({type:'join',playerId:ONL.pid,name:(($('#lobbyName')&&$('#lobbyName').value)||$('#nameIn').value||localStorage.getItem('wb-name')||'').trim(),avatar:myAvatar(),tier:ONL.pendingTier||undefined,mode:ONL.pendingTier?(ONL.pendingMode||'solo'):undefined,spectate:ONL.spectateOnly||undefined,friendlyEconomyVersion:ONL.friendlyEconomyVersion||undefined,friendlyParticipationId:ONL.friendlyParticipationId||undefined});
+    const joinMsg=await withIdToken({type:'join',tableProtocol:ONL.room?.startsWith('f6-')?385:undefined,playerId:ONL.pid,name:(($('#lobbyName')&&$('#lobbyName').value)||$('#nameIn').value||localStorage.getItem('wb-name')||'').trim(),avatar:myAvatar(),tier:ONL.pendingTier||undefined,mode:ONL.pendingTier?(ONL.pendingMode||'solo'):undefined,spectate:ONL.spectateOnly||undefined,friendlyEconomyVersion:ONL.friendlyEconomyVersion||undefined,friendlyParticipationId:ONL.friendlyParticipationId||undefined});
     if(!current()||ws.readyState!==1)return;
     ws.send(JSON.stringify(joinMsg));if(!joinMsg.spectate&&ONL.friendlyJoinIntent)ONL.friendlyJoinIntent.sent=true;
     while(ONL.queue.length&&current())ws.send(JSON.stringify(ONL.queue.shift()));
@@ -4357,6 +4400,7 @@ function oReceiveChat(msg){
   if(seatAt(1)===msg.from)bubbleId='oChatBubbleR';
   else if(seatAt(2)===msg.from)bubbleId='oChatBubbleT';
   else if(seatAt(3)===msg.from)bubbleId='oChatBubbleL';
+  if(window.MajabeedSix?.active())bubbleId=MajabeedSix.bubbleId(msg.from);
   if(!bubbleId)return;
   const bub=$('#'+bubbleId);
   if(bub){
@@ -4401,7 +4445,7 @@ function openReactionsPanel(){
   wrap.innerHTML=`<div id="reactSheet" role="dialog" aria-modal="true" aria-labelledby="expressionTitle" dir="rtl">
     <header class="expressionHeader"><div><h3 id="expressionTitle">التعبيرات</h3><p>مزح وتشجيع على الطاولة</p></div><button class="expressionClose" aria-label="إغلاق">×</button></header>
     <div id="reactGrid">${EXPRESSIONS.map(r=>`<button class="reactBtn" data-id="${r.id}" aria-pressed="false">${expressionArt(r)}<span>${r.t}</span></button>`).join('')}</div>
-    <footer class="expressionFooter"><p class="expressionPreview" aria-live="polite">اختر التعبير ثم اسم اللاعب</p><button class="expressionSend" disabled>إرسال <span class="expressionCost"><bdi>${toH(REACT_COST)}</bdi><span>ذهب</span>${uiGoldCoin()}</span></button></footer>
+    <footer class="expressionFooter"><p class="expressionPreview" aria-live="polite">اختر التعبير ثم اسم اللاعب</p><button class="expressionSend" disabled>إرسال <span class="expressionCost"><bdi>${window.VipClient?.active()?'بلس · مجانًا':toH(REACT_COST)}</bdi><span>ذهب</span>${uiGoldCoin()}</span></button></footer>
   </div>`;
   sc.appendChild(wrap);
   const close=()=>{wrap.remove();document.getElementById('oReactBtn')?.focus();};
@@ -4451,6 +4495,7 @@ function oReceiveReact(msg){
   else if(seatAt(1)===msg.from)bubbleId='oChatBubbleR';
   else if(seatAt(2)===msg.from)bubbleId='oChatBubbleT';
   else if(seatAt(3)===msg.from)bubbleId='oChatBubbleL';
+  if(window.MajabeedSix?.active())bubbleId=MajabeedSix.bubbleId(msg.from);
   if(!bubbleId)return;
   const bub=$('#'+bubbleId);
   if(bub){
@@ -4463,6 +4508,7 @@ function oReceiveReact(msg){
 // Expressions persist through seat redraws, using one bounded expiry per recipient.
 const TARGET_EXPRESSIONS=new Map();
 function expressionAvatar(pid){
+  if(window.MajabeedSix?.active())return MajabeedSix.avatar(pid);
   const v=ONL.view;if(!v)return null;
   const idx=v.seats.indexOf(pid);if(idx<0)return null;
   const mine=Math.max(0,v.seats.indexOf(ONL.you));
@@ -4679,6 +4725,8 @@ function attachHandCardDrag(el,c,isMyTurnNow,opts){
   el.addEventListener('pointercancel',finish);
 }
 function renderOnl(){
+  window.MajabeedSix?.syncMode();
+  if(window.MajabeedSix?.active())return renderOnlSix();
   if(typeof uiSyncOnlineAudience==='function')uiSyncOnlineAudience();
   if(!ONL.active)return;
   if(typeof uiPlayerPanelsRoom==='function')uiPlayerPanelsRoom('online:'+ONL.room);
@@ -4780,10 +4828,10 @@ function renderOnl(){
       holderBadgeHtml:isHolder?`<div class="holderVal">${toH(holderVal)}</div>`:'',
       avaHtml:avatarHTML(v.avatars&&v.avatars[pid],52), // الإصلاح الجوهري: كانت isBot(pid)?botAvatarFor(pid):... — botAvatarFor دالة منفصلة قديمة تتجاهل v.avatars كلياً (تعتمد فقط على رقم البوت)، فصور البوتات الجديدة من السيرفر ما كانت تظهر إطلاقاً
       nameHtml:`${esc(seatName)}${mate?' <span style="color:var(--peach2)">(شريكك)</span>':''}`,
-      autoControlled:!!(v.autoControlled&&v.autoControlled[pid]),teamScore:v.mode==='team',
+      autoControlled:!!(v.autoControlled&&v.autoControlled[pid]),teamScore:!window.UITableHUD?.active()&&v.mode==='team',
       handCount:v.handCounts[pid],
-      pts:toH(teamCombinedPts(pid)), // FIX — كان p.points: بالجماعي يعرض الآن مجموع الفريق (يطابق نسبة التعبئة)
-      pct:goalPct(teamCombinedPts(pid),v.tierGoal), // NEW CODE
+      pts:toH(window.UITableHUD?.active()?(v.piles[pid]?.points||0):teamCombinedPts(pid)), // Individual pile points beside each player.
+      pct:goalPct(window.UITableHUD?.active()?(v.piles[pid]?.points||0):teamCombinedPts(pid),v.tierGoal),
       pileTopCard:p.top,pileCount:p.count,
       pileBadgeHtml:uiPileCountHTML(p.count),
       onAvaClick:seatUid?(()=>MiniProfile.open(seatUid,seatName,seatAva)):null // NEW CODE — بوت أو بلا uid موثّق = بلا تفاعل إطلاقاً
@@ -4871,8 +4919,8 @@ function renderOnl(){
     $('#uiResumeControl').textContent='جارٍ الاستعادة…';
   };
   const myPile=uiAuctionPile(v.waqf,bottomPid,v.piles[bottomPid]||{points:0,count:0,top:null});
-  const myDisplayPts=v.piles[bottomPid]?teamCombinedPts(bottomPid):0; // FIX — كان myPile.points فقط: بالجماعي يعرض الآن مجموع الفريق
-  const mp=$('#oMyPile');mp.innerHTML=`<span class="pts"><i class="ptsFill" style="width:${goalPct(myDisplayPts,v.tierGoal)}%"></i><b>${toH(myDisplayPts)} <small>${v.mode==='team'?'للفريق':'نقطة'}</small></b></span>`;
+  const myDisplayPts=window.UITableHUD?.active()?(v.piles[bottomPid]?.points||0):(v.piles[bottomPid]?teamCombinedPts(bottomPid):0);
+  const mp=$('#oMyPile');mp.innerHTML=`<span class="pts"><i class="ptsFill" style="width:${goalPct(myDisplayPts,v.tierGoal)}%"></i><b>${toH(myDisplayPts)} <small>${v.mode==='team'&&!window.UITableHUD?.active()?'للفريق':'نقطة'}</small></b></span>`;
   if(myPile.top){const w2=document.createElement('div');w2.style.cssText='display:flex;align-items:center;gap:4px';w2.appendChild(uiPileCard(myPile.top,myPile.count));
     w2.insertAdjacentHTML('beforeend',uiPileCountHTML(myPile.count));uiMarkAuctionPile(w2,myPile);mp.appendChild(w2)}
   // يدي — تباعد ديناميكي يملأ الشاشة (نفس الفردي)
@@ -4961,6 +5009,7 @@ function renderOnl(){
   // معركة وقّف على الطاولة — مين أكل مين
   const w=v.waqf;
   const settling=!!ONL._settleInfo;
+  const bidAnchor=window.UITableHUD?.centeredFour()?'-50%':'-52%';
   $('#oSettleBanner').classList.add('hidden'); // ما نحتاج شارة "استقرت عند" نهائيًا
   if(v.phase==='waqf'&&w){
     $('#oWaqf').classList.remove('hidden');
@@ -4972,11 +5021,11 @@ function renderOnl(){
       $('#oWaqfCntL').classList.add('hidden');
       $('#oWaqfStack').style.transition='opacity .2s,transform .35s';
       $('#oWaqfStack').style.opacity='0'; /* FIX — كانت .35: نسخة باهتة تبقى بمكانها تزامناً مع المستنسخات الطائرة للفائز = ازدواج بصري. صارت تختفي فوراً — الطيران وحده هو مشهد الاستقرار الآن */
-      $('#oWaqfStack').style.transform='translate(-50%,-52%) scale(.82)';
+      $('#oWaqfStack').style.transform=`translate(-50%,${bidAnchor}) scale(.82)`;
       return;
     }
     $('#oWaqfStack').style.opacity='1';
-    $('#oWaqfStack').style.transform='translate(-50%,-52%) scale(1)';
+    $('#oWaqfStack').style.transform=`translate(-50%,${bidAnchor}) scale(1)`;
     const hn=v.names[w.holder]||'لاعب';
     const nmStyle='font-family:var(--fh);font-weight:400;font-size:19px;color:#ffe9b8;text-shadow:0 2px 0 rgba(0,0,0,.35);unicode-bidi:isolate'; // NEW CODE — أضفنا unicode-bidi:isolate لمنع تداخل اسم إنجليزي مع النص العربي المحيط
     let srcTxt;
@@ -5105,7 +5154,7 @@ function renderLobby(){
   if(wait.dataset.uiLobbyRoom!==ONL.room){wait.dataset.uiLobbyRoom=ONL.room||'';uiLobbySetTab('seats');}
   const lb=ONL.lobby||{mode:'solo',creator:null,names:{}};
   const seats=ONL.seats||[],isCreator=!!ONL.you&&lb.creator===ONL.you;
-  wait.querySelector('h2').textContent=ONL.tournament?'انتظار المباراة':'طاولة الأصدقاء';
+  wait.querySelector('h2').textContent=ONL.tournament?'انتظار المباراة':'طاولة ودية';
   wait.querySelector('.sub').textContent=(lb.mode==='team'?'جماعي 2×2':'فردي')+' · '+(lb.tier?.goal?'الهدف '+toH(lb.tier.goal)+' نقطة':'الرزمة كاملة');
   $('#uiLobbyCount').innerHTML='<bdi>'+seats.length+' / 4</bdi><small>لاعبون</small>';
   $('#uiLobbySeatHelp').textContent=lb.mode==='team'
@@ -5191,7 +5240,7 @@ $('#lobbyName').addEventListener('input',()=>{
     if(!nm)return;
     localStorage.setItem('wb-name',nm);
     try{fbSaveProfile()}catch(e){} // FIX — تغيير الاسم من اللوبي كان يوصل السيرفر (الطاولة) بس ما يوصل السحابة، فيرجع القديم بعد إعادة الدخول
-    oSend({type:'join',playerId:ONL.pid,name:nm,avatar:myAvatar(),friendlyEconomyVersion:ONL.friendlyEconomyVersion||undefined,friendlyParticipationId:ONL.friendlyParticipationId||undefined});
+    oSend({type:'join',tableProtocol:ONL.room?.startsWith('f6-')?385:undefined,playerId:ONL.pid,name:nm,avatar:myAvatar(),friendlyEconomyVersion:ONL.friendlyEconomyVersion||undefined,friendlyParticipationId:ONL.friendlyParticipationId||undefined});
   },450);
 });
 function renderOver(){
@@ -5299,7 +5348,8 @@ async function fetchAndShowOtherRanks(key){
 function animateResultsScreenCounters(oldGold,newGold,oldRank,newRank,resultRead){
   uiResultServerStats(newGold,newRank,resultRead);
 }
-function oTick(){ // مزامنة المهل مع الخادم وإرسال الحسم/المهلة تلقائياً
+function oTick(){
+  if(window.MajabeedSix?.active())return oTickSix(); // مزامنة المهل مع الخادم وإرسال الحسم/المهلة تلقائياً
   if(!ONL.active||!ONL.view||ONL.status!=='playing'||ONL.paymentPending)return;
   const v=ONL.view;
   // خريطة لاعب → عنصر الصورة الشخصية (لتحديث الحلقة الدائرية)
@@ -5406,44 +5456,17 @@ function shopEquipped(kind){
   try{return localStorage.getItem('wb-eq-'+kind)||dflt}catch(e){return dflt}
 }
 // v377 iPhone handoff: shop and themes available; gold checkout completely disabled.
-const SHOW_STORE=true;
+const SHOW_STORE=true; // V382: themes, Plus and rewards remain available.
 const SHOW_GOLD_PURCHASES=false;
 function openShop(tab){uiOpenShop(tab);}
 function renderShop(){uiRenderShop();}
 // ═══ NEW CODE — باقات شراء الذهب (Paymob): عرض فقط هنا (الأسعار الحقيقية والحاسمة تعيش بالسيرفر
 // حصراً في payments.js — هذا الجدول للعرض المرئي لا أكثر، لا يُستخدم أبداً لحساب أي خصم فعلي) ═══
-const GOLD_PACKAGES_DISPLAY=[
-  {key:'tier1',sar:5,  label:'500 ذهب'},
-  {key:'tier2',sar:10, label:'1,100 ذهب'},
-  {key:'tier3',sar:25, label:'3,000 ذهب'},
-  {key:'tier4',sar:50, label:'6,500 ذهب'},
-  {key:'tier5',sar:100,label:'14,000 ذهب'},
-];
+// Gold checkout is disabled in both native frontends.
+const GOLD_PACKAGES_DISPLAY=[];
 function renderGoldPackages(){uiRenderGoldPackages();}
-async function buyGoldPackage(tierKey){ // NEW CODE — يبدأ عملية الدفع الفعلية عبر Paymob
-  if(!SHOW_STORE||!SHOW_GOLD_PURCHASES)return;
-  if(!FB.ready||!FB.user){ toast2('سجّل دخولك بحساب أولاً لشراء الذهب'); return; } // NEW CODE
-  try{ // NEW CODE
-    toast2('جارٍ التحويل لصفحة الدفع...'); // NEW CODE
-    const idToken=await FB.user.getIdToken(); // NEW CODE
-    const r=await fetch('https://'+GAME_SRV+'/paymob/create-payment',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({idToken,tierKey})}).then(x=>x.json()); // NEW CODE
-    if(!r||!r.ok||!r.checkoutUrl){ toast2(r&&r.error?r.error:'تعذّر بدء عملية الدفع'); return; } // NEW CODE
-    location.href=r.checkoutUrl; // NEW CODE — تحويل كامل الصفحة لبوابة Paymob (لا نافذة منبثقة — أوثق على الجوال)
-  }catch(e){ toast2('تعذّر بدء عملية الدفع — تحقق من اتصالك'); } // NEW CODE
-} // NEW CODE
-// NEW CODE — استقبال العودة من Paymob بعد الدفع: الإضافة الفعلية للذهب تمت سيرفرياً عبر الـWebhook مسبقاً
-// (أو لم تتم لو فشل الدفع) — هذا فقط يُطمئن اللاعب ويحدّث عرض رصيده من السيرفر، لا يضيف أي ذهب بنفسه إطلاقاً
-function checkPaymentReturn(){ // NEW CODE
-  if(!SHOW_GOLD_PURCHASES)return;
-  try{ // NEW CODE
-    const params=new URLSearchParams(location.search); // NEW CODE
-    if(params.get('payment')==='return'){ // NEW CODE
-      history.replaceState(null,'',location.pathname); // NEW CODE — تنظيف الرابط فوراً كي لا يتكرر عند أي تحديث لاحق للصفحة
-      toast2('نتحقق من نتيجة الدفع...'); // NEW CODE
-      setTimeout(()=>{ try{refreshHome()}catch(e){} },2500); // NEW CODE — مهلة قصيرة تعطي الـWebhook فرصة يصل قبل تحديث الرصيد المعروض
-    } // NEW CODE
-  }catch(e){} // NEW CODE
-} // NEW CODE
+function buyGoldPackage(){return false;}
+function checkPaymentReturn(){return;}
 // تطبيق الطاولة المفعّلة على شاشتي اللعب
 function applyEquippedTheme(uiThemeOverride){
   try{
@@ -5476,6 +5499,7 @@ function sentReqsSet(){ try{return new Set(JSON.parse(localStorage.getItem('wb-s
 function markReqSent(uid){ if(!uid)return; const s=sentReqsSet(); s.add(uid); localStorage.setItem('wb-sent-reqs',JSON.stringify([...s])); }
 function hasSentReq(uid){ return !!uid && sentReqsSet().has(uid); }
 function viewProfile(player){
+  window.VipClient?.profile(player.uid);
   if(typeof uiLeagueProfile==='function')uiLeagueProfile(player.uid);
   uiRememberProfileOrigin();
   $('#profile').classList.add('uiOtherProfile');
@@ -5546,71 +5570,94 @@ function viewProfile(player){
   $('#pfDeleteAcc').style.display=isMeForReport?'':'none';
   show('profile');
 }
-const WEEKLY_PRIZES={1:20000,2:15000,3:10000,4:5000}; // جوائز نهاية الأسبوع حسب الترتيب
-let LB_ACTIVE_PERIOD='rank'; // NEW CODE — تبويب الصدارة النشط: 'rank' (العام، افتراضي) أو 'week' (الأسبوعي)
-let LB_COUNTDOWN_TIMER=null;
+const WEEKLY_PRIZES={1:5000,2:3000,3:2000};
+const MONTHLY_PRIZES={1:20000,2:10000,3:5000};
+let LB_ACTIVE_PERIOD='month',LB_COUNTDOWN_TIMER=null,LB_REQUEST=0,LB_END_AT=0,LB_CLOCK_OFFSET=0;
+function leaderboardEnd(period,now=Date.now()){
+  if(period==='month'){
+    const d=new Date(now-4*3600000);
+    return Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,1,4);
+  }
+  const d=new Date(now);d.setUTCHours(4,0,0,0);
+  d.setUTCDate(d.getUTCDate()-((d.getUTCDay()+3)%7));
+  if(d.getTime()>now)d.setUTCDate(d.getUTCDate()-7);
+  return d.getTime()+7*86400000;
+}
 function updateLbCountdown(){
-  const end=periodStart('week')+7*24*60*60*1000; // نهاية الأسبوع الحالي = بداية الأسبوع القادم
-  const left=Math.max(0,end-Date.now());
-  const days=Math.floor(left/86400000), hrs=Math.floor((left%86400000)/3600000), mins=Math.floor((left%3600000)/60000);
-  const el=$('#lbCountdown'); if(!el)return;
-  el.textContent=days>0?`${toH(days)}ي ${toH(hrs)}س`:hrs>0?`${toH(hrs)}س ${toH(mins)}د`:`${toH(mins)}د`;
+  if($('#lboard').classList.contains('hidden')){clearInterval(LB_COUNTDOWN_TIMER);return;}
+  const left=Math.max(0,LB_END_AT-(Date.now()+LB_CLOCK_OFFSET));
+  const days=Math.floor(left/86400000),hrs=Math.floor(left%86400000/3600000),mins=Math.floor(left%3600000/60000),secs=Math.floor(left%60000/1000);
+  $('#lbCountdown').textContent=days>0?`${toH(days)}ي ${toH(hrs)}س`:hrs>0?`${toH(hrs)}س ${toH(mins)}د`:`${toH(mins)}د ${toH(secs)}ث`;
+  if(left===0){clearInterval(LB_COUNTDOWN_TIMER);openBoard(LB_ACTIVE_PERIOD);}
 }
 async function openBoard(period){
-  period=period||LB_ACTIVE_PERIOD; LB_ACTIVE_PERIOD=period; // NEW CODE — التبويب المطلوب، أو آخر تبويب نشط
-  // FIX — كانت الشاشة لا تُعرض إلا *بعد* اكتمال جلب أفضل ٥٠ لاعباً من فايرستور — فيحس المستخدم إن الضغطة
-  // ما اشتغلت. الآن: الشاشة تفتح فوراً بحالة "جارٍ التحميل"، والجلب يكمل بالخلفية ويعبّي القائمة لحظة وصوله.
-  show('lboard'); mountNav('lboard','board'); // FIX — أول شي
-  { const l0=$('#lbList'); if(l0)l0.innerHTML='<div style="text-align:center;color:#b9caa2;font-weight:700;font-size:13px;padding:30px">...جارٍ التحميل</div>'; } // FIX
-  document.querySelectorAll('.lbTab').forEach(b=>{ // NEW CODE — تفعيل الزر المطابق بصرياً
-    const on=b.dataset.lbp===period;
-    b.classList.toggle('on',on);
-    b.style.background=on?'#f6c14d':'none'; b.style.color=on?'#412402':'rgba(255,255,255,.55)';
+  period=period==='week'?'week':period==='month'||period==='rank'?'month':LB_ACTIVE_PERIOD;
+  LB_ACTIVE_PERIOD=period;const request=++LB_REQUEST,myUid=FB.user?.uid||null;
+  show('lboard');mountNav('lboard','board');
+  const list=$('#lbList'),pod=$('#lbPodium');pod.replaceChildren();
+  list.innerHTML='<div style="text-align:center;color:#b9caa2;padding:30px">جارٍ تحميل الترتيب…</div>';
+  document.querySelectorAll('.lbTab').forEach(b=>{
+    const on=b.dataset.lbp===period;b.classList.toggle('on',on);
+    b.style.background=on?'#f6c14d':'none';b.style.color=on?'#412402':'rgba(255,255,255,.55)';
   });
-  $('#lbPrizeBanner').classList.toggle('hidden',period!=='week'); // NEW CODE — بانر جائزة الأسبوع يخص تبويب الأسبوعي فقط
-  const field=period==='week'?'weekPts':'rank'; // FIX — كانت ثابتة weekPts؛ الآن حسب التبويب
-  if(period==='week'){ // FIX — ensurePeriodFresh والعدّاد التنازلي يخصّان الأسبوعي فقط، لا معنى لهما بالعام
-    ensurePeriodFresh(period);
-    updateLbCountdown();
-    clearInterval(LB_COUNTDOWN_TIMER);
-    LB_COUNTDOWN_TIMER=setInterval(updateLbCountdown,30000);
-  }else clearInterval(LB_COUNTDOWN_TIMER);
-  const myUid=FB.user?FB.user.uid:null;
-  const me={name:localStorage.getItem('wb-name')||'أنت', ava:myAvatar(), gold:ST.n('gold'), lv:ST.n('level')||1, rpts:parseInt(localStorage.getItem('wb-'+field)||'0',10), lifeRank:ST.n('rank'), me:true, pid:myUid};
-  let all=[];
-  // اجلب أفضل اللاعبين الحقيقيين من Firestore (حسب نقاط الفترة المختارة)
-  if(FB.ready&&FB.db){
-    try{
-      const snap=await FB.db.collection('players').orderBy(field,'desc').limit(50).get();
-      snap.forEach(doc=>{
-        const d=doc.data();
-        if(doc.id===myUid)return; // نضيف "me" المحدّث لاحقاً
-        all.push({name:d.name||'لاعب', ava:d.avatar||'😎', gold:d.gold||0, lv:d.level||1, rpts:d[field]||0, lifeRank:d.rank||0, pid:doc.id, games:d.games||0, wins:d.wins||0, best:d.best||0, achievement:d.achievement||null, achievementDate:d.achievementDate||null}); // NEW CODE — أضفنا achievement/achievementDate
-      });
-    }catch(e){ console.warn('leaderboard fetch failed',e); }
+  const prizes=period==='week'?WEEKLY_PRIZES:MONTHLY_PRIZES;
+  $('#lbPrizeBanner').classList.remove('hidden');
+  $('#lbPeriodLabel').textContent=period==='week'?'جوائز الأسبوع خلال':'جوائز الشهر خلال';
+  $('#lbPrizeSummary').textContent=`🥇 ${toH(prizes[1])}  ·  🥈 ${toH(prizes[2])}  ·  🥉 ${toH(prizes[3])} ذهب`;
+  $('#lbResetNote').textContent=period==='week'?'كل خميس الساعة 7 صباحًا بتوقيت السعودية':'يبدأ شهر جديد يوم 1 الساعة 7 صباحًا بتوقيت السعودية';
+  LB_END_AT=leaderboardEnd(period,Date.now()+LB_CLOCK_OFFSET);
+  clearInterval(LB_COUNTDOWN_TIMER);updateLbCountdown();LB_COUNTDOWN_TIMER=setInterval(updateLbCountdown,1000);
+  const stillCurrent=()=>request===LB_REQUEST&&LB_ACTIVE_PERIOD===period&&(FB.user?.uid||null)===myUid&&!$('#lboard').classList.contains('hidden');
+  let all=[],me=null;
+  try{
+    if(period==='month'){
+      if(!myUid)throw Error('سجّل دخولك لعرض الترتيب الشهري');
+      const token=await FB.user.getIdToken(),controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
+      try{
+        const response=await fetch('https://'+GAME_SRV+'/leaderboard/monthly',{headers:{authorization:'Bearer '+token},cache:'no-store',signal:controller.signal});
+        const value=await response.json();
+        if(!response.ok||!value.ok)throw Error(value.error||'تعذّر تحميل الترتيب الشهري');
+        if(!stillCurrent())return;
+        if(!Number.isFinite(value.period?.endAt)||!Number.isFinite(value.serverNow))throw Error('بيانات الترتيب غير مكتملة');
+        LB_CLOCK_OFFSET=value.serverNow-Date.now();LB_END_AT=value.period.endAt;
+        all=value.leaders||[];me=value.me||null;
+        if(me&&!all.some(p=>p.pid===me.pid))all.push(me);
+      }finally{clearTimeout(timer);}
+    }else{
+      if(!FB.ready||!FB.db)throw Error('تعذّر الاتصال؛ حاول مجددًا');
+      const col=FB.db.collection('players'),key=firebase.firestore.FieldPath.documentId();
+      const ordered=col.orderBy('weekPts','desc').orderBy(key,'desc');
+      const [snap,mine]=await Promise.all([ordered.limit(50).get(),myUid?col.doc(myUid).get():null]);
+      const row=(doc,rank)=>{const d=doc.data();return {name:d.name||'لاعب',ava:d.avatar||'😎',gold:d.gold||0,lv:d.level||1,rpts:d.weekPts||0,lifeRank:d.rank||0,pid:doc.id,me:doc.id===myUid,rank,games:d.games||0,wins:d.wins||0,best:d.best||0,achievement:d.achievement||null,achievementDate:d.achievementDate||null};};
+      let place=0;snap.forEach(doc=>{if((doc.data().weekPts||0)>0)all.push(row(doc,++place));});
+      me=all.find(p=>p.me)||null;
+      if(!me&&mine?.exists&&(mine.data().weekPts||0)>0){
+        const above=await ordered.endBefore(mine.data().weekPts,myUid).count().get();
+        me=row(mine,above.data().count+1);all.push(me);
+      }
+    }
+    if(!stillCurrent())return;
+  }catch(e){
+    if(stillCurrent()){
+      pod.replaceChildren();list.replaceChildren();
+      const error=document.createElement('p');error.style.cssText='text-align:center;color:#f6d5b1;padding:20px';
+      error.textContent=e.name==='AbortError'?'تأخر تحميل الترتيب؛ حاول مجددًا':e.message||'تعذّر تحميل الترتيب';list.appendChild(error);
+      const retry=document.createElement('button');retry.className='qBtn';retry.textContent='إعادة المحاولة';retry.onclick=()=>openBoard(period);list.appendChild(retry);
+    }
+    return;
   }
-  // ملاحظة: لا نضيف أي لاعبين وهميين/بوتات للتصنيف — فقط لاعبون حقيقيون مسجّلون
-  all.push(me);
-  all.sort((a,b)=>b.rpts-a.rpts);
-  all.forEach((p,i)=>p.rank=i+1);
-  // FIX — الرتبة أعلاه صحيحة لأي لاعب من الخمسين المجلوبين فعلياً (موضعه الحقيقي بالترتيب العام)، لكن غلط لي أنا
-  // لو كنت خارج أفضل ٥٠ أصلاً (تصير مجرد موضعي داخل قائمة صغيرة، تقارب ٥٠ دائماً بغض النظر عن رتبتي الحقيقية).
-  // نحسب رتبتي الفعلية بعدّ كل من نقاطه أعلى مني بكامل القاعدة (بلا تحميل بيانات، استعلام عدّ فقط).
-  if(FB.ready&&FB.db&&myUid){
-    try{
-      const aboveSnap=await FB.db.collection('players').where(field,'>',me.rpts).count().get();
-      me.rank=aboveSnap.data().count+1;
-    }catch(e){ console.warn('true rank count failed',e); }
+  if(!all.length){
+    list.innerHTML='<div style="text-align:center;color:#d6e1c3;padding:30px">لا توجد نقاط لهذه الفترة بعد. العب تنافسيًا لتدخل الترتيب.</div>';return;
   }
   // المنصة (أول ثلاثة)
-  const pod=$('#lbPodium');pod.innerHTML='';
+  pod.innerHTML='';
   const order=[1,0,2]; // الثاني، الأول، الثالث (شكل منصة)
   const heights=[58,82,44];
   const blockBg=['linear-gradient(#d4d7dd,#b8bcc4)','linear-gradient(#ffd977,#e3a93c)','linear-gradient(#dda87c,#c98a5a)'];
   const blockTxt=['#5b606b','#7a4c07','#6b3d17'];
   const ringCol=['#b8bcc4','#f6c14d','#c98a5a'];
   order.forEach((idx,slot)=>{
-    const p=all[idx];if(!p)return;
+    const p=all.find(p=>p.rank===idx+1);if(!p)return;
     const medal=['🥈','🥇','🥉'][slot];
     const sz=slot===1?68:56;
     const podEl=document.createElement('div');
@@ -5622,14 +5669,14 @@ async function openBoard(period){
       <div style="font-size:${slot===1?'13.5px':'12.5px'};font-weight:800;color:#f9f4ed;max-width:${slot===1?92:80}px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.name)}${p.me?' (أنت)':''}</div>
       <div>${rankBadgeHTML(p.lifeRank,8.5)}</div>
       <div style="display:flex;align-items:center;gap:4px;font-size:${slot===1?'12px':'11.5px'};font-weight:800;color:#ccdbb2"><span style="font-size:${slot===1?'13px':'12px'}">🏅</span>${toH(p.rpts)} نقطة</div>
-      ${period==='week'?`<div style="display:flex;align-items:center;gap:3px;font-size:11px;font-weight:800;color:#f6c14d"><i style="width:10px;height:10px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block;flex:none"></i>+${toH(WEEKLY_PRIZES[p.rank])}</div>`:''}
+      ${prizes[p.rank]?`<div style="display:flex;align-items:center;gap:3px;font-size:11px;font-weight:800;color:#f6c14d"><i style="width:10px;height:10px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block;flex:none"></i>+${toH(prizes[p.rank])}</div>`:''}
       <div style="width:100%;height:${heights[slot]}px;border-radius:14px 14px 0 0;background:${blockBg[slot]};display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:${slot===1?30:24}px;color:${blockTxt[slot]}">${toH(p.rank)}</div>
     </div>`;
     pod.appendChild(podEl);
   });
   // البقية
-  const list=$('#lbList');list.innerHTML='';
-  all.slice(3).forEach(p=>{
+  list.innerHTML='';
+  all.filter(p=>p.rank>3).forEach(p=>{
     const row=document.createElement('div');
     row.className='uiRankRow'+(p.me?' uiSelf':'');
     row.style.cssText=`display:flex;align-items:center;gap:11px;background:${p.me?'#fbe9dc':'#fff'};border-radius:18px;padding:10px 14px;cursor:pointer${p.me?';box-shadow:0 0 0 2.5px #d67f48':';box-shadow:0 2px 8px rgba(0,0,0,.15)'}`;
@@ -5637,7 +5684,7 @@ async function openBoard(period){
       <div style="width:40px;height:40px;border-radius:999px;background:#f0e3cc;display:flex;align-items:center;justify-content:center;overflow:hidden">${avatarHTML(p.ava,40)}</div>
       <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:800;color:#201e1d">${esc(p.name)}${p.me?' (أنت)':''}</div>${rankBadgeHTML(p.lifeRank,9)}</div>
       <div style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:800;color:#8a6a4a"><span style="font-size:14px">🏅</span>${toH(p.rpts)} نقطة</div>
-      ${period==='week'&&WEEKLY_PRIZES[p.rank]?`<div style="display:flex;align-items:center;gap:3px;font-size:12px;font-weight:800;color:#b2622d;flex:none"><i style="width:11px;height:11px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block;flex:none"></i>+${toH(WEEKLY_PRIZES[p.rank])}</div>`:''}`;
+      ${prizes[p.rank]?`<div style="display:flex;align-items:center;gap:3px;font-size:12px;font-weight:800;color:#b2622d;flex:none"><i style="width:11px;height:11px;border-radius:999px;background:url('icons/gold-coin.png') center/contain no-repeat;display:inline-block;flex:none"></i>+${toH(prizes[p.rank])}</div>`:''}`;
     row.onclick=()=>{ if(p.me)openProfile(); else viewProfile({name:p.name,ava:p.ava,lv:p.lv,gold:p.gold,rpts:p.lifeRank,pid:p.pid||null,uid:p.pid||null,games:p.games,wins:p.wins,best:p.best,achievement:p.achievement,achievementDate:p.achievementDate}); }; // NEW CODE — أضفنا achievement/achievementDate
     list.appendChild(row);
   });
@@ -5940,7 +5987,7 @@ function rankBadgeHTML(pts,size){
 }
 // فرق النقاط عند نهاية الجولة: فوز يزيد، خسارة تنقص (بحد أدنى صفر) — يُستدعى بنهاية كل جولة تنافسية
 const RANK_WIN_PTS=50, RANK_LOSS_PTS=30;
-// حدود الفترات: اليوم يبدأ 12ص، الأسبوع يبدأ يوم الخميس 7ص، الشهر يبدأ أول يوم بالشهر منتصف الليل
+// حدود الصدارة بتوقيت السعودية: الخميس 7ص للأسبوع، يوم 1 الساعة 7ص للشهر.
 async function recordVisit(){
   const today=todayKey();
   if(localStorage.getItem('wb-last-visit-day')===today)return; // مرة وحدة باليوم لكل جهاز، يكفي لعدّ الزيارات
@@ -5956,13 +6003,8 @@ async function recordVisit(){
 function periodStart(kind){
   const n=new Date();
   if(kind==='day'){ const d=new Date(n.getFullYear(),n.getMonth(),n.getDate()); return d.getTime(); }
-  if(kind==='month'){ const d=new Date(n.getFullYear(),n.getMonth(),1); return d.getTime(); }
-  // week: أقرب خميس 7ص ماضٍ أو الآن (الخميس=4 بترقيم JS: أحد=0..سبت=6)
-  const d=new Date(n.getFullYear(),n.getMonth(),n.getDate(),7,0,0,0);
-  let diff=(d.getDay()-4+7)%7; // كم يوم بعد آخر خميس
-  d.setDate(d.getDate()-diff);
-  if(d.getTime()>n.getTime())d.setDate(d.getDate()-7); // لو لسه ما وصل خميس هالأسبوع، ارجع للي قبله
-  return d.getTime();
+  if(kind==='month'){ const d=new Date(Date.now()-4*3600000); return Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),1,4); }
+  return leaderboardEnd('week')-7*86400000;
 }
 function ensurePeriodFresh(kind){
   // FIX — حُيِّد التصفير المحلي هنا بالكامل: كان يصفّر wb-weekPts محلياً عند اكتشاف حدود أسبوع جديد (حسب
@@ -5974,8 +6016,8 @@ function addPeriodPts(delta){
   // FIX — أمني: استبعدنا 'week' من هذي الحلقة — كانت تسمح للعب الأوفلاين (بلا رسوم دخول ولا أي تحقق
   // سيرفري) بتضخيم weekPts محلياً، تُحفَظ تلقائياً للسحابة عبر fbSaveProfile، فيتسلل لاعب لجوائز أسبوعية
   // حقيقية (ذهب فعلي) بلا أي مباراة تنافسية فعلية. weekPts الآن حصراً من السيرفر (incrementWeeklyPoints)
-  // عند فوز مباراة تنافسية أونلاين موثّقة فعلاً — day/month تبقيان كسابقهما (غير معروضتين حالياً بأي مكان).
-  for(const kind of ['day','month']){ // FIX — week حُذفت من هذي القائمة
+  // v378: الأسبوع والشهر من نتائج السيرفر فقط؛ العداد المحلي المتبقي لليوم وحده.
+  for(const kind of ['day']){ // v378 — لا نقاط شهرية أو أسبوعية من اللعب المحلي
     ensurePeriodFresh(kind);
     const ptsKey='wb-'+kind+'Pts';
     const cur=parseInt(localStorage.getItem(ptsKey)||'0',10);
@@ -6030,7 +6072,7 @@ function applyRankDelta(won){
   const delta=won?RANK_WIN_PTS:-RANK_LOSS_PTS;
   const next=Math.max(0, cur + delta);
   ST.set('rank',next);
-  addPeriodPts(next-cur); // نفس الفرق الفعلي (بعد قصّه عند الصفر) يُضاف لعدّادات اليوم/الأسبوع/الشهر
+  addPeriodPts(next-cur); // فرق محلي للعداد اليومي فقط؛ الصدارة الشهرية والأسبوعية من السيرفر
   const after=rankFor(next);
   return {before:cur, after:next, delta:next-cur, rankUp: after.name!==before.name};
 }
@@ -6149,7 +6191,7 @@ $('#rulesX').onclick=$('#rulesOk').onclick=()=>$('#rules').classList.add('hidden
 $('#tiersBack').onclick=()=>goHome();
 $('#shopBack').onclick=()=>goHome();
 $('#lboardBack').onclick=()=>goHome();
-document.querySelectorAll('.lbTab').forEach(b=>b.onclick=()=>openBoard(b.dataset.lbp)); // NEW CODE — تبديل تبويبي الأسبوعي/العام
+document.querySelectorAll('.lbTab').forEach(b=>b.onclick=()=>openBoard(b.dataset.lbp)); // v378 — تبديل تبويبي الأسبوعي والشهري
 $('#awardsBack').onclick=()=>goHome();
 // تبويبات المتجر
 // ربط نقر .shopTab محذوف — شريط التبويبات نفسه اتحذف من الـHTML
@@ -6408,16 +6450,19 @@ window._rebindWelcome=()=>{ try{
 
 // بعد نجاح أي تسجيل دخول: حمّل بيانات اللاعب من السحابة ثم ادخل الرئيسية
 async function afterAuth(user){
+  window.MajabeedBoot?.set('account');
   if(UI_COST.uid!==user.uid)uiCostReset(user.uid);
   FB.user=user;
+  window.VipClient?.refresh().catch(()=>{});
   uiHomeWalletAccount(user.uid);
   if(typeof uiThemeSetAccount==='function')uiThemeSetAccount(user.uid);
   // اسم مبدئي من البريد أو حساب Google
   let nm=localStorage.getItem('wb-name');
   if(!nm){ nm=(user.displayName||(user.email||'لاعب').split('@')[0]).slice(0,14); localStorage.setItem('wb-name',nm); }
   // حمّل من Firestore (يغلب المحفوظ سحابياً على المحلي)
-  const authRoomGeneration=ONL.generation;
+  const authRoomGeneration=ONL.generation,authEntrySerial=UI_FRIENDLY_ENTRY.serial;
   const cloud=await fbLoadProfile(user.uid);
+  window.MajabeedBoot?.set('ready');
   if(FB.user?.uid!==user.uid)return;
   if(cloud&&cloud.banned){
     toast2(cloud.banReason?('هذا الحساب محظور: '+cloud.banReason):'هذا الحساب محظور — تواصل مع الدعم'); // NEW CODE — يعرض سبب الحظر المحدَّد لو أدخله الأدمن
@@ -6451,13 +6496,15 @@ async function afterAuth(user){
     const r=await fetch('https://'+GAME_SRV+'/claim-welcome',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({idToken:idt})}).then(x=>x.json()); // NEW CODE
     if(r&&r.ok&&r.granted>0){ localStorage.setItem('wb-gold',String(r.gold)); try{refreshHome()}catch(_){ } toast2('🎁 هدية ترحيبية: '+r.granted+' قطعة ذهبية!'); } // NEW CODE
   }catch(e){ console.log('[TRACE] claim-welcome:',e&&e.message); } })(); // NEW CODE
-  if(ONL.active||MATCH.on||ONL.generation!==authRoomGeneration)return; // Never let a late auth/profile restore replace a newer match.
-  if(cloud&&cloud.activeRoom&&!uiHomeWalletLeavingRoom(cloud.activeRoom)&&!(cloud.activeSince&&cloud.activeSince<Date.now()-3*60*60*1000)){ // FIX
+  if(ONL.active||MATCH.on||ONL.generation!==authRoomGeneration||UI_FRIENDLY_ENTRY.serial!==authEntrySerial)return; // Never let a late auth/profile restore replace a newer match.
+  const linkedRoom=new URLSearchParams(location.search).get('room');
+  if(linkedRoom&&!uiHomeWalletLeavingRoom(linkedRoom)){ONL.pendingTier=null;ONL.pendingMode=null;enterOnline();return;}
+  if(cloud&&cloud.activeRoom&&uiRoomPreference(cloud.activeRoom)?.mode!=='dismissed'&&!uiHomeWalletLeavingRoom(cloud.activeRoom)&&!(cloud.activeSince&&cloud.activeSince<Date.now()-3*60*60*1000)){ // FIX
     console.log("[TRACE] afterAuth: جلسة نشطة مسجَّلة — إعادة اتصال تلقائية لغرفة",cloud.activeRoom); // FIX
     const params=new URLSearchParams(location.search); // FIX
-    params.set('room',cloud.activeRoom);params.delete('spectate'); // Restore participation, never an unrelated stale viewing intent.
+    params.set('room',cloud.activeRoom);if(uiRoomPreference(cloud.activeRoom)?.mode==='watch')params.set('spectate','1');else params.delete('spectate'); // Restore participation, never an unrelated stale viewing intent.
     history.replaceState(null,'',location.pathname+'?'+params.toString()); // FIX
-    enterOnline(); // FIX
+    enterOnline({restore:true}); // FIX
     return; // FIX — نتجاوز أي منطق افتراضي آخر لشاشة البدء (شاشة الترحيب/الرئيسية)، ندخل الطاولة مباشرة
   } // FIX
   // إن لم يكن للمستخدم اسم مستخدم بعد (حساب Google جديد مثلاً) → شاشة الإكمال
@@ -6487,7 +6534,6 @@ async function afterAuth(user){
   const n=$('#nameIn'); if(n)n.value=localStorage.getItem('wb-name')||nm;
   recordVisit();
   try{updateDmBadge()}catch(e){}
-  if(_room0&&!uiHomeWalletLeavingRoom(_room0)){ONL.pendingTier=null;ONL.pendingMode=null;enterOnline();return}
   goHome();
   try{ startInviteListener(); }catch(e){}
   setTimeout(()=>{try{showDailyReward()}catch(e){}},500);
@@ -7243,6 +7289,7 @@ function renderAvatarPicker(){
 function myCode(){return (localStorage.getItem('wb-player-id')||'p-????????').slice(2)}
 function myUsername(){return localStorage.getItem('wb-username')||'';}
 function openProfile(){
+  window.VipClient?.profile(FB.user?.uid);
   if(typeof uiLeagueProfile==='function')uiLeagueProfile(FB.user?.uid);
   uiRememberProfileOrigin();
   $('#profile').classList.remove('uiOtherProfile');
@@ -8153,7 +8200,7 @@ $('#setupBack').onclick=()=>goHome();
   if(!localStorage.getItem('wb-welcomed'))localStorage.setItem('wb-welcomed','1');
 })();
 checkPaymentReturn(); // NEW CODE — يفحص عودة من صفحة دفع Paymob (إن وُجدت) ويحدّث الرصيد المعروض
-const _room0=new URLSearchParams(location.search).get('room');
+// V381: invitation URL is read when auth resolves, never replayed after cancellation.
 function versionLt(a,b){ // هل a أقدم من b؟ مقارنة عددية بالأجزاء (1.9.0 < 1.10.0)
   const pa=String(a||'0').split('.').map(n=>parseInt(n,10)||0);
   const pb=String(b||'0').split('.').map(n=>parseInt(n,10)||0);
@@ -8185,8 +8232,10 @@ function showForceUpdateModal(d){
 }
 function isIOSDevice(){ return /iPhone|iPad|iPod/.test(navigator.userAgent); }
 async function bootTo(){
+  window.MajabeedBoot?.set('connecting');
   // انتظر تحميل Firebase (قد يتأخّر على شبكات بطيئة)
   const ok=await ensureFB();
+  window.MajabeedBoot?.set(ok?'account':'error');
   if(await checkForceUpdate())return; // تحديث إجباري — النافذة تغطي الشاشة، لا داعي نكمّل الإقلاع
   if(!ok){
     // فشل تحميل Firebase تماماً — لن يصل أي ردّ مصادقة أبداً بهذي الحالة، فحُلّ الوعد الآن كي ما ينتظره أحد للأبد
@@ -8194,7 +8243,7 @@ async function bootTo(){
     // أظهر الترحيب والزر (الأزرار ستعيد المحاولة عند الضغط)
     const lb=$('#wLogin'), ld=$('#wLoading');
     if(lb)lb.style.display='';
-    if(ld)ld.style.display='none';
+    if(ld)ld.style.display='';
     show('welcome');
     return;
   }
@@ -8264,6 +8313,7 @@ async function bootTo(){
   }).catch(e=>{ _redirectChecked=true; if(GLOGIN&&!(FB.auth&&FB.auth.currentUser))showGloginPrompt(); try{toast2(authErr(e))}catch(x){} }); // FIX
   // راقب حالة الدخول: لا رئيسية إلا بحساب مسجّل (لا ضيف)
   FB.auth.onAuthStateChanged(async(user)=>{
+    window.VipClient?.reset();
     FB._resolveAuthReady(user||null); // أول ردّ فعلي من Firebase عن حالة الدخول — أي كود منتظر يتحرر الآن بغضّ النظر عن afterAuth أدناه
     if(user){
       const gp=document.getElementById('gloginPrompt'); if(gp)gp.remove(); // FIX — دخل فعلاً: أزل شاشة الربط تحت شاشة "✓ تم"
@@ -8277,6 +8327,7 @@ async function bootTo(){
       _appleHandledUid=null;
       if(GLOGIN){ if(_redirectChecked)showGloginPrompt(); return; } // FIX — بوضع الربط: شاشة الربط فقط (بعد حسم العودة)، لا ترحيب عادي ولا أي إطلاق تلقائي
       // غير مسجّل: أظهر شاشة الترحيب مع زر الدخول
+      window.MajabeedBoot?.set('ready');
       const lb=$('#wLogin'), ld=$('#wLoading');
       if(lb)lb.style.display='';
       if(ld)ld.style.display='none';
@@ -8374,21 +8425,12 @@ fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
     }); // FIX
   }; // FIX
   // FIX — Promise<void>: يُحل فور إغلاق الإعلان فعلياً، أو فوراً لو تعذّر العرض أصلاً
-  window.showInterstitialAd=async function(){ // FIX
-    const AdMob=getAdMob(); if(!AdMob){ console.warn('[AdMob] غير متوفرة عند الاستدعاء'); return; } // FIX
-    return new Promise(async (resolve)=>{ // FIX
-      const dismissedListener=await AdMob.addListener(EV_INTERSTITIAL_DISMISSED, ()=>{ // FIX
-        dismissedListener.remove(); resolve(); // FIX
-      }); // FIX
-      try{ // FIX
-        await AdMob.prepareInterstitial({adId:ADMOB_INTERSTITIAL_AD_UNIT_ID}); // FIX
-        await AdMob.showInterstitial(); // FIX
-      }catch(e){ // FIX
-        dismissedListener.remove(); // FIX
-        console.warn('[AdMob] فشل عرض الإعلان الخلالي —',e&&e.message); resolve(); // FIX
-      } // FIX
-    }); // FIX
-  }; // FIX
+  // V380: shared failure/dismissal handling; existing platform ad-unit IDs retained.
+  window.showInterstitialAd=window.MajabeedInterstitial.create({
+    getPlugin:getAdMob,
+    adId:ADMOB_INTERSTITIAL_AD_UNIT_ID,
+    isExempt:()=>window.VipClient?.checkActive()||false
+  });
 })();
 </script>
 <!-- ============ تكامل تسجيل الدخول بجوجل الأصلي — نفس نمط AdMob المؤكَّد بالضبط ============ -->
@@ -8402,7 +8444,9 @@ fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
      يدوياً — مهم: غيّر اسمه لـ"firebase-auth-plugin.js" وقت النسخ (لا تسمّه plugin.js زي ما هو، لأن AdMob
      أيضاً عنده ملف بنفس الاسم بالضبط بمجلده — لو الاثنين اتسمّوا plugin.js بنفس مجلد www، الثاني يمحو الأول). -->
 <script src="firebase-auth-plugin.js"></script>
-<script src="ui-card-motion.js?v=361"></script>
+<script src="ui-six-v388.js"></script>
+<script src="ui-table-hud-v389.js"></script>
+<script src="ui-card-motion.js?v=388"></script>
 <script src="ui-community.js"></script>
 <script src="ui-leagues.js"></script>
 </body>

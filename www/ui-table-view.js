@@ -41,6 +41,8 @@ function uiSyncOnlineAudience(){
 // Coordinates are measured relative to the game screen, including a scaled
 // preview frame. CSS keeps the original safe-area anchors as the fallback.
 function uiPlaceDrawStock(online){
+  if(online&&window.UITableHUD?.active())return UITableHUD.placeStock();
+  if(online&&window.MajabeedSix?.active())return MajabeedSix.placeStock();
   const get=id=>document.getElementById(id);
   const root=get(online?'onl':'game'),deck=get(online?'oDeckStack':'deckStack');
   if(!root||!deck||root.classList.contains('hidden')||!root.clientWidth||!root.clientHeight)return null;

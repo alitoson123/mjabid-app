@@ -27,10 +27,10 @@ window.UICardFlow=(()=>{
   function clear(ctx){for(const flight of [...ctx.flights.values()])flight.stop();ctx.previous=null;ctx.geometry=null;ctx.capture=null;ctx.frame=0;ctx.paint=0;}
   function online(){
     if(typeof ONL==='undefined'||!ONL.active||ONL.status!=='playing'||!ONL.view)return null;
-    const v=ONL.view, seats=v.seats||[];if(seats.length!==4)return null;
+    const v=ONL.view, seats=v.seats||[];const six=v.tableFormat==='3v3'&&seats.length===6;if(seats.length!==4&&!six)return null;
     const bottom=seats.includes(ONL.you)?ONL.you:seats[0], index=seats.indexOf(bottom);
-    return {id:'online',identity:ONL.room+'|'+ONL.you+'|'+bottom,root:'onl',bottom,
-      seats:[0,1,2,3].map(k=>seats[(index+k)%4]),field:list(v.field),hand:list(v.myHand),
+    return {id:'online',identity:ONL.room+'|'+ONL.you+'|'+bottom,root:'onl',bottom,six,
+      seats:(six?[0,1,2,3,4,5]:[0,1,2,3]).map(k=>seats[(index+k)%seats.length]),field:list(v.field),hand:list(v.myHand),
       piles:Object.fromEntries(seats.map(pid=>[pid,{count:v.piles[pid]?.count||0,top:copy(v.piles[pid]?.top)}])),
       handCounts:{...v.handCounts},waqf:v.waqf?{cards:list(v.waqf.contested),holder:v.waqf.holder,from:[...(v.waqf.fromPids||[])],grabs:v.waqf.grabs||0,capturePiles:claims(v.waqf)}:null,
       settle:v.lastSettle?{seq:v.lastSettle.seq,holder:v.lastSettle.holder,cards:list(v.lastSettle.cards),from:[...(v.lastSettle.fromPids||[])],capturePiles:claims(v.lastSettle)}:null,lastEater:v.lastEater};
@@ -50,8 +50,8 @@ window.UICardFlow=(()=>{
     g.center=at(document.getElementById(on?'oWaqfStack':'contested'),54,77)||at(document.getElementById(on?'oField':'field'),54,77)||fallback?.center;
     g.deck=at(document.getElementById(on?'oDeckStack':'deckStack'))||fallback?.deck;
     model.seats.forEach((pid,k)=>{
-      g.directions.set(pid,[{x:0,y:1},{x:1,y:0},{x:0,y:-1},{x:-1,y:0}][k]);
-      const seat=document.getElementById(on?['oIdent','oSeatR','oSeat','oSeatL'][k]:['meIdent','seatR','seatT','seatL'][k]);
+      g.directions.set(pid,model.six?MajabeedSix.dirs[k]:[{x:0,y:1},{x:1,y:0},{x:0,y:-1},{x:-1,y:0}][k]);
+      const seat=document.getElementById(on?(model.six?MajabeedSix.ids:['oIdent','oSeatR','oSeat','oSeatL'])[k]:['meIdent','seatR','seatT','seatL'][k]);
       const pile=k===0?document.getElementById(on?'oMyPile':'myPile'):seat?.querySelector('.pileBox');
       const top=pile?.querySelector('.card[data-id]'), pr=rect(top)||at(pile)||fallback?.piles.get(pid);
       if(pr)g.piles.set(pid,{...pr,el:top||null});
@@ -142,6 +142,13 @@ window.UICardFlow=(()=>{
     return [{transform:transform(from,w,h),opacity:1,offset:0,easing:'cubic-bezier(.16,.65,.3,1)'},
       {transform:transform(to,w,h),opacity:1,offset:1}];
   }
+  // V388: a small contact tilt and light pulse on played cards in every mode; final pose is unchanged.
+  function focusFrames(from,to,w,h){
+    const touch={...to,w:to.w*1.025,h:to.h*1.025,angle:to.angle+1.1};
+    return [{transform:transform(from,w,h),opacity:1,filter:'brightness(1)',offset:0},
+      {transform:transform(touch,w,h),opacity:1,filter:'brightness(1.08)',offset:.32},
+      {transform:transform(to,w,h),opacity:1,filter:'brightness(1)',offset:1}];
+  }
   function impactFrames(from,to,impact,w,h){
     // A small friction-limited rearrangement remains in the renderer's committed pose.
     return [{transform:transform(from,w,h),opacity:1,offset:0,easing:'cubic-bezier(.16,.7,.25,1)'},
@@ -175,7 +182,7 @@ window.UICardFlow=(()=>{
     if(distance<2&&Math.abs(to.w-from.w)<2&&Math.abs(to.angle-from.angle)<2&&!options.impact&&!options.settling&&!options.hold&&!options.holdFor)return;
     const el=cardEl(card,'sm');el.classList.add('uiCardFlight');el.removeAttribute('data-id');el.removeAttribute('data-rank');el.removeAttribute('aria-label');el.setAttribute('aria-hidden','true');
     el.dataset.motionKind=options.kind||'play';el.dataset.motionPlayer=String(options.pid??'');
-    const action=options.area==='stack'||options.kind==='collect';
+    const action=options.area==='stack'||options.kind==='collect'||options.focus;
     if(action)el.classList.add('uiCardFlightAction');
     if(options.merge)el.classList.add('uiCardFlightMerged');
     if(options.packetCount>1){
@@ -221,12 +228,12 @@ window.UICardFlow=(()=>{
       const onStack=options.area==='stack';
       // The new top stays stationary above the moving receiving clones; it never glides or bounces.
       const resting=onStack?{...arrival}:{...current,angle:unwrapAngle(current.angle,arrival.angle)};
-      const contactDuration=onStack?160:140;
+      const contactDuration=options.focus?190:onStack?160:140;
       flight.to=resting;flight.duration=contactDuration;flight.delay=0;flight.startedAt=Date.now();
       options={...options,_landed:true,settling:true,spin:false,via:null,rotateVia:undefined,rotateTo:resting.angle};
       flight.options=options;mask(flight,current.el);
       try{
-        const frames=settleFrames(arrival,resting,w,h);recordAngles(flight,frames);
+        const frames=(options.focus?focusFrames:settleFrames)(arrival,resting,w,h);recordAngles(flight,frames);
         animation=el.animate(frames,{duration:contactDuration,easing:'linear',fill:'both'});
         flight.animation=animation;animation.onfinish=()=>options.holdFor?waitForContact():flight.stop();animation.oncancel=flight.stop;
         arm(Math.max(300,(options.holdUntil||0)-Date.now()+160));
@@ -370,7 +377,7 @@ window.UICardFlow=(()=>{
         fly(ctx,c,start,to,{kind:last?(isBid?'bid':'play'):'capture',pid,area:'stack',target:target?.el,delay:last?0:Math.min(order*20,80),order:++order,merge:!now.stack.has(key(c)),land:last&&now.stack.has(key(c)),landingDirection:start&&to?impactVector(start,to):null,throwDir:last?now.directions.get(pid):null,
           ...(contactPaint?{paintOrder:contactPaint-unique.size+order}:{}),
           ...(receiver?{holdFor:key(played),holdUntil:contactUntil,receiverTo:target,paintOrder:contactPaint-receivers.length+receivers.indexOf(c)}:{}),
-          ...(last?{duration:480,spin:true,paintOrder:contactPaint}:{})});
+          ...(last?{duration:480,spin:true,focus:true,paintOrder:contactPaint}:{})});
       }
       ctx.capture=null;
     }
@@ -378,7 +385,7 @@ window.UICardFlow=(()=>{
       const dest=now.field.get(key(c));if(!dest)continue;
       if(!previousFields.has(key(c))&&!settlement){
         const start=c.by===undefined?geo.deck:geo.hand.get(key(c))||geo.hands.get(c.by);
-        fly(ctx,c,start,dest,{kind:'play',pid:c.by,area:'field',target:dest.el,order:20,land:c.by!==undefined,landingDirection:start?impactVector(start,dest):null});
+        fly(ctx,c,start,dest,{kind:'play',pid:c.by,area:'field',target:dest.el,order:20,focus:c.by!==undefined,throwDir:now.directions.get(c.by),land:c.by!==undefined,landingDirection:start?impactVector(start,dest):null});
       }else if(previousFields.has(key(c))&&geo.field.has(key(c))&&!ctx.flights.has(key(c))){
         const start=geo.field.get(key(c));if(Math.hypot(dest.x-start.x,dest.y-start.y)>3)fly(ctx,c,start,dest,{kind:'shift',area:'field',target:dest.el,duration:210});
       }
@@ -429,7 +436,8 @@ window.UITablePresentation=(()=>{
     ['oChatBubble','oIdent','onl','bottom'],
     ['oChatBubbleR','oSeatR','onl','right'],
     ['oChatBubbleT','oSeat','onl','top'],
-    ['oChatBubbleL','oSeatL','onl','left']
+    ['oChatBubbleL','oSeatL','onl','left'],
+    ['oSixBubble2','oSixSeat2','onl','right'],['oSixBubble4','oSixSeat4','onl','left']
   ].map(([id,seat,root,side])=>({bubble:byId(id),seat:byId(seat),root:byId(root),side}))
     .filter(e=>e.bubble&&e.seat&&e.root);
   let frame=0;

@@ -1,0 +1,131 @@
+/* All table overrides are scoped to the new six-seat room. */
+.sixOnly{display:none!important}
+#onl.uiSixTable .sixOnly{display:flex!important}
+#onl.uiSixTable .sixOnly.hidden{display:none!important}
+#onl.uiSixTable #lobbyMode{display:none!important}
+#onl.uiSixTable #lobbyPlayers{display:grid!important;grid-template-columns:1fr 1fr;gap:10px}
+#onl.uiSixTable .sixLobbyTeam{padding:8px;border:1px solid #9fc8b3;border-radius:16px;background:#163e34;color:#fff5df}
+#onl.uiSixTable .sixLobbyTeam[data-six-team="1"]{background:#263b50;border-color:#9ab6d6}
+#onl.uiSixTable .sixLobbyTeam h3{margin:0 0 8px;font-size:15px}
+#onl.uiSixTable .sixLobbySeat{display:grid;grid-template-columns:38px 1fr;width:100%;min-height:64px;gap:3px;padding:7px;border-radius:10px;border:1px solid #ffffff25;background:#ffffff09;color:inherit;text-align:right;margin:5px 0;cursor:pointer}
+#onl.uiSixTable .sixLobbySeat>span{grid-row:1/3;align-self:center;font-size:24px}
+#onl.uiSixTable .sixLobbySeat b{font-size:12px;overflow-wrap:anywhere}
+#onl.uiSixTable .sixLobbySeat small{font-size:9px;color:#d2dfd9}
+#onl.uiSixTable .sixLobbySeat.isYou{border:2px solid #f2cf7f;background:#ddbe591b}
+#sixCreateDialog{position:fixed;inset:0;z-index:14000;background:#001a16d9;display:grid;place-items:center;padding:20px;direction:rtl}
+#sixCreateDialog section{position:relative;width:min(100%,370px);padding:26px 20px;border-radius:24px;background:#f8f1df;color:#203d33;text-align:center;box-shadow:0 16px 60px #0005}
+#sixCreateDialog h2{margin:0;font-size:26px}
+#sixCreateDialog button[data-format]{display:flex;flex-direction:column;gap:6px;width:100%;margin:12px 0;padding:18px 12px;border:1px solid #b9c6b6;border-radius:16px;background:#fffaf0;color:#203d33;font-family:inherit;cursor:pointer}
+#sixCreateDialog button[data-format="six"]{background:#183f34;color:#fff2cd}
+#sixCreateDialog button b{font-size:22px}#sixCreateDialog button span{font-size:12px}
+#sixCreateDialog .sixClose{position:absolute;left:12px;top:10px;background:none;border:0;font-size:28px;color:inherit}
+#sixCreateDialog .sixCreateNote{font-size:12px;margin-bottom:0}
+#onl.uiSixTable{--six-seat-w:82px;--six-seat-h:130px;--six-hand-w:72px;--six-hand-h:101px;--six-head-h:36px;--six-stats-h:18px;--six-label-h:12px;--six-avatar-size:30px;--six-pile-w:34px;--six-pile-h:48px}
+#onl.uiSixTable .seat{position:absolute!important;display:grid!important;grid-template-columns:1fr!important;grid-template-rows:36px 28px 22px var(--six-pile-h)!important;align-items:center!important;justify-items:center!important;gap:2px!important;width:var(--six-seat-w)!important;height:var(--six-seat-h)!important;min-width:0!important;min-height:0!important;max-width:none!important;padding:5px!important;border:1px solid #9ab9a77a!important;border-radius:15px!important;background:linear-gradient(150deg,#234b3e,#122f28)!important;box-shadow:0 3px 10px #0003!important;transform:none!important;margin:0!important;z-index:18!important;box-sizing:border-box!important}
+#onl.uiSixTable .seat[data-six-team="1"]{background:linear-gradient(150deg,#30465e,#1a2c40)!important;border-color:#9db9d57a!important}
+#onl.uiSixTable .seat::before,#onl.uiSixTable .seat::after{display:none!important}
+#onl.uiSixTable .seat.turnGlow{border-color:#f5d379!important;box-shadow:0 0 0 2px #f5d37944!important}
+#onl.uiSixTable #oSeat{top:var(--six-center-y,120px)!important;left:calc(50% - var(--six-seat-w)/2)!important;right:auto!important}
+#onl.uiSixTable #oSixSeat2{top:var(--six-upper-y,160px)!important;right:8px!important;left:auto!important}
+#onl.uiSixTable #oSixSeat4{top:var(--six-upper-y,160px)!important;left:8px!important;right:auto!important}
+#onl.uiSixTable #oSeatR{top:var(--six-lower-y,400px)!important;right:8px!important;left:auto!important}
+#onl.uiSixTable #oSeatL{top:var(--six-lower-y,400px)!important;left:8px!important;right:auto!important}
+#onl.uiSixTable .seat .avaWrap{position:relative!important;grid-area:1/1!important;width:36px!important;height:36px!important;transform:none!important;margin:0!important;order:0!important}
+#onl.uiSixTable .seat .ava,#onl.uiSixTable #oIdent .ava{width:36px!important;height:36px!important;min-width:36px!important;border-radius:50%!important;margin:0!important}
+#onl.uiSixTable .seat .ava>img,#onl.uiSixTable #oIdent .ava>img{width:100%!important;height:100%!important}
+#onl.uiSixTable .seat .oppHandFan,#onl.uiSixTable .seat .uiSeatRank{display:none!important}
+#onl.uiSixTable .seat .handCountBadge{left:auto!important;width:20px!important;height:18px!important;line-height:16px!important;right:-14px!important;bottom:0!important;font-size:10px!important;min-width:18px!important}
+#onl.uiSixTable .seat .nm{grid-area:2/1!important;display:flex!important;flex-direction:column;justify-content:center!important;width:80px!important;max-width:80px!important;min-width:0!important;height:28px!important;max-height:28px!important;line-height:13px!important;font-size:10px!important;text-align:center!important;white-space:normal!important;margin:0!important;overflow:hidden!important;order:0!important}
+#onl.uiSixTable .seat .uiPlayerName{width:80px!important;max-width:80px!important;max-height:26px!important;font-size:10px!important;line-height:13px!important}
+#onl.uiSixTable .seat .inf{grid-area:3/1!important;margin:0!important;position:static!important;transform:none!important;justify-self:center!important;max-width:none!important;order:0!important}
+#onl.uiSixTable .seat .pts{font-size:11px!important;height:22px!important;width:auto!important;max-width:80px!important;padding:1px 5px!important;min-width:0!important;display:flex!important;align-items:center!important;justify-content:center!important;box-sizing:border-box!important;overflow:visible!important}
+#onl.uiSixTable .seat .pileBox{grid-area:4/1!important;position:relative!important;inset:auto!important;transform:none!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:4px!important;width:80px!important;min-width:0!important;min-height:var(--six-pile-h)!important;height:var(--six-pile-h)!important;margin:0!important;order:0!important;align-self:center!important}
+#onl.uiSixTable .seat .pileBox .card{width:var(--six-pile-w)!important;height:var(--six-pile-h)!important;min-width:var(--six-pile-w)!important;transform:none!important;margin:0!important}
+#onl.uiSixTable .seat .pileBox>.pileCntX,#onl.uiSixTable .seat .pileBox>.cnt{font-size:12px!important;line-height:16px!important;min-width:20px!important;position:static!important;inset:auto!important;transform:none!important;padding:1px 4px!important;margin:0!important;flex:none!important}
+#onl.uiSixTable .seat .bubble{top:-16px!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;font-size:9px!important;padding:1px 8px!important;white-space:nowrap}
+#onl.uiSixTable .seat .holderVal{display:none!important}
+#onl.uiSixTable .tableWood{top:var(--six-table-y,240px)!important;width:var(--six-table-w,374px)!important;height:var(--six-table-h,304px)!important;left:50%!important;transform:translateX(-50%)!important}
+#onl.uiSixTable #oFieldWrap{top:var(--six-field-y,290px)!important;left:50%!important;right:auto!important;bottom:auto!important;width:var(--six-field-w,202px)!important;height:var(--six-field-h,206px)!important;transform:translateX(-50%)!important;min-height:0!important}
+#onl.uiSixTable #oField{inset:0!important;width:100%!important;height:100%!important;min-height:0!important;transform:none!important}
+#onl.uiSixTable #fieldRing{opacity:.5}
+#onl.uiSixTable #oWaqfStack{width:107px!important;height:151px!important;top:50%!important}
+#onl.uiSixTable #oWaqfCntL{top:calc(50% + 62px)!important;bottom:auto!important;left:0!important;right:0!important;text-align:center;transform:none!important;font-size:14px!important}
+#onl.uiSixTable #oWaqfBanner{top:var(--six-caption-y,290px)!important;left:100px!important;right:100px!important;z-index:28!important}
+#onl.uiSixTable #oWaqfBannerTxt{font-size:10px!important;padding:4px 6px!important;border-radius:8px!important;white-space:normal!important;text-align:center;line-height:1.4!important}
+#onl.uiSixTable #oWaqfBannerTxt b{font-size:12px!important}
+#onl.uiSixTable #me2{position:absolute!important;left:0!important;right:0!important;bottom:0!important;height:var(--six-self-h,246px)!important;padding:0 0 var(--six-safe-bottom,0px)!important;box-sizing:border-box!important}
+#onl.uiSixTable #oMeTop{height:var(--six-own-h,64px)!important;min-height:var(--six-own-h,64px)!important;padding:0 12px!important;justify-content:space-between!important;gap:8px!important}
+#onl.uiSixTable #oIdent{max-width:46%!important;min-width:0!important;padding:4px 6px!important;min-height:40px!important}
+#onl.uiSixTable #oIdent .uiPlayerName{font-size:11px!important}
+#onl.uiSixTable #oIdent .uiSeatRank{display:none!important}
+#onl.uiSixTable #oMyPile{position:static!important;transform:none!important;min-width:0!important;display:flex!important;gap:5px!important;align-items:center!important}
+#onl.uiSixTable #oMyPile .card{width:var(--six-pile-w)!important;height:var(--six-pile-h)!important;min-width:var(--six-pile-w)!important}
+#onl.uiSixTable #oMyPile .pts{font-size:11px!important;min-width:0!important;padding:2px 5px!important}
+#onl.uiSixTable #oHint{height:var(--six-hint-h,24px)!important;min-height:var(--six-hint-h,24px)!important;font-size:11px!important;padding:0 10px!important;line-height:14px!important;display:block;text-align:center;white-space:normal}
+#onl.uiSixTable #oThumb{display:flex!important;flex-direction:column!important;position:relative!important;height:calc(var(--six-hand-row,116px) + var(--six-actions-h,44px))!important;min-height:0!important;margin:0!important;gap:0!important;padding:0 8px!important}
+#onl.uiSixTable #oHand{flex:none!important;height:var(--six-hand-row,116px)!important;min-height:var(--six-hand-row,116px)!important;max-height:none!important;padding:6px 0 0!important;align-items:flex-start!important}
+#onl.uiSixTable #oHand>.card{width:var(--six-hand-w)!important;min-width:var(--six-hand-w)!important;height:var(--six-hand-h)!important}
+#onl.uiSixTable #oActions{position:static!important;flex:none!important;width:100%!important;height:var(--six-actions-h,44px)!important;min-height:var(--six-actions-h,44px)!important;padding:0 0 4px!important;margin:0!important}
+#onl.uiSixTable #oActions button{min-height:34px!important;height:calc(var(--six-actions-h,44px) - 6px)!important}
+#onl.uiSixTable #oTimer,#onl.uiSixTable #oTimerTop{display:none!important}
+#onl.uiSixTable .sixEmpty{font-size:10px;color:#c9d6c7}
+/* V388: separate identity, hand count, points, and auction status. */
+#onl.uiSixTable.uiSixCompact .seat{grid-template-columns:minmax(0,1fr) var(--six-avatar-size)!important;grid-template-rows:var(--six-head-h) var(--six-stats-h) calc(var(--six-pile-h) + var(--six-label-h))!important;padding:3px 4px!important;gap:2px!important}
+#onl.uiSixTable.uiSixCompact .seat .avaWrap{grid-area:1/2!important;width:var(--six-avatar-size)!important;height:var(--six-avatar-size)!important}
+#onl.uiSixTable.uiSixCompact .seat .ava{width:var(--six-avatar-size)!important;min-width:var(--six-avatar-size)!important;height:var(--six-avatar-size)!important;border-width:1px!important}
+#onl.uiSixTable .ava>span:not(.avaSec){font-size:calc(var(--six-avatar-size)*.68)!important;line-height:1;display:block}
+#onl.uiSixTable .ava>svg{width:100%!important;height:100%!important}
+#onl.uiSixTable .ava>.avaRing{inset:-3px}
+#onl.uiSixTable .ava>.avaSec{display:none!important}
+#onl.uiSixTable .uiSixClock{display:flex;align-items:center;justify-content:center;visibility:hidden;min-height:12px;height:12px;margin:1px 0 0;padding:0 4px;border-radius:4px;background:#f4d991;color:#173c30;font:800 9px/12px var(--fb);white-space:nowrap;font-variant-numeric:tabular-nums;box-sizing:border-box;direction:rtl}
+#onl.uiSixTable .uiSixClock.on{visibility:visible}
+#onl.uiSixTable .uiSixClock.urgent{background:#f9d5bd;color:#8c271d}
+#onl.uiSixTable .uiSixClock.isAuto{background:#ffffff12;color:#dbe5cf}
+#onl.uiSixTable #oIdent .uiSixClock:not(.on){display:none}
+#onl.uiSixTable #uiResumeControl{min-height:22px;height:22px;padding:2px 4px;font-size:9px}
+#onl.uiSixTable.uiSixTight .uiSixResuming .uiSelfName{display:flex;flex-direction:row;align-items:center;gap:3px}
+#onl.uiSixTable.uiSixTight .uiSixResuming .uiPlayerName{display:none!important}
+#onl.uiSixTable.uiSixCompact .seat .nm{grid-area:1/1!important;width:100%!important;max-width:100%!important;height:var(--six-head-h)!important;max-height:var(--six-head-h)!important;padding:0!important;overflow:hidden!important}
+#onl.uiSixTable.uiSixCompact .seat .uiPlayerName{width:100%!important;max-width:100%!important;font-size:9px!important;line-height:11px!important;max-height:22px!important;flex-shrink:0}
+#onl.uiSixTable.uiSixCompact .seat .inf{grid-area:2/1/3/3!important;width:100%;height:var(--six-stats-h);display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center;gap:3px!important}
+#onl.uiSixTable.uiSixCompact .seat .pts{height:var(--six-stats-h)!important;font-size:9px!important;padding:0!important;border:0!important;flex:1 1 auto;max-width:none!important}
+#onl.uiSixTable.uiSixCompact .seat .pts b,#onl.uiSixTable.uiSixCompact .seat .pts small{line-height:14px!important;gap:2px!important}
+#onl.uiSixTable.uiSixCompact .seat .pts small{font-size:8px!important}
+#onl.uiSixTable.uiSixCompact .seat .handCountBadge{position:static!important;inset:auto!important;transform:none!important;font:800 9px/14px var(--fb)!important;height:var(--six-stats-h)!important;width:auto!important;min-width:20px!important;gap:2px;padding:0!important;border:0!important;margin:0!important;box-shadow:none;flex:none;box-sizing:border-box}
+#onl.uiSixTable .handCountBadge::before{content:'';width:5px;height:8px;display:block;border:1px solid #d6e3bf;border-radius:1px;box-shadow:-1px 1px 0 #b6cab0;flex:none}
+#onl.uiSixTable.uiSixCompact .seat .pileBox,#onl.uiSixTable .uiSixOwnPile{display:grid!important;grid-template-columns:var(--six-pile-w) minmax(0,1fr)!important;grid-template-rows:var(--six-pile-h) var(--six-label-h)!important;gap:0 4px!important;align-items:center!important;justify-items:center;position:relative;min-height:0!important;height:calc(var(--six-pile-h) + var(--six-label-h))!important}
+#onl.uiSixTable.uiSixCompact .seat .pileBox{grid-area:3/1/4/3!important;width:100%!important}
+#onl.uiSixTable .uiSixOwnPile{min-width:64px;max-width:85px}
+#onl.uiSixTable .pileBox>.card,#onl.uiSixTable .uiSixOwnPile>.card{grid-area:1/1!important}
+#onl.uiSixTable .pileBox>.uiPileCount,#onl.uiSixTable .uiSixOwnPile>.uiPileCount{grid-area:1/2!important;font-size:11px!important;padding:1px 3px!important;gap:2px!important;min-width:0!important}
+#onl.uiSixTable .pileBox>.uiPileCount svg,#onl.uiSixTable .uiSixOwnPile>.uiPileCount svg{width:10px!important;height:12px!important}
+#onl.uiSixTable .pileBox>div:not(.card){grid-area:1/1/3/3;text-align:center}
+#onl.uiSixTable .uiPileTarget>.uiAuctionTargetLabel{position:static!important;inset:auto!important;transform:none!important;grid-area:2/1/3/3!important;width:100%!important;max-width:100%!important;min-width:0!important;height:var(--six-label-h)!important;margin:0!important;padding:0 1px!important;border:0!important;border-radius:3px!important;font:700 9px/12px var(--fb)!important;text-align:center;white-space:nowrap!important;box-sizing:border-box;overflow:hidden;align-self:end}
+#onl.uiSixTable.uiSixTight{--six-avatar-size:22px}
+#onl.uiSixTable.uiSixTight .seat .uiPlayerName{max-height:11px!important;-webkit-line-clamp:1!important}
+#onl.uiSixTable.uiSixTight .seat .pts{font-size:9px!important}
+#onl.uiSixTable.uiSixTight .seat .pts small{font-size:7px!important}
+#onl.uiSixTable.uiSixTight .pileBox>.uiPileCount{font-size:9px!important;min-height:14px!important}
+#onl.uiSixTable.uiSixTight .pileBox>.uiPileCount svg{width:8px!important;height:10px!important}
+#onl.uiSixTable.uiSixTight .pileBox>.uiPileCount,#onl.uiSixTable.uiSixTight .uiSixOwnPile>.uiPileCount{height:var(--six-pile-h)!important;min-height:0!important;max-height:var(--six-pile-h)!important;line-height:10px!important;font-size:9px!important;padding:0 2px!important;box-sizing:border-box}
+#onl.uiSixTable.uiSixTight .uiSixOwnPile>.uiPileCount svg{width:8px!important;height:10px!important}
+#onl.uiSixTable.uiSixTight #oIdent{min-height:32px!important;padding:2px 4px!important}
+#onl.uiSixTable.uiSixTight #oIdent .ava{width:26px!important;min-width:26px!important;height:26px!important}
+#onl.uiSixTable.uiSixTight #oHint{line-height:12px!important;font-size:10px!important}
+#onl.uiSixTable.uiSixTight #oWaqfStack{transform:translate(-50%,-52%) scale(.76)!important}
+#onl.uiSixTable.uiSixTight #oWaqfCntL{top:50%!important;left:0!important;right:auto!important;transform:translateY(-50%)!important}
+#onl.uiSixTable.uiSixTight #oWaqfCntL .uiPileCount{font-size:10px!important;gap:2px!important;min-height:24px!important;padding:2px 3px!important}
+#onl.uiSixTable.uiSixTight #oWaqfBannerTxt{font-size:9px!important;line-height:10px!important;padding:2px 4px!important;max-height:24px;overflow:hidden}
+#onl.uiSixTable.uiSixTight #oWaqfBannerTxt b{font-size:9px!important;line-height:10px!important}
+#onl.uiSixTable #oOver .avaDuo{width:82px!important;min-width:82px!important;display:flex!important;flex-wrap:nowrap!important}
+#onl.uiSixTable #oOver .resRow{min-height:106px!important}
+#onl.uiSixTable.uiSpectating #oThumb,#onl.uiSixTable.uiSpectating #oHint{display:none!important}
+@media(max-width:350px){#onl.uiSixTable #oWaqfBanner{left:84px!important;right:84px!important}}
+@media(max-width:350px){
+ #onl.uiSixTable.uiSixCompact .seat .inf{gap:2px!important}
+ #onl.uiSixTable.uiSixCompact .seat .pts{font-size:8px!important;padding:0!important}
+ #onl.uiSixTable.uiSixCompact .seat .pts b{gap:1px!important}
+ #onl.uiSixTable.uiSixCompact .seat .pts small{font-size:7px!important}
+ #onl.uiSixTable.uiSixCompact .seat .handCountBadge{border:0!important;padding:0!important;min-width:18px!important;gap:2px}
+ #onl.uiSixTable.uiSixCompact .seat .handCountBadge::before{display:none}
+}

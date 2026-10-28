@@ -21,7 +21,6 @@ window.GoldShop=(()=>{
  }
  async function render(){
   const wrap=el('goldPkgList');if(!wrap)return;
-  if(native()&&window.NativeShop)return window.NativeShop.renderGold(wrap);
   wrap.innerHTML='<p class="gcNotice" role="status">جارٍ تحميل الباقات والعروض…</p>';
   try{await load();draw(wrap);}catch(_){wrap.innerHTML='<p class="gcNotice">تعذّر تحميل المتجر. حاول مرة أخرى.</p>';const b=document.createElement('button');b.className='btn';b.textContent='إعادة المحاولة';b.onclick=render;wrap.append(b);}
  }
@@ -39,7 +38,7 @@ window.GoldShop=(()=>{
    card.onclick=()=>open(p.key);wrap.append(card);
   }
  }
- function close(){window.NativeShop?.close();serial++;modal?.remove();modal=null;busy=false;previousFocus?.focus?.();}
+ function close(){serial++;modal?.remove();modal=null;busy=false;previousFocus?.focus?.();}
  function shell(){
   close();previousFocus=document.activeElement;modal=document.createElement('div');modal.className='gcOverlay';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-labelledby','gcTitle');
   modal.innerHTML='<section class="gcDialog"><button class="gcClose" type="button" aria-label="إغلاق">×</button><div id="gcMark" class="gcMedallion" aria-hidden="true">✦</div><small class="gcEyebrow">متجر مجابيد</small><h2 id="gcTitle"></h2><p id="gcDescription" role="status" aria-live="polite"></p><div id="gcDetails"></div><div id="gcActions"></div><small id="gcFootnote"></small></section>';
@@ -53,7 +52,6 @@ window.GoldShop=(()=>{
  function button(text,fn,secondary=false){const b=document.createElement('button');b.className=secondary?'gcSecondary':'gcPrimary';b.textContent=text;b.onclick=fn;el('gcActions').append(b);return b;}
  function detail(label,value){const r=document.createElement('div');r.className='gcDetail';const a=document.createElement('span'),b=document.createElement('strong');a.textContent=label;b.textContent=value;r.append(a,b);el('gcDetails').append(r);}
  async function open(key){
-  if(native()&&window.NativeShop){close();return window.NativeShop.openGold(key);}
   const gen=shell();state('نجهز باقتك','جارٍ التحقق من السعر والعرض…','✦',true);
   try{
    await load();if(gen!==serial)return;const p=catalog.packages.find(p=>p.key===key);if(!p)throw Error('الباقة غير متاحة');
@@ -91,7 +89,7 @@ window.GoldShop=(()=>{
   }
   if(gen===serial){state('طلبك قيد التحقق','لم يصل تأكيد نهائي بعد. لا تعِد الدفع لنفس الطلب.','…');detail('رقم الطلب',orderId);button('تحقق مجددًا',()=>track(orderId));button('لاحقًا',close,true);}
  }
- function resume(){if(native()&&window.NativeShop)return window.NativeShop.resume();if(!FB.user)return;const params=new URLSearchParams(location.search),id=params.get('payment')==='return'?params.get('order'):localStorage.getItem('wb-purchase-'+FB.user.uid);if(params.get('payment')==='return'){params.delete('payment');params.delete('order');history.replaceState(null,'',location.pathname+(params.size?'?'+params:'')+location.hash);}if(id&&/^pm-[a-f0-9-]{36}$/.test(id))track(id);}
+ function resume(){if(!FB.user)return;const params=new URLSearchParams(location.search),id=params.get('payment')==='return'?params.get('order'):localStorage.getItem('wb-purchase-'+FB.user.uid);if(params.get('payment')==='return'){params.delete('payment');params.delete('order');history.replaceState(null,'',location.pathname+(params.size?'?'+params:'')+location.hash);}if(id&&/^pm-[a-f0-9-]{36}$/.test(id))track(id);}
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)load().catch(()=>{});});
  load().catch(()=>{});
  return {render,open,resume,load,close};

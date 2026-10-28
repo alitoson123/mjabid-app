@@ -1,0 +1,97 @@
+/* Full-screen player card; the tab body owns scrolling, not the entire page. */
+#profile{--ink:#f7efd9;--mut:#a9bdaf;--line:#d9bd7730;color:var(--ink);background:radial-gradient(ellipse at 100% 0,#2c59434d,transparent 55%),#0b241d}
+#profile #pfShell{inset:0;gap:0;padding:0;overflow:hidden!important;isolation:isolate}
+#profile #pfHead{flex:none;margin:0;padding:calc(12px + var(--ui-safe-top)) 20px 20px;border:0;border-bottom:1px solid #dfc88c2b;border-radius:0;background:radial-gradient(ellipse at 0 80%,#b4964524,transparent 65%),linear-gradient(140deg,#214b38,#112e25);box-shadow:none}
+#profile #pfHead::before,#profile #pfHead::after{content:none}
+.pfToolbar{display:grid;grid-template-columns:44px 1fr 60px;align-items:center;gap:8px;min-height:44px}
+.pfToolbar h1{margin:0;font:400 20px/1.5 var(--fh);color:#f6e4b5;text-align:center}
+#profile #pfBack,#profile #pfEdit{position:static;inset:auto;transform:none;margin:0;min-height:44px;padding:8px;border:1px solid #d8bf7b45;border-radius:13px;background:#ffffff08;color:#f6e6bf;box-shadow:none;font:700 12px/1.5 var(--fb)}
+#profile #pfBack{width:44px;font:24px/1 var(--fb)}
+#profile #pfEdit{min-width:60px}
+.pfIdentity{position:relative;display:flex;align-items:center;gap:18px;margin-top:22px;min-height:92px;text-align:right}
+#profile #pfAva{position:relative;flex:0 0 76px;width:76px;height:76px;margin:0;border:2px solid #edd699;border-radius:50%!important;background:#244536;box-shadow:0 0 0 6px #d4b56c0c,0 8px 20px #0003;overflow:visible;z-index:1}
+#profile #pfAva img,#profile #pfAva>svg{width:100%!important;height:100%!important;object-fit:cover;border-radius:50%;clip-path:circle(50%)}
+#profile #pfAva>.vipBadge{bottom:-11px;left:50%;transform:translateX(-50%);z-index:3;display:inline-flex;align-items:center;justify-content:center;min-width:52px;min-height:23px;padding:4px 9px;line-height:1;font:bold 12px/1.2 Arial,sans-serif;letter-spacing:.6px;white-space:nowrap;border:1px solid #fff0be;border-radius:20px;color:#30240d;background:linear-gradient(135deg,#ffe8a9,#d6aa52);box-shadow:0 3px 8px #0005}
+.pfIdentityCopy{min-width:0;flex:1;z-index:1}
+#profile #pfGameLabel{display:inline-flex;align-items:center;gap:6px;margin:0 0 3px;color:#ddc58b;font:700 10px/1.5 var(--fb);letter-spacing:.3px}
+#profile #pfGameLabel::before{content:'♦';font-size:12px}
+#profile.blProfile #pfGameLabel::before{content:'♠'}
+#profile #pfName{margin:0 0 5px;font:400 28px/1.35 var(--fh);text-align:right;color:#fff5dd;overflow-wrap:anywhere;text-shadow:0 2px 3px #0002}
+#profile #pfMeta{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;flex-wrap:wrap;gap:7px;margin:0;max-width:100%}
+#profile #pfCode{background:none;border:0;padding:0;color:#b5c7b6;font:600 11px/1.7 var(--fb);direction:ltr;unicode-bidi:isolate}
+#profile #pfRankBadge{font-size:11px;color:#edd59b}
+.pfHeroSuit{position:absolute;left:-9px;top:-17px;font:125px/1 Georgia,serif;color:#e5c67909;transform:rotate(-15deg);pointer-events:none}
+#profile #pfTabs{display:flex;flex:none;gap:0;margin:0 18px;padding:7px 0 0;border:0;border-bottom:1px solid #bba66c29;border-radius:0;background:none}
+#profile #pfTabs button{position:relative;min-height:48px;padding:8px 3px 12px;border-radius:0;color:#9bb5a4;background:none;box-shadow:none;font:700 12px/1.5 var(--fb)}
+#profile #pfTabs button[aria-selected="true"]{color:#f2d694;background:none;box-shadow:none}
+#profile #pfTabs button[aria-selected="true"]::after{content:'';position:absolute;bottom:-1px;right:16%;left:16%;height:3px;border-radius:3px;background:#e1bc6c;box-shadow:0 -3px 12px #d4aa5630}
+#profile #pfPages{flex:1 1 0;min-height:0;overflow-y:auto;padding:0 0 calc(94px + var(--ui-safe-bottom));scrollbar-width:thin;scrollbar-color:#b59c6544 transparent}
+#profile #pfPages [role="tabpanel"]{padding:18px 18px 6px;outline-offset:-3px}
+.pfSectionHeading{display:flex;align-items:center;gap:13px;margin:0 0 14px;color:#e6d8b5;font:700 12px/1.5 var(--fb)}
+.pfSectionHeading i{height:1px;flex:1;background:linear-gradient(90deg,transparent,#c7b17e30)}
+#profile #pfStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0;padding:0}
+#profile #pfStats .pfStat{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:11px 4px 10px;border:1px solid #d7bc7930;border-radius:16px;background:linear-gradient(145deg,#234536,#17362b);box-shadow:0 4px 12px #0001}
+#profile #pfStats .pfStatIc{font-size:15px;line-height:20px;filter:saturate(.65)}
+#profile #pfStats .pfStat b{font:400 29px/1.2 var(--fh);color:#f3dfaf;font-variant-numeric:tabular-nums}
+#profile #pfStats .pfStat>span:last-child{margin:0;font:600 10px/1.7 var(--fb);color:#b2c3ae}
+#profile #pfWin{margin:12px 0 0!important;padding:12px 14px!important;border:1px solid #c6ad7226!important;border-radius:15px!important;background:#17362a!important;color:#b6c9b9}
+#profile #pfWin .row{margin:0 0 8px;font-size:11px;color:#b6c9b9}
+#profile #stRate{font:400 18px/1.3 var(--fh);color:#efd495;direction:ltr}
+#profile #pfBar{height:5px;background:#ffffff0d;border-radius:8px}
+#profile #pfBar i{height:100%;background:linear-gradient(90deg,#a98b48,#f0d596);border-radius:8px}
+#profile #pfRankProgress{margin:12px 0 0!important;padding:15px!important;border:1px solid #d8b96d5e!important;border-radius:18px!important;background:linear-gradient(115deg,#314a31,#1b3a2d)!important;box-shadow:inset 0 1px #f2dda60c}
+#profile #pfRankProgress>div:first-child{margin-bottom:10px!important}
+#profile #pfRankProgress::before{color:#bccbb5;font-size:11px;margin-bottom:10px}
+#profile #pfRankPtsNum{font-size:26px!important;color:#f3d899!important}
+#profile #pfRankProgress>div:nth-child(2){height:5px!important;background:#ffffff12!important}
+#profile #pfRankRemain{font-size:11px!important;line-height:1.8;color:#c0cfb9!important}
+#profile #pfRankDemote{color:#f1b09d!important;line-height:1.6}
+#profile #uiThemeStatus{display:none}
+#profile #blProfileRank{margin:0 0 12px;padding:15px;border-radius:18px;background:linear-gradient(120deg,#334c32,#17382c);border-color:#d8b96d5e;box-shadow:inset 0 1px #f2dda60c}
+#profile .blRankHeading{gap:12px}
+#profile .blRankHeading h2{font-size:23px;margin:0}
+#profile .blRankHeading b{font-size:24px}
+#profile .blRankHeading .blCrest{width:59px;height:66px}
+#profile #blProfileRank>p{font-size:10px;line-height:1.8;margin:9px 0}
+#profile .blRankRates{padding-top:7px;gap:6px;font-size:10px}
+#profile .blRankLink{margin-top:10px;min-height:36px;background:#ffffff08;color:#ead397;border:1px solid #d5b96d30}
+#profile .pfPageTitle{margin:0 0 14px;color:#e9d6a3;font:400 22px/1.5 var(--fh)}
+#profile .pfPageEmpty{margin:28px 8px;text-align:center;color:#afc0ac;font:500 13px/1.9 var(--fb)}
+#profile #pfHistory{margin:0!important}
+#profile #pfHistoryRow{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px!important}
+#profile #pfHistoryRow>span{border:1px solid #fff2;border-radius:13px!important;min-height:48px;box-shadow:0 3px 9px #0002}
+#profile #pfAchievements{margin:0!important}
+#profile #pfAchievements>.t{color:#e9d6a3;margin-bottom:14px}
+#profile #pfAchievementsList>div{background:#1b3b2d!important;border:1px solid #d2b77030!important;border-radius:16px!important}
+#profile #pfAchievementsList b{color:#eedcae!important}
+#profile #pfAchievementsList span{color:#afc2b0!important}
+#profile #pfProfileActions{margin:12px 0 0}
+#profile #pfPanelAchievements .lg-profile{margin:0 0 16px;background:#193b2c;color:#dce7d6;border-color:#a8b49b33}
+#profile .vipProfile{max-width:none;margin:0 0 16px;background:#2c412b;border-color:#d1b77640;text-align:right;padding:15px;color:#efdba8}
+#profile .vipProfileButton{width:100%;margin-top:6px;min-height:44px;font-size:12px}
+#profile #pfPasswordForm{padding:15px;border:1px solid #cfb47533;border-radius:18px;background:#19382b}
+#profile #pfPasswordForm h3{font-size:15px;color:#ead6a5}
+#profile #pfPasswordForm label{color:#bfcebd}
+#profile #pfPasswordForm input{background:#102b22;color:#f7ecd1;border-color:#65816d80}
+#profile #pfResetPassword{width:100%;border:1px solid #e1c782;border-radius:12px;background:#e4cc91;color:#19372a;font-weight:800}
+#profile #pfOut{margin:16px 0 0;width:100%;min-height:46px;border:1px solid #f0c99a40;border-radius:13px;background:#e3c48912;color:#e6d4b0;font-weight:800;box-shadow:none}
+#profile #pfDeleteAcc{color:#dca397!important;min-height:44px;text-decoration:none!important}
+#profile .navBar{background:#102e24f5;border-top-color:#d2bc7e29;backdrop-filter:blur(12px)}
+#profile button:focus-visible,#profile input:focus-visible{outline:2px solid #efd397;outline-offset:3px}
+/* Keep the reaction caption under its art, wholly above the avatar's lower edge. */
+#onl .ava>.targetExpression{position:absolute;inset:auto;bottom:0;left:50%;right:auto;transform:translateX(-50%);width:max-content;max-width:106px;height:auto;display:flex!important;flex-direction:column;align-items:center;gap:0;z-index:35;pointer-events:none;font-size:11px!important;line-height:1.4!important}
+#onl .targetExpression .expressionArt{display:block;width:52px;height:52px;flex:none;margin:0}
+#onl .avaWrap:has(> .handCountBadge) .targetExpression{bottom:22px}
+#onl .avaWrap:has(> .handCountBadge) .targetExpression .expressionArt{width:44px;height:44px}
+#onl .targetExpression>span{display:block;max-width:106px;margin:-2px 0 0;padding:3px 8px;border:1px solid #d4b570;border-radius:9px;background:#fff0cc;color:#173c2b;box-shadow:0 3px 8px #0005;font:800 11px/16px var(--fb);white-space:normal;text-align:center;text-wrap:balance;overflow-wrap:break-word}
+#onl #oSeatR .targetExpression,#onl #oSixSeat2 .targetExpression{right:0;left:auto;transform:none}
+#onl #oSeatL .targetExpression,#onl #oSixSeat4 .targetExpression{left:0;right:auto;transform:none}
+#onl .expressionAvatarActive{z-index:35;background:transparent!important;border-color:transparent!important;box-shadow:none!important}
+@media(max-width:360px){
+ #profile #pfHead{padding-inline:16px}.pfIdentity{gap:13px}#profile #pfName{font-size:25px}#profile #pfAva{width:66px;height:66px;flex-basis:66px;border-radius:20px}
+ #profile #pfPages [role="tabpanel"]{padding-inline:14px}#profile #pfTabs{margin-inline:14px}#profile #pfTabs button{font-size:11px}#profile .blRankHeading{gap:9px}
+}
+@media(max-height:700px){
+ #profile #pfHead{padding-top:calc(7px + var(--ui-safe-top));padding-bottom:12px}.pfIdentity{margin-top:10px;min-height:76px}#profile #pfAva{width:62px;height:62px;flex-basis:62px;border-radius:18px}#profile #pfName{font-size:24px}
+ #profile #pfPages [role="tabpanel"]{padding-top:12px}.pfSectionHeading{margin-bottom:10px}#profile #pfStats .pfStat{padding-block:7px}#profile #pfTabs button{min-height:44px}
+}

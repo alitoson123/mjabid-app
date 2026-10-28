@@ -43,7 +43,7 @@ workflows:
       - name: Set up build number
         script: |
           cd ios/App
-          agvtool new-version -all $((49 + ${BUILD_NUMBER:-0}))
+          agvtool new-version -all $((50 + ${BUILD_NUMBER:-0}))
           
       - name: Install Pods
         script: |

@@ -1,0 +1,38 @@
+/* The score row shares one safe-area-aware layout across friendly 2v2/3v3 and competitive tables. */
+#uiTeamScore[hidden]{display:none!important}
+#onl #sixTeamScore{display:none!important}
+#onl.uiTeamHUD #topbar{padding:calc(8px + var(--ui-safe-top)) 12px 0!important;min-height:calc(50px + var(--ui-safe-top));height:auto!important;align-items:center!important;box-sizing:border-box;z-index:35}
+#onl.uiTeamHUD #oHeaderTtl{gap:7px!important;flex-wrap:wrap;align-content:center}
+#onl.uiTeamHUD .uiMatchWords{gap:2px;text-align:center}
+#onl.uiTeamHUD .uiMatchTitleLine{justify-content:center}
+#onl.uiTeamHUD #uiOnlineTitle{font-size:13px;line-height:18px}
+#onl.uiTeamHUD #uiOnlineMode{font-size:11px;line-height:16px}
+#onl.uiTeamHUD #oHeaderGoal{font-size:10px;min-height:22px;padding:2px 5px}
+#onl.uiTeamHUD #uiTeamScore{position:absolute;left:12px;right:12px;top:var(--ui-score-y,66px);height:36px;display:grid;grid-template-columns:minmax(0,1fr) 72px minmax(0,1fr);gap:10px;align-items:center;z-index:24;direction:rtl;pointer-events:none}
+#uiTeamScore .uiTeamChip{height:34px;display:flex;justify-content:space-between;align-items:center;gap:6px;padding:4px 10px;border:1px solid #a2c3b48c;border-radius:18px;background:#123d33ed;color:#f2eee1;box-shadow:0 3px 10px #0002;font:700 11px/1.25 var(--fb);white-space:nowrap}
+#uiTeamScore .uiTeamChip[data-team="1"]{background:#263e55ed;border-color:#a8c5df8c}
+#uiTeamScore .uiTeamChip bdi{font-size:17px;color:#ffe4a1;line-height:1;font-variant-numeric:tabular-nums}
+#uiTeamScore .uiStockSlot{display:grid;place-items:center}
+#uiTeamScore #oDeckStack.uiHudStock{position:relative!important;inset:auto!important;transform:none!important;width:72px!important;height:36px!important;padding:2px 4px!important;border:1px solid #ceb6757a;border-radius:10px;background:#122b25ed;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;clip-path:none!important;overflow:visible!important;z-index:auto!important;box-shadow:none}
+#uiTeamScore #oDeckStack .uiStockLabel{font:700 9px/11px var(--fb);color:#d3dfd4;display:block}
+#uiTeamScore #oDeckStack .cnt{position:static!important;inset:auto!important;transform:none!important;min-width:0!important;min-height:0!important;padding:0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;font:800 15px/17px var(--fb)!important;color:#ffdfa1!important}
+#uiTeamScore #oDeckStack .card{display:none!important}
+/* Keep the four-seat layout, moving its top identity below the new score row. */
+#onl.uiTeamHUD:not(.uiSixTable) #oSeat{top:calc(var(--ui-score-bottom,102px) + 10px)!important}
+#onl.uiTeamHUD:not(.uiSixTable) #oSeatR,#onl.uiTeamHUD:not(.uiSixTable) #oSeatL{top:calc(var(--ui-score-bottom,102px) + 116px)!important;transform:none!important}
+#onl.uiTeamHUD:not(.uiSixTable) #oFieldWrap{top:calc(var(--ui-score-bottom,102px) + 126px)!important}
+#onl.uiTeamHUD:not(.uiSixTable) #oWaqfBanner,#onl.uiTeamHUD:not(.uiSixTable) #oSettleBanner{top:calc(var(--ui-score-bottom,102px) + 114px)!important}
+/* Chat has its own stacking context above all seats, auction labels and speech. */
+#onl.uiChatOpen #me2{z-index:80!important}
+#onl.uiChatOpen #oThumb,#onl.uiChatOpen #oActions,#onl.uiChatOpen #oChatWrap{z-index:81!important}
+#onl #oChatPanel{z-index:90!important;max-width:calc(100vw - 24px)!important;max-height:min(400px,calc(100dvh - var(--ui-safe-top) - var(--ui-safe-bottom) - 150px))!important}
+#onl.uiChatOpen .oppBubble,#onl.uiChatOpen #oChatBubble{visibility:hidden!important}
+#onl.uiTeamHUD .seat .pts b,#onl.uiTeamHUD #oMyPile .pts b{display:inline-flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:3px!important;line-height:18px!important;white-space:nowrap!important}
+#onl.uiTeamHUD .seat .pts small,#onl.uiTeamHUD #oMyPile .pts small{display:inline!important;line-height:18px!important;font-size:9px!important;white-space:nowrap!important;flex:none!important;color:#e1e8d9!important}
+@media(max-width:350px){#onl.uiTeamHUD #uiTeamScore{gap:6px;left:8px;right:8px;grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr)}#uiTeamScore .uiTeamChip{padding-inline:7px;font-size:10px}#uiTeamScore .uiTeamChip bdi{font-size:15px}#uiTeamScore #oDeckStack.uiHudStock{width:64px!important}}
+#onl.uiChatOpen #oHand{z-index:0!important}
+body.uiOnlineChatOpen .uiCardFlightLayer{visibility:hidden!important}
+#onl.uiTeamHUD:not(.uiSixTable) #oSeatR .pts b,#onl.uiTeamHUD:not(.uiSixTable) #oSeatL .pts b{flex-direction:column!important;line-height:14px!important;gap:0!important}
+#onl.uiTeamHUD:not(.uiSixTable) #oSeatR .pts small,#onl.uiTeamHUD:not(.uiSixTable) #oSeatL .pts small{font-size:8px!important;line-height:11px!important}
+
+#uiTeamScore #oDeckStack.uiHudStock.empty{opacity:1!important}

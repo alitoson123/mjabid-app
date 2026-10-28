@@ -1,0 +1,108 @@
+/* All table overrides are scoped to the new six-seat room. */
+.sixOnly{display:none!important}
+#onl.uiSixTable .sixOnly{display:flex!important}
+#onl.uiSixTable .sixOnly.hidden{display:none!important}
+#onl.uiSixTable #lobbyMode{display:none!important}
+#onl.uiSixTable #lobbyPlayers{display:grid!important;grid-template-columns:1fr 1fr;gap:10px}
+#onl.uiSixTable .sixLobbyTeam{padding:8px;border:1px solid #9fc8b3;border-radius:16px;background:#163e34;color:#fff5df}
+#onl.uiSixTable .sixLobbyTeam[data-six-team="1"]{background:#263b50;border-color:#9ab6d6}
+#onl.uiSixTable .sixLobbyTeam h3{margin:0 0 8px;font-size:15px}
+#onl.uiSixTable .sixLobbySeat{display:grid;grid-template-columns:38px 1fr;width:100%;min-height:64px;gap:3px;padding:7px;border-radius:10px;border:1px solid #ffffff25;background:#ffffff09;color:inherit;text-align:right;margin:5px 0;cursor:pointer}
+#onl.uiSixTable .sixLobbySeat>span{grid-row:1/3;align-self:center;font-size:24px}
+#onl.uiSixTable .sixLobbySeat b{font-size:12px;overflow-wrap:anywhere}
+#onl.uiSixTable .sixLobbySeat small{font-size:9px;color:#d2dfd9}
+#onl.uiSixTable .sixLobbySeat.isYou{border:2px solid #f2cf7f;background:#ddbe591b}
+#sixCreateDialog{position:fixed;inset:0;z-index:14000;background:#001a16d9;display:grid;place-items:center;padding:20px;direction:rtl}
+#sixCreateDialog section{position:relative;width:min(100%,370px);padding:26px 20px;border-radius:24px;background:#f8f1df;color:#203d33;text-align:center;box-shadow:0 16px 60px #0005}
+#sixCreateDialog h2{margin:0;font-size:26px}
+#sixCreateDialog button[data-format]{display:flex;flex-direction:column;gap:6px;width:100%;margin:12px 0;padding:18px 12px;border:1px solid #b9c6b6;border-radius:16px;background:#fffaf0;color:#203d33;font-family:inherit;cursor:pointer}
+#sixCreateDialog button[data-format="six"]{background:#183f34;color:#fff2cd}
+#sixCreateDialog button b{font-size:22px}#sixCreateDialog button span{font-size:12px}
+#sixCreateDialog .sixClose{position:absolute;left:12px;top:10px;background:none;border:0;font-size:28px;color:inherit}
+#sixCreateDialog .sixCreateNote{font-size:12px;margin-bottom:0}
+#onl.uiSixTable{--six-seat-w:86px;--six-seat-h:150px;--six-top:154px;--six-low:calc(100% - 355px)}
+#onl.uiSixTable #sixTeamScore{position:absolute;top:65px;left:12px;right:12px;justify-content:space-between;align-items:center;height:29px;gap:10px;font-size:12px;color:#f4edd9;z-index:20}
+#onl.uiSixTable #sixTeamScore span{padding:4px 10px;border:1px solid #9bc0ab77;border-radius:20px;background:#123d32}
+#onl.uiSixTable #sixTeamScore span:last-child{background:#243b51;border-color:#9db8d077}
+#onl.uiSixTable #sixTeamScore b{margin-inline-start:8px;color:#ffe6a4}
+#onl.uiSixTable #sixTeamScore small{font-size:10px}
+#onl.uiSixTable .seat{position:absolute!important;display:grid!important;grid-template-columns:1fr!important;grid-template-rows:38px 30px 20px 52px!important;align-items:center!important;justify-items:center!important;gap:1px!important;width:var(--six-seat-w)!important;height:var(--six-seat-h)!important;min-width:0!important;max-width:none!important;padding:5px!important;border:1px solid #9ab9a77a!important;border-radius:15px!important;background:linear-gradient(150deg,#234b3e,#122f28)!important;box-shadow:0 3px 10px #0003!important;transform:none!important;margin:0!important;z-index:18!important}
+#onl.uiSixTable .seat[data-six-team="1"]{background:linear-gradient(150deg,#30465e,#1a2c40)!important;border-color:#9db9d57a!important}
+#onl.uiSixTable .seat::before,#onl.uiSixTable .seat::after{display:none!important}
+#onl.uiSixTable .seat.turnGlow{border-color:#f5d379!important;box-shadow:0 0 0 2px #f5d37944!important}
+#onl.uiSixTable #oSeat{top:100px!important;left:calc(50% - 43px)!important;right:auto!important}
+#onl.uiSixTable #oSixSeat2{top:var(--six-top)!important;right:8px!important;left:auto!important}
+#onl.uiSixTable #oSixSeat4{top:var(--six-top)!important;left:8px!important;right:auto!important}
+#onl.uiSixTable #oSeatR{top:var(--six-low)!important;right:8px!important;left:auto!important}
+#onl.uiSixTable #oSeatL{top:var(--six-low)!important;left:8px!important;right:auto!important}
+#onl.uiSixTable .seat .avaWrap{position:relative!important;grid-area:auto!important;width:36px!important;height:36px!important;transform:none!important;margin:0!important}
+#onl.uiSixTable .seat .ava,#onl.uiSixTable #oIdent .ava{width:36px!important;height:36px!important;min-width:36px!important;border-radius:50%!important;margin:0!important}
+#onl.uiSixTable .seat .ava>img,#onl.uiSixTable #oIdent .ava>img{width:100%!important;height:100%!important}
+#onl.uiSixTable .seat .oppHandFan,#onl.uiSixTable .seat .uiSeatRank{display:none!important}
+#onl.uiSixTable .seat .handCountBadge{right:-16px!important;bottom:0!important;font-size:10px!important;min-width:18px!important}
+#onl.uiSixTable .seat .nm{grid-area:auto!important;display:flex!important;flex-direction:column;justify-content:center!important;width:76px!important;max-width:76px!important;min-width:0!important;height:30px!important;max-height:30px!important;line-height:13px!important;font-size:10px!important;text-align:center!important;white-space:normal!important;margin:0!important;overflow:hidden!important}
+#onl.uiSixTable .seat .uiPlayerName{width:76px!important;max-width:76px!important;max-height:26px!important;font-size:10px!important;line-height:13px!important}
+#onl.uiSixTable .seat .inf{grid-area:auto!important;margin:0!important;position:static!important;transform:none!important}
+#onl.uiSixTable .seat .pts{font-size:10px!important;height:18px!important;padding:1px 6px!important;min-width:0!important}
+#onl.uiSixTable .seat .pileBox{grid-area:auto!important;position:relative!important;inset:auto!important;transform:none!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:3px!important;width:76px!important;min-width:0!important;min-height:50px!important;margin:0!important}
+#onl.uiSixTable .seat .pileBox .card{width:34px!important;height:48px!important;min-width:34px!important;transform:none!important;margin:0!important}
+#onl.uiSixTable .seat .pileBox .uiPileCount{font-size:12px!important;min-width:18px!important;position:static!important}
+#onl.uiSixTable .seat .bubble{top:-16px!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;font-size:9px!important;padding:1px 8px!important;white-space:nowrap}
+#onl.uiSixTable #oFieldWrap{top:260px!important;left:104px!important;right:104px!important;bottom:278px!important;width:auto!important;height:auto!important;transform:none!important;min-height:65px!important}
+#onl.uiSixTable #oField{inset:0!important;width:100%!important;height:100%!important;min-height:0!important;transform:none!important}
+#onl.uiSixTable #fieldRing{opacity:.5}
+#onl.uiSixTable #oWaqfStack{width:90px!important;height:105px!important;top:50%!important}
+#onl.uiSixTable #oWaqfCntL{top:auto!important;bottom:-20px!important;left:0!important;right:0!important;text-align:center;transform:none!important;font-size:14px!important}
+#onl.uiSixTable #oWaqfBanner{top:251px!important;left:101px!important;right:101px!important;z-index:28!important}
+#onl.uiSixTable #oWaqfBannerTxt{font-size:10px!important;padding:4px 6px!important;border-radius:8px!important;white-space:normal!important;text-align:center;line-height:1.4!important}
+#onl.uiSixTable #oWaqfBannerTxt b{font-size:12px!important}
+#onl.uiSixTable #me2{position:absolute!important;left:0!important;right:0!important;bottom:0!important;height:195px!important;padding:0!important}
+#onl.uiSixTable #oMeTop{height:58px!important;padding:0 12px!important;justify-content:space-between!important;gap:8px!important}
+#onl.uiSixTable #oIdent{max-width:48%!important;min-width:0!important;padding:4px 6px!important;min-height:44px!important}
+#onl.uiSixTable #oIdent .uiPlayerName{font-size:11px!important}
+#onl.uiSixTable #oIdent .uiSeatRank{display:none!important}
+#onl.uiSixTable #oMyPile{position:static!important;transform:none!important;min-width:0!important;display:flex!important;gap:5px!important;align-items:center!important}
+#onl.uiSixTable #oMyPile .card{width:34px!important;height:48px!important;min-width:34px!important}
+#onl.uiSixTable #oMyPile .pts{font-size:10px!important;min-width:0!important;padding:3px 6px!important}
+#onl.uiSixTable #oHint{height:28px!important;min-height:28px!important;font-size:11px!important;padding:0 12px!important;line-height:14px!important;display:flex;justify-content:center;align-items:center}
+#onl.uiSixTable #oThumb{height:105px!important;min-height:0!important;padding:0 8px!important}
+#onl.uiSixTable #oHand{height:80px!important;min-height:0!important;padding-top:8px!important}
+#onl.uiSixTable #oActions{height:40px!important;min-height:40px!important;padding:0 4px!important}
+#onl.uiSixTable #oTimer,#onl.uiSixTable #oTimerTop{display:none!important}
+#onl.uiSixTable .sixEmpty{font-size:10px;color:#c9d6c7}
+@media(max-height:720px){
+ #onl.uiSixTable{--six-top:125px;--six-low:calc(100% - 330px);--six-seat-h:128px}
+ #onl.uiSixTable .seat{grid-template-rows:30px 26px 16px 42px!important;padding:4px!important}
+ #onl.uiSixTable .seat .avaWrap,#onl.uiSixTable .seat .ava{height:28px!important;width:28px!important;min-width:28px!important}
+ #onl.uiSixTable .seat .pileBox{min-height:40px!important}
+ #onl.uiSixTable .seat .pileBox .card{height:40px!important;width:28px!important;min-width:28px!important}
+ #onl.uiSixTable #oSeat{top:93px!important}
+ #onl.uiSixTable #oFieldWrap{top:231px!important;bottom:233px!important}
+ #onl.uiSixTable #oWaqfBanner{top:222px!important}
+}
+@media(max-height:590px){#onl.uiSixTable{min-height:590px!important}body:has(#onl.uiSixTable:not(.hidden)){overflow-y:auto!important}}
+#onl.uiSixTable .seat .avaWrap{grid-row:1!important;grid-column:1!important;order:0!important}
+#onl.uiSixTable .seat .nm{grid-row:2!important;grid-column:1!important;order:0!important}
+#onl.uiSixTable .seat .inf{grid-row:3!important;grid-column:1!important;order:0!important}
+#onl.uiSixTable .seat .pileBox{grid-row:4!important;grid-column:1!important;order:0!important;align-self:center!important}
+#onl.uiSixTable .seat .handCountBadge{left:auto!important;width:20px!important;height:18px!important;line-height:16px!important;right:-14px!important}
+#onl.uiSixTable #me2{height:218px!important}
+#onl.uiSixTable #oThumb{display:flex!important;flex-direction:column!important;position:relative!important;height:132px!important;gap:0!important;padding:0 8px!important}
+#onl.uiSixTable #oHand{flex:none!important;height:88px!important;max-height:none!important;padding:4px 0 0!important;align-items:flex-start!important}
+#onl.uiSixTable #oHand>.card{width:54px!important;min-width:54px!important;height:76px!important}
+#onl.uiSixTable #oActions{position:static!important;flex:none!important;width:100%!important;height:44px!important;padding:0 0 4px!important;margin:0!important}
+#onl.uiSixTable #oActions button{min-height:36px!important;height:36px!important}
+#onl.uiSixTable{--six-low:calc(100% - 380px)}
+@media(max-height:720px){#onl.uiSixTable{--six-low:calc(100% - 358px)}}
+@media(max-height:620px){
+ #onl.uiSixTable{min-height:0!important;--six-top:116px;--six-low:calc(100% - 331px);--six-seat-h:110px}
+ #onl.uiSixTable .seat{grid-template-rows:24px 22px 14px 38px!important}
+ #onl.uiSixTable .seat .pileBox .card{width:26px!important;height:37px!important;min-width:26px!important}
+ #onl.uiSixTable .seat .pileBox{height:38px!important;min-height:38px!important}
+ #onl.uiSixTable .seat .nm{height:24px!important}
+ #onl.uiSixTable #oFieldWrap{top:224px!important;bottom:225px!important}
+ #onl.uiSixTable #oWaqfBanner{top:216px!important}
+}
+
+#onl.uiSixTable #oOver .avaDuo{width:82px!important;min-width:82px!important;display:flex!important;flex-wrap:nowrap!important}
+#onl.uiSixTable #oOver .resRow{min-height:106px!important}

@@ -7,7 +7,10 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#102e25">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"><!-- FIX (من نسخة آيفون) — viewport-fit=cover إلزامي وإلا env(safe-area-inset-*) = 0 على iOS -->
-<title>مجابيد</title>
+<title>مجابيد و صكة</title>
+<meta name="apple-mobile-web-app-title" content="مجابيد و صكة">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=398-brand-1">
+<link rel="icon" type="image/png" href="icon192.png?v=398-brand-1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400;500;600;700;800&family=Lalezar&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
@@ -689,12 +692,12 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script src="image-cache.js"></script>
-<link rel="stylesheet" href="ui-polish.css?v=377">
+<link rel="stylesheet" href="ui-polish.css?v=364">
 <link rel="stylesheet" href="ui-friendly-v369.css?v=370">
 <script defer src="ui-theme-rentals.js?v=363"></script>
 <script defer src="ui-results-store.js?v=382"></script>
 <script defer src="ui-polish.js"></script>
-<script defer src="ui-navigation.js?v=364"></script>
+<script defer src="ui-navigation.js?v=398-social-1"></script>
 <script defer src="ui-player-panels.js?v=365"></script>
 <script defer src="ui-table-view.js?v=386"></script>
 <link rel="stylesheet" href="ui-leagues.css">
@@ -712,14 +715,22 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 <link rel="stylesheet" href="ui-player-panels.css?v=365">
 <link rel="stylesheet" href="ui-table-view.css?v=365">
 <link rel="stylesheet" href="ui-auth-v369.css?v=369">
-<link rel="stylesheet" href="ui-entry-v380.css">
-<script src="ui-entry-v380.js"></script>
+<link rel="stylesheet" href="ui-entry-v380.css?v=399-project-1">
+<script src="ui-entry-v380.js?v=399-project-1"></script>
 <script src="ui-session-ads-v380.js"></script>
-<link rel="stylesheet" href="ui-fixes-v381.css">
+<script src="ui-entry-ads.js?v=399-project-1"></script>
+<link rel="stylesheet" href="ui-entry-ads.css?v=399-project-1">
+<link rel="stylesheet" href="ui-friendly-hand.css?v=399-project-1">
+<link rel="stylesheet" href="ui-fixes-v381.css?v=398-brand-1">
 <script defer src="ui-vip.js?v=383"></script>
 <link rel="stylesheet" href="ui-vip.css?v=383">
 <link rel="stylesheet" href="ui-six-v388.css">
 <link rel="stylesheet" href="ui-table-hud-v389.css">
+<link rel="stylesheet" href="ui-baloot.css?v=399-project-1">
+<link rel="stylesheet" href="ui-baloot-lobby-v398.css?v=399-project-1">
+<link rel="stylesheet" href="ui-game-help.css?v=399-project-1">
+<link rel="stylesheet" href="ui-player-experience-v398.css?v=2">
+<link rel="stylesheet" href="ui-home-v399.css?v=399-project-1">
 </head>
 <body>
 <div id="frame">
@@ -761,7 +772,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
   </div>
   <div id="forceUpdate" class="hidden" style="position:fixed;inset:0;z-index:200;background:rgba(15,10,5,.75);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:24px">
     <div style="width:100%;max-width:340px;background:#fdf9f0;border-radius:24px;padding:26px 22px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.5)">
-      <div style="font-size:16px;font-weight:800;color:#5e2f0e;margin-bottom:18px">هناك نسخة جديدة من مجابيد</div>
+      <div style="font-size:16px;font-weight:800;color:#5e2f0e;margin-bottom:18px">هناك نسخة جديدة من مجابيد و صكة</div>
       <div style="width:96px;height:96px;border-radius:22px;overflow:hidden;margin:0 auto 16px;box-shadow:0 6px 16px rgba(0,0,0,.25)"><img src="icon192.png" style="width:100%;height:100%;object-fit:cover" alt=""></div>
       <div id="fuMsg" style="font-size:13.5px;color:#5e4530;font-weight:600;line-height:1.6;margin-bottom:10px">فضلاً قم بتحميل أحدث نسخة واستمتع بالخصائص الجديدة.</div>
       <div style="font-size:11.5px;color:#a89880;font-weight:700;margin-bottom:18px">النسخة الحالية: <span id="fuCurrent">-</span> — النسخة الجديدة: <span id="fuNew">-</span></div>
@@ -805,7 +816,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
     </div>
   </div>
   <div id="pageLoader" class="hidden">
-    <div class="uiEntryBrand" aria-hidden="true">مجابيد</div>
+    <div class="uiEntryBrand" aria-hidden="true">مجابيد و صكة</div>
     <div class="entryLoaderSub">كل جولة لها حكاية</div>
     <div id="plCards" aria-hidden="true"><img src="cards/KH.png" alt=""><img src="cards/AS.png" alt=""><img src="cards/QD.png" alt=""></div>
     <div id="pageLoaderTxt" role="status" aria-live="polite">نجهّز جلستك…</div>
@@ -1050,9 +1061,9 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
   <!-- الترحيب -->
   <div class="screen" id="welcome" data-boot-stage="prepare">
     <div id="wWrap">
-      <div class="entryTop" aria-hidden="true">MAJABEED</div>
+      <div class="entryTop" aria-hidden="true">MAJABEED &amp; SAKKA</div>
       <div id="wMid">
-        <div id="wTitle">مجابيد</div>
+        <div id="wTitle">مجابيد و صكة</div>
         <div id="wSub">ورق المجالس… كِل ولا تنكِل</div>
         <div id="wCards" aria-hidden="true">
           <img src="cards/KH.png" alt="" width="100" height="146">
@@ -1082,9 +1093,9 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
   <div class="screen hidden" id="login">
     <div id="lgWrap">
       <svg class="saduSvg" width="100%" height="40" viewBox="0 0 390 40" preserveAspectRatio="none" style="opacity:.55"><defs><pattern id="sdLogin" width="30" height="40" patternUnits="userSpaceOnUse"><path d="M15 5l10 15-10 15L5 20z" fill="none" stroke="#d67f48" stroke-width="2.5"></path><path d="M15 14l5 6-5 6-5-6z" fill="#8fa073"></path></pattern></defs><rect width="390" height="40" fill="url(#sdLogin)"></rect></svg>
-      <div id="lgTopRow"><button id="lgBack" class="qBtn" type="button" aria-label="العودة للبداية"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span class="uiEntryWordmark" aria-hidden="true">مجابيد <i>♠</i></span></div>
+      <div id="lgTopRow"><button id="lgBack" class="qBtn" type="button" aria-label="العودة للبداية"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span class="uiEntryWordmark" aria-hidden="true">مجابيد و صكة <i>♠</i></span></div>
       <div id="lgAva" aria-hidden="true"><span class="uiAuthCard" data-suit="♦">♦</span><span class="uiAuthCard" data-suit="♠">♠</span><span class="uiAuthCard" data-suit="♣">♣</span></div>
-      <div id="lgHead"><span class="t">حيّاك في مجابيد</span><span class="sub">سجّل دخولك وارجع للميدان.</span></div>
+      <div id="lgHead"><span class="t">حيّاك في مجابيد و صكة</span><span class="sub">سجّل دخولك وارجع للميدان.</span></div>
       <div class="uiAuthPanel">
       <div id="lgFields">
         <div>
@@ -1161,11 +1172,8 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
   <div class="screen hidden" id="profile">
     <div id="pfShell" style="position:absolute;inset:0;display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch">
       <div id="pfHead">
-        <button class="qBtn" id="pfBack">→</button>
-        <button id="pfEdit">تعديل</button>
-        <div id="pfAva">😎</div>
-        <div id="pfName">ضيف</div>
-        <div id="pfMeta"><span id="pfRankBadge"></span><span id="pfCode">@--------</span></div>
+        <div class="pfToolbar"><button class="qBtn" id="pfBack" aria-label="الرجوع">→</button><h1>الملف الشخصي</h1><button id="pfEdit">تعديل</button></div>
+        <div class="pfIdentity"><div id="pfAva">😎</div><div class="pfIdentityCopy"><span id="pfGameLabel">مجابيد</span><div id="pfName">ضيف</div><div id="pfMeta"><span id="pfRankBadge"></span><span id="pfCode">@--------</span></div></div><span class="pfHeroSuit" aria-hidden="true">♠</span></div>
       </div>
       <nav id="pfTabs" role="tablist" aria-label="أقسام الملف الشخصي">
         <button id="pfTabOverview" role="tab" aria-controls="pfPanelOverview" aria-selected="true" data-pf-tab="overview">نظرة عامة</button>
@@ -1175,6 +1183,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
       </nav>
       <div id="pfPages">
       <section id="pfPanelOverview" role="tabpanel" aria-labelledby="pfTabOverview" tabindex="0">
+      <div class="pfSectionHeading"><span>أرقامك على الطاولة</span><i></i></div>
       <div id="pfStats">
         <div class="pfStat"><span class="pfStatIc">🎴</span><b id="stGames">0</b><span>مباراة</span></div>
         <div class="pfStat"><span class="pfStatIc">🏆</span><b id="stWins">0</b><span>فوز</span></div>
@@ -1319,7 +1328,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
     <div data-navholder style="position:absolute;inset:0;display:flex;flex-direction:column;background:radial-gradient(130% 90% at 50% 22%,#2f5138 0%,#16281c 85%)">
       <div style="display:flex;align-items:center;gap:10px;padding:calc(18px + env(safe-area-inset-top, 47px)) 16px 0">
         <button class="qBtn" id="awardsBack" style="width:40px;height:40px;border-radius:999px;border:0;background:rgba(0,0,0,.32);color:#ffc6a5;display:flex;align-items:center;justify-content:center;flex:none;font-size:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></button>
-        <span style="font-family:var(--fh);font-size:25px;color:#ffc6a5;text-shadow:0 2px 0 rgba(0,0,0,.35)">الأوسمة</span>
+        <span style="font-family:var(--fh);font-size:25px;color:#ffc6a5;text-shadow:0 2px 0 rgba(0,0,0,.35)">الإنجازات</span>
       </div>
       <div style="padding:6px 20px 0">
         <div id="awardsProg" style="font-size:13px;font-weight:700;color:#b9caa2;margin-top:2px"></div>
@@ -1347,7 +1356,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
       <div class="hHead">
         <button class="hProf" id="hProfBtn">
           <span class="hAva" id="hAvaWrap"><span id="hAvaContent">😎</span></span>
-          <span><span class="hNm" id="hName">ضيف</span> <span id="hRankBadge"></span></span>
+          <span class="hIdentity"><span class="hNm" id="hName">ضيف</span> <span id="hRankBadge"></span></span>
         </button>
         <button class="hGold" id="hGoldBtn" style="position:relative"><i></i><span id="hGold">0</span><b>+</b><small id="hWalletPending" role="status" aria-live="polite" hidden style="position:absolute;top:calc(100% + 3px);left:0;right:auto;text-align:left;width:max-content;max-width:170px;font-family:var(--fb);font-size:10px;line-height:1.4;color:#f6e7c6;text-shadow:0 1px 3px #071c17;pointer-events:none"></small></button>
       </div>
@@ -1392,16 +1401,16 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
           <!-- REMOVED — زر "جلسة كاملة" (#hSession) حُذف بطلب صريح مع كامل عائلة session بالعميل -->
           <!-- NEW CODE — بطاقة الرتبة انتقلت هنا مضغوطة (كانت شريطاً كامل العرض أسفل الشبكة). نفس المعرّفات
                rcBadge/rcRemain/rcNextName/rcFill محفوظة حرفياً → refreshRankCard() تشتغل بلا أي تعديل (DRY) -->
-          <button class="hBig rank" id="rankCard">
-            <span id="rcBadge"></span>
+          <button class="hBig rank" id="rankCard" aria-label="رتبتي وتقدمي">
+            <span class="hTileHead"><span class="hTileIcon hRankEmblem" aria-hidden="true"><img id="rcEmblem" src="ui-art/rank-0.svg" alt=""></span><span class="hTileCopy"><small>رتبتك الحالية</small><span id="rcBadge"></span></span></span>
             <span class="rcRemain" id="rcRemain"></span>
-            <span class="rcNext"><span id="rcNextName"></span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg></span>
-            <span class="rcBar"><i id="rcFill"></i></span>
+            <span class="rcNext"><span class="rcNextLabel">التالي</span><span id="rcNextName"></span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="rcBar" role="progressbar" aria-label="التقدم إلى الرتبة التالية" aria-valuemin="0" aria-valuemax="100"><i id="rcFill"></i></span>
           </button>
-          <button class="hBig grp" id="hGroup">
-            <img src="cards/JS.png" alt="" style="position:absolute;left:14px;bottom:8px;width:44px;border-radius:6px;opacity:.32;pointer-events:none;background:#fdfcf8">
-            <b style="font-size:18px;margin-top:4px">أنشئ مجموعة</b>
-            <span>مع أصدقائك — 500 <img class="uiGoldCoin" src="ui-art/gold-coin.svg" alt="ذهب" width="32" height="32"></span><!-- v369: creation includes the creator's seat, once per session. -->
+          <button class="hBig grp" id="hGroup" aria-label="أنشئ جلسة مع أصدقائك">
+            <span class="hTileHead"><span class="hTileIcon hCreateEmblem" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><rect x="7" y="8" width="22" height="30" rx="4" transform="rotate(-12 7 8)" fill="#234c3d" stroke="#dfc385" stroke-width="1.5"/><rect x="16" y="7" width="22" height="30" rx="4" fill="#f5e5bb" stroke="#fff2d0" stroke-width="1.5"/><path d="m27 13 5 7-5 7-5-7 5-7Z" fill="#244d3d"/><circle cx="36" cy="35" r="10" fill="#cfa96a" stroke="#163b2e" stroke-width="3"/><path d="M36 30v10m-5-5h10" stroke="#143c2b" stroke-width="2.5" stroke-linecap="round"/></svg></span><span class="hTileCopy"><small>مجلسك الخاص</small><b>أنشئ جلسة</b></span></span>
+            <span class="hCreateCaption">اجمع أصدقاءك على طاولتك</span>
+            <span class="hSessionCost"><span>الدخول</span><bdi id="uiCreationPrice">…</bdi><img class="uiGoldCoin" src="ui-art/gold-coin.svg" alt="ذهب" width="20" height="20"></span>
           </button>
 
         </div>
@@ -1517,7 +1526,7 @@ const $=s=>document.querySelector(s);
 // ⚠️ الصق مفاتيح مشروعك هنا (من إعدادات Firebase → تطبيق الويب).
 // هذه المفاتيح آمنة للنشر في كود الواجهة (مصمّمة لذلك).
 // رقم إصدار التطبيق — يُحدَّث يدويًا مع كل نسخة تُرفع للمتاجر (مو نفس رقم كاش الـSW)
-const APP_VERSION='2.1.4'; // V389: unified Android/iOS release for mandatory updates.
+const APP_VERSION='2.2.11'; // V399 PROJECT 1: unified client and native release.
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCZZrU2tip4efYEfYhUi9F_DNfuRZ22adU",
   authDomain: "jops-e508d.firebaseapp.com",
@@ -2685,7 +2694,7 @@ function runWaqf(contested,rank,holder,src,capturePiles=[]){
         if(Math.random()<p)use=nat;
       }
       // بالجوكر: لا يهدره إلا لأكلة تستحق (تفوق قيمته)، وما يستخدمه ضد شريكه أبداً
-      if(!nat&&jok&&!isPartner){
+      if(!use&&jok&&!isPartner){
         const th=45;
         if(v>=th&&Math.random()<0.85)use=jok;
       }
@@ -2833,7 +2842,7 @@ function botPlay(pIdx){
     const netGain=best?best.gain-50-bestPlain:0; // ما يضيفه الجوكر فوق أفضل بديل
     const onlyJokers=p.hand.every(c=>c.rank===JOKER);
     const deckLow=G.deck.length<=8; // قرب النهاية: استعمله قبل ما يضيع
-    if(best&&(netGain>=jokThresh||onlyJokers||(deckLow&&netGain>0&&best.gain>=60)))options.push(best);
+    if(best&&(netGain>=jokThresh||onlyJokers||(deckLow&&best.gain>=60)))options.push(best);
   }
   // استراتيجية "المشروع": لو عندي 5+ أوراق من نفس الرتبة باليد، تجميع المزيد منها له أولوية أعلى
   // (يقلّل الأوراق العالقة بدون فائدة، ويهيّئ لأكلات متتالية لاحقاً بنفس الرقم)
@@ -3034,6 +3043,7 @@ function confetti(){
 
 /* ================= الواجهة ================= */
 function show(id,overlay){
+  id=window.MajabeedBaloot?.routeFor?.(id,overlay)||id;
   if(!overlay&&document.getElementById('uiFriendlyEntry'))uiFriendlyEntryCancel(true);
   if(!overlay)uiCostRoute(id);
   if(!overlay){for(const s of['setup','game','waqf','results','onl','login','signup','gcomplete','home','match','welcome','profile','chat','friends','addfr','tiers','shop','lboard','awardsScr'])$('#'+s).classList.add('hidden')}
@@ -3997,17 +4007,12 @@ async function claimAdRewardClient(user){
   }catch(e){return {ok:false,error:'network-error'};}
   finally{clearTimeout(timeout);}
 }
-// FIX — عدّاد جولات الجلسة الحالية (يُصفَّر عند كل فتح/تحميل جديد للتطبيق، غير محفوظ بين الجلسات عمداً)
-let sessionGamesPlayed=0; // FIX
-// FIX — تغليف بدء المطابقة لـ"لعب سريع" تحديداً (لا الجلسة الكاملة): أول جولة بالجلسة تبدأ فوراً بلا إعلان،
-// أي جولة تالية تعرض إعلاناً خلالياً أولاً، ولا تبدأ المطابقة إلا بعد إغلاقه فعلياً — بالضبط كما طُلب
+// V398: one shared, account-scoped allowance across the five entry choices.
 async function enterMatchWithInterstitial(tierKey,mode,intent){
-  const isFirst=sessionGamesPlayed===0;
-  sessionGamesPlayed++;
-  if(!isFirst){toast2('جاري تحميل الإعلان...');await showInterstitialAd();}
-  if(intent!==undefined&&intent!==TIER_ENTRY.generation)return;
-  if(MATCH.on||QUICK_SEARCH.assigned||ONL.active)return;
-  enterMatch(tierKey,mode);
+  const uid=FB.user?.uid;
+  const current=()=>!!uid&&FB.user?.uid===uid&&(intent===undefined||intent===TIER_ENTRY.generation)&&!MATCH.on&&!QUICK_SEARCH.assigned&&!ONL.active&&document.getElementById('frame').dataset.majabeedGame!=='baloot';
+  if(!current()||mode!=='team'||!['beginner','amateur','pro','elite','legend'].includes(tierKey))return false;
+  return window.MajabeedEntryGate.run(()=>{if(!current())return false;enterMatch(tierKey,mode);return MATCH.on;},{isCurrent:current});
 }
 // v377: one reward flow and one live timer for both shop and home reward dialog.
 const AD_REWARD_GOLD=200;
@@ -4191,7 +4196,7 @@ function enterOnline({restore=false,createSix=false}={}){
   oConnect();
   if(ONL.iv)clearInterval(ONL.iv);
   ONL.iv=setInterval(oTick,180);
-  if(FB.ready&&FB.user){ try{ FB.db.collection('players').doc(FB.user.uid).set({activeRoom:room,activeSince:Date.now()},{merge:true}); }catch(e){} }
+  if(FB.ready&&FB.user){ try{ FB.db.collection('players').doc(FB.user.uid).set({activeRoom:room,activeSince:Date.now(),activeGame:'majabeed'},{merge:true}); }catch(e){} }
   if(ONL.hbIv)clearInterval(ONL.hbIv); // NEW CODE — نبضة دورية: تحدّث activeSince كل 60 ثانية طول الاتصال الفعلي، عشان "النشاط الحالي" بلوحة التحكم يعكس الواقع لا وقت الانضمام فقط
   ONL.hbIv=setInterval(()=>{
     if(FB.ready&&FB.user&&ONL.active){ try{ FB.db.collection('players').doc(FB.user.uid).set({activeSince:Date.now()},{merge:true}); }catch(e){} }
@@ -4203,6 +4208,10 @@ function enterOnline({restore=false,createSix=false}={}){
 // محتوى النافذة فقط وقت فتحها فعليًا. يقرأ العميل مجموعة active_rooms مباشرة عبر Firebase SDK (يكتبها
 // السيرفر فقط عبر REST بحساب خدمة يتجاوز قواعد الأمان أصلاً — راجع db.js: publishRoomStatus/removeRoomStatus).
 let ACTIVE_SESSIONS=[]; // NEW CODE
+// Ignore legacy directory records with no participant, even before their room wakes to delete them.
+function uiActiveSessionVisible(d,now=Date.now()){
+ return !!d&&['lobby','playing'].includes(d.status)&&Number.isFinite(d.updatedAt)&&now-d.updatedAt<20*60*1000&&Array.isArray(d.seats)&&d.seats.some(p=>p&&!p.isBot&&!p.bot);
+}
 async function startActiveSessionsListener(force){ // NEW CODE
   if(!FB.ready||!FB.db||document.hidden)return;
   if(startActiveSessionsListener._pending)return startActiveSessionsListener._pending;
@@ -4213,7 +4222,7 @@ async function startActiveSessionsListener(force){ // NEW CODE
     startActiveSessionsListener._at=Date.now();
 
       const STALE_MS=20*60*1000; // NEW CODE — طبقة حماية إضافية بالعميل: نتجاهل أي جلسة ما تحدّثت من ٢٠ دقيقة (احتياطي لو removeRoomStatus فاتها لأي سبب بالسيرفر)
-      ACTIVE_SESSIONS=snap.docs.map(d=>({id:d.id,...d.data()})).filter(d=>(Date.now()-(d.updatedAt||0))<STALE_MS); // NEW CODE
+      ACTIVE_SESSIONS=snap.docs.map(d=>({id:d.id,...d.data()})).filter(d=>uiActiveSessionVisible(d)); // NEW CODE
       const n=ACTIVE_SESSIONS.length; // NEW CODE
       const numEl=$('#sessCountNum'); if(numEl)numEl.textContent=toH(n); // NEW CODE
       const lblEl=$('#sessCountLbl'); if(lblEl)lblEl.textContent=n===1?'جلسة مباشرة':'جلسات مباشرة'; // NEW CODE
@@ -4247,6 +4256,7 @@ function sessionCardHTML(roomId,d){ // NEW CODE
     </div>
     <div style="font-size:12px;color:var(--mut);font-family:var(--fb);margin-bottom:10px">${esc(statusLine)}</div>
     ${feeLine}
+    ${window.MajabeedFriendlyHands?.sessionDetails(d)||''}
     <div style="display:flex;align-items:center;justify-content:flex-end">
       ${btnHTML}
     </div>
@@ -4269,13 +4279,15 @@ function joinActiveSession(roomId,spectate){ // NEW CODE — spectate=true تح�
   $('#sessionsModal').classList.add('hidden'); // NEW CODE
   enterOnline(); // NEW CODE
 } // NEW CODE
-// V380: count accepted native visits only; never count a rapid duplicate tap.
-$('#hSessions').onclick=window.MajabeedSessionAds.create({
-  button:$('#hSessions'),
-  canOpen:()=>$('#sessionsModal').classList.contains('hidden')&&!ONL.active&&!MATCH.on&&$('#game').classList.contains('hidden'),
-  showAd:()=>window.showInterstitialAd?.(),
-  open:()=>{ startActiveSessionsListener(true); SFX.tick(); $('#sessionsModal').classList.remove('hidden'); renderSessionsList(); }
-});
+// The list consumes one shared entry only when it actually opens.
+$('#hSessions').onclick=async()=>{
+  const current=()=>!!FB.user&&!window.MajabeedEntryGate.busy&&$('#frame').dataset.majabeedGame!=='baloot'&&$('#sessionsModal').classList.contains('hidden')&&!ONL.active&&!MATCH.on&&$('#game').classList.contains('hidden');
+  if(!current())return false;
+  const uid=FB.user.uid,button=$('#hSessions');button.disabled=true;button.setAttribute('aria-busy','true');
+  const eligible=()=>FB.user?.uid===uid&&$('#frame').dataset.majabeedGame!=='baloot'&&$('#sessionsModal').classList.contains('hidden')&&!ONL.active&&!MATCH.on&&$('#game').classList.contains('hidden');
+  try{return await window.MajabeedEntryGate.run(()=>{if(!eligible())return false;startActiveSessionsListener(true);SFX.tick();$('#sessionsModal').classList.remove('hidden');renderSessionsList();return true;},{isCurrent:eligible});}
+  finally{button.disabled=false;button.removeAttribute('aria-busy');}
+};
 $('#sessionsClose').onclick=()=>$('#sessionsModal').classList.add('hidden'); // NEW CODE
 function leaveOnline(){
   uiRememberRoom(ONL.room,'dismissed');
@@ -5455,7 +5467,9 @@ function shopEquipped(kind){
   const dflt=kind==='theme'?'theme-midnight':'back-default'; // NEW CODE — الافتراضي الجديد للاعبين اللي ما اختاروا ثيم صراحة
   try{return localStorage.getItem('wb-eq-'+kind)||dflt}catch(e){return dflt}
 }
-// v377 iPhone handoff: shop and themes available; gold checkout completely disabled.
+// NEW CODE (توحيد نسخة آيفون) — علم إظهار المتجر: كان ثابتاً يدوياً (SHOW_STORE=false) بنسخة آيفون فقط لإخفاء المتجر (باقات Paymob
+// + الثيمات) عن App Store، لأن آبل تمنع أي دفع خارجي لعناصر داخل التطبيق وتشترط IAP الرسمي. بملف واحد للمنصات كلها يصير
+// العلم بالمنصة: ظاهر على الويب/أندرويد، مخفي على iOS تلقائياً — بلا أي تعديل يدوي عند كل رفعة.
 const SHOW_STORE=true; // V382: themes, Plus and rewards remain available.
 const SHOW_GOLD_PURCHASES=false;
 function openShop(tab){uiOpenShop(tab);}
@@ -5499,7 +5513,6 @@ function sentReqsSet(){ try{return new Set(JSON.parse(localStorage.getItem('wb-s
 function markReqSent(uid){ if(!uid)return; const s=sentReqsSet(); s.add(uid); localStorage.setItem('wb-sent-reqs',JSON.stringify([...s])); }
 function hasSentReq(uid){ return !!uid && sentReqsSet().has(uid); }
 function viewProfile(player){
-  window.VipClient?.profile(player.uid);
   if(typeof uiLeagueProfile==='function')uiLeagueProfile(player.uid);
   uiRememberProfileOrigin();
   $('#profile').classList.add('uiOtherProfile');
@@ -5509,6 +5522,7 @@ function viewProfile(player){
   $('#pfAva').style.cursor='default';$('#pfAva').onclick=null;
   applyRankColor($('#pfAva'),player.rpts||0); // NEW CODE — لون الحلقة حسب رتبة اللاعب المعروض
   $('#pfName').textContent=player.name||'لاعب';
+  window.VipClient?.profile(player.uid);
   $('#pfRankBadge').innerHTML=rankBadgeHTML(player.rpts||0,12); // NEW CODE — المعيار الوحيد الآن، رفعنا الحجم شوي (كان ١٠.٥)
   $('#pfCode').textContent=player.code?('#'+player.code):'';
   const hasRealStats=player.games!=null;
@@ -5704,7 +5718,7 @@ const AWARDS=[
 ];
 function openAwards(){
   const unlocked=AWARDS.filter(a=>ST.n(a.stat)>=a.need).length;
-  $('#awardsProg').textContent=`أنجزت ${toH(unlocked)} من ${toH(AWARDS.length)} أوسمة`;
+  $('#awardsProg').textContent=`أكملت ${toH(unlocked)} من أصل ${toH(AWARDS.length)} إنجازًا`;
   $('#awardsBar').style.width=Math.round(unlocked/AWARDS.length*100)+'%';
   const grid=$('#awardsGrid');grid.innerHTML='';
   for(const a of AWARDS){
@@ -5902,9 +5916,19 @@ function refreshRankCard(){
   const pts=ST.n('rank');
   const idx=PLAYER_RANKS.findIndex(x=>x===rankFor(pts));
   const cur=PLAYER_RANKS[idx], next=PLAYER_RANKS[idx+1];
-  card.style.background=`linear-gradient(90deg,rgba(0,0,0,.15),rgba(0,0,0,.55)),url('${cur.banner}') center/cover`;
-  card.style.borderColor=cur.color+'88';
-  card.style.boxShadow=`0 3px 0 rgba(0,0,0,.15), inset 0 0 0 1.5px rgba(255,255,255,.12)`;
+  // Keep rank identity; use readable accents on the dark home surface.
+  const accents=['#c4cec6','#b7ce8b','#91c4f3','#efb080','#f2a09a','#d2adeb','#acbed8','#f6d884'];
+  for(const el of [card,$('#hProfBtn')]){
+    el.style.setProperty('--home-rank',cur.color);
+    el.style.setProperty('--home-rank-light',accents[idx]);
+    el.style.setProperty('--home-rank-wash',hexToRgba(cur.color,.18));
+  }
+  $('#rcEmblem').src='ui-art/rank-'+idx+'.svg';
+  card.dataset.rank=String(idx);
+  const progress=card.querySelector('[role="progressbar"]');
+  progress.setAttribute('aria-valuenow',String(next?Math.min(100,Math.max(0,Math.round((pts-cur.min)/(next.min-cur.min)*100))):100));
+  progress.setAttribute('aria-valuetext',next?`${pts-cur.min} من ${next.min-cur.min} نقطة للوصول إلى ${next.name}`:'أعلى رتبة');
+  card.querySelector('.rcNext').hidden=!next;
   $('#rcBadge').innerHTML=rankBadgeHTML(pts,13.5);
   if(next){
     const span=next.min-cur.min, done=pts-cur.min;
@@ -6118,7 +6142,7 @@ async function claimDaily(sc){ // FIX
   finally{ if(btn){btn.disabled=false;btn.textContent='استلم';} } // FIX
 } // FIX
 // نافذة اختيار: مكافأة يومية أو إعلان مقابل ذهب
-// v377: shared 15-minute rewarded-ad timer.
+// V381: one 15-minute clock for all rewarded-ad entry points.
 function showRewardChoice(){
   let sc=$('#rewardScr');
   if(!sc){
@@ -6196,7 +6220,7 @@ $('#awardsBack').onclick=()=>goHome();
 // تبويبات المتجر
 // ربط نقر .shopTab محذوف — شريط التبويبات نفسه اتحذف من الـHTML
 $('#hGroup').onclick=()=>{ // FIX — تحقق الذهب قبل الدخول للوبي أصلاً (كان يدخل بحرّية ويُرفض لاحقاً لحظة الضغط على "ابدأ" فقط)
-  if(ST.n('gold')<500){toast2('إنشاء الجلسة يحتاج 500 ذهب عند البدء، ويشمل مقعدك');return}
+  if(!FB.user){toast2('سجّل الدخول لإنشاء الجلسة');return;} // The lobby quotes the server's frozen session price before Start.
   SFX.tick(); history.replaceState(null,'',location.pathname); ONL.pendingTier=null; ONL.pendingMode=null; enterOnline();
 };
 
@@ -6497,6 +6521,7 @@ async function afterAuth(user){
     if(r&&r.ok&&r.granted>0){ localStorage.setItem('wb-gold',String(r.gold)); try{refreshHome()}catch(_){ } toast2('🎁 هدية ترحيبية: '+r.granted+' قطعة ذهبية!'); } // NEW CODE
   }catch(e){ console.log('[TRACE] claim-welcome:',e&&e.message); } })(); // NEW CODE
   if(ONL.active||MATCH.on||ONL.generation!==authRoomGeneration||UI_FRIENDLY_ENTRY.serial!==authEntrySerial)return; // Never let a late auth/profile restore replace a newer match.
+  if(window.MajabeedBaloot?.needsChoice?.()&&localStorage.getItem('wb-username')){goHome();return;}
   const linkedRoom=new URLSearchParams(location.search).get('room');
   if(linkedRoom&&!uiHomeWalletLeavingRoom(linkedRoom)){ONL.pendingTier=null;ONL.pendingMode=null;enterOnline();return;}
   if(cloud&&cloud.activeRoom&&uiRoomPreference(cloud.activeRoom)?.mode!=='dismissed'&&!uiHomeWalletLeavingRoom(cloud.activeRoom)&&!(cloud.activeSince&&cloud.activeSince<Date.now()-3*60*60*1000)){ // FIX
@@ -7289,7 +7314,6 @@ function renderAvatarPicker(){
 function myCode(){return (localStorage.getItem('wb-player-id')||'p-????????').slice(2)}
 function myUsername(){return localStorage.getItem('wb-username')||'';}
 function openProfile(){
-  window.VipClient?.profile(FB.user?.uid);
   if(typeof uiLeagueProfile==='function')uiLeagueProfile(FB.user?.uid);
   uiRememberProfileOrigin();
   $('#profile').classList.remove('uiOtherProfile');
@@ -7303,6 +7327,7 @@ function openProfile(){
   $('#pfEdit').style.display='';
   $('#pfOut').style.display='';
   $('#pfName').textContent=localStorage.getItem('wb-name')||'ضيف';
+  window.VipClient?.profile(FB.user?.uid);
   $('#pfRankBadge').innerHTML=rankBadgeHTML(ST.n('rank'),12); // NEW CODE — المعيار الوحيد الآن
   { // NEW CODE — قسم تقدم الرتبة التفصيلي
     const info=rankProgressInfo(ST.n('rank')); // NEW CODE
@@ -7977,30 +8002,33 @@ function agoAr(ts){
   const h=Math.floor(m/60); if(h<24)return 'قبل '+(h===1?'ساعة':h+' ساعات');
   const d=Math.floor(h/24); return d===1?'أمس':'قبل '+d+' أيام';
 }
-async function refreshFriendsActiveStatus(fl){
-  if(!(await ensureFB()))return;
-  const staleCutoff=Date.now()-3*60*60*1000; // نتجاهل جلسة عالقة أكثر من 3 ساعات (غالبًا أغلق التطبيق بدون خروج نظيف)
-  await Promise.all(fl.filter(f=>f.uid).map(async f=>{
-    try{
-      const doc=await uiCostDoc('players/'+f.uid);
-      if(!doc.exists)return;
-      const d=doc.data();
-      const active=d.activeRoom&&!(d.activeSince&&d.activeSince<staleCutoff)?d.activeRoom:null;
-      if(!active)return;
-      const row=document.querySelector('.frRow[data-fpid="'+CSS.escape(f.pid)+'"]');
-      if(row)row.outerHTML=frRow(f,active);
-    }catch(e){}
-  }));
-  document.querySelectorAll('.frBtn.watch[data-watch]').forEach(b=>{
-    b.onclick=()=>joinRoomFromChat(b.dataset.watch,false);
-  });
+let friendStatusSerial=0;
+function friendGame(){return window.MajabeedBaloot?.state.selected==='baloot'?'baloot':'majabeed';}
+async function watchFriendInGame(uid,game){
+  if(game!==friendGame())return;
+  if(game==='baloot')return window.MajabeedBaloot?.watchFriend(uid);
+  if(ONL.active||MATCH.on){toast2('غادر الجلسة الحالية قبل المشاهدة');return;}
+  const account=FB.user?.uid;
+  try{if(!(await ensureFB()))return;const doc=await FB.db.collection('players').doc(uid).get({source:'server'}),d=doc.exists?doc.data():{};
+    if(friendGame()!==game||FB.user?.uid!==account||$('#friends').classList.contains('hidden')||ONL.active||MATCH.on)return;
+    if(!d.activeRoom||d.activeGame==='baloot'||d.activeSince&&d.activeSince<Date.now()-10800000){toast2('الصديق لم يعد يلعب مجابيد');return;}joinRoomFromChat(d.activeRoom,false);
+  }catch(_){toast2('تعذّر تحديث حالة الصديق');}
 }
-function frRow(f,activeRoom){
+async function refreshFriendsActiveStatus(fl){
+  const serial=++friendStatusSerial,game=friendGame(),uid=FB.user?.uid;
+  let rows=[];
+  if(game==='baloot')rows=await window.MajabeedBaloot.friendActivity(fl.filter(f=>f.uid).map(f=>f.uid));
+  else{if(!(await ensureFB()))return;rows=(await Promise.all(fl.filter(f=>f.uid).map(async f=>{try{const doc=await uiCostDoc('players/'+f.uid),d=doc.exists?doc.data():{};return d.activeGame!=='baloot'&&d.activeRoom&&!(d.activeSince&&d.activeSince<Date.now()-10800000)?{uid:f.uid,room:d.activeRoom}:null;}catch(_){return null;}}))).filter(Boolean);}
+  if(serial!==friendStatusSerial||game!==friendGame()||uid!==FB.user?.uid)return;
+  for(const f of fl){const active=rows.find(r=>r.uid===f.uid);if(!active)continue;const row=document.querySelector('.frRow[data-fpid="'+CSS.escape(f.pid)+'"]');if(row)row.outerHTML=frRow(f,active.room,game);}
+  document.querySelectorAll('.frBtn.watch[data-watch]').forEach(b=>b.onclick=()=>watchFriendInGame(b.dataset.uid,b.dataset.game));
+}
+function frRow(f,activeRoom,game=friendGame()){
   const ava=f.ava||'🎭';
   const canDM=!!f.uid;
   const invBtn='<button class="frBtn inv" data-inv="'+f.pid+'" data-nm="'+esc(f.name)+'" data-uid="'+(f.uid||'')+'">دعوة للعب</button>';
   const msgBtn=canDM?'<button class="frBtn" data-dm="'+f.pid+'" data-nm="'+esc(f.name)+'" data-uid="'+f.uid+'" data-ava="'+encodeURIComponent(ava)+'" style="background:#ece0ca;color:var(--clay)">💬</button>':'';
-  const watchBtn=activeRoom?'<button class="frBtn watch" data-watch="'+esc(activeRoom)+'" style="background:#dcebd6;color:var(--sage)">'+uiWatchIcon()+'<span>شاهد</span></button>':'';
+  const watchBtn=activeRoom?'<button class="frBtn watch" data-watch="'+esc(activeRoom)+'" data-game="'+game+'" data-uid="'+esc(f.uid||'')+'" style="background:#dcebd6;color:var(--sage)">'+uiWatchIcon()+'<span>شاهد</span></button>':'';
   const statusLine=activeRoom?'<div class="fSt on">🟢 يلعب الآن</div>':'<div class="fSt">'+(f.uid?'@'+esc(f.username||''):'صديق')+'</div>';
   return `<div class="frRow" data-fpid="${esc(f.pid)}"><div class="fAva" style="overflow:hidden">${avatarHTML(ava,44)}</div>
     <div class="fBody"><div class="fNm">${esc(f.name)}</div>${statusLine}</div>
@@ -8188,7 +8216,7 @@ $('#hProfBtn').onclick=()=>openProfile();
 // NEW CODE — حذفنا $('#hChat').onclick — الزر نفسه اتحذف من الترويسة العلوية، الدردشة صارت بالشريط السفلي فقط
 $('#hDaily').onclick=()=>{SFX.tick();showRewardChoice()};
 $('#hGoldBtn').onclick=()=>{SFX.tick();if(uiHomeWalletHasPending()){uiHomeWalletResume(true);return;}openShop('gold')};
-if(!SHOW_GOLD_PURCHASES){const plus=document.querySelector('#hGoldBtn b');if(plus)plus.style.display='none';} // v377 — المتجر متاح، وإشارة شراء الذهب مخفية.
+if(!SHOW_GOLD_PURCHASES){ const plus=document.querySelector('#hGoldBtn b'); if(plus)plus.style.display='none'; } // NEW CODE — يخفي إشارة "+" (تلمّح لعملية شراء) طالما المتجر مقفل — لا يترك زراً يبدو تفاعلياً بلا وظيفة
 $('#setupBack').onclick=()=>goHome();
 
 /* توجيه البدء */
@@ -8269,7 +8297,7 @@ async function bootTo(){
     const d=document.createElement('div'); // NEW CODE
     d.style.cssText='position:fixed;inset:0;z-index:9999;background:#14180d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:30px;text-align:center'; // NEW CODE
     d.innerHTML=ok // NEW CODE
-      ?'<div style="font-size:52px">✓</div><div style="color:#ccdbb2;font-weight:800;font-size:20px">تم تسجيل الدخول بنجاح</div><div style="color:#8a9678;font-weight:700;font-size:14px">ارجع الآن لتطبيق مجابيد — دخولك بيكتمل تلقائياً خلال ثانية</div>' // NEW CODE
+      ?'<div style="font-size:52px">✓</div><div style="color:#ccdbb2;font-weight:800;font-size:20px">تم تسجيل الدخول بنجاح</div><div style="color:#8a9678;font-weight:700;font-size:14px">ارجع الآن لتطبيق مجابيد و صكة — دخولك بيكتمل تلقائياً خلال ثانية</div>' // NEW CODE
       :'<div style="font-size:52px">✕</div><div style="color:#e2925c;font-weight:800;font-size:20px">تعذّر إكمال الربط</div><div style="color:#8a9678;font-weight:700;font-size:14px">ارجع للتطبيق واضغط زر Google من جديد</div>'; // NEW CODE
     const b=document.createElement('button'); // FIX — مخرج لمن يبي يكمل بالمتصفح بدل التطبيق: تحديث نظيف بلا وضع الربط
     b.textContent='أو تابع اللعب من المتصفح'; // FIX
@@ -8299,7 +8327,7 @@ async function bootTo(){
     const d=document.createElement('div'); // FIX
     d.id='gloginPrompt'; // FIX
     d.style.cssText='position:fixed;inset:0;z-index:9998;background:#14180d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:30px;text-align:center'; // FIX
-    d.innerHTML='<div style="font-size:44px">🎮</div><div style="color:#ccdbb2;font-weight:800;font-size:19px">إكمال دخول تطبيق مجابيد</div><div style="color:#8a9678;font-weight:700;font-size:13.5px">اضغط الزر وسجّل بحسابك — بعدها ارجع للتطبيق ودخولك بيكتمل تلقائياً</div>'; // FIX
+    d.innerHTML='<div style="font-size:44px">🎮</div><div style="color:#ccdbb2;font-weight:800;font-size:19px">إكمال دخول تطبيق مجابيد و صكة</div><div style="color:#8a9678;font-weight:700;font-size:13.5px">اضغط الزر وسجّل بحسابك — بعدها ارجع للتطبيق ودخولك بيكتمل تلقائياً</div>'; // FIX
     const b=document.createElement('button'); // FIX
     b.innerHTML='المتابعة بحساب Google'; // FIX
     b.style.cssText='background:#fff;color:#1a1a1a;border:none;border-radius:999px;padding:14px 26px;font-family:inherit;font-weight:800;font-size:16px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.4)'; // FIX
@@ -8321,6 +8349,7 @@ async function bootTo(){
       if(_appleSignInBusy||_appleHandledUid===user.uid)return; // Apple already owns this profile load.
       if(_redirectHandled)return; // already handled directly above — تجنّب التكرار
       await afterAuth(user);
+      window.VipClient?.refresh().catch(()=>{});
     }else{
       uiCostReset(null);FB.user=null;
       if(typeof uiThemeSetAccount==='function')uiThemeSetAccount(null);
@@ -8361,12 +8390,11 @@ else window.addEventListener('load',bootTo);
 if('serviceWorker' in navigator&&location.protocol==='https:'){
   navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
-// Capacitor iOS uses a local scheme; showing the bundled build does not require a service worker.
+// iOS serves bundled assets using capacitor://; display the build without a service worker.
 fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
-  const m=t.match(/waggif-v(\d+)/); const bt=document.getElementById('buildTag');
+  const m=t.match(/waggif-v([0-9A-Za-z-]+)/); const bt=document.getElementById('buildTag');
   if(m&&bt)bt.textContent='build v'+m[1];
 }).catch(()=>{});
-
 </script>
 <!-- ============ تكامل AdMob الفعلي — النسخة الصحيحة المؤكَّدة من فحص ملف plugin.js الفعلي ============ -->
 <!-- FIX — المحاولة الأولى (استيراد ES module) لم تعمل: هذا المشروع بلا أداة تجميع، فـimport يفشل صامتاً حتى
@@ -8447,7 +8475,14 @@ fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
 <script src="ui-six-v388.js"></script>
 <script src="ui-table-hud-v389.js"></script>
 <script src="ui-card-motion.js?v=388"></script>
-<script src="ui-community.js"></script>
+<script src="ui-community.js?v=398-polish-1"></script>
 <script src="ui-leagues.js"></script>
+<script src="ui-baloot-sounds.js?v=398-social-1"></script>
+<script src="ui-baloot-audio.js?v=399-project-1"></script>
+<script src="ui-baloot-ranks.js?v=398"></script>
+<script src="ui-baloot.js?v=399-project-1"></script>
+<script src="ui-game-help.js?v=399-project-1"></script>
+<script src="ui-entry-ads-ui.js?v=399-project-1"></script>
+<script src="ui-friendly-hand.js?v=399-project-1"></script>
 </body>
 </html>

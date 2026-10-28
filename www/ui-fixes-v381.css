@@ -6,8 +6,11 @@
 .uiAdCountdown[hidden]{display:none!important}
 .uiStoreAd:disabled,#rwAd:disabled{cursor:default;opacity:.7}
 #rwAd .uiAdAvailability{color:#735733}
-#hDaily .uiHomeAdClock{position:absolute;left:calc(100% + 6px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:1px;align-items:center;min-width:46px;padding:4px 6px;border:1px solid #eac77f44;border-radius:10px;background:#102b21;color:#f5dfab;box-shadow:0 3px 10px #0002;pointer-events:none;font:700 11px/1.35 var(--fb);white-space:nowrap}
+#hDaily .uiHomeAdClock{position:absolute;left:50%;top:calc(100% + 6px);transform:translateX(-50%);display:flex;flex-direction:column;gap:1px;align-items:center;width:54px;min-width:0;padding:4px 6px;border:1px solid #eac77f44;border-radius:10px;background:#102b21;color:#f5dfab;box-shadow:0 3px 10px #0002;pointer-events:none;font:700 11px/1.35 var(--fb);white-space:normal;text-align:center}
 #hDaily .uiHomeAdClock small{font-size:9px;font-weight:400;color:#c2d0bf}
 #hAdCountdown{font-variant-numeric:tabular-nums}
-@media(max-width:360px){#hDaily .uiHomeAdClock{left:calc(100% + 4px);min-width:40px;padding:3px 4px;font-size:10px}#hDaily .uiHomeAdClock small{font-size:8px}}
+@media(max-width:360px){#hDaily .uiHomeAdClock{left:50%;min-width:0;padding:3px 4px;font-size:10px}#hDaily .uiHomeAdClock small{font-size:8px}}
 #uiFriendlyEntry{padding-top:max(24px,env(safe-area-inset-top))!important;padding-bottom:max(24px,env(safe-area-inset-bottom))!important}
+
+#pageLoader .uiEntryBrand{font-size:clamp(28px,8vw,40px)}
+#lgTopRow .uiEntryWordmark{font-size:21px}

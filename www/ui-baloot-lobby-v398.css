@@ -1,0 +1,62 @@
+/* One-screen Sakka lobby: four seats, teams and invitations remain in view. */
+#blGame .blLobbyCompact{padding:max(8px,var(--ui-safe-top,0px)) 8px max(8px,var(--ui-safe-bottom,0px));overflow:hidden;box-sizing:border-box}
+#blGame .blLobbyCompact>.blPanel{display:flex;flex-direction:column;gap:8px;width:min(100%,420px);height:min(100%,700px);max-height:100%;min-height:0;overflow:hidden;padding:14px;box-sizing:border-box;border-radius:24px}
+#blGame .blLobbyCompact>.blPanel>header{flex:none;min-height:34px;margin:0;gap:8px}
+#blGame .blLobbyCompact header h2{font:400 26px/1.2 var(--fh);margin:0}
+#blGame .blLobbyCompact header small{font:10px/1.4 var(--fb)}
+#blGame .blLobbyCompact header>.blBtn{min-height:36px;padding:5px 12px;font-size:12px}
+#blGame .blLobbyCompact .blLobbyCode{flex:none;min-height:36px;margin:0;padding:4px 8px;border-radius:11px;gap:6px;box-sizing:border-box}
+#blGame .blLobbyCompact .blLobbyCode b{font-size:19px;letter-spacing:1px}
+#blGame .blLobbyCompact .blLobbyCode .blBtn{min-height:30px;padding:3px 9px;font-size:11px}
+#blGame .blLobbyCompact .blLobbyNote{flex:none;font:10px/1.4 var(--fb);margin:0!important;text-align:center}
+#blGame .blLobbyCompact .blLobbyTeams{flex:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0;min-height:0}
+#blGame .blLobbyCompact .blLobbyTeam{display:grid;grid-template-rows:auto repeat(2,minmax(0,1fr));gap:6px;padding:7px;min-height:0;border-radius:16px}
+#blGame .blLobbyCompact .blTeamHeading h3{font:400 18px/1.2 var(--fh);margin:0}
+#blGame .blLobbyCompact .blTeamHeading small{font:9px/1.3 var(--fb);color:#c2d2ba}
+#blGame .blLobbyCompact .blLobbyTeam .blLobbySeat{display:flex;flex-direction:column;justify-content:center;gap:5px;min-height:0;margin:0;padding:7px 4px;overflow:hidden;border-radius:11px}
+#blGame .blLobbyCompact .blSeatIdentity{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-width:0}
+#blGame .blLobbyCompact .blSeatIdentity>div{flex:1;min-width:0;text-align:right}
+#blGame .blLobbyCompact .blSeatIdentity b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;font:700 11px/1.6 var(--fb)}
+#blGame .blLobbyCompact .blSeatIdentity small{display:block;font:9px/1.5 var(--fb);color:#d1c7aa;white-space:nowrap}
+#blGame .blLobbyCompact .blSeatIdentity>.blAvatar,#blGame .blLobbyCompact .blSeatIdentity>.blEmptySeat{width:32px;height:32px;flex:none;font-size:22px;margin:0}
+#blGame .blLobbyCompact .blSeatIdentity .blAvatar img{width:100%;height:100%;object-fit:cover}
+#blGame .blLobbyCompact .blSeatTools{display:flex;gap:4px;width:100%;flex:none}
+#blGame .blLobbyCompact .blSeatTools:empty{display:none}
+#blGame .blLobbyCompact .blSeatTools>.blBtn{flex:1;min-width:0;width:auto;min-height:34px;padding:4px 2px;font:700 10px/1.35 var(--fb);white-space:normal}
+#blGame .blLobbyCompact .blReadyStatus{padding:1px 5px;max-width:100%;box-sizing:border-box;font:9px/1.5 var(--fb);white-space:nowrap}
+#blGame .blLobbyCompact .blLobbyFooter{flex:none;position:static;bottom:auto;display:flex;flex-direction:column;gap:7px;padding:0;background:none}
+#blGame .blLobbyCompact .blLobbyStart{display:flex;gap:7px;margin:0}
+#blGame .blLobbyCompact .blLobbyStart>.blBtn{flex:1;min-height:42px;padding:6px;font:700 12px/1.5 var(--fb)}
+#blGame .blLobbyCompact .blLobbyStart>.blChatButton{flex:0 0 44px;width:44px}
+#blGame .blLobbyCompact .blLobbyStart>p{margin:0;align-self:center;font:11px/1.5 var(--fb);flex:1;text-align:center}
+#blGame .blLobbyCompact .blLobbyInvites{margin:0;padding-top:7px}
+#blGame .blLobbyCompact .blLobbyInvites>b{margin:0 0 5px;font:700 10px/1.3 var(--fb)}
+#blGame .blLobbyCompact .blInviteMain{gap:6px}
+#blGame .blLobbyCompact .blInviteMain>.blBtn{min-height:42px;padding:5px 2px;font:700 11px/1.35 var(--fb)}
+#blGame .blLobbyCompact .blInviteUnavailable{font:10px/1.3 var(--fb)!important;margin:0!important}
+#blGame .blLobbyCompact .blRematchStatus{flex:none;flex-direction:row;align-items:center;justify-content:space-between;gap:6px;margin:0;padding:5px 8px;border-radius:10px}
+#blGame .blLobbyCompact .blRematchStatus b{font:700 12px/1.4 var(--fb)}
+#blGame .blLobbyCompact .blRematchStatus small{font:9px/1.4 var(--fb);max-width:55%}
+#blGame .blLobbyCompact .blSeatRequest{flex:none;display:grid;grid-template-columns:1fr auto;gap:3px 7px;margin:0;padding:5px 7px;border-radius:10px}
+#blGame .blLobbyCompact .blSeatRequest>b{font:700 10px/1.4 var(--fb);grid-column:1}
+#blGame .blLobbyCompact .blSeatRequest>small{font:9px/1.3 var(--fb);grid-column:1}
+#blGame .blLobbyCompact .blSeatRequest>.blInline,#blGame .blLobbyCompact .blSeatRequest>.blBtn{grid-column:2;grid-row:1 / span 2;align-self:center;margin:0;gap:4px}
+#blGame .blLobbyCompact .blSeatRequest .blBtn{min-height:34px;padding:4px 7px;font:10px/1.4 var(--fb)}
+#blGame .blLobbyCompact #blConnection{flex:none;position:static;margin:0;font:10px/1.4 var(--fb);text-align:center}
+#blGame .blLobbyCompact #blConnection:empty{display:none}
+@media(max-height:650px){
+ #blGame .blLobbyCompact>.blPanel{gap:6px;padding:10px;border-radius:20px}
+ #blGame .blLobbyCompact header h2{font-size:23px}
+ #blGame .blLobbyCompact header small{font-size:9px}
+ #blGame .blLobbyCompact .blLobbyTeam{padding:5px;gap:4px}
+ #blGame .blLobbyCompact .blLobbyTeam .blLobbySeat{padding:4px 3px;gap:4px}
+ #blGame .blLobbyCompact .blTeamHeading h3{font-size:17px}
+ #blGame .blLobbyCompact .blSeatIdentity{gap:4px}
+ #blGame .blLobbyCompact .blSeatIdentity>.blAvatar,#blGame .blLobbyCompact .blSeatIdentity>.blEmptySeat{width:28px;height:28px}
+ #blGame .blLobbyCompact .blSeatIdentity b{font-size:10px}
+ #blGame .blLobbyCompact .blSeatIdentity small{font-size:8px}
+ #blGame .blLobbyCompact .blSeatTools>.blBtn{min-height:32px;font-size:9px}
+ #blGame .blLobbyCompact .blLobbyNote{font-size:9px}
+ #blGame .blLobbyCompact .blLobbyFooter{gap:5px}
+ #blGame .blLobbyCompact .blLobbyInvites{padding-top:5px}
+}

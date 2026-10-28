@@ -1,0 +1,24 @@
+/* The allowance badge occupies its own space; room/player counts keep theirs. */
+.mjEntryAdBadge{box-sizing:border-box;display:inline-flex!important;align-items:center;justify-content:center;gap:6px;min-height:18px;max-width:104px;padding:2px 8px;border:1px solid #dac18755;border-radius:8px;background:#0c281db8;color:#f6dfaa;font:700 10px/1.4 var(--fb)!important;white-space:nowrap;pointer-events:none;flex:none;direction:rtl;letter-spacing:0}
+.mjEntryAdBadge[hidden]{display:none!important}
+.mjEntryAdBadge[data-state="free"]{min-width:39px;border-color:transparent;background:transparent;padding-inline:4px}
+.mjEntryAdDot{display:block;box-sizing:border-box;width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:#b5ad9240;border:1px solid #d7c39477;box-shadow:none}
+.mjEntryAdDot.available{background:linear-gradient(145deg,#ffe7a7,#d6a646);border-color:#ffe9aa;box-shadow:0 0 7px #f9d77d40}
+.mjEntryAdBadge[data-state="exempt"],.mjEntryAdBadge[data-state="web"]{border-color:#b8c9b333;background:#15352699;color:#d3dfc5;font-size:9px!important}
+.mjHasEntryAd[data-entry-busy="true"]{pointer-events:none}
+#home #hOnl.mjHasEntryAd>.mjEntryAdBadge{position:absolute;top:5px;right:14px;color:#27422a;border-color:#41644333;background:#42613b16;z-index:1}
+#home #hOnl.mjHasEntryAd>.mjEntryAdBadge[data-state="free"]{background:transparent;border-color:transparent}
+#home #hOnl.mjHasEntryAd .mjEntryAdDot{background:#34503a29;border-color:#42624066}
+#home #hOnl.mjHasEntryAd .mjEntryAdDot.available{background:#fff7db;border-color:#fffdf0;box-shadow:0 1px 3px #76541c66}
+#home #hSessions.mjHasEntryAd{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;column-gap:6px;row-gap:1px;padding:4px 10px}
+#home #hSessions.mjHasEntryAd>.sessIcoWrap{grid-column:1;grid-row:1;min-width:0}
+#home #hSessions.mjHasEntryAd>.sessCount{grid-column:2;grid-row:1}
+#home #hSessions.mjHasEntryAd>.mjEntryAdBadge{grid-column:1 / -1;grid-row:2;justify-self:start;min-height:16px;padding-block:0}
+#blHomeMenu .blPlayCard.mjHasEntryAd>.mjEntryAdBadge{position:absolute;left:16px;top:12px;color:#27422a;border-color:#41644333;background:#42613b16}
+#blHomeMenu .blPlayCard.mjHasEntryAd>.mjEntryAdBadge[data-state="free"]{background:transparent;border-color:transparent}
+#blHomeMenu .blPlayCard.mjHasEntryAd .mjEntryAdDot{background:#34503a29;border-color:#42624066}
+#blHomeMenu .blPlayCard.mjHasEntryAd .mjEntryAdDot.available{background:#fff7db;border-color:#fffdf0;box-shadow:0 1px 3px #76541c66}
+#blHomeMenu .blCta.mjHasEntryAd>.mjEntryAdBadge{position:absolute;left:10px;top:15px;max-width:calc(100% - 54px);font-size:9px!important;padding-inline:6px}
+#blModal [data-bl="create"].mjHasEntryAd{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+#blModal [data-bl="create"].mjHasEntryAd>.mjEntryAdBadge{position:static}
+@media(max-width:350px){#home #hOnl.mjHasEntryAd>.mjEntryAdBadge{right:10px}#blHomeMenu .blPlayCard.mjHasEntryAd>.mjEntryAdBadge{left:12px;top:12px}#blHomeMenu .blCta.mjHasEntryAd>.mjEntryAdBadge{left:8px;padding-inline:5px;font-size:8px!important}}

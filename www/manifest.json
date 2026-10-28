@@ -1,24 +1,31 @@
 {
- "name": "مجابيد — Majabeed",
- "short_name": "مجابيد",
- "dir": "rtl",
- "lang": "ar",
- "start_url": "./",
- "scope": "./",
- "display": "standalone",
- "background_color": "#f9f4ed",
- "theme_color": "#272e1b",
- "icons": [
-  {
-   "src": "icon192.png",
-   "sizes": "192x192",
-   "type": "image/png"
-  },
-  {
-   "src": "icon512.png",
-   "sizes": "512x512",
-   "type": "image/png",
-   "purpose": "any maskable"
-  }
- ]
+  "name": "مجابيد وصكة",
+  "short_name": "مجابيد وصكة",
+  "dir": "rtl",
+  "lang": "ar",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#073b32",
+  "theme_color": "#073b32",
+  "icons": [
+    {
+      "src": "icon192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
 }

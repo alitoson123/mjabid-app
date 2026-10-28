@@ -1,0 +1,18 @@
+/* Friendly lobby setting and directory score rows. */
+#uiFriendlyHandSettings[hidden]{display:none!important}
+#uiFriendlyHandSettings{margin:10px 0;padding:12px;border:1px solid #d5ba7455;border-radius:14px;background:#082c24;color:#f7e7ba;min-width:0}
+.uiHandSettingRow{display:flex;align-items:center;justify-content:space-between;gap:12px;font:700 13px/1.5 var(--fb)}
+#uiFriendlyHandSelect{width:76px;min-height:44px;border:1px solid #d8bf7b;border-radius:10px;background:#f3dfaa;color:#173e30;padding:6px 12px;font:800 17px var(--fb);text-align:center;cursor:pointer}
+#uiFriendlyHandSelect:disabled{opacity:.7;cursor:default}
+#uiFriendlyHandHelp{font:500 11px/1.8 var(--fb);color:#d7dbc6;margin:7px 0 0}
+.uiSessionHandInfo{display:flex;gap:8px;align-items:center;justify-content:space-between;font:700 12px/1.5 var(--fb);color:var(--ink);margin-bottom:8px;flex-wrap:wrap}
+.uiSessionHandInfo small{font:500 11px var(--fb);color:var(--mut)}
+.uiSessionCurrentScore{padding:8px 10px;border:1px solid #b6c7b7;border-radius:12px;background:#eef3e8;margin-bottom:10px;color:#1c4638}
+.uiSessionScoreLabel{display:block;font:700 10px/1.5 var(--fb);color:#496551;margin-bottom:5px}
+.uiSessionScoreGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px}
+.uiSessionScoreItem{display:flex;align-items:center;justify-content:space-between;gap:5px;min-width:0;font:600 11px/1.6 var(--fb)}
+.uiSessionScoreItem>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.uiSessionScoreItem bdi{font-weight:800;font-size:14px;flex:none;color:#254d34}
+.uiSessionScorePending{font:500 11px/1.5 var(--fb);margin:0;color:#617461}
+/* Keep the visible card corners inside the hand, even with the dealer's sixteenth card. */
+#onl #oHand.uiFlexibleHand>.card,#onl.uiSixTable #oHand.uiFlexibleHand>.card{width:var(--ui-hand-width)!important;min-width:var(--ui-hand-width)!important;height:var(--ui-hand-height)!important;margin-inline:var(--ui-hand-overlap)!important;flex:none!important}

@@ -1,0 +1,128 @@
+/* Majabeed home identity. Sakka keeps its own header and rank system. */
+#home:not(.blHome) .hHead{gap:10px;align-items:center}
+#home:not(.blHome) .hLogo{padding-top:10px}
+#home:not(.blHome) .hSide{top:calc(100px + var(--ui-safe-top))}
+#home:not(.blHome) #hProfBtn{position:relative;min-height:64px;max-width:none;padding:7px 9px 7px 24px;gap:10px;border:1px solid #b7ccbd30;border-radius:20px;background:linear-gradient(110deg,var(--home-rank-wash,#ffffff08),transparent 75%),#102c23;box-shadow:inset 0 1px #ffffff08,0 5px 16px #061c1830;overflow:visible}
+#home:not(.blHome) #hProfBtn:after{content:'';position:absolute;left:12px;top:calc(50% - 3px);width:6px;height:6px;border-left:1.5px solid #aac1b1;border-bottom:1.5px solid #aac1b1;transform:rotate(45deg)}
+#home:not(.blHome) #hAvaWrap{width:46px;height:46px;min-width:46px;border-radius:50%;border:2px solid #102c23;box-shadow:0 0 0 1.5px var(--home-rank-light,#c4cec6);background:#e6d3aa;overflow:hidden}
+#home:not(.blHome) #hAvaContent{display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:50%;overflow:hidden}
+#home:not(.blHome) #hAvaContent img{width:100%!important;height:100%!important;object-fit:cover;border-radius:50%}
+#home:not(.blHome) .hIdentity{display:flex;flex:1;flex-direction:column;align-items:flex-start;gap:3px;min-width:0}
+#home:not(.blHome) #hName{max-width:100%;font-size:17px;line-height:1.35;font-weight:800;color:#fff5e0;text-align:start}
+#home:not(.blHome) #hRankBadge{display:block;max-width:100%;line-height:1}
+#home:not(.blHome) #hRankBadge .uiRankBadge{display:inline-flex;gap:4px;max-width:100%;padding:2px 7px 2px 5px;border:1px solid #ffffff12;border-radius:7px;background:var(--home-rank-wash,#ffffff08);color:var(--home-rank-light,#c4cec6)!important;font-size:11px!important;line-height:1.4;box-shadow:none}
+#home:not(.blHome) #hRankBadge .uiRankBadge img{width:17px;height:19px}
+#home:not(.blHome) #hGoldBtn{flex:none;min-width:83px;min-height:43px;justify-content:center;border-radius:15px;font-size:16px;padding:7px 9px;border-color:#dbbf7a30}
+#home:not(.blHome) .hMenu .row2{gap:10px}
+#home:not(.blHome) .hMenu .row2 .hBig{align-items:stretch;justify-content:center;text-align:right;padding:11px 12px!important;gap:5px!important;border-radius:20px;box-shadow:inset 0 1px #ffffff09,0 4px 14px #071e1830;overflow:hidden}
+#home:not(.blHome) #rankCard{background:radial-gradient(ellipse at 100% 0,var(--home-rank-wash,#ffffff0a),transparent 85%),#112e25!important;border:1px solid #b7ccbd30}
+#home:not(.blHome) #hGroup{background:linear-gradient(135deg,#2c5140,#17392d);border:1px solid #d5bb7e59}
+#home:not(.blHome) .hMenu .row2 .hTileHead{display:flex!important;align-items:center;gap:9px;opacity:1;min-width:0;text-shadow:none}
+#home:not(.blHome) .hTileIcon{display:flex;align-items:center;justify-content:center;flex:0 0 39px;width:39px;height:40px;background:#ffffff06;border:1px solid #ffffff0b;border-radius:12px}
+#home:not(.blHome) .hTileIcon img{width:39px;height:40px;object-fit:contain}
+#home:not(.blHome) .hTileIcon svg{width:37px;height:37px;overflow:visible}
+#home:not(.blHome) .hCreateEmblem{background:#e8d19c0c;border-color:#f0d6a119}
+#home:not(.blHome) .hTileCopy{min-width:0;display:flex;flex-direction:column;gap:2px}
+#home:not(.blHome) .hTileCopy small{font:500 10px/1.4 var(--fb);color:#c3d2c7;white-space:nowrap}
+#home:not(.blHome) .hTileCopy b{font:800 16px/1.5 var(--fb);color:#fff0cc;white-space:nowrap}
+#home:not(.blHome) #rcBadge{display:block;line-height:1.4}
+#home:not(.blHome) #rcBadge .uiRankBadge{display:inline;color:var(--home-rank-light,#c4cec6)!important;background:none!important;border:0;box-shadow:none;padding:0!important;font:800 16px/1.5 var(--fb)!important;white-space:nowrap}
+#home:not(.blHome) #rcBadge .uiRankBadge img{display:none}
+#home:not(.blHome) #rankCard .rcRemain{font-size:11px!important;font-weight:600;color:#e2e9df;text-shadow:none;line-height:1.5;margin-top:2px}
+#home:not(.blHome) #rankCard .rcNext{font-size:10px!important;line-height:1.4;color:#b9cbbf;gap:4px;text-shadow:none}
+#home:not(.blHome) #rankCard .rcNextLabel{color:#a7beae;font-weight:500}
+#home:not(.blHome) #rankCard .rcNext[hidden]{display:none!important}
+#home:not(.blHome) #rankCard .rcBar{height:4px;margin-top:3px;background:#061e17;box-shadow:none;border:0}
+#home:not(.blHome) #rcFill{background:var(--home-rank-light,#c4cec6)!important;box-shadow:none}
+#home:not(.blHome) #hGroup .hCreateCaption{font-size:10px!important;line-height:1.5;color:#c4d5c7;opacity:1;white-space:nowrap;margin-top:3px}
+#home:not(.blHome) #hGroup .hSessionCost{display:flex!important;align-items:center;gap:5px;font-size:11px!important;line-height:1.6;color:#f2d89c;opacity:1;margin-top:2px}
+#home:not(.blHome) .hSessionCost>span{font-size:10px;color:#c2d2c4}
+#home:not(.blHome) .hSessionCost bdi{font-weight:800}
+#home:not(.blHome) .hSessionCost .uiGoldCoin{width:17px!important;height:17px!important}
+#home:not(.blHome) #hProfBtn:focus-visible,#home:not(.blHome) #rankCard:focus-visible,#home:not(.blHome) #hGroup:focus-visible{outline:2px solid #ffe1a1;outline-offset:3px}
+@media(max-width:350px){
+ #home:not(.blHome) .hHead{gap:8px;padding-inline:14px}
+ #home:not(.blHome) #hProfBtn{padding-inline-end:20px;gap:8px}
+ #home:not(.blHome) #hGoldBtn{min-width:75px;font-size:14px;gap:5px}
+ #home:not(.blHome) #hAvaWrap{width:40px;height:40px;min-width:40px}
+ #home:not(.blHome) #hName{font-size:15px}
+ #home:not(.blHome) .hMenu .row2 .hBig{padding:9px!important;gap:4px!important}
+ #home:not(.blHome) .hMenu .row2 .hTileHead{gap:6px}
+ #home:not(.blHome) .hTileIcon{width:32px;height:35px;flex-basis:32px;border-radius:10px}
+ #home:not(.blHome) .hTileIcon img,#home:not(.blHome) .hTileIcon svg{width:32px;height:35px}
+ #home:not(.blHome) .hTileCopy b,#home:not(.blHome) #rcBadge .uiRankBadge{font-size:14px!important}
+ #home:not(.blHome) .hTileCopy small{font-size:9px}
+ #home:not(.blHome) #hGroup .hCreateCaption{font-size:9px!important;white-space:normal}
+}
+@media(max-height:740px){
+ #home:not(.blHome) .hMenu{grid-template-rows:minmax(72px,1.1fr) minmax(48px,.7fr) minmax(112px,1.2fr) minmax(56px,.7fr)}
+ #home:not(.blHome) .hMenu .row2 .hBig{padding-block:7px!important;gap:3px!important}
+ #home:not(.blHome) .hTileIcon{height:32px}
+ #home:not(.blHome) .hTileIcon img,#home:not(.blHome) .hTileIcon svg{height:32px}
+}
+@media(prefers-reduced-motion:reduce){#home:not(.blHome) #rcFill{transition:none}}
+
+/* Sakka uses one menu column, sized within the safe area above shared navigation. */
+#home.blHome{--bl-home-profile:clamp(60px,calc(var(--ui-home-height)*.12 - 10px),80px);--bl-home-hero:clamp(60px,calc(var(--ui-home-height) - 600px),148px);overflow:hidden;overscroll-behavior:none}
+#home.blHome .homeWrap{bottom:calc(78px + var(--ui-safe-bottom,0px));padding-bottom:0;overflow:hidden;overscroll-behavior:none;touch-action:none;-webkit-overflow-scrolling:auto;scrollbar-width:none}
+#home.blHome .hHead{padding-top:calc(8px + var(--ui-safe-top,0px));gap:8px}
+#home.blHome .hProf{min-height:var(--bl-home-profile);padding:6px 8px}
+#home.blHome .hLogo{flex:0 0 auto;padding:8px 0 0;min-height:0;height:auto}
+#home.blHome .hLogo #blSelector{min-height:50px;margin-bottom:6px;padding:3px 6px;gap:0}
+#home.blHome #blSelector .blSwitchGame{min-height:28px;padding-block:3px}
+#home.blHome .hSide{top:calc(26px + var(--ui-safe-top,0px) + var(--bl-home-profile));gap:6px}
+#home.blHome .hSideBtn{width:36px;height:36px;border-radius:12px}
+#home.blHome #blHomeHero{height:var(--bl-home-hero);min-height:0;padding:0 16px;overflow:hidden;justify-content:flex-end}
+#home.blHome #blHomeHero h1{font-size:clamp(30px,calc(var(--ui-home-height)*.1 - 16px),54px);line-height:1;margin:0}
+#home.blHome #blHomeHero p{max-height:clamp(0px,calc(var(--ui-home-height) - 700px),20px);overflow:hidden;margin:3px 0 0;font-size:10px}
+#home.blHome .blHeroArt{position:relative;top:auto;left:auto;width:120px;height:auto;flex:1 1 0;min-height:0;max-height:74px;margin-bottom:5px;overflow:hidden;transform:none}
+#home.blHome .blHeroArt img{width:auto;height:clamp(0px,calc(100% - 14px),56px);left:50%;top:10px;transform:translateX(calc(-50% - 25px)) rotate(-22deg)}
+#home.blHome .blHeroArt img:nth-child(2){top:0;transform:translateX(-50%)}
+#home.blHome .blHeroArt img:nth-child(3){transform:translateX(calc(-50% + 25px)) rotate(22deg)}
+#home.blHome .hMenu{display:flex;flex:1 1 auto;grid-template-rows:none;min-height:0;max-height:none;padding:8px 16px 8px;gap:0;overflow:hidden;overscroll-behavior:none;touch-action:none;scrollbar-width:none}
+#home.blHome #blHomeMenu{display:flex;flex-direction:column;flex:1;min-height:0;height:100%;gap:6px;overflow:hidden;touch-action:none}
+#home.blHome .blMenuSection{display:none}
+#home.blHome #blHomeMenu .blPlayCard{flex:1.1 1 0;min-height:72px;max-height:150px;padding:7px 15px;justify-content:center;gap:2px;border-radius:22px}
+#home.blHome .blPlayCard strong{font-size:clamp(24px,calc(var(--ui-home-height)*.06 - 10px),36px);line-height:1.15}
+#home.blHome .blPlayTop{font-size:9px;line-height:1.4}
+#home.blHome .blPlayBottom{font-size:10px;line-height:1.5;min-width:0;max-width:100%}
+#home.blHome .blPlayBottom>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#home.blHome #blHomeMenu .blTwo{flex:1 1 0;min-height:80px;max-height:140px;gap:9px}
+#home.blHome #blHomeMenu .blCta{height:100%;min-height:0;justify-content:center;padding:7px 12px;gap:2px;border-radius:20px;overflow:hidden}
+#home.blHome #blHomeMenu .blCta strong{font-size:clamp(19px,calc(var(--ui-home-height)*.035 - 1px),24px);line-height:1.3;white-space:nowrap}
+#home.blHome #blHomeMenu .blCta small{font-size:10px;line-height:1.4;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+#home.blHome .blTileIcon{height:20px;margin:0}
+#home.blHome .blTileIcon svg{width:20px;height:20px}
+#home.blHome .blHomeShortcuts{flex:0 0 44px;height:44px;margin:0;gap:9px}
+#home.blHome .blHomeShortcuts button{min-height:44px;font-size:11px}
+#home.blHome #blResume{flex:0 0 44px;height:44px;min-height:44px;margin:0;padding:6px 12px;align-items:center;font-size:11px}
+#home.blHome .homeWrap::-webkit-scrollbar,#home.blHome .hMenu::-webkit-scrollbar,#home.blHome #blHomeMenu::-webkit-scrollbar{display:none;width:0;height:0}
+#home.blHome #blHomeMenu .blCta.mjHasEntryAd>.mjEntryAdBadge{top:8px;left:8px}
+#home.blHome #blHomeMenu .blPlayCard.mjHasEntryAd>.mjEntryAdBadge{top:8px}
+@media(max-height:700px){
+ #home.blHome .hMenu{padding:5px 12px;overflow:hidden;touch-action:none}
+ #home.blHome .homeWrap{touch-action:none}
+ #home.blHome .hLogo{padding-top:6px}
+ #home.blHome .hSide{right:12px}
+ #home.blHome .hSideLeft{right:auto;left:12px}
+ #home.blHome #blHomeHero p{display:none}
+ #home.blHome #blHomeHero{justify-content:center}
+ #home.blHome .blHeroArt{display:none}
+}
+@media(max-height:640px){
+ #home.blHome #blHomeRank{grid-template-columns:minmax(0,1fr) auto;gap:1px;padding-inline-start:22px!important;font-size:9px}
+ #home.blHome #blHomeRank>.blCrest{width:18px;height:22px}
+ #home.blHome #blHomeRank b{font-size:9px}
+ #home.blHome #blHomeRank i{grid-column:1/-1;margin-top:1px}
+ #home.blHome .hNm{font-size:14px;line-height:1.3}
+ #home.blHome .hSide{top:calc(22px + var(--ui-safe-top,0px) + var(--bl-home-profile))}
+ #home.blHome #blHomeMenu{gap:4px}
+ #home.blHome #blHomeMenu .blPlayCard{min-height:66px;padding-block:5px}
+ #home.blHome .blPlayCard strong{font-size:23px}
+ #home.blHome #blHomeMenu .blTwo{min-height:72px}
+ #home.blHome #blHomeMenu .blCta{padding-block:5px}
+ #home.blHome #blHomeMenu .blCta strong{font-size:18px}
+ #home.blHome .blTileIcon,#home.blHome .blTileIcon svg{height:16px}
+ #home.blHome .blHomeShortcuts,#home.blHome #blResume{flex-basis:40px;height:40px;min-height:40px}
+ #home.blHome .blHomeShortcuts button{min-height:40px}
+}

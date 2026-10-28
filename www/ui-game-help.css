@@ -1,0 +1,22 @@
+/* In-game help does not navigate away from the live table. */
+.mjGameHelp{display:inline-flex;align-items:center;justify-content:center;flex:0 0 40px;width:40px;height:40px;min-height:40px;padding:8px;border:1px solid #d9bd7780;border-radius:50%;background:#16392de8;color:#f6df9d;cursor:pointer;touch-action:manipulation}
+.mjGameHelp svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mjGameHelp:focus-visible{outline:3px solid #ffe8ad;outline-offset:2px}
+#blGame .blTop>.mjSakkaTools{display:flex;align-items:center;justify-content:center;gap:6px;flex:none;direction:ltr}
+#blGame .mjSakkaTools>.mjGameHelp{position:static;flex:none;box-sizing:border-box}
+#game #topbar>.mjGameHelp,#onl #topbar>.mjGameHelp{border:1px solid #d9bd7780;background:#16392de8;color:#f6df9d;min-width:36px;width:36px;height:40px;flex-basis:36px;padding:7px}
+#game #topbar .uiMatchWords,#onl #topbar .uiMatchWords{min-width:0}
+#helpModal{z-index:3100!important;background:#031810ad!important;backdrop-filter:blur(3px)}
+#helpModal .mjHelpPanel{box-sizing:border-box!important;width:100%!important;max-width:420px!important;max-height:90dvh!important;overflow:auto!important;background:linear-gradient(160deg,#214b39,#102d22)!important;color:#f5e9cb;border:1px solid #cfb06a88;box-shadow:0 -8px 40px #0005;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px))!important}
+#helpTitle{font:700 21px/1.5 var(--fh)!important;color:#f8df9f!important}
+#helpClose{min-width:44px;min-height:44px!important;border:1px solid #c4ae7755!important;background:#1b3b2f!important;color:#ffe9b6!important;cursor:pointer}
+#helpKindTabs{gap:8px!important;margin-bottom:10px!important}
+#helpKindTabs button{flex:1;min-height:42px;border:1px solid #bba66c66;background:#17372b!important;color:#e6ddc5!important;cursor:pointer;font:700 13px/1.5 var(--fb)}
+#helpKindTabs button.on{background:#ebd29a!important;color:#183c2c!important;border-color:#ebd29a}
+#helpText{box-sizing:border-box;background:#08231d!important;color:#fff2d0!important;border:1px solid #d6bd7a77!important;min-height:110px;max-height:30dvh;line-height:1.8;outline-offset:2px}
+#helpText::placeholder{color:#aabdaf}
+#helpCount{display:block;margin-top:3px;font:11px/1.5 var(--fb);color:#c1cdbb;text-align:left;direction:ltr}
+#helpStatus{font:12px/1.8 var(--fb);color:#e7d7ad;margin:8px 0 0;min-height:22px}
+#helpSubmit{background:linear-gradient(#f2dca9,#d6ba78)!important;color:#123727!important;font:700 17px/1.5 var(--fh)!important;min-height:46px;margin-top:10px!important;cursor:pointer}
+#helpModal button:disabled,#helpText:disabled{opacity:.65;cursor:wait}
+@media(max-height:580px){#blGame .blTop>.mjSakkaTools{gap:4px}#blGame .mjSakkaTools>.mjGameHelp{width:36px;height:40px;padding:7px}#helpModal .mjHelpPanel{padding:10px 14px!important}#helpTitle{font-size:18px!important}#helpText{min-height:88px}#helpModal .mjHelpPanel>div:first-child{margin-bottom:8px!important}}

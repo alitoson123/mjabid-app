@@ -125,7 +125,7 @@ function uiNavRoute(id,overlay=false){
  UI_NAV.screen=id;
  if(['profile','awardsScr','shop','lboard'].includes(id))mountNav(id,{profile:'profile',awardsScr:'awards',shop:'shop',lboard:'board'}[id]);
  const screen=document.getElementById(id);
- if(['home','chat','friends','profile','shop','lboard','awardsScr'].includes(id)&&screen?.animate&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+ if(window.MajabeedBaloot?.state.selected!=='baloot'&&['home','chat','friends','profile','shop','lboard','awardsScr'].includes(id)&&screen?.animate&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   // Paint transition only: dispatch/navigation never waits for this animation.
   UI_NAV.animation=screen.animate([{opacity:.88},{opacity:1}],{duration:150,easing:'ease-out'});
  }

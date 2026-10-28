@@ -11,6 +11,7 @@ function uiProfileSelect(key,focus=false){
 }
 function uiProfileOpen(){
  const other=!!viewedProfile;
+ const membership=document.getElementById('vipProfile');if(membership){if(other)document.getElementById('pfPanelOverview').append(membership);else document.querySelector('#pfPanelAccount .pfPageTitle').after(membership);}
  document.getElementById('pfTabHistory').hidden=other;
  document.getElementById('pfTabAccount').hidden=other;
  const league=document.getElementById('lgProfile');

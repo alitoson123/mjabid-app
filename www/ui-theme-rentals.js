@@ -1,6 +1,7 @@
 /* v363 — Cosmetic access only. No game state or server alarm. */
 const UI_THEME_RENTALS={uid:null,data:null,verified:false,receivedAt:0,monoAt:0,flight:null,generation:0,revision:0,renting:false,lastAttempt:0,error:'',route:'',tick:null,expiry:null};
-const UI_FREE_THEME='theme-midnight';
+const UI_FREE_THEME='theme-persian';
+const UI_FREE_THEMES=new Set([UI_FREE_THEME,'theme-midnight']);
 function uiThemeNow(){
   const r=UI_THEME_RENTALS;
   if(!r.data)return Date.now();
@@ -8,6 +9,15 @@ function uiThemeNow(){
 }
 function uiThemeRead(key){try{return localStorage.getItem(key);}catch(_){return null;}}
 function uiThemeWrite(key,value){try{if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value);}catch(_){}}
+function uiThemeChoiceKey(){return 'wb-theme-explicit-v400:'+(FB.user?.uid||'guest');}
+function uiThemeMigrateDefault(){
+  const selected=uiThemeRead('wb-eq-theme');
+  // Older profiles stored the previous free default without recording a choice.
+  // Keep paid/owned selections; a fresh explicit choice of the cafe stays selected.
+  if(!selected||selected==='theme-midnight'&&uiThemeRead(uiThemeChoiceKey())!=='theme-midnight'){
+    uiThemeWrite('wb-eq-theme',UI_FREE_THEME);
+  }
+}
 function uiThemeSetAccount(uid){
   const r=UI_THEME_RENTALS;if(r.uid===uid)return;
   clearTimeout(r.tick);clearTimeout(r.expiry);r.tick=null;r.expiry=null;
@@ -25,7 +35,7 @@ function uiThemeSetAccount(uid){
   }
 }
 function uiThemeAccess(id){
-  if(id===UI_FREE_THEME)return {id,active:true,permanent:true,expiresAt:0,source:'free'};
+  if(UI_FREE_THEMES.has(id))return {id,active:true,permanent:true,expiresAt:0,source:'free'};
   const r=UI_THEME_RENTALS,entry=r.uid===FB.user?.uid?r.data?.themes.find(t=>t.id===id):null;
   if(!entry)return {id,active:false,permanent:false,expiresAt:0,source:'none'};
   return {...entry,active:entry.permanent===true||Number(entry.expiresAt)>uiThemeNow()};
@@ -39,12 +49,13 @@ function uiThemeRemaining(expiresAt){
 }
 function uiThemeAccessText(id){
   const a=uiThemeAccess(id);
-  if(a.source==='free')return 'مجانية للجميع · الخلفية الأساسية';
+  if(a.source==='free')return id===UI_FREE_THEME?'مجانية للجميع · الخلفية الأساسية':'مجانية للجميع';
   if(a.permanent)return 'ملكية سابقة محفوظة · دائمة';
   if(a.active)return (a.source==='legacy-gift'?'هدية انتقالية · ':'متبقٍ · ')+uiThemeRemaining(a.expiresAt);
   return (a.expiresAt?'انتهت المدة · ':'')+'2000 كوينز · 7 أيام';
 }
 function uiThemeResolve(){
+  uiThemeMigrateDefault();
   const selected=shopEquipped('theme');
   if(uiThemeAccess(selected).active)return selected;
   // Do not discard a saved choice while account verification is still pending.
@@ -64,7 +75,8 @@ async function uiThemeRequest(body){
   finally{clearTimeout(timeout);}
 
   if(!response.ok||!data?.ok)throw Error(data?.error||'تعذّر التحقق من الإيجار؛ حاول مجددًا');
-  if(!Number.isFinite(data.serverNow)||!Array.isArray(data.themes)||data.freeThemeId!==UI_FREE_THEME)throw Error('حدّث خدمة الخلفيات ثم أعد المحاولة');
+  // Both metadata versions are supported while website/native releases roll out.
+  if(!Number.isFinite(data.serverNow)||!Array.isArray(data.themes)||!UI_FREE_THEMES.has(data.freeThemeId))throw Error('حدّث خدمة الخلفيات ثم أعد المحاولة');
   return data;
 }
 function uiThemeAccept(data,uid,generation){
@@ -112,7 +124,7 @@ function uiThemeRenderStatus(){
   const r=UI_THEME_RENTALS,box=document.getElementById('uiThemeStatus');
   if(box){
     const id=uiThemeResolve(),theme=SHOP_THEMES.find(t=>t.id===id);
-    box.textContent=(theme?.name||'قهوة الأولين')+' — '+uiThemeAccessText(id);
+    box.textContent=(theme?.name||'السجّاد الفارسي')+' — '+uiThemeAccessText(id);
   }
   document.querySelectorAll('[data-theme-remaining]').forEach(el=>{el.textContent=uiThemeAccessText(el.dataset.themeRemaining);});
   const error=document.getElementById('uiThemeServiceNote');

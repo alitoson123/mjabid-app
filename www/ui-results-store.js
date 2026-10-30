@@ -215,6 +215,7 @@ function uiPresentLocalResult(won,draw){
 
 // One catalog and one active theme, including migration of the older local picker.
 function uiMigrateThemeChoice(){
+  uiThemeMigrateDefault();
   if(localStorage.getItem('wb-theme-catalog-v320'))return;
   const legacy=localStorage.getItem('wb-ui-table'),equipped=localStorage.getItem('wb-eq-theme');
   let next=equipped;
@@ -240,7 +241,7 @@ function uiRenderThemePreview(){
   const scene=document.getElementById('uiShopScene');
   scene.classList.toggle('uiIllustratedRoom',!!theme.bg&&theme.bg.startsWith('ui-art/rooms-v362/'));
   scene.style.backgroundImage=`linear-gradient(0deg,#071c17aa,transparent 75%),url("${theme.preview||theme.bg}")`;
-  scene.innerHTML='<img class="uiPreviewTable" src="'+(theme.table||'bg/table-center.png'+BGV)+'" alt=""><div class="uiPreviewCards" aria-hidden="true"><i>♦</i><i>♣</i><i>♥</i></div><span class="uiSceneBadge">'+(active?'خلفيتك الحالية':access.source==='free'?'المجانية الأساسية':access.permanent?'ملكية سابقة':access.active?'جاهزة للتفعيل':'إيجار لمدة 7 أيام')+'</span>';
+  scene.innerHTML='<img class="uiPreviewTable" src="'+(theme.table||'bg/table-center.png'+BGV)+'" alt=""><div class="uiPreviewCards" aria-hidden="true"><i>♦</i><i>♣</i><i>♥</i></div><span class="uiSceneBadge">'+(active?'خلفيتك الحالية':access.source==='free'?(theme.id===UI_FREE_THEME?'المجانية الأساسية':'خلفية مجانية'):access.permanent?'ملكية سابقة':access.active?'جاهزة للتفعيل':'إيجار لمدة 7 أيام')+'</span>';
   document.getElementById('uiShopSceneName').textContent=theme.name;
   const note=document.getElementById('uiShopSceneNote');note.dataset.themeRemaining=theme.id;note.textContent=uiThemeAccessText(theme.id);
   const button=document.getElementById('uiShopActivate');
@@ -282,6 +283,7 @@ async function uiActivateTheme(id){
   try{
     if(!uiThemeAccess(id).active&&!(await uiThemeRent(id)))return;
     localStorage.setItem('wb-eq-theme',id);localStorage.setItem('wb-ui-table','original');
+    uiThemeWrite(uiThemeChoiceKey(),id);
     try{fbSaveProfile()}catch(_){}
     applyEquippedTheme();refreshHome();uiThemeRenderStatus();uiThemePlan();toast2('تم تفعيل '+theme.name);
   }catch(e){if((FB.user?.uid||null)===uid&&UI_THEME_RENTALS.generation===generation){UI_THEME_RENTALS.error=e.message;toast2(e.message||'تعذّر تفعيل الخلفية');}}

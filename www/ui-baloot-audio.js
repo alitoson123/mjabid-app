@@ -78,7 +78,7 @@
   return [];
  }
  function scope(g){return [g.id,g.round,g.phase,g.turn,g.deadline].join(':');}
- function sync(g,me,previous,serverNow=Date.now()){
+ function sync(g,me,previous,serverNow=Date.now(),options={}){
   if(!g)return;const key='mj-baloot-audio-cursor',currentScope=scope(g);let cursor=A.cursor;
   if(!cursor||cursor.match!==g.id){try{cursor=JSON.parse(localStorage.getItem(key)||'null')}catch(_){}if(cursor?.match!==g.id)cursor={match:g.id,seq:previous||g.round===1&&g.cues?.length===1?0:g.cueSeq};A.cursor=cursor;}
   const unseen=(g.cues||[]).filter(e=>e.id>cursor.seq),latest=unseen.at(-1);
@@ -93,7 +93,7 @@
   const fresh=unseen.filter(e=>(e.round===undefined||e.round===g.round)&&(!e.at||serverNow-e.at<1200));
   let event=fresh.at(-1);if(!event)return;
   if(event.type==='result')event={buyer:g.roundResult?.contract?.buyer,...event,matchWinner:g.winner};
-  const effects=plan(event,me).filter(id=>assets[id]&&!assets[id].speech);for(const id of effects)play(id);
+  const effects=plan(event,me).filter(id=>assets[id]&&!assets[id].speech);for(const id of effects)if(!options.motionEffects||!['card_play','trick_collect'].includes(id))play(id);
   // A purchase and its bid share a single move. Second-hokum confirmation must not repeat the buyer.
   if(event.type==='purchase'&&event.kind==='hokum'&&event.bidRound===2){const bid=fresh.at(-2);event=bid?.type==='bid'?bid:null;}
   if(event?.type==='card'&&!event.baloot&&!event.akka){const project=fresh.at(-2);if(project?.type==='project'&&project.seat===event.seat)event=project;}

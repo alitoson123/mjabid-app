@@ -1,0 +1,12 @@
+/* Viewport-space flights are isolated from scaled game frames and server DOM reconciliation. */
+.blMotionLayer{position:fixed;inset:0;z-index:1300;pointer-events:none;overflow:hidden;contain:layout style;direction:ltr}
+.blMotionCard{position:absolute;left:0;top:0;margin:0;padding:0;pointer-events:none;transform-origin:50% 50%;will-change:transform,opacity;backface-visibility:hidden;isolation:isolate}
+.blMotionCard>img.blCardFace{position:absolute;inset:0;display:block;width:100%;height:100%;margin:0;border:0;border-radius:5px;background:#fffdf7;object-fit:fill;box-shadow:none;user-select:none;-webkit-user-drag:none}
+.blMotionShadow{position:absolute;inset:2px 0 -2px;border-radius:6px;background:#000;filter:blur(5px);transform:translate3d(0,4px,0);opacity:.26;will-change:opacity;pointer-events:none}
+#blGame .blField .blPlayed[data-bl-motion-hidden="1"]{visibility:hidden!important}
+#blGame .blField .blPlayed{margin-top:var(--bl-motion-center-shift,0px)}
+#blGame .blHand button{transition:filter .12s,translate var(--bl-motion-select-ms,100ms) cubic-bezier(.2,.72,.25,1);backface-visibility:hidden}
+/* A back and face share the same aspect ratio, including the tiny seat fans. */
+#blGame .blBacks i{height:36.4px;box-sizing:border-box;transition:transform var(--bl-motion-hand-ms,210ms) cubic-bezier(.2,.72,.25,1)}
+@media(max-height:720px){#blGame .blBacks i{height:30.8px}}
+@media(prefers-reduced-motion:reduce){.blMotionLayer{display:none!important}#blGame .blHand button,#blGame .blBacks i{transition:none!important}}

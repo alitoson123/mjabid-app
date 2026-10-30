@@ -15,6 +15,16 @@
    function notify(){try{onChange();}catch(_){}}
    function save(uid,count){memory.set(uid,count);try{storage().setItem(prefix+uid,String(count));unsaved.delete(uid);}catch(_){unsaved.add(uid);}notify();}
    function snapshot(){const uid=user(),count=remaining(uid),platform=native(),member=freeMember();return {remaining:count,due:!!uid&&platform&&!member&&count===0,exempt:member,native:platform,busy};}
+   function afterAdForeground(){
+    const doc=root.document;
+    if(!doc?.hidden)return Promise.resolve();
+    // Native dismissal may precede the WebView's resume/visibility event.
+    // Keep this new entry pending; never create its seat while still hidden.
+    return new Promise(resolve=>{
+     const ready=()=>{if(doc.hidden)return;doc.removeEventListener('visibilitychange',ready);doc.removeEventListener('resume',ready);root.removeEventListener('pageshow',ready);resolve();};
+     doc.addEventListener('visibilitychange',ready);doc.addEventListener('resume',ready);root.addEventListener('pageshow',ready);ready();
+    });
+   }
    async function run(work,{isCurrent=()=>true}={}){
     const uid=user(),current=()=>{try{return user()===uid&&isCurrent()!==false;}catch(_){return false;}};
     if(busy||!uid||typeof work!=='function'||!current())return false;
@@ -30,6 +40,8 @@
       // A completed ad earns two future entries, including when the pending
       // destination was cancelled while it played. A failed ad earns none.
       if(shown)save(uid,2);
+      if(!current())return false;
+      await afterAdForeground();
       if(!current())return false;
       return (await work())!==false&&user()===uid;
      }

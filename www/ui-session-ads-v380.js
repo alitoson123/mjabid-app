@@ -55,7 +55,10 @@
               // A late load after the deadline must never show over the sessions list.
               if (ended) return;
               clearTimeout(timer);
-              timer = setTimeout(() => finish(false), 10000);
+              // Once presentation is dispatched the native operation cannot be
+              // cancelled here. A timeout would admit the player to a table
+              // while this same ad can still appear later over the match.
+              // Only native dismissal/failure may release the entry gate now.
               await plugin.showInterstitial();
               // Native show() is not dismissal. Keep navigation waiting for Dismissed.
               if (!ended) { shown = true; clearTimeout(timer); }

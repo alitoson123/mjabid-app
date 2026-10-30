@@ -1214,3 +1214,13 @@ body{position:fixed;inset:0;width:100%;overscroll-behavior:none}
 #uiThemeServiceNote[hidden]{display:none}
 .uiThemeAccountStatus{margin:14px 16px 0;padding:12px 14px;border:1px solid var(--ui-paper-line);border-radius:14px;background:var(--ui-paper);color:var(--ui-text);font:700 12px/1.8 var(--fb);font-variant-numeric:tabular-nums}
 #profile.uiOtherProfile .uiThemeAccountStatus{display:none}
+/* Persian uses Sakka's blue table artwork; retain every Majabeed layout dimension. */
+#game .tableWood.uiPersianTable,#onl .tableWood.uiPersianTable,#onl[data-league="true"] .tableWood.uiPersianTable{box-shadow:none!important;border-radius:0;filter:drop-shadow(0 12px 20px #0007)}
+.tableWood.uiPersianTable>.rg1,.tableWood.uiPersianTable>.rg2{display:none}
+.frBtn.frRemove{background:#f6e4dc;color:#8b382e;border:1px solid #dab0a4}
+.uiFriendRemove{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;background:#071b14bd;direction:rtl}
+.uiFriendRemove section{width:min(100%,360px);padding:24px;border:1px solid #d8bf7b;border-radius:24px;background:#123a2d;color:#f8edcf;box-shadow:0 18px 60px #0005;text-align:right;font-family:var(--fb)}
+.uiFriendRemove h2{margin:0 0 14px;font-size:22px}.uiFriendRemove p{margin:0 0 18px;line-height:1.8;font-size:15px;overflow-wrap:anywhere}
+.uiFriendRemove .uiFriendRemoveStatus:empty{display:none}.uiFriendRemove .uiFriendRemoveStatus{color:#f5d597;font-size:14px}
+.uiFriendRemoveActions{display:flex;gap:10px}.uiFriendRemoveActions button{flex:1;min-height:44px;padding:10px;border:1px solid #d8bf7b66;border-radius:12px;background:#2b5541;color:#fff7df;font:700 14px var(--fb);cursor:pointer}
+.uiFriendRemoveActions [data-remove-confirm]{background:#a14537;border-color:#cb7461}.uiFriendRemoveActions button:disabled{opacity:.65;cursor:wait}.uiFriendRemoveActions button:focus-visible{outline:2px solid #f5d597;outline-offset:3px}

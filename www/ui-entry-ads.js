@@ -2,7 +2,7 @@
 (function(root){
  'use strict';
  root.MajabeedEntryAds={
-  create({getUser,isNative=()=>!!root.Capacitor?.isNativePlatform?.(),isExempt=async()=>false,exempt=()=>false,showAd=async()=>false,storage=()=>root.localStorage,onChange=()=>{}}){
+  create({getUser,isNative=()=>!!root.Capacitor?.isNativePlatform?.(),isExempt=async()=>false,exempt=()=>false,chooseEntry=async()=>'watch',openStore=()=>{},showAd=async()=>false,storage=()=>root.localStorage,onChange=()=>{}}){
    const memory=new Map(),unsaved=new Set(),prefix='mj-entry-ads-v398:';let busy=false;
    const user=()=>{try{const uid=getUser();return typeof uid==='string'&&uid?uid:null;}catch(_){return null;}};
    const native=()=>{try{return isNative()===true;}catch(_){return false;}};
@@ -35,6 +35,11 @@
      if(!current())return false;
      const count=remaining(uid),charged=platform&&known&&!member;
      if(charged&&count===0){
+      // Declining the offer is not an ad failure: it must never admit a player.
+      let choice='cancel';try{choice=await chooseEntry({isCurrent:current});}catch(_){}
+      if(!current())return false;
+      if(choice==='store'){await openStore();return false;}
+      if(choice!=='watch')return false;
       let shown=false;try{shown=(await showAd())===true;}catch(_){}
       if(user()!==uid)return false;
       // A completed ad earns two future entries, including when the pending

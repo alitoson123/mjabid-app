@@ -4,7 +4,9 @@
   const BUCKET='jops-e508d.firebasestorage.app', DAY=86400000;
   const LIMIT_BYTES=20*1024*1024, LIMIT_ITEMS=400, MAX_FILE=2*1024*1024;
   const memory=new Map(), pending=new Map(), failures=new Map();
-  const stats={network:0,diskHits:0,memoryHits:0,failures:0};
+  const stats={network:0,diskHits:0,memoryHits:0,failures:0,warmHits:0};
+ const RECENT_KEY='mj-chat-avatars-v1', WARM_ITEMS=12, WARM_BYTES=2*1024*1024;
+ const decodedRecent=[];let warmPromise;
   let dbPromise, active=0, pruneChain=Promise.resolve();
   const queue=[];
   function storageURL(value){
@@ -56,7 +58,32 @@
     while(memory.size>100){const key=memory.keys().next().value;URL.revokeObjectURL(memory.get(key).src);memory.delete(key);}
     return item.src;
   }
-  async function load(url){
+  function peek(url){const hit=memory.get(url);return hit&&hit.expires>Date.now()?hit.src:null;}
+ function rememberChat(urls){
+  try{const recent=[...new Set(urls.filter(storageURL))].slice(0,WARM_ITEMS);
+   if(recent.length)root.localStorage.setItem(RECENT_KEY,JSON.stringify(recent));
+  }catch(_){}
+ }
+ // Rehydrate a few recently viewed thumbnails from local storage, never fetch them.
+ function warmRecent(){
+  if(warmPromise)return warmPromise;
+  return warmPromise=(async()=>{
+   let urls=[];try{const saved=JSON.parse(root.localStorage.getItem(RECENT_KEY)||'[]');
+    if(Array.isArray(saved))urls=[...new Set(saved.filter(storageURL))].slice(0,WARM_ITEMS);
+   }catch(_){}let bytes=0;
+   for(const url of urls){
+    if(peek(url)||pending.has(url))continue;
+    const row=await diskGet(url);
+    if(!row||row.expires<=Date.now()||!row.blob||!row.blob.size||row.blob.size>256*1024||bytes+row.blob.size>WARM_BYTES)continue;
+    if(peek(url)||pending.has(url))continue;
+    bytes+=row.blob.size;const src=keep(url,row.blob,row.expires);stats.warmHits++;
+    try{const img=new Image();img.src=src;decodedRecent.push(img);
+     if(typeof img.decode==='function')await img.decode().catch(()=>{});
+    }catch(_){}
+   }
+  })().catch(()=>{});
+ }
+ async function load(url){
     if(!storageURL(url))return url;
     const now=Date.now(),hit=memory.get(url);
     if(hit&&hit.expires>now){stats.memoryHits++;return hit.src;}
@@ -94,10 +121,14 @@
   function scan(node){if(!node||node.nodeType!==1)return;
     const list=[];if(node.matches('img[data-mj-avatar]'))list.push(node);
     node.querySelectorAll('img[data-mj-avatar]').forEach(img=>list.push(img));
-    list.forEach(img=>{if(watched.has(img))return;watched.add(img);if(observer)observer.observe(img);else hydrate(img);});
+    list.forEach(img=>{if(watched.has(img))return;watched.add(img);
+   const ready=peek(img.getAttribute('data-mj-avatar'));if(ready){img.loading='eager';if(img.getAttribute('src')!==ready)img.src=ready;return;}
+   if(observer)observer.observe(img);else hydrate(img);});
   }
   function init(){scan(document.body);new MutationObserver(records=>records.forEach(r=>r.addedNodes.forEach(scan)))
     .observe(document.body,{childList:true,subtree:true});}
-  root.MajabeedImages={source,storageURL,load,prepare:hydrate,stats};
+  root.MajabeedImages={source,storageURL,load,prepare:hydrate,peek,rememberChat,warmRecent,stats};
+ if(typeof root.requestIdleCallback==='function')root.requestIdleCallback(warmRecent,{timeout:2000});
+ else setTimeout(warmRecent,800);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(window);

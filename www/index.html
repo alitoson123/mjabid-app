@@ -691,8 +691,8 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-<script src="image-cache.js"></script>
-<link rel="stylesheet" href="ui-polish.css?v=401-friends-1">
+<script src="image-cache.js?v=401-firebase-chat-1"></script>
+<link rel="stylesheet" href="ui-polish.css?v=401-weekly-hotfix-1">
 <link rel="stylesheet" href="ui-friendly-v369.css?v=370">
 <script defer src="ui-theme-rentals.js?v=401-flow-1"></script>
 <script defer src="ui-results-store.js?v=401-flow-1"></script>
@@ -718,8 +718,8 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 <link rel="stylesheet" href="ui-entry-v380.css?v=399-project-1">
 <script src="ui-entry-v380.js?v=399-project-1"></script>
 <script src="ui-session-ads-v380.js?v=401-flow-1"></script>
-<script src="ui-entry-ads.js?v=401-flow-1"></script>
-<link rel="stylesheet" href="ui-entry-ads.css?v=399-project-1">
+<script src="ui-entry-ads.js?v=401-ad-choice-1"></script>
+<link rel="stylesheet" href="ui-entry-ads.css?v=401-ad-choice-1">
 <link rel="stylesheet" href="ui-friendly-hand.css?v=399-project-1">
 <link rel="stylesheet" href="ui-fixes-v381.css?v=398-brand-1">
 <script defer src="ui-vip.js?v=383"></script>
@@ -1527,7 +1527,7 @@ const $=s=>document.querySelector(s);
 // ⚠️ الصق مفاتيح مشروعك هنا (من إعدادات Firebase → تطبيق الويب).
 // هذه المفاتيح آمنة للنشر في كود الواجهة (مصمّمة لذلك).
 // رقم إصدار التطبيق — يُحدَّث يدويًا مع كل نسخة تُرفع للمتاجر (مو نفس رقم كاش الـSW)
-const APP_VERSION='2.2.16'; // V401 FRIENDS 1: friend removal and Sakka profile corrections.
+const APP_VERSION='2.2.19'; // V401 IOS AUDIO 1: audio recovery after foreground and native ads.
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCZZrU2tip4efYEfYhUi9F_DNfuRZ22adU",
   authDomain: "jops-e508d.firebaseapp.com",
@@ -2033,39 +2033,75 @@ const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()
 
 /* ================= الأصوات (مولّدة — بلا ملفات) ================= */
 let AC=null, muted=false;
-function ac(){
+// V401 IOS AUDIO: common lifecycle, bounded recovery, no stale effect backlog.
+const UI_AUDIO={generation:0,paused:false,gestured:false,batch:0,activeBatch:0,latestFx:0,sources:new Set(),resuming:new WeakMap(),probes:new WeakMap(),stalled:new WeakMap()};
+function uiAudioBlocked(){return muted||UI_AUDIO.paused||document.hidden;}
+function uiResumeAudioContext(context,gesture=false){
+  if(!context||uiAudioBlocked()||context.state==='closed')return Promise.resolve(false);
+  if(context.state==='running')return Promise.resolve(true);
+  const existing=UI_AUDIO.resuming.get(context);if(existing&&!gesture)return existing;
+  let resume;try{resume=context.resume();}catch(_){return Promise.resolve(false);}
+  let timer;
+  const task=Promise.race([Promise.resolve(resume).then(()=>context.state==='running',()=>false),new Promise(resolve=>{timer=setTimeout(()=>resolve(false),600);})])
+    .finally(()=>{clearTimeout(timer);if(UI_AUDIO.resuming.get(context)===task)UI_AUDIO.resuming.delete(context);});
+  UI_AUDIO.resuming.set(context,task);return task;
+}
+function uiTrackAudioSource(source,nodes=[]){
+  const entry={source,nodes};UI_AUDIO.sources.add(entry);
+  source.onended=()=>{UI_AUDIO.sources.delete(entry);for(const node of [source,...nodes])try{node.disconnect();}catch(_){}};
+  return source;
+}
+function uiCancelAudioEffects(){
+  UI_AUDIO.generation++;UI_AUDIO.latestFx=++UI_AUDIO.batch;
+  for(const entry of UI_AUDIO.sources){try{entry.source.stop();}catch(_){}for(const node of [entry.source,...entry.nodes])try{node.disconnect();}catch(_){}}
+  UI_AUDIO.sources.clear();window.GameSoundManager?.stopAll();
+}
+function uiPlayFreshEffect(context,play){
+  if(!context||uiAudioBlocked())return;
+  const generation=UI_AUDIO.generation,at=Date.now(),batch=UI_AUDIO.activeBatch||++UI_AUDIO.batch;
+  UI_AUDIO.latestFx=batch;
+  if(context.state==='running'){try{play();}catch(_){}return;}
+  uiResumeAudioContext(context).then(ok=>{
+    if(ok&&!uiAudioBlocked()&&context===AC&&generation===UI_AUDIO.generation&&batch===UI_AUDIO.latestFx&&Date.now()-at<=300){try{play();}catch(_){}}
+  });
+}
+function uiAudioNeedsReplacement(context,gesture=false){
+  if(!context||context.state==='closed')return true;
+  const stalledAt=UI_AUDIO.stalled.get(context);
+  if(stalledAt===undefined)return false;
+  if(context.currentTime>stalledAt+0.005){UI_AUDIO.stalled.delete(context);return false;}
+  return gesture;
+}
+function uiRetireAudioContext(context){try{Promise.resolve(context?.close()).catch(()=>{});}catch(_){}}
+function ac(gesture=false){
   try{
-    if(!AC){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;AC=new C()}
-    if(AC.state==='suspended')AC.resume();
-    return AC;
-  }catch(e){return null}
+    if(uiAudioBlocked()||!UI_AUDIO.gestured)return null;
+    if(uiAudioNeedsReplacement(AC,gesture)){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;uiCancelAudioEffects();uiRetireAudioContext(AC);AC=new C();}
+    uiResumeAudioContext(AC,gesture);return AC;
+  }catch(_){return null;}
 }
-function tone(f0,f1,dur,type,vol,when){ // نغمة منزلقة
-  const a=ac();if(!a||muted)return;
-  const t=a.currentTime+(when||0);
-  const o=a.createOscillator(),g=a.createGain();
-  o.type=type||'sine';
-  o.frequency.setValueAtTime(f0,t);
-  if(f1&&f1!==f0)o.frequency.exponentialRampToValueAtTime(f1,t+dur);
-  g.gain.setValueAtTime(0.0001,t);
-  g.gain.exponentialRampToValueAtTime(vol||0.12,t+0.008);
-  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
-  o.connect(g).connect(a.destination);
-  o.start(t);o.stop(t+dur+0.02);
+function tone(f0,f1,dur,type,vol,when){
+  const a=ac();if(!a)return;
+  uiPlayFreshEffect(a,()=>{
+    const t=a.currentTime+(when||0),o=a.createOscillator(),g=a.createGain();
+    o.type=type||'sine';o.frequency.setValueAtTime(f0,t);
+    if(f1&&f1!==f0)o.frequency.exponentialRampToValueAtTime(f1,t+dur);
+    g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol||0.12,t+0.008);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g).connect(a.destination);uiTrackAudioSource(o,[g]);o.start(t);o.stop(t+dur+0.02);
+  });
 }
-function swish(dur,freq,vol,when){ // حفيف ورق (ضجيج مرشّح)
-  const a=ac();if(!a||muted)return;
-  const t=a.currentTime+(when||0);
-  const n=Math.floor(a.sampleRate*dur);
-  const buf=a.createBuffer(1,n,a.sampleRate);
-  const d=buf.getChannelData(0);
-  for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
-  const src=a.createBufferSource();src.buffer=buf;
-  const f=a.createBiquadFilter();f.type='bandpass';f.frequency.value=freq||1400;f.Q.value=0.8;
-  const g=a.createGain();g.gain.value=vol||0.22;
-  src.connect(f).connect(g).connect(a.destination);
-  src.start(t);
+function swish(dur,freq,vol,when){
+  const a=ac();if(!a)return;
+  uiPlayFreshEffect(a,()=>{
+    const t=a.currentTime+(when||0),n=Math.floor(a.sampleRate*dur),buf=a.createBuffer(1,n,a.sampleRate),d=buf.getChannelData(0);
+    for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+    const src=a.createBufferSource();src.buffer=buf;
+    const f=a.createBiquadFilter();f.type='bandpass';f.frequency.value=freq||1400;f.Q.value=0.8;
+    const g=a.createGain();g.gain.value=vol||0.22;
+    src.connect(f).connect(g).connect(a.destination);uiTrackAudioSource(src,[f,g]);src.start(t);
+  });
 }
+
 const SFX={
   tick(){tone(1750,1750,0.035,'square',0.06)},                       // اختيار ورقة
   throw(){swish(0.09,900,0.2);tone(240,180,0.06,'sine',0.08,0.02)},  // رمي بالميدان
@@ -2080,6 +2116,9 @@ const SFX={
   win(){[523,659,784,1047].forEach((f,i)=>tone(f,f,0.16,'triangle',0.12,i*0.13))},      // فوز
   lose(){tone(392,392,0.2,'triangle',0.1);tone(311,311,0.3,'triangle',0.1,0.2)}         // خسارة
 };
+
+// Group a multi-part effect; a newer pending effect supersedes an older one.
+for(const key of Object.keys(SFX)){const play=SFX[key];SFX[key]=function(...args){const previous=UI_AUDIO.activeBatch;UI_AUDIO.activeBatch=++UI_AUDIO.batch;try{return play.apply(this,args);}finally{UI_AUDIO.activeBatch=previous;}};}
 
 /* ================= أصوات المقاطع الحقيقية (دردشة اللاعبين + مؤثرات) ================= */
 const VOICE_FILES={
@@ -2103,67 +2142,71 @@ const VOICE_FILES={
 // يسمح بتراكب الأصوات (BufferSource جديد كل استدعاء) بدل ما يقطع صوت سابق لم ينتهِ — مهم بالأونلاين لحدثين متقاربين.
 // tick/fastTick معرَّفة بالبنية لمستقبل ميزة عداد صوتي، بس غير مفعَّلة الآن (لا ملفات، لا استدعاء) حتى تأكيد سامي.
 class SoundManager {
-    constructor() {
-        this.ctx = null;
-        this.buffers = {};
-        this.sounds = {
-            drop1: 'sfx/drop1.wav',  // NEW CODE — صوت الحركة الأول (تنزيل)
-            drop2: 'sfx/drop2.wav',  // NEW CODE — صوت الحركة الثاني (تنزيل) — يتبادل مع الأول بكل حركة
-            arrive: 'sfx/arrive.wav' // NEW CODE — صوت وصول الورقة لمن أكلها (يُضاف فوق صوت الحركة، مؤجَّل)
-        };
-        this._dropToggle = 0; // NEW CODE — 0/1 يتبادل بكل استدعاء playActionSound
-        this.activeSources = [];
-        this.timerInterval = null;
-    }
-    async init() {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContextClass) { console.error("Web Audio API غير مدعومة في هذا المتصفح."); return; }
-        if (this.ctx) return; // NEW CODE — منع إعادة التهيئة لو استُدعيت أكثر من مرة (أول لمسة قد تُطلق أكثر من حدث فتح)
-        this.ctx = new AudioContextClass();
-        const loadPromises = Object.entries(this.sounds).map(async ([key, url]) => {
-            try {
-                const response = await fetch(url);
-                const arrayBuffer = await response.arrayBuffer();
-                this.buffers[key] = await this.ctx.decodeAudioData(arrayBuffer);
-            } catch (error) { console.error(`فشل تحميل الملف الصوتي: ${key} من الرابط: ${url}`, error); }
-        });
-        await Promise.all(loadPromises);
-    }
-    _playSound(bufferKey, options = {}) {
-        if (!this.ctx || !this.buffers[bufferKey]) return null;
-        if (this.ctx.state === 'suspended') this.ctx.resume();
-        const source = this.ctx.createBufferSource();
-        source.buffer = this.buffers[bufferKey];
-        if (options.randomPitch) { const min=0.9,max=1.1; source.playbackRate.value = Math.random()*(max-min)+min; }
-        else if (options.playbackRate) source.playbackRate.value = options.playbackRate;
-        if (options.loop) source.loop = true;
-        source.connect(this.ctx.destination);
-        source.start(0);
-        this.activeSources.push(source);
-        source.onended = () => { this.activeSources = this.activeSources.filter(s => s !== source); };
-        return source;
-    }
-    playActionSound(){ // NEW CODE — صوت أي حركة ورق (أكل/سرقة/رمي/مزايدة) — يتبادل بين drop1 وdrop2 كل مرة لتجنّب التكرار الممل
-        const key = this._dropToggle===0 ? 'drop1' : 'drop2';
-        this._dropToggle = 1 - this._dropToggle;
-        this._playSound(key, { randomPitch: true });
-    }
-    playCardArrive(){ this._playSound('arrive', { randomPitch: false }); } // NEW CODE — صوت وصول الورقة لصاحبها (أكل/سرقة فقط)
-    startTimerTick(isUrgent = false) {
-        this.stopTimerTick();
-        const bufferToUse = isUrgent && this.buffers['fastTick'] ? 'fastTick' : 'tick';
-        this.currentTimerSource = this._playSound(bufferToUse, { loop: true });
-        if (!this.currentTimerSource) {
-            const intervalTime = isUrgent ? 500 : 1000;
-            this.timerInterval = setInterval(() => { this._playSound(bufferToUse); }, intervalTime);
-        }
-    }
-    stopTimerTick() {
-        if (this.currentTimerSource) { try{this.currentTimerSource.stop()}catch(e){} this.currentTimerSource=null; }
-        if (this.timerInterval) { clearInterval(this.timerInterval); this.timerInterval=null; }
-    }
+  constructor(){
+    this.ctx=null;this.buffers={};this.sounds={drop1:'sfx/drop1.wav',drop2:'sfx/drop2.wav',arrive:'sfx/arrive.wav'};
+    this._dropToggle=0;this.activeSources=[];this.timerInterval=null;this._loading={};this._retryAfter={};this._generation=0;this._requests={};
+  }
+  init(gesture=false){
+    if(uiAudioBlocked()||!UI_AUDIO.gestured)return Promise.resolve();
+    const Context=window.AudioContext||window.webkitAudioContext;if(!Context)return Promise.resolve();
+    try{if(uiAudioNeedsReplacement(this.ctx,gesture)){this.stopAll();uiRetireAudioContext(this.ctx);this.ctx=new Context();this._loading={};}}
+    catch(_){return Promise.resolve();}
+    // Invoke resume synchronously while still inside a trusted gesture.
+    uiResumeAudioContext(this.ctx,gesture);
+    return Promise.all(Object.keys(this.sounds).map(key=>this._load(key)));
+  }
+  _load(key){
+    if(this.buffers[key])return Promise.resolve(this.buffers[key]);
+    if(this._loading[key])return this._loading[key];
+    if(!this.ctx||!this.sounds[key]||Date.now()<(this._retryAfter[key]||0))return Promise.resolve(null);
+    const context=this.ctx;
+    const task=Promise.resolve().then(async()=>{
+      try{
+        const response=await fetch(this.sounds[key]);if(!response.ok)throw Error('audio missing');
+        const decoded=await context.decodeAudioData(await response.arrayBuffer());
+        if(this.ctx!==context)return null;
+        this.buffers[key]=decoded;delete this._retryAfter[key];return decoded;
+      }catch(_){this._retryAfter[key]=Date.now()+1000;return null;}
+      finally{if(this._loading[key]===task)delete this._loading[key];}
+    });this._loading[key]=task;return task;
+  }
+  _playSound(bufferKey,options={}){
+    if(uiAudioBlocked()||!UI_AUDIO.gestured)return null;
+    if(!this.ctx||this.ctx.state==='closed')this.init();
+    const context=this.ctx;if(!context)return null;
+    const generation=this._generation,epoch=UI_AUDIO.generation,at=Date.now(),channel=bufferKey==='arrive'?'arrive':'action';
+    const request=this._requests[channel]=(this._requests[channel]||0)+1;
+    const start=()=>{
+      if(uiAudioBlocked()||this.ctx!==context||context.state!=='running'||!this.buffers[bufferKey]||generation!==this._generation||epoch!==UI_AUDIO.generation||Date.now()-at>600)return null;
+      const source=context.createBufferSource();source.buffer=this.buffers[bufferKey];
+      if(options.randomPitch)source.playbackRate.value=0.9+Math.random()*0.2;
+      else if(options.playbackRate)source.playbackRate.value=options.playbackRate;
+      if(options.loop)source.loop=true;
+      source.connect(context.destination);this.activeSources.push(source);
+      source.onended=()=>{this.activeSources=this.activeSources.filter(s=>s!==source);try{source.disconnect();}catch(_){}};
+      try{source.start(0);return source;}catch(_){source.onended();return null;}
+    };
+    if(context.state==='running'&&this.buffers[bufferKey])return start();
+    if(options.loop)return null;
+    // Keep only the newest pending action/arrival; never burst old actions on resume.
+    Promise.all([uiResumeAudioContext(context),this._load(bufferKey)]).then(([ok])=>{if(ok&&this._requests[channel]===request)start();});
+    return null;
+  }
+  stopAll(){
+    this._generation++;this._requests={};this.stopTimerTick();
+    for(const source of this.activeSources){try{source.stop();}catch(_){}try{source.disconnect();}catch(_){}}
+    this.activeSources=[];
+  }
+  playActionSound(){const key=this._dropToggle===0?'drop1':'drop2';this._dropToggle=1-this._dropToggle;return this._playSound(key,{randomPitch:true});}
+  playCardArrive(){return this._playSound('arrive',{randomPitch:false});}
+  startTimerTick(isUrgent=false){
+    this.stopTimerTick();const key=isUrgent&&this.buffers.fastTick?'fastTick':'tick';
+    this.currentTimerSource=this._playSound(key,{loop:true});
+    if(!this.currentTimerSource)this.timerInterval=setInterval(()=>this._playSound(key),isUrgent?500:1000);
+  }
+  stopTimerTick(){if(this.currentTimerSource){try{this.currentTimerSource.stop();}catch(_){}this.currentTimerSource=null;}if(this.timerInterval){clearInterval(this.timerInterval);this.timerInterval=null;}}
 }
-window.GameSoundManager = new SoundManager();
+window.GameSoundManager=new SoundManager();
 
 
 const _voiceCache={};
@@ -2171,19 +2214,64 @@ const _voiceCache={};
 // مباشرة بلمسة المستخدم بنفس اللحظة — وأحداث لاعبين آخرين (سرقة، استقرار مزايدة) تصل عبر الشبكة
 // بلا أي لمسة من هذا المستخدم بالذات، فيُمنع صوتها بصمت. تشغيل صامت خفيف مرة واحدة يفتح الصوت لبقية الجلسة كاملة.
 let _audioUnlocked=false;
-function unlockAudioOnce(){
-  if(_audioUnlocked)return;_audioUnlocked=true;
-  GameSoundManager.init(); // NEW CODE — نفس لحظة فتح الصوت الأصلية، يضمن الامتثال لسياسة المتصفحات من البداية
-  try{ac()}catch(e){} // NEW CODE — يفتح/يستأنف AudioContext الخاص بنظام SFX الاصطناعي (tone/swish) بنفس لحظة اللمسة الحقيقية
-  try{
-    const a=new Audio(VOICE_FILES.eatSound);a.volume=0;
-    a.play().then(()=>{a.pause();a.currentTime=0}).catch(()=>{});
-  }catch(e){}
+function uiAudioClockProbe(context){
+  if(!context||context.state!=='running'||uiAudioBlocked())return;
+  const generation=UI_AUDIO.generation;if(UI_AUDIO.probes.get(context)===generation)return;UI_AUDIO.probes.set(context,generation);
+  const started=context.currentTime;
+  setTimeout(()=>{
+    if(uiAudioBlocked()||generation!==UI_AUDIO.generation||context.state!=='running'||context.currentTime>started+0.005)return;
+    // WebKit can report running while the audio clock is stopped after an interruption.
+    // One recovery attempt, then mark only a persistently frozen clock for a
+    // replacement on the next trusted gesture. Healthy contexts stay intact.
+    const mark=()=>{if(!uiAudioBlocked()&&generation===UI_AUDIO.generation&&context.currentTime<=started+0.005)UI_AUDIO.stalled.set(context,context.currentTime);};
+    let suspend;
+    try{suspend=context.suspend();}catch(_){mark();return;}
+    let timeout;
+    Promise.race([Promise.resolve(suspend).then(()=>true,()=>false),new Promise(resolve=>{timeout=setTimeout(()=>resolve(false),600);})]).then(ok=>{
+      clearTimeout(timeout);
+      if(uiAudioBlocked()||generation!==UI_AUDIO.generation)return;
+      if(!ok){mark();return;}
+      uiResumeAudioContext(context).then(()=>{setTimeout(mark,250);});
+    });
+  },250);
 }
-['pointerdown','touchstart','click'].forEach(ev=>document.addEventListener(ev,unlockAudioOnce,{once:true,passive:true}));
+function unlockAudioOnce(event){
+  if(event&&event.isTrusted===false)return;
+  if(event?.type==='keydown'&&(event.repeat||event.metaKey||event.ctrlKey||event.altKey))return;
+  if(document.hidden)return;
+  UI_AUDIO.paused=false;
+  UI_AUDIO.gestured=true;
+  if(muted)return;
+  try{const context=ac(true);_audioUnlocked=context?.state==='running';}catch(_){}
+  try{GameSoundManager.init(true);}catch(_){}
+  try{window.BalootAudio?.unlock({gesture:true});}catch(_){}
+  // Keep the existing HTMLAudio quick-phrase path. Prime only until it succeeds.
+  if(!unlockAudioOnce.mediaReady&&!unlockAudioOnce.mediaPending){
+    try{const a=new Audio(GameSoundManager.sounds.drop1);a.volume=0;unlockAudioOnce.mediaPending=true;
+      let timer;const play=Promise.resolve(a.play()).then(()=>{unlockAudioOnce.mediaReady=true;a.pause();a.currentTime=0;},()=>{});
+      Promise.race([play,new Promise(resolve=>{timer=setTimeout(resolve,600);})]).finally(()=>{clearTimeout(timer);unlockAudioOnce.mediaPending=false;});
+    }catch(_){unlockAudioOnce.mediaPending=false;}
+  }
+}
+function uiAudioPause(){
+  UI_AUDIO.paused=true;uiCancelAudioEffects();
+  try{window.BalootAudio?.suspend();}catch(_){}
+  for(const a of Object.values(_voiceCache))try{a.pause();a.currentTime=0;}catch(_){}
+}
+function uiAudioForeground(){
+  if(document.hidden)return;UI_AUDIO.paused=false;uiCancelAudioEffects();
+  if(!UI_AUDIO.gestured||muted)return;
+  for(const context of [AC,GameSoundManager.ctx]){uiResumeAudioContext(context).then(ok=>{if(ok)uiAudioClockProbe(context);});}
+  try{window.BalootAudio?.unlock({probe:true});}catch(_){}
+}
+['pointerdown','touchend','click','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudioOnce,{capture:true,passive:true}));
+document.addEventListener('visibilitychange',()=>document.hidden?uiAudioPause():uiAudioForeground());
+document.addEventListener('pause',uiAudioPause);document.addEventListener('resume',uiAudioForeground);
+window.addEventListener('pagehide',uiAudioPause);window.addEventListener('pageshow',uiAudioForeground);
+
 // NEW CODE — صوت "كسب الأكلة" يتأخر 320ms ليتزامن مع نهاية أنيميشن طيران الورقة فعلياً (مدة ghost.animate الحقيقية بـrenderScatterField)، بدل ما ينطلق فوراً مع بداية الحركة
 function playVoice(key){
-  if(muted)return;
+  if(uiAudioBlocked())return;
   try{
     let a=_voiceCache[key];
     if(!a){a=new Audio(VOICE_FILES[key]);a.volume=0.85;_voiceCache[key]=a}
@@ -2249,6 +2337,7 @@ function uiCardMotion(el,frames,options,removeAfter){
   }catch(_){cleanup();return null}
 }
 function uiSoundButtons(){
+  if(muted)uiCancelAudioEffects();
   for(const id of ['sndBtn','oSnd']){
     const el=document.getElementById(id);if(!el)continue;
     el.innerHTML='<svg class="uiIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4 6 8H3v8h3l5 4V4Z"/>'+(muted?'<path d="m16 9 6 6m0-6-6 6"/>':'<path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/>')+'</svg>';
@@ -4239,13 +4328,18 @@ let ACTIVE_SESSIONS=[]; // NEW CODE
 function uiActiveSessionVisible(d,now=Date.now()){
  return !!d&&['lobby','playing'].includes(d.status)&&Number.isFinite(d.updatedAt)&&now-d.updatedAt<20*60*1000&&Array.isArray(d.seats)&&d.seats.some(p=>p&&!p.isBot&&!p.bot);
 }
+function uiActiveSessionsGame(){
+  const current=window.MajabeedBaloot?.state?.selected||document.getElementById('frame')?.dataset.majabeedGame;
+  if(current)return current;
+  try{return localStorage.getItem('mj-game')||'majabeed';}catch(_){return 'majabeed';}
+}
 async function startActiveSessionsListener(force){ // NEW CODE
-  if(!FB.ready||!FB.db||document.hidden)return;
+  if(!FB.ready||!FB.db||document.hidden||uiActiveSessionsGame()==='baloot')return;
   if(startActiveSessionsListener._pending)return startActiveSessionsListener._pending;
   if(!force&&Date.now()-(startActiveSessionsListener._at||0)<60000)return;
   const generation=UI_COST.generation;
   return startActiveSessionsListener._pending=FB.db.collection('active_rooms').orderBy('updatedAt','desc').limit(30).get().then(snap=>{
-    if(generation!==UI_COST.generation)return;
+    if(generation!==UI_COST.generation||uiActiveSessionsGame()==='baloot')return;
     startActiveSessionsListener._at=Date.now();
 
       const STALE_MS=20*60*1000; // NEW CODE — طبقة حماية إضافية بالعميل: نتجاهل أي جلسة ما تحدّثت من ٢٠ دقيقة (احتياطي لو removeRoomStatus فاتها لأي سبب بالسيرفر)
@@ -5660,6 +5754,28 @@ function updateLbCountdown(){
   $('#lbCountdown').textContent=days>0?`${toH(days)}ي ${toH(hrs)}س`:hrs>0?`${toH(hrs)}س ${toH(mins)}د`:`${toH(mins)}د ${toH(secs)}ث`;
   if(left===0){clearInterval(LB_COUNTDOWN_TIMER);openBoard(LB_ACTIVE_PERIOD);}
 }
+async function weeklyRankPosition(uid,points,current=()=>true){
+  const user=FB.user,project=FIREBASE_CONFIG.projectId;
+  if(!user||user.uid!==uid||typeof uid!=='string'||!uid||/[\/\x00-\x1f]/.test(uid)||!Number.isSafeInteger(points)||points<=0)throw Error('تعذّر حساب مركزك الحالي');
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
+  try{
+    const token=await user.getIdToken();
+    if(controller.signal.aborted||FB.user?.uid!==uid||!current())throw Error('انتهى طلب الترتيب');
+    // Compat Query has no .count(); use the same server aggregation as the monthly board.
+    const response=await fetch('https://firestore.googleapis.com/v1/projects/'+encodeURIComponent(project)+'/databases/(default)/documents:runAggregationQuery',{
+      method:'POST',headers:{authorization:'Bearer '+token,'content-type':'application/json'},signal:controller.signal,
+      body:JSON.stringify({structuredAggregationQuery:{structuredQuery:{from:[{collectionId:'players'}],
+        orderBy:[{field:{fieldPath:'weekPts'},direction:'DESCENDING'},{field:{fieldPath:'__name__'},direction:'DESCENDING'}],
+        endAt:{values:[{integerValue:String(points)},{referenceValue:'projects/'+project+'/databases/(default)/documents/players/'+uid}],before:true}},
+        aggregations:[{alias:'above',count:{}}]}})
+    });
+    if(!response.ok)throw Error('تعذّر حساب مركزك الحالي');
+    const result=await response.json(),raw=Array.isArray(result)?result.find(x=>x.result)?.result?.aggregateFields?.above?.integerValue:null;
+    const count=typeof raw==='string'&&/^\d+$/.test(raw)?Number(raw):NaN;
+    if(!Number.isSafeInteger(count)||count<0||!Number.isSafeInteger(count+1))throw Error('تعذّر حساب مركزك الحالي');
+    return count+1;
+  }finally{clearTimeout(timer);}
+}
 async function openBoard(period){
   period=period==='week'?'week':period==='month'||period==='rank'?'month':LB_ACTIVE_PERIOD;
   LB_ACTIVE_PERIOD=period;const request=++LB_REQUEST,myUid=FB.user?.uid||null;
@@ -5678,7 +5794,7 @@ async function openBoard(period){
   LB_END_AT=leaderboardEnd(period,Date.now()+LB_CLOCK_OFFSET);
   clearInterval(LB_COUNTDOWN_TIMER);updateLbCountdown();LB_COUNTDOWN_TIMER=setInterval(updateLbCountdown,1000);
   const stillCurrent=()=>request===LB_REQUEST&&LB_ACTIVE_PERIOD===period&&(FB.user?.uid||null)===myUid&&!$('#lboard').classList.contains('hidden');
-  let all=[],me=null;
+  let all=[],me=null,rankUnavailable=false;
   try{
     if(period==='month'){
       if(!myUid)throw Error('سجّل دخولك لعرض الترتيب الشهري');
@@ -5690,7 +5806,7 @@ async function openBoard(period){
         if(!stillCurrent())return;
         if(!Number.isFinite(value.period?.endAt)||!Number.isFinite(value.serverNow))throw Error('بيانات الترتيب غير مكتملة');
         LB_CLOCK_OFFSET=value.serverNow-Date.now();LB_END_AT=value.period.endAt;
-        all=value.leaders||[];me=value.me||null;
+        all=value.leaders||[];me=value.me||null;rankUnavailable=value.rankUnavailable===true;
         if(me&&!all.some(p=>p.pid===me.pid))all.push(me);
       }finally{clearTimeout(timer);}
     }else{
@@ -5702,8 +5818,11 @@ async function openBoard(period){
       let place=0;snap.forEach(doc=>{if((doc.data().weekPts||0)>0)all.push(row(doc,++place));});
       me=all.find(p=>p.me)||null;
       if(!me&&mine?.exists&&(mine.data().weekPts||0)>0){
-        const above=await ordered.endBefore(mine.data().weekPts,myUid).count().get();
-        me=row(mine,above.data().count+1);all.push(me);
+        try{
+          const place=await weeklyRankPosition(myUid,mine.data().weekPts,stillCurrent);
+          if(!stillCurrent())return;
+          me=row(mine,place);all.push(me);
+        }catch(_){if(!stillCurrent())return;rankUnavailable=true;}
       }
     }
     if(!stillCurrent())return;
@@ -5712,7 +5831,7 @@ async function openBoard(period){
       pod.replaceChildren();list.replaceChildren();
       const error=document.createElement('p');error.style.cssText='text-align:center;color:#f6d5b1;padding:20px';
       error.textContent=e.name==='AbortError'?'تأخر تحميل الترتيب؛ حاول مجددًا':e.message||'تعذّر تحميل الترتيب';list.appendChild(error);
-      const retry=document.createElement('button');retry.className='qBtn';retry.textContent='إعادة المحاولة';retry.onclick=()=>openBoard(period);list.appendChild(retry);
+      const retry=document.createElement('button');retry.className='qBtn uiBoardRetry';retry.textContent='إعادة المحاولة';retry.onclick=()=>openBoard(period);list.appendChild(retry);
     }
     return;
   }
@@ -5758,6 +5877,10 @@ async function openBoard(period){
     row.onclick=()=>{ if(p.me)openProfile(); else viewProfile({name:p.name,ava:p.ava,lv:p.lv,gold:p.gold,rpts:p.lifeRank,pid:p.pid||null,uid:p.pid||null,games:p.games,wins:p.wins,best:p.best,achievement:p.achievement,achievementDate:p.achievementDate}); }; // NEW CODE — أضفنا achievement/achievementDate
     list.appendChild(row);
   });
+  if(rankUnavailable){
+    const status=document.createElement('p');status.className='uiBoardRankNotice';status.setAttribute('role','status');status.textContent='تعذّر حساب مركزك الحالي. يمكنك متابعة الصدارة وإعادة المحاولة.';list.appendChild(status);
+    const retry=document.createElement('button');retry.className='qBtn uiBoardRetry';retry.textContent='إعادة حساب مركزي';retry.onclick=()=>openBoard(period);list.appendChild(retry);
+  }
   // FIX — show('lboard') صارت بأول الدالة (فتح فوري) — لا حاجة لتكرارها هنا
 }
 
@@ -7227,8 +7350,10 @@ function avatarHTML(av,size){
   size=size||46;
   if(av&&typeof av==='string'&&(av.startsWith('http://')||av.startsWith('https://')||av.startsWith('data:image')||av.startsWith('avatars/'))){
     const url=window.MajabeedImages?MajabeedImages.source(av,size):av;
-    const attr=window.MajabeedImages&&MajabeedImages.storageURL(url)?'data-mj-avatar':'src';
-    return `<img ${attr}="${esc(url)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block" loading="lazy">`;
+    const remote=window.MajabeedImages&&MajabeedImages.storageURL(url);
+    const ready=remote&&MajabeedImages.peek?.(url);
+    const attrs=remote?'data-mj-avatar="'+esc(url)+'"'+(ready?' src="'+esc(ready)+'"':''):'src="'+esc(url)+'"';
+    return `<img ${attrs} style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block" loading="${ready?'eager':'lazy'}">`;
   }
   try{
     const pro=AV_PRO.find(a=>a.id===av);
@@ -7517,16 +7642,29 @@ function uiChatBefore(el,msgs){
     const base=JSON.stringify([m.uid||m.from,m.ts,m.text,m.room,m.type]);
     const count=counts.get(base)||0;counts.set(base,count+1);return base+':'+count;
   });
+  // Keep decoded avatar elements when a message snapshot rebuilds its rows.
+  const images=new Map();
+  [...el.children].forEach(child=>{if(child.dataset.uiMessageKey)images.set(child.dataset.uiMessageKey,[...child.querySelectorAll('img')]);});
   const old=UI_CHAT_STATE.keys;
   const added=keys.map((key,i)=>!old||old.has(key)?-1:i).filter(i=>i>=0);
   const own=added.some(i=>(msgs[i].uid||msgs[i].from)===WBMsg.myUid());
   const first=[...el.children].find(child=>child.offsetTop+child.offsetHeight>el.scrollTop);
-  return {keys,added,stick:!old||chatListNearBottom(el)||own,version:UI_CHAT_STATE.version,
+  return {keys,images,added,stick:!old||chatListNearBottom(el)||own,version:UI_CHAT_STATE.version,
     top:el.scrollTop,anchor:first?.dataset.uiMessageKey,offset:first?first.offsetTop-el.scrollTop:0};
 }
 function uiChatAfter(el,update){
   if(update.version!==UI_CHAT_STATE.version)return;
-  [...el.children].forEach((child,i)=>{if(update.keys[i])child.dataset.uiMessageKey=update.keys[i];});
+  [...el.children].forEach((child,i)=>{
+    const key=update.keys[i];if(!key)return;child.dataset.uiMessageKey=key;
+    const previous=update.images?.get(key)||[];
+    child.querySelectorAll('img').forEach(img=>{
+      const url=img.getAttribute('data-mj-avatar')||img.getAttribute('src');
+      const at=previous.findIndex(old=>(old.getAttribute('data-mj-avatar')||old.getAttribute('src'))===url);
+      if(at>=0)img.replaceWith(previous.splice(at,1)[0]);
+    });
+  });
+  // Only retain URLs for a bounded, disk-only warmup on the next launch.
+  window.MajabeedImages?.rememberChat?.([...el.querySelectorAll('img[data-mj-avatar]')].reverse().map(img=>img.getAttribute('data-mj-avatar')));
   UI_CHAT_STATE.keys=new Set(update.keys);
   const button=document.getElementById('uiNewMessages');
   if(update.stick){UI_CHAT_STATE.pending=0;button?.classList.add('hidden');}
@@ -8521,6 +8659,10 @@ fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
   function getAdMob(){ return window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.AdMob; } // FIX — الوصول القياسي الموثوق، لا الاسم الغريب بالملف
   const _AdMob=getAdMob(); // FIX
   if(_AdMob){
+    // Restore existing game audio after a native ad, including dismissal without visibilitychange.
+    for(const event of ['interstitialAdDismissed','interstitialAdFailedToShow','onRewardedVideoAdDismissed','onRewardedVideoAdFailedToShow']){
+      try{Promise.resolve(_AdMob.addListener(event,uiAudioForeground)).catch(()=>{});}catch(_){}
+    }
     _AdMob.initialize()
       .then(() => {
         if (isIOS) {
@@ -8576,12 +8718,12 @@ fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
 <script src="ui-community.js?v=398-polish-1"></script>
 <script src="ui-leagues.js"></script>
 <script src="ui-baloot-sounds.js?v=398-social-1"></script>
-<script src="ui-baloot-audio.js?v=400-stack-1"></script>
+<script src="ui-baloot-audio.js?v=401-ios-audio-1"></script>
 <script src="ui-baloot-ranks.js?v=398"></script>
 <script src="ui-baloot-motion.js?v=400-stack-1"></script>
-<script src="ui-baloot.js?v=401-friends-1"></script>
+<script src="ui-baloot.js?v=401-firebase-chat-1"></script>
 <script src="ui-game-help.js?v=399-project-1"></script>
-<script src="ui-entry-ads-ui.js?v=399-project-1"></script>
+<script src="ui-entry-ads-ui.js?v=401-ad-choice-1"></script>
 <script src="ui-friendly-hand.js?v=399-project-1"></script>
 </body>
 </html>

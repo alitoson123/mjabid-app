@@ -1,7 +1,7 @@
 /* V398 AUDIO_V4: one current announcement, with click-free starts, ends and interruptions. */
 (function(){
  'use strict';
- const A={context:null,muted:localStorage.getItem('mj-baloot-muted')==='1',buffers:new Map(),sources:new Set(),cursor:null,generation:0,voiceGeneration:0,voiceSource:null,group:null,snapshot:null,discardNext:false};
+ const A={context:null,muted:localStorage.getItem('mj-baloot-muted')==='1',buffers:new Map(),sources:new Set(),cursor:null,generation:0,voiceGeneration:0,voiceSource:null,group:null,snapshot:null,discardNext:false,waiters:new Set(),primer:null,clockProbe:null,stalled:null,paused:false};
  const assets=window.MAJABEED_BALOOT_SOUNDS||{};
  function fadeStop(entry){
   if(!entry||entry.stopping)return;entry.stopping=true;
@@ -13,41 +13,133 @@
    param.linearRampToValueAtTime(0,end);entry.source.stop(end);
   }catch(_){try{entry.gain.gain.value=0;entry.source.stop()}catch(_){}}
  }
- function stopVoices(){A.voiceGeneration++;A.group=null;const entry=A.voiceSource;A.voiceSource=null;fadeStop(entry);}
- function stop(){A.generation++;stopVoices();for(const entry of A.sources)fadeStop(entry);A.snapshot=null;}
- function muted(value){A.muted=!!value;if(value)stop();}
- async function unlock(){
-  if(A.muted)return;try{if(!A.context){const Context=window.AudioContext||window.webkitAudioContext;if(!Context)return;A.context=new Context();}if(A.context.state==='suspended')await A.context.resume();
-   // Decode local speech before the first bid; fetch failures remain retryable.
-   if(!A.preloading){A.preloading=true;const ids=[...new Set(['pass','wala','hokm','sun','first','second','hokm_second','card_deal','card_play','turn_alert',...Object.keys(assets)])];
-    await Promise.all(Array.from({length:4},async()=>{while(ids.length){const id=ids.shift();try{await buffer(id)}catch(_){}}}));A.preloading=false;}
-  }catch(_){A.preloading=false;}
+ function hardStop(entry){
+  if(!entry)return;entry.stopping=true;
+  try{entry.source.stop(0);}catch(_){}
+  try{entry.source.disconnect();entry.gain.disconnect();}catch(_){}
+  A.sources.delete(entry);entry.finish?.();
+ }
+ function stopVoices(immediate=false){A.voiceGeneration++;A.group=null;const entry=A.voiceSource;A.voiceSource=null;(immediate?hardStop:fadeStop)(entry);wake();}
+ function stop(immediate=false){A.generation++;stopVoices(immediate);for(const entry of A.sources)(immediate?hardStop:fadeStop)(entry);
+  if(immediate&&A.primer){const source=A.primer;A.primer=null;try{source.stop(0);source.disconnect();}catch(_){}}
+  A.snapshot=null;wake();}
+ function muted(value){A.muted=!!value;if(value)stop(true);}
+ // A gesture can retry resume even if a previous resume Promise is still pending.
+ function wake(){for(const check of [...A.waiters])check();}
+ function context(rebuild=false){
+  if(A.context&&(rebuild||A.context.state==='closed')){
+   const snapshot=A.snapshot;stop(true);A.snapshot=snapshot;
+   if(A.clockProbe)A.clockProbe.finish();A.stalled=null;
+   try{if(A.context.state!=='closed')Promise.resolve(A.context.close()).catch(()=>{});}catch(_){}
+   A.context.removeEventListener?.('statechange',wake);A.context=null;
+   A.buffers.clear();A.preloading=null;A.primer=null;
+  }
+  if(!A.context){const Context=window.AudioContext||window.webkitAudioContext;if(!Context)return null;
+   A.context=new Context();A.context.addEventListener?.('statechange',wake);
+  }return A.context;
+ }
+ function resume(ctx){
+  if(!ctx||ctx.state==='closed')return;
+  if(ctx.state!=='running'){
+   try{Promise.resolve(ctx.resume()).then(wake,wake);}catch(_){wake();}
+  }else wake();
+ }
+ function prime(ctx){
+  if(A.primer||!ctx||ctx.state==='closed')return;
+  try{const source=ctx.createBufferSource();source.buffer=ctx.createBuffer(1,1,ctx.sampleRate||44100);
+   A.primer=source;source.onended=()=>{if(A.primer===source)A.primer=null;try{source.disconnect()}catch(_){}};
+   source.connect(ctx.destination);source.start(0);
+  }catch(_){A.primer=null;}
+ }
+ function preload(ctx){
+  if(A.preloading||!ctx)return;
+  const ids=[...new Set(['pass','wala','hokm','sun','first','second','hokm_second','card_deal','card_play','turn_alert',...Object.keys(assets)])].filter(id=>!A.buffers.has(id));
+  if(!ids.length)return;
+  const task=Promise.all(Array.from({length:4},async()=>{while(ids.length&&A.context===ctx){const id=ids.shift();try{await buffer(id)}catch(_){}}}));
+  A.preloading=task;task.finally(()=>{if(A.preloading===task)A.preloading=null;});
+ }
+ function probeClock(ctx){
+  if(!ctx||A.clockProbe?.ctx===ctx)return;
+  const probe={ctx,generation:A.generation,timer:null,listener:null};A.clockProbe=probe;
+  const usable=()=>A.clockProbe===probe&&A.context===ctx&&A.generation===probe.generation&&!A.paused&&!A.muted&&!document.hidden;
+  const clear=()=>{clearTimeout(probe.timer);if(probe.listener)ctx.removeEventListener?.('statechange',probe.listener);probe.listener=null;};
+  const finish=()=>{clear();if(A.clockProbe===probe)A.clockProbe=null;};probe.finish=finish;
+  const sample=next=>{
+   clear();if(!usable()){finish();return;}
+   const begin=()=>{if(!usable()){finish();return;}if(ctx.state!=='running')return;
+    clear();const time=ctx.currentTime;
+    probe.timer=setTimeout(()=>{if(!usable()||ctx.state!=='running'){finish();return;}next(ctx.currentTime-time>=.005);},250);
+   };
+   if(ctx.state==='running')begin();
+   else{probe.listener=begin;ctx.addEventListener?.('statechange',begin);probe.timer=setTimeout(finish,1200);}
+  };
+  sample(advanced=>{
+   if(advanced){finish();return;}
+   // WebKit can report running while its audio clock is frozen after an interruption.
+   // Try one bounded same-context repair; never create a recurring recovery timer.
+   probe.timer=setTimeout(finish,1200);
+   try{Promise.resolve(ctx.suspend()).then(()=>{if(!usable()){finish();return;}resume(ctx);sample(repaired=>{
+    if(!repaired)A.stalled={ctx,time:ctx.currentTime};finish();
+   });},finish);}catch(_){finish();}
+  });
+ }
+ function unlock(options={}){
+  if(A.muted||document.hidden)return;A.paused=false;
+  try{const old=A.context,stalled=A.stalled;
+   const rebuild=!!options.gesture&&stalled?.ctx===old&&old?.state==='running'&&old.currentTime-stalled.time<.005;
+   if(options.gesture&&stalled&&!rebuild)A.stalled=null;
+   const ctx=context(rebuild);if(!ctx)return;
+   // Resume and a silent one-sample source are invoked inside the gesture, before async work.
+   resume(ctx);prime(ctx);preload(ctx);if(options.probe)probeClock(ctx);
+  }catch(_){}
  }
  function buffer(id){
-  if(!assets[id]||!A.context)return Promise.reject(Error('audio unavailable'));
-  if(!A.buffers.has(id))A.buffers.set(id,fetch(assets[id].src).then(r=>{if(!r.ok)throw Error('audio missing');return r.arrayBuffer()}).then(b=>A.context.decodeAudioData(b)).catch(e=>{A.buffers.delete(id);throw e;}));
-  return A.buffers.get(id);
+  const ctx=A.context;if(!assets[id]||!ctx)return Promise.reject(Error('audio unavailable'));
+  if(!A.buffers.has(id)){
+   const task=fetch(assets[id].src).then(r=>{if(!r.ok)throw Error('audio missing');return r.arrayBuffer()})
+    .then(b=>ctx.decodeAudioData(b)).then(data=>{if(A.context!==ctx)throw Error('audio replaced');return data;})
+    .catch(e=>{if(A.buffers.get(id)===task)A.buffers.delete(id);throw e;});
+   A.buffers.set(id,task);
+  }return A.buffers.get(id);
  }
- function valid(group){return !A.muted&&!document.hidden&&A.context?.state==='running'&&(!group||A.group===group&&group.generation===A.voiceGeneration&&Date.now()<group.until&&(group.started||Date.now()<=group.startBy));}
+ function eligible(group){return !A.muted&&!A.paused&&!document.hidden&&(!group||A.group===group&&group.generation===A.voiceGeneration&&Date.now()<group.until&&(group.started||Date.now()<=group.startBy));}
+ function running(ctx,generation,group,deadline){
+  // Wait only for this fresh event, not a backlog. A later gesture/statechange can wake it.
+  if(ctx?.state==='running')return Promise.resolve(true);
+  return new Promise(resolve=>{
+   let timer,finished=false;
+   const finish=ok=>{if(finished)return;finished=true;clearTimeout(timer);A.waiters.delete(check);resolve(ok);};
+   const check=()=>{
+    if(A.context!==ctx||!eligible(group)||generation!==A.generation||Date.now()>deadline||ctx?.state==='closed')finish(false);
+    else if(ctx?.state==='running')finish(true);
+   };
+   A.waiters.add(check);timer=setTimeout(()=>finish(false),Math.max(0,deadline-Date.now()));
+   resume(ctx);check();
+  });
+ }
+ function valid(group){return eligible(group)&&A.context?.state==='running';}
  async function output(id,generation,volume,group){
-  if(!valid(group))return;
-  const requested=Date.now();try{const data=await buffer(id);if(!valid(group)||generation!==A.generation||!group&&Date.now()-requested>600)return;
+  if(!eligible(group))return;
+  const requested=Date.now(),ctx=A.context,deadline=group?(group.started?group.until:group.startBy):requested+600;
+  try{if(!ctx||!await running(ctx,generation,group,deadline))return;
+   const data=await buffer(id);if(!valid(group)||A.context!==ctx||generation!==A.generation||!group&&Date.now()-requested>600)return;
    const source=A.context.createBufferSource(),gain=A.context.createGain(),startAt=A.context.currentTime,endAt=startAt+data.duration;
    const entry={source,gain,startAt,endAt,volume,speech:!!group,stopping:false};source.buffer=data;
    if(group){gain.gain.setValueAtTime(0,startAt);gain.gain.linearRampToValueAtTime(volume,startAt+Math.min(.005,data.duration/4));gain.gain.setValueAtTime(volume,Math.max(startAt+data.duration/4,endAt-.020));gain.gain.linearRampToValueAtTime(0,endAt);}
    else gain.gain.value=volume;
    source.connect(gain).connect(A.context.destination);A.sources.add(entry);if(group){A.voiceSource=entry;group.started=true;}
-   await new Promise(resolve=>{source.onended=()=>{A.sources.delete(entry);if(A.voiceSource===entry)A.voiceSource=null;source.disconnect();gain.disconnect();resolve()};source.start(startAt);});
+   await new Promise(resolve=>{entry.finish=()=>{A.sources.delete(entry);if(A.voiceSource===entry)A.voiceSource=null;source.disconnect();gain.disconnect();resolve()};source.onended=entry.finish;try{source.start(startAt);}catch(_){entry.finish();}});
   }catch(_){}
  }
  function speak(ids,event={},startIn=1200){
-  ids=ids.filter(id=>assets[id]?.speech);if(!ids.length||A.muted||document.hidden)return;
-  stopVoices();const now=Date.now(),group={ids,event,scope:A.snapshot,started:false,startBy:now+Math.max(0,startIn),until:now+Math.max(1500,ids.reduce((n,id)=>n+assets[id].duration*1000,0)+1200),generation:A.voiceGeneration};A.group=group;
-  (async()=>{const generation=A.generation;for(const id of ids){if(!valid(group)||generation!==A.generation)break;await output(id,generation,.85,group);}if(A.group===group)A.group=null;})();
+  ids=ids.filter(id=>assets[id]?.speech);if(!ids.length||A.muted||A.paused||document.hidden)return;
+  if(!context())return;stopVoices();const now=Date.now(),group={ids,event,scope:A.snapshot,started:false,startBy:now+Math.max(0,startIn),until:now+Math.max(1500,ids.reduce((n,id)=>n+assets[id].duration*1000,0)+1200),generation:A.voiceGeneration};A.group=group;
+  (async()=>{const generation=A.generation;for(const id of ids){if(!eligible(group)||generation!==A.generation)break;await output(id,generation,.85,group);}if(A.group===group)A.group=null;})();
  }
  function play(id){
-  if(A.muted||document.hidden||!assets[id])return;
+  if(A.muted||A.paused||document.hidden||!assets[id])return;
   if(id==='card_play'&&window.GameSoundManager){window.GameSoundManager.playActionSound();return;}
+  if(!context())return;
   if(assets[id].speech){if(!A.group)speak([id],{type:'status'});}
   else output(id,A.generation,id==='ui_click'?.35:.65);
  }
@@ -101,8 +193,9 @@
   const spoken=plan(event.type==='result'?{buyer:g.roundResult?.contract?.buyer,...event,matchWinner:g.winner}:event,me).filter(id=>assets[id]?.speech);
   if(spoken.length)speak(spoken,event,1200-Math.max(0,serverNow-(event.at||serverNow)));
  }
- document.addEventListener('pointerdown',e=>{if(e.target.closest('#blGame,#blModal,#blSelector,#blHomeMenu,#blGamePicker'))unlock();},{passive:true});
- document.addEventListener('visibilitychange',()=>{if(document.hidden){stop();A.discardNext=true;}});
- window.addEventListener('pagehide',()=>{stop();A.discardNext=true;});
- window.BalootAudio={unlock,play,sync,muted,stop,plan,assets};
+ document.addEventListener('pointerdown',e=>{if(e.target.closest('#blGame,#blModal,#blSelector,#blHomeMenu,#blGamePicker'))unlock({gesture:true});},{passive:true});
+ function suspend(){A.paused=true;stop(true);if(A.clockProbe)A.clockProbe.finish();A.discardNext=true;}
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)suspend();});
+ window.addEventListener('pagehide',suspend);
+ window.BalootAudio={unlock,play,sync,muted,stop,suspend,plan,assets};
 })();

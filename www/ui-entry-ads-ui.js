@@ -6,11 +6,52 @@
  const account=()=>typeof FB!=='undefined'?FB.user?.uid||null:null;
  let gate=null,queued=false,serial=0;
  function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;refresh();});}
+ function chooseEntry({isCurrent}){
+  if(document.hidden||!isCurrent())return Promise.resolve('cancel');
+  return new Promise(resolve=>{
+   const previous=document.activeElement,host=document.getElementById('frame'),wasInert=host?.inert;
+   const overlay=document.createElement('section');overlay.className='mjEntryOffer';overlay.id='mjEntryOffer';
+   overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-labelledby','mjEntryOfferTitle');overlay.setAttribute('aria-describedby','mjEntryOfferText');
+   overlay.innerHTML='<div class="mjEntryOfferPanel" dir="rtl"><button type="button" class="mjEntryOfferClose" aria-label="إغلاق">×</button><span class="mjEntryOfferMark" aria-hidden="true">♠</span><span class="mjEntryOfferPlus">مجابيد بلس</span><h2 id="mjEntryOfferTitle">هل تريد اللعب دون إعلانات؟</h2><p id="mjEntryOfferText">انتهى رصيد الدخول دون إعلانات. اشترك في بلس، أو شاهد الإعلان وتابع اللعب.</p><button type="button" class="mjEntryOfferSubscribe">اشترك والعب دون إعلانات</button><button type="button" class="mjEntryOfferWatch">شاهد الإعلان والعب</button></div>';
+   document.body.append(overlay);if(host)host.inert=true;
+   let done=false,timer;
+   const valid=()=>!document.hidden&&isCurrent();
+   function finish(choice){
+    if(done)return;done=true;
+    if(!valid())choice='cancel';
+    clearInterval(timer);document.removeEventListener('visibilitychange',visibility);document.removeEventListener('pause',cancel);
+    root.removeEventListener('pagehide',cancel);root.removeEventListener('popstate',cancel);root.removeEventListener('keydown',keyboard,true);
+    overlay.remove();if(host)host.inert=wasInert;
+    if(choice!=='store'&&previous?.isConnected&&!document.hidden)previous.focus?.({preventScroll:true});
+    resolve(choice);
+   }
+   function cancel(){finish('cancel');}
+   function visibility(){if(document.hidden)cancel();}
+   function keyboard(event){
+    if(event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();cancel();return;}
+    if(event.key!=='Tab')return;
+    const controls=[...overlay.querySelectorAll('button')],first=controls[0],last=controls.at(-1);
+    if(!overlay.contains(document.activeElement)||event.shiftKey&&document.activeElement===first){event.preventDefault();(event.shiftKey?last:first).focus();}
+    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+   }
+   overlay.querySelector('.mjEntryOfferClose').onclick=cancel;
+   overlay.querySelector('.mjEntryOfferSubscribe').onclick=()=>finish('store');
+   overlay.querySelector('.mjEntryOfferWatch').onclick=()=>finish('watch');
+   overlay.onclick=event=>{if(event.target===overlay)cancel();};
+   document.addEventListener('visibilitychange',visibility);document.addEventListener('pause',cancel);
+   root.addEventListener('pagehide',cancel);root.addEventListener('popstate',cancel);root.addEventListener('keydown',keyboard,true);
+   // A changed account or destination invalidates this choice, even without a click.
+   timer=setInterval(()=>{if(!valid())cancel();},200);
+   overlay.querySelector('.mjEntryOfferSubscribe').focus({preventScroll:true});
+  });
+ }
  gate=root.MajabeedEntryAds.create({
   getUser:account,
   isNative:()=>!!root.Capacitor?.isNativePlatform?.(),
   isExempt:async()=>{if(!root.VipClient?.checkActive)throw Error('Membership not ready');return root.VipClient.checkActive();},
   exempt:()=>!!root.VipClient?.active?.(),
+  chooseEntry,
+  openStore:()=>{goHome();openShop('gold');},
   showAd:()=>root.showInterstitialAd?.(),
   storage:()=>root.localStorage,
   onChange:schedule

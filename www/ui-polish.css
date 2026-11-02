@@ -1224,3 +1224,5 @@ body{position:fixed;inset:0;width:100%;overscroll-behavior:none}
 .uiFriendRemove .uiFriendRemoveStatus:empty{display:none}.uiFriendRemove .uiFriendRemoveStatus{color:#f5d597;font-size:14px}
 .uiFriendRemoveActions{display:flex;gap:10px}.uiFriendRemoveActions button{flex:1;min-height:44px;padding:10px;border:1px solid #d8bf7b66;border-radius:12px;background:#2b5541;color:#fff7df;font:700 14px var(--fb);cursor:pointer}
 .uiFriendRemoveActions [data-remove-confirm]{background:#a14537;border-color:#cb7461}.uiFriendRemoveActions button:disabled{opacity:.65;cursor:wait}.uiFriendRemoveActions button:focus-visible{outline:2px solid #f5d597;outline-offset:3px}
+#lbList .uiBoardRetry{width:auto;min-width:160px;max-width:100%;min-height:44px;height:auto;align-self:center;flex:none;margin:8px auto;padding:12px 22px;border:1px solid #d8bf7b77;border-radius:14px;background:#e7cc8b;color:#193c2c;font:700 15px var(--fb);line-height:1.5;white-space:normal}
+#lbList .uiBoardRankNotice{margin:12px 0 0;padding:12px;color:#f6d5b1;font-size:14px;line-height:1.8;text-align:center}

@@ -39,7 +39,7 @@
  function closeModal(){clearTimeout(B.viewTimer);B.viewRequest=null;if(B.modal==='sessions'){$('#sessionsModal').classList.add('hidden');if(B.hub?.ready)B.hub.ws.send(JSON.stringify({type:'closeSessions'}));}B.modal=null;const el=$('#blModal');if(el)el.hidden=true;}
 
  function active(){const g=B.state?.game;return !!g&&(g.phase!=='matchEnd'||!!g.claimReviewUntil);}
- function select(game){const uid=user()?.uid;if(!uid||!['baloot','majabeed'].includes(game)||B.pickerUid&&B.pickerUid!==uid)return;if(active()||B.queue||typeof ONL!=='undefined'&&ONL.active||typeof MATCH!=='undefined'&&MATCH.on){toast('أنهِ الجلسة أو غادرها قبل تغيير اللعبة');return;}transitionTo('ننتقل إلى '+(game==='baloot'?'صكة':'مجابيد')+'…',()=>{if(user()?.uid!==uid)return;WBMsg.pubUnsub?.();rememberGame(game);closePicker();closeModal();home();try{mountNav('home','home')}catch(_){}if(game==='baloot')loadProfile();else closeLink('hub');});}
+ function select(game){const uid=user()?.uid;if(!uid||!['baloot','majabeed'].includes(game)||B.pickerUid&&B.pickerUid!==uid)return;if(active()||B.queue||typeof ONL!=='undefined'&&ONL.active||typeof MATCH!=='undefined'&&MATCH.on){toast('أنهِ الجلسة أو غادرها قبل تغيير اللعبة');return;}transitionTo('ننتقل إلى '+(game==='baloot'?'صكة':'مجابيد')+'…',()=>{if(user()?.uid!==uid)return;WBMsg.pubUnsub?.();rememberGame(game);closePicker();closeModal();home();try{mountNav('home','home')}catch(_){}if(game==='baloot')loadProfile();else{closeLink('hub');if(typeof startActiveSessionsListener==='function')startActiveSessionsListener();}});}
 
 
  const RANKS=window.MAJABEED_BALOOT_RANKS;

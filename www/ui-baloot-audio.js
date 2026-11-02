@@ -3,6 +3,19 @@
  'use strict';
  const A={context:null,muted:localStorage.getItem('mj-baloot-muted')==='1',buffers:new Map(),sources:new Set(),cursor:null,generation:0,voiceGeneration:0,voiceSource:null,group:null,snapshot:null,discardNext:false,waiters:new Set(),primer:null,clockProbe:null,stalled:null,paused:false};
  const assets=window.MAJABEED_BALOOT_SOUNDS||{};
+ // Capacitor 6 iOS serves bundled WAVs with URLResponse (status 0), not HTTPURLResponse.
+ // Accept only readable local app audio; real HTTP failures and opaque responses stay rejected.
+ function nativeAudioResponse(response,src){
+  if(response.status!==0||!['basic','default'].includes(response.type)||response.redirected)return false;
+  try{
+   const cap=window.Capacitor;if(cap?.isNativePlatform?.()!==true||cap.getPlatform?.()!=='ios')return false;
+   const page=new URL(window.location.href),request=new URL(src,document.baseURI||page.href);
+   if(page.protocol!=='capacitor:'||request.protocol!==page.protocol||request.host!==page.host||!request.pathname.startsWith('/sfx/'))return false;
+   if(response.url){const resolved=new URL(response.url,page.href);if(resolved.protocol!==request.protocol||resolved.host!==request.host||resolved.pathname!==request.pathname)return false;}
+   return true;
+  }catch(_){return false;}
+ }
+
  function fadeStop(entry){
   if(!entry||entry.stopping)return;entry.stopping=true;
   const now=A.context.currentTime,param=entry.gain.gain,end=Math.min(entry.endAt,now+.012);
@@ -96,7 +109,7 @@
  function buffer(id){
   const ctx=A.context;if(!assets[id]||!ctx)return Promise.reject(Error('audio unavailable'));
   if(!A.buffers.has(id)){
-   const task=fetch(assets[id].src).then(r=>{if(!r.ok)throw Error('audio missing');return r.arrayBuffer()})
+   const task=fetch(assets[id].src).then(r=>{if(!r.ok&&!nativeAudioResponse(r,assets[id].src))throw Error('audio missing');return r.arrayBuffer()}).then(bytes=>{if(!bytes.byteLength)throw Error('audio empty');return bytes;})
     .then(b=>ctx.decodeAudioData(b)).then(data=>{if(A.context!==ctx)throw Error('audio replaced');return data;})
     .catch(e=>{if(A.buffers.get(id)===task)A.buffers.delete(id);throw e;});
    A.buffers.set(id,task);
@@ -171,14 +184,15 @@
  }
  function scope(g){return [g.id,g.round,g.phase,g.turn,g.deadline].join(':');}
  function sync(g,me,previous,serverNow=Date.now(),options={}){
-  if(!g)return;const key='mj-baloot-audio-cursor',currentScope=scope(g);let cursor=A.cursor;
-  if(!cursor||cursor.match!==g.id){try{cursor=JSON.parse(localStorage.getItem(key)||'null')}catch(_){}if(cursor?.match!==g.id)cursor={match:g.id,seq:previous||g.round===1&&g.cues?.length===1?0:g.cueSeq};A.cursor=cursor;}
+  if(!g)return;const key='mj-baloot-audio-cursor',currentScope=scope(g);let cursor=A.cursor,newMatch=false;
+  if(!cursor||cursor.match!==g.id){try{cursor=JSON.parse(localStorage.getItem(key)||'null')}catch(_){}if(cursor?.match!==g.id){newMatch=true;cursor={match:g.id,seq:previous||g.round===1&&g.cues?.length===1?0:g.cueSeq};}A.cursor=cursor;}
   const unseen=(g.cues||[]).filter(e=>e.id>cursor.seq),latest=unseen.at(-1);
   cursor.seq=Math.max(cursor.seq,g.cueSeq||0);try{localStorage.setItem(key,JSON.stringify(cursor))}catch(_){}
   const group=A.group,ownProject=group?.event.type==='project'&&previous?.id===g.id&&previous.round===g.round&&['play','collect'].includes(g.phase)&&unseen.every(e=>e.type==='collect'||e.type==='card'&&e.seat===group.event.seat&&!e.baloot&&!e.akka);
   if(group&&(group.scope!==currentScope||latest)&&!ownProject)stopVoices();
   if(ownProject)group.scope=currentScope;A.snapshot=currentScope;
-  if(A.discardNext){A.discardNext=false;stopVoices();return;}
+  // An ad before entering a brand-new match must not discard its fresh first deal.
+  if(A.discardNext){A.discardNext=false;stopVoices();if(!(newMatch&&g.round===1&&g.cues?.length===1&&latest?.type==='deal'))return;}
   // Reconnection consumes past announcements. Only a genuinely new initial deal is spoken on entry.
   if(!previous&&!(g.round===1&&g.cues?.length===1&&latest?.type==='deal')){stopVoices();return;}
   if(!latest||latest.at&&serverNow-latest.at>=1200)return;

@@ -482,3 +482,20 @@ img.blDragCard.blCardFace{background-color:#fff;border-radius:7px}
 #blGame .blHand button.selected{translate:0 calc(-1 * var(--bl-motion-select-lift,14px))}
 #blGame .blHand button.blSendingCard{translate:0 calc(-1 * var(--bl-motion-select-lift,14px));transition:filter .1s,translate var(--bl-motion-select-ms,100ms) cubic-bezier(.2,.7,.25,1)}
 @media(prefers-reduced-motion:reduce){#blGame .blHand button{transition:none}}
+
+/* V401 IOS AUDIO 2: reserve space for the score, round label and upper card fan.
+   iOS moves the header below the safe area; the opposite seat must share that offset. */
+#blGame{--bl-header-top:calc(10px + var(--ui-safe-top,0px));--bl-round-top:calc(var(--bl-header-top) + 64px);--bl-opposite-base:17%;--bl-opposite-clearance:50px}
+#blGame .blTop{top:var(--bl-header-top)}
+#blGame .blRound{top:var(--bl-round-top);line-height:1.5}
+#blGame .blSeat[data-pos="2"]{top:max(var(--bl-opposite-base),calc(var(--bl-round-top) + var(--bl-opposite-clearance)))}
+@media(max-height:720px){
+ #blGame{--bl-round-top:calc(var(--bl-header-top) + 57px);--bl-opposite-base:calc(18% + 14px);--bl-opposite-clearance:48px}
+}
+@media(max-height:580px){
+ #blGame{--bl-header-top:calc(6px + var(--ui-safe-top,0px));--bl-round-top:calc(var(--bl-header-top) + 52px);--bl-opposite-base:calc(19% + 14px)}
+}
+/* The compact Sawa layout has its own lower fan; still keep its upper cards below the header. */
+@media(max-height:720px){
+ #blGame.blSawaReveal .blSeat[data-pos="2"]{top:calc(var(--bl-round-top) + var(--bl-opposite-clearance))}
+}

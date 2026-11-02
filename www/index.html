@@ -726,7 +726,7 @@ button:active,.hBig:active,.mSlot:active{transform:scale(.96);transition:transfo
 <link rel="stylesheet" href="ui-vip.css?v=383">
 <link rel="stylesheet" href="ui-six-v388.css">
 <link rel="stylesheet" href="ui-table-hud-v389.css">
-<link rel="stylesheet" href="ui-baloot.css?v=401-flow-1">
+<link rel="stylesheet" href="ui-baloot.css?v=401-ios-audio-2">
 <link rel="stylesheet" href="ui-baloot-motion.css?v=400-stack-1">
 <link rel="stylesheet" href="ui-baloot-lobby-v398.css?v=399-project-1">
 <link rel="stylesheet" href="ui-game-help.css?v=399-project-1">
@@ -1527,7 +1527,7 @@ const $=s=>document.querySelector(s);
 // ⚠️ الصق مفاتيح مشروعك هنا (من إعدادات Firebase → تطبيق الويب).
 // هذه المفاتيح آمنة للنشر في كود الواجهة (مصمّمة لذلك).
 // رقم إصدار التطبيق — يُحدَّث يدويًا مع كل نسخة تُرفع للمتاجر (مو نفس رقم كاش الـSW)
-const APP_VERSION='2.2.19'; // V401 IOS AUDIO 1: audio recovery after foreground and native ads.
+const APP_VERSION='2.2.20'; // V401 IOS AUDIO 2: native local speech asset loading.
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCZZrU2tip4efYEfYhUi9F_DNfuRZ22adU",
   authDomain: "jops-e508d.firebaseapp.com",
@@ -2141,6 +2141,25 @@ const VOICE_FILES={
 // ===== NEW CODE — مدير الصوتيات الاحترافي (Web Audio API) — يستبدل drop/eat بالكامل، مصدره سامي =====
 // يسمح بتراكب الأصوات (BufferSource جديد كل استدعاء) بدل ما يقطع صوت سابق لم ينتهِ — مهم بالأونلاين لحدثين متقاربين.
 // tick/fastTick معرَّفة بالبنية لمستقبل ميزة عداد صوتي، بس غير مفعَّلة الآن (لا ملفات، لا استدعاء) حتى تأكيد سامي.
+// Capacitor iOS serves bundled media with URLResponse: status 0 can carry valid bytes.
+// Limit this exception to readable media in this app's own local asset directory.
+async function uiAudioResponseBytes(response,src){
+  let bundled=false;
+  if(response.status===0&&(response.type==='basic'||response.type==='default')&&!response.redirected){
+    try{
+      const cap=window.Capacitor,base=new URL(location.href),requested=new URL(src,base);
+      const received=response.url?new URL(response.url,base):requested;
+      bundled=cap?.isNativePlatform?.()===true&&cap?.getPlatform?.()==='ios'&&base.protocol==='capacitor:'&&
+        requested.protocol===base.protocol&&requested.host===base.host&&requested.pathname.startsWith('/sfx/')&&
+        received.protocol===base.protocol&&received.host===base.host&&received.pathname===requested.pathname;
+    }catch(_){}
+  }
+  if(!response.ok&&!bundled)throw Error('audio missing');
+  const bytes=await response.arrayBuffer();
+  if(!bytes||!bytes.byteLength)throw Error('audio empty');
+  return bytes;
+}
+
 class SoundManager {
   constructor(){
     this.ctx=null;this.buffers={};this.sounds={drop1:'sfx/drop1.wav',drop2:'sfx/drop2.wav',arrive:'sfx/arrive.wav'};
@@ -2162,8 +2181,8 @@ class SoundManager {
     const context=this.ctx;
     const task=Promise.resolve().then(async()=>{
       try{
-        const response=await fetch(this.sounds[key]);if(!response.ok)throw Error('audio missing');
-        const decoded=await context.decodeAudioData(await response.arrayBuffer());
+        const response=await fetch(this.sounds[key]);
+        const decoded=await context.decodeAudioData(await uiAudioResponseBytes(response,this.sounds[key]));
         if(this.ctx!==context)return null;
         this.buffers[key]=decoded;delete this._retryAfter[key];return decoded;
       }catch(_){this._retryAfter[key]=Date.now()+1000;return null;}
@@ -2683,12 +2702,15 @@ function passTurn(pIdx){
   toast(`${G.players[pIdx].name} ما عنده حركة — تجاوز`);
   if(G.passStreak>=4){ // الكل محبوس (جوكرات بلا هدف)
     G.passStreak=0;
-    if(G.deck.length){
-      let guard=G.deck.length;
-      while(guard-->0&&G.deck[0].rank===JOKER)G.deck.push(G.deck.shift()); // الجوكر لا يُقلب للميدان
-      if(G.deck[0]&&G.deck[0].rank!==JOKER){const c=G.deck.shift();G.field.push(c);toast('انقلبت ورقة من الرزمة للميدان')}
+    const idx=G.deck.findIndex(c=>c&&c.rank!==JOKER);
+    if(idx>=0){
+      const c=G.deck.splice(idx,1)[0];
+      G.field.push(c);
+      toast('انقلبت ورقة من الرزمة للميدان');
+    }else{
+      endRound();
+      return;
     }
-    else{endRound();return}
   }
   afterMove(true);
 }
@@ -8718,7 +8740,7 @@ fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
 <script src="ui-community.js?v=398-polish-1"></script>
 <script src="ui-leagues.js"></script>
 <script src="ui-baloot-sounds.js?v=398-social-1"></script>
-<script src="ui-baloot-audio.js?v=401-ios-audio-1"></script>
+<script src="ui-baloot-audio.js?v=401-ios-audio-2"></script>
 <script src="ui-baloot-ranks.js?v=398"></script>
 <script src="ui-baloot-motion.js?v=400-stack-1"></script>
 <script src="ui-baloot.js?v=401-firebase-chat-1"></script>

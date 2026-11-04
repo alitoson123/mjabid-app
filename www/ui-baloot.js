@@ -59,7 +59,7 @@
   const journey=next?'<div class="blRankDestination">'+crestHTML(next.tier)+'<div><small>هدفك التالي · المستوى '+(next.tier+1)+'</small><b>'+E(next.name)+'</b></div><span>'+number(next.at)+' نقطة</span></div><div class="blRankMeter" role="progressbar" aria-label="التقدم بالنقاط إلى '+E(next.name)+'" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.round(pct)+'"><i style="width:'+pct+'%"></i></div><p class="blRankRemaining">'+(remaining?'باقي <b>'+number(remaining)+'</b> نقطة':'اكتملت نقاط المستوى التالي')+'</p>'+(next.days?'<p class="blRankDays">'+(daysKnown?'أيام اللعب المؤهلة <bdi>'+number(r.days)+' / '+number(next.days)+'</bdi>'+(daysLeft?' · باقي '+number(daysLeft)+' يوم': ' · مكتملة'):'يتطلب هذا المستوى '+number(next.days)+' يوم لعب مؤهل')+'</p>':''):'<p class="blRankSummit">وصلت إلى أعلى مستوى · استمر في جمع النقاط والمنافسة على الصدارة</p>';
   return '<section class="blRankResult" aria-label="نتيجة التقدم التنافسي"><div class="blRankIdentity '+(promoted?'promoted':'')+'">'+crestHTML(tier)+'<div><small>'+E(status)+'</small><strong>'+E(current.name)+'</strong><span>المستوى '+(tier+1)+(promoted?' · ترقية جديدة':'')+'</span></div></div><div class="blRankChange '+(r.delta<0?'loss':r.delta>0?'gain':'neutral')+'"><strong dir="ltr">'+delta+'</strong><span>'+change+'</span></div><div class="blRankBalances"><div><small>قبل الصكة</small><bdi>'+number(r.before)+'</bdi></div><span aria-hidden="true">←</span><div><small>رصيدك الآن</small><bdi>'+number(r.after)+'</bdi></div></div><div class="blRankJourney">'+journey+'</div>'+notices.map(t=>'<p class="blRankNotice">'+E(t)+'</p>').join('')+'</section>';
  }
- function ranksDialog(){const r=rankInfo();modal('رتب صكة','<p class="blNote">نقاط ترقية مستقلة عن نتيجة الصكة والذهب. الفوز والخسارة بحسب رصيدك عند البداية؛ كل شريك يأخذ قيمته كاملة.</p><div class="blRankList">'+RANKS.map((t,i)=>'<article class="blRankRow '+(i===r.tier?'current':'')+'">'+crestHTML(i)+'<div><b>'+E(t.name)+'</b><span><bdi dir="ltr">'+t.at.toLocaleString('en-US')+(RANKS[i+1]?'–'+(RANKS[i+1].at-1).toLocaleString('en-US'):'')+'</bdi>'+(RANKS[i+1]?'':' فأكثر')+' نقطة</span><small>فوز <bdi dir="ltr">+'+t.win+'</bdi> · خسارة <bdi dir="ltr">'+(t.loss?'−'+t.loss:'٠')+'</bdi>'+(t.days?' · '+t.days+' يوم لعب':'')+'</small></div></article>').join('')+'</div><p class="blNote">كل حد تصل إليه يصبح محميًا، حتى أثناء انتظار أيام الشارة. الأيام غير متتالية وتُحسب بإكمال صكة تنافسية مؤهلة، ولا تتصفر النقاط أو الأيام. الودي والكمبيوتر لا يمنحان نقاطًا.</p>','ranks');}
+ function ranksDialog(){const r=rankInfo();modal('رتب صكة','<p class="blNote">نقاط ترقية مستقلة عن نتيجة الصكة والذهب. الفوز والخسارة بحسب رصيدك عند البداية؛ كل شريك يأخذ قيمته كاملة.</p><div class="blRankList">'+RANKS.map((t,i)=>'<article class="blRankRow '+(i===r.tier?'current':'')+'">'+crestHTML(i)+'<div><b>'+E(t.name)+'</b><span><bdi dir="ltr">'+t.at.toLocaleString('en-US')+(RANKS[i+1]?'–'+(RANKS[i+1].at-1).toLocaleString('en-US'):'')+'</bdi>'+(RANKS[i+1]?'':' فأكثر')+' نقطة</span><small>فوز <bdi dir="ltr">+'+t.win+'</bdi> · خسارة <bdi dir="ltr">'+(t.loss?'−'+t.loss:'٠')+'</bdi>'+(t.days?' · '+t.days+' يوم لعب':'')+'</small></div></article>').join('')+'</div><p class="blNote">كل حد تصل إليه يصبح محميًا، حتى أثناء انتظار أيام الشارة. الأيام غير متتالية وتُحسب بإكمال صكة تنافسية مؤهلة، ولا تتصفر النقاط أو الأيام. الجلسات الودية لا تمنح نقاط ترتيب. تُحتسب نتيجة اللاعب في التنافسي حتى مع اكتمال بعض المقاعد تلقائيًا.</p>','ranks');}
  function syncNavigation(){
   const baloot=B.selected==='baloot';frame().dataset.majabeedGame=B.selected;
   if(typeof NAV_ITEMS==='undefined')return;
@@ -111,22 +111,39 @@
  function requestView(kind){if(kind==='board')board();else{B.sessionRows=null;sessions();}clearTimeout(B.viewTimer);const request={kind,uid:user()?.uid};B.viewRequest=request;B.viewTimer=setTimeout(()=>viewError(request),12000);sendHub({type:kind,...(kind==='board'?{period:B.board}:{})}).then(ok=>{if(!ok)viewError(request);});return true;}
  function finishView(kind){if(B.viewRequest?.kind===kind){clearTimeout(B.viewTimer);B.viewRequest=null;}}
  function queueView(){
-  const el=$('#blQueue');if(!el||!B.queue)return;el.hidden=false;const connected=!!B.hub?.ready,count=connected?Math.min(4,B.queueCount):0;
-  $('#blQueueStatus').textContent=connected?'نبحث لك عن منافسين…':B.hub?.closed?'تعذّر الاتصال بالبحث':'نجهّز اتصالك بالطاولة…';
-  $('#blQueueCount').innerHTML=connected?'<bdi dir="ltr">'+count+' / 4</bdi> لاعبين جاهزين':'بانتظار الاتصال';
-  $('#blQueueRetry').hidden=connected;$('#blQueueSteps').innerHTML=[0,1,2,3].map(i=>'<i class="'+(i<count?'ready':'')+'"></i>').join('');
-  const players=connected?B.queuePlayers:[];
-  $('#blQueueSeats').innerHTML=[0,1,2,3].map(i=>{const p=players[i];return '<div class="blWaitingSeat '+(p?(p.uid===user()?.uid?'me':'ready'):'empty')+'">'+(p?avatar(p):'<span class="blEmptySeat" aria-hidden="true">'+icon('profile')+'</span>')+'<b>'+E(p?.name||(connected&&i<count?'لاعب جاهز':'بانتظار لاعب'))+'</b><small>'+(p?.uid===user()?.uid?'أنت':p?'جاهز':'نكمّل اللمّة')+'</small></div>';}).join('');
+  const el=$('#blQueue');if(!el||!B.queue)return;el.hidden=false;const connected=!!B.hub?.ready,players=connected?B.queuePlayers:[],count=connected?Math.min(4,players.length?players.filter(Boolean).length:B.queueCount):0;
+  $('#blQueueStatus').textContent=connected?'ننتظر انضمام اللاعبين…':B.hub?.closed?'تعذّر الاتصال بالبحث':'نجهّز اتصالك بالطاولة…';
+  $('#blQueueCount').innerHTML=connected?'<bdi dir="ltr">'+count+' / 4</bdi> مقاعد':'بانتظار الاتصال';
+  $('#blQueueRetry').hidden=connected;$('#blQueueSteps').innerHTML=[0,1,2,3].map(i=>'<i class="'+(players[i]||!players.length&&i<count?'ready':'')+'"></i>').join('');
+  $('#blQueueSeats').innerHTML=[0,1,2,3].map(i=>{const p=players[i];return '<div class="blWaitingSeat '+(p?(p.uid===user()?.uid?'me':'ready'):'empty')+'">'+(p?avatar(p):'<span class="blEmptySeat" aria-hidden="true">'+icon('profile')+'</span>')+'<b>'+E(p?.name||'بانتظار لاعب')+'</b><small>'+(p?.uid===user()?.uid?'أنت':'')+'</small></div>';}).join('');
  }
+
  function openQueue(){
-  if(B.queue)return false;if(B.queueBlockedUntil>Date.now()){receive('hub',{type:'queueBlocked',until:B.queueBlockedUntil});return false;}if(!user()){toast('سجّل دخولك للعب صكة');return false;}closeModal();B.queue=true;B.queueAt=Date.now();B.queueCount=0;B.queuePlayers=[];queueView();startClock();
+  if(B.queue)return false;if(B.queueBlockedUntil>Date.now()){receive('hub',{type:'queueBlocked',until:B.queueBlockedUntil});return false;}if(!user()){toast('سجّل دخولك للعب صكة');return false;}closeModal();B.queue=true;B.queueAt=Date.now();B.queueDeadline=0;B.queueWaitingForHuman=false;B.queueCount=0;B.queuePlayers=[];queueView();startClock();
   if(B.hub?.ready)B.hub.ws.send(JSON.stringify({type:'queue'}));else connect('hub','/baloot/hub').catch(()=>queueView());return true;
  }
  function stopQueue(){B.queue=false;$('#blQueue').hidden=true;if(B.hub?.ready)B.hub.ws.send(JSON.stringify({type:'cancelQueue'}));}
+
+ function returnIdentity(){return B.room&&B.room.uid===user()?.uid&&B.state?.sessionMatch&&B.room.options.sessionToken?{uid:user().uid,room:B.state.room,match:B.state.sessionMatch,token:B.room.options.sessionToken}:null;}
+ function configureReturn(){
+  window.UISessionReturn?.configure('baloot',{
+   identity:returnIdentity,
+   eligible:()=>B.state?.me>=0&&active()&&B.state.game.phase!=='matchEnd'&&!B.leaving,
+   away:message=>sendRoom(message),
+   suspend:()=>{const link=B.room;if(!link)return;B.projectDraft=null;B.first=null;B.second=null;B.claimKey=null;B.evidencePending=false;closeModal();link.suspended=true;link.attempt=(link.attempt||0)+1;link.connecting=false;link.ready=false;clearTimeout(link.retry);clearTimeout(link.timeout);clearInterval(link.ping);const ws=link.ws;link.ws=null;if(ws){ws.onclose=null;ws.onmessage=null;ws.onopen=null;try{ws.close()}catch(_){}}clearInterval(B.clock);B.clock=null;B.pending=null;clearTimeout(B.pendingTimer);},
+   reconnect:()=>{const link=B.room;if(!link||document.hidden)return;link.suspended=false;if(!link.ready&&!link.connecting){clearTimeout(link.retry);link.open();}},
+   sendReturn:message=>sendRoom(message),
+   resumed:()=>{B.preselect=null;B.akka=false;B.pending=null;startClock();sendRoom({type:'sync'});render();window.UIConnectionQuality?.paintSakka(B.state,B.connections,Date.now()+B.offset);},
+   expire:reason=>{sendRoom({type:'leave'});leaveLocal();toast(reason);},
+   invalidated:()=>leaveLocal({refresh:false})
+  });
+ }
+
  function background(){
   cancelPublicProfile();cancelDrag();clearCardMotion();
   clearTimeout(B.syncTimer);
   B.preselect=null;B.akka=false;B.restoring=false;clearTimeout(B.restoreTimer);hideChat();paintPreselect();
+  configureReturn();if(window.UISessionReturn?.background('baloot')){closeLink('hub');return;}
   if(B.room?.ready&&B.state?.me>=0)sendRoom({type:'presence',visible:false});
   // Leaving the app ends this view's intent. Only an explicit new entry may reopen it.
   // Closing the transport keeps the server's existing disconnect/auto-play rules.
@@ -136,7 +153,7 @@
   closeLink('hub');
  }
  function foreground(){
-  if(document.hidden)return;
+  if(document.hidden)return;configureReturn();if(window.UISessionReturn?.foreground('baloot'))return;
   if(B.returnHome){B.returnHome=false;goHome();if(B.selected==='baloot'&&user())loadProfile(true);return;}
   if(B.room||B.queue)startClock();if(B.selected==='baloot'&&user()&&!B.hub)loadProfile(true);
   if(B.room?.ready){
@@ -177,38 +194,39 @@
  async function connect(kind,path,options={}){
   const u=user();if(!u){toast('سجّل دخولك للعب صكة');throw Error('login required');}
   const existing=B[kind];if(existing?.path===path&&existing.uid===u.uid&&existing.options.spectate===options.spectate&&existing.options.watchUid===options.watchUid){if(existing.ready)return existing;return existing.promise;}
+  if(kind==='room'&&!options.sessionToken)options={...options,sessionToken:window.UISessionReturn?.token()};
   closeLink(kind);const link={path,uid:u.uid,ready:false,closed:false,tries:0,options};B[kind]=link;
   link.promise=new Promise((resolve,reject)=>{link.resolve=resolve;link.reject=reject;});
   // Attach rejection handler immediately; callers still receive the actual rejection.
   link.promise.catch(()=>{});
   link.open=async()=>{
-   if(link.closed||link.connecting||user()?.uid!==link.uid)return;link.connecting=true;
+   if(link.closed||link.suspended||link.connecting||user()?.uid!==link.uid||kind==='room'&&document.hidden)return;link.connecting=true;const attempt=link.attempt=(link.attempt||0)+1;const validAttempt=()=>!link.closed&&!link.suspended&&B[kind]===link&&link.attempt===attempt&&user()?.uid===link.uid&&!(kind==='room'&&document.hidden);
    try{
     if(kind==='room'&&typeof fbSaveProfile==='function'&&FB.ready)await fbSaveProfile(true);
-    const idToken=await u.getIdToken();if(link.closed||user()?.uid!==link.uid){link.connecting=false;return;}
+    if(!validAttempt())return;const idToken=await u.getIdToken();if(!validAttempt())return;
     const old=link.ws;if(old){old.onclose=null;try{old.close()}catch(_){}}clearTimeout(link.timeout);const ws=new WebSocket('wss://'+GAME_SRV+path);link.ws=ws;link.ready=false;
     link.timeout=setTimeout(()=>{if(!link.ready){link.connecting=false;link.reject(Error('تعذّر الاتصال؛ تأكد من رفع سيرفر صكة'));toast('تعذّر الاتصال بخدمة صكة؛ أعد المحاولة');ws.close()}},12000);
-    ws.onopen=()=>{if(link.closed||B[kind]!==link||ws!==link.ws||user()?.uid!==link.uid||ws.readyState!==1)return;ws.send(JSON.stringify({type:'auth',idToken,spectate:options.spectate===true,...(options.watchUid?{watchUid:options.watchUid}:{}),features:{sawa:2,qablak:1}}));};
+    ws.onopen=()=>{if(!validAttempt()||ws!==link.ws||ws.readyState!==1)return;ws.send(JSON.stringify({type:'auth',idToken,spectate:options.spectate===true,...(options.watchUid?{watchUid:options.watchUid}:{}),features:{sawa:2,qablak:1,sessionReturn:1,connectionQuality:1,fastSakka:1,autoProjects:1},sessionToken:options.sessionToken,sessionResume:kind==='room'?window.UISessionReturn?.resumeFields('baloot',options.sessionToken,B.state?.sessionMatch):undefined}));};
     ws.onmessage=event=>{
      if(link.closed||ws!==link.ws||user()?.uid!==link.uid)return;let m;try{m=JSON.parse(event.data)}catch(_){return;}
      if(m.type==='ready'||m.type==='state'){
-      if(!link.ready){link.connecting=false;link.ready=true;link.tries=0;clearTimeout(link.timeout);link.resolve(link);clearInterval(link.ping);link.ping=setInterval(()=>{if(ws.readyState===1)ws.send(JSON.stringify({type:'ping'}))},25000);}
+      if(!link.ready){link.connecting=false;link.ready=true;link.tries=0;clearTimeout(link.timeout);link.resolve(link);clearInterval(link.ping);if(kind==='room'&&!document.hidden)ws.send(JSON.stringify({type:'connectionPing'}));link.ping=setInterval(()=>{if(ws.readyState===1&&!document.hidden)ws.send(JSON.stringify({type:'ping',connection:kind==='room'}))},25000);}
      }
      receive(kind,m);
     };
     ws.onclose=event=>{
-     if(ws!==link.ws||link.closed)return;link.connecting=false;if(kind==='room'){clearCardMotion();B.preselect=null;B.akka=false;paintPreselect();}link.ready=false;clearInterval(link.ping);clearTimeout(link.timeout);
+     if(ws!==link.ws||link.closed)return;link.connecting=false;if(kind==='room'){window.UISessionReturn?.disconnected('baloot');const own=B.state?.seats?.[B.state.me]?.uid;if(own){B.connections={...B.connections,[own]:{quality:'offline',updatedAt:Date.now()+B.offset}};window.UIConnectionQuality?.paintSakka(B.state,B.connections,Date.now()+B.offset);}clearCardMotion();B.preselect=null;B.akka=false;paintPreselect();}link.ready=false;clearInterval(link.ping);clearTimeout(link.timeout);
      if(event.code===4001){link.closed=true;link.reject(Error('فتحت اللعبة في اتصال آخر'));toast('فتحت اللعبة في اتصال آخر');connection();return;}
      if(event.code===4004){link.closed=true;link.reject(Error('انتهت الجلسة'));toast('انتهت الجلسة');leaveLocal();return;}
      link.tries++;connection();if(link.tries<=6)link.retry=setTimeout(link.open,Math.min(15000,1000*2**(link.tries-1)));else{link.reject(Error('تعذّر الاتصال'));toast('تعذّر الاتصال؛ اضغط إعادة الاتصال');}
     };
     ws.onerror=()=>{};
-   }catch(e){link.connecting=false;if(link.closed||B[kind]!==link||user()?.uid!==link.uid)return;link.reject(e);if(B.loading)loadError('تعذّر تسجيل الاتصال');else toast('تعذّر تسجيل الاتصال');}
+   }catch(e){if(!validAttempt())return;link.connecting=false;link.reject(e);if(B.loading)loadError('تعذّر تسجيل الاتصال');else toast('تعذّر تسجيل الاتصال');}
   };link.open();return link.promise;
  }
  async function sendHub(m){const intent=B.loading?.id,uid=user()?.uid;try{const link=await connect('hub','/baloot/hub');if(!link.closed&&link.uid===user()?.uid&&link.ws.readyState===1){link.ws.send(JSON.stringify(m));return true;}}catch(e){if(e.message==='cancelled'||user()?.uid!==uid)return;if(B.loading?.id===intent)loadError('تعذّر الاتصال؛ أعد المحاولة');if(B.profileLoading){B.profileLoading=false;B.profileError=true;profileView();}}}
- function sendRoom(m){if(!B.room?.ready||B.room.ws.readyState!==1){connection();return false;}B.room.ws.send(JSON.stringify(m));return true;}
- function move(a){if(B.pending||!B.state?.game)return false;const id=crypto.randomUUID().replace(/-/g,'');B.pending=id;if(!sendRoom({type:'action',action:a,id,seq:B.state.game.seq})){B.pending=null;return false;}clearTimeout(B.pendingTimer);B.pendingTimer=setTimeout(()=>{B.pending=null;clearPlayVisual();paintPreselect();sendRoom({type:'sync'});},8000);return true;}
+ function sendRoom(m){if(window.UISessionReturn?.blocked('baloot')&&!['sessionAway','sessionReturn','leave','sync','ping','connectionAck'].includes(m.type))return false;if(!B.room?.ready||B.room.ws.readyState!==1){connection();return false;}B.room.ws.send(JSON.stringify(m));return true;}
+ function move(a){if(window.UISessionReturn?.blocked('baloot'))return false;if(B.pending||!B.state?.game)return false;const id=crypto.randomUUID().replace(/-/g,'');B.pending=id;if(!sendRoom({type:'action',action:a,id,seq:B.state.game.seq})){B.pending=null;return false;}clearTimeout(B.pendingTimer);B.pendingTimer=setTimeout(()=>{B.pending=null;clearPlayVisual();paintPreselect();sendRoom({type:'sync'});},8000);return true;}
  function loadProfile(force=false){if(user()&&!B.profileLoading&&(force||Date.now()-(B.profileAt||0)>30000)){B.profileLoading=true;B.profileError=false;B.profileAt=Date.now();sendHub({type:'profile'});clearTimeout(B.profileTimer);B.profileTimer=setTimeout(()=>{if(B.profileLoading){B.profileLoading=false;B.profileError=true;profileView();home();}},12000);}}
  function friendRequest(type,data){
   const requestId=crypto.randomUUID(),uid=user()?.uid;
@@ -222,7 +240,10 @@
   try{const rows=await friendRequest('friendWatch',{uid});if(B.selected==='baloot'&&user()?.uid===account&&!$('#friends').classList.contains('hidden')&&!B.room&&!B.queue&&!(typeof ONL!=='undefined'&&ONL.active)&&!(typeof MATCH!=='undefined'&&MATCH.on)&&rows[0]?.uid===uid)await join(rows[0].room,true,uid);}catch(e){if(user()?.uid===account&&B.selected==='baloot')toast(e.message);}finally{B.friendWatchBusy=false;}
  }
  function receive(kind,m){
-  if(m.type==='error')clearPlayVisual();
+  if(kind==='room'&&m.type==='connectionProbe'){if(!document.hidden)sendRoom({type:'connectionAck',id:m.id});if(m.connections){B.connections=m.connections;window.UIConnectionQuality?.paintSakka(B.state,B.connections,m.now);}return;}
+  if(kind==='room'&&m.type==='connectionStatus'){B.connections=m.connections||{};window.UIConnectionQuality?.paintSakka(B.state,B.connections,m.now);return;}
+  if(kind==='room'&&m.type!=='state'&&window.UISessionReturn?.handle('baloot',m)===true)return;
+  if(m.type==='error'){if(kind==='room')window.UISessionReturn?.disconnected('baloot');clearPlayVisual();}
   if(m.type==='friendResponse'){const request=friendRequests.get(m.requestId);if(!request)return;clearTimeout(request.timer);friendRequests.delete(m.requestId);if(request.uid!==user()?.uid){request.reject(Error('تغيّر الحساب'));return;}if(m.error)request.reject(Error(m.error));else request.resolve(m.rows||[]);return;}
 
   if(m.type==='queueBlocked'){stopQueue();B.queueBlockedUntil=m.until;modal('البحث متوقف مؤقتًا','<p>انتهت مهلة العودة إلى الصكة التنافسية.</p><p>يمكنك البحث مجددًا بعد <b data-bl-ban="'+m.until+'"></b></p>'+btn('الرئيسية','close','blPrimary'),'queueBlocked');startClock();clock();return;}
@@ -241,23 +262,25 @@
   if(m.type==='ack'){if(B.pending===m.id){B.pending=null;clearTimeout(B.pendingTimer);}return;}
   if(m.type==='assigned'){B.queue=false;$('#blQueue').hidden=true;endLoad();const invite=B.inviteAfterCreate;B.inviteAfterCreate=null;join(m.room).then(()=>{if(invite&&invite.account===user()?.uid&&B.state?.room===m.room)sendFriendInvite(invite.uid,invite.name);});return;}
   if(m.type==='resume'){const requested=B.resumeRequested;B.resumeRequested=false;if(requested&&m.room&&!document.hidden)join(m.room);return;}
-  if(m.type==='queue'){if(!B.queue)return;B.queueAt=m.since;B.queueCount=m.count;B.queuePlayers=Array.isArray(m.players)?m.players:[];queueView();return;}
+  if(m.type==='queue'){if(!B.queue)return;B.queueAt=m.since;B.queueDeadline=m.startAt||m.deadline||0;B.queueWaitingForHuman=m.autoProjects===1||m.fastSakka===true||m.waitingForHuman===true;B.queueCount=m.count;B.queuePlayers=Array.isArray(m.players)?m.players:[];queueView();return;}
   if(m.type==='sessions'){finishView('sessions');endLoad('sessions');if(B.modal==='sessions')sessions(m.rows);return;}
   if(m.type==='board'){if(m.period===B.board){finishView('board');endLoad('board');if(B.modal==='board')board(m);}return;}
+  if(m.type==='resultReturned'){const p=B.state?.game?.resultPresentation;if(p&&m.match===p.match&&m.round===p.round){B.dismissedResultKey=resultPresentationKey(p);resultPresentationClock();}return;}
   if(m.type==='left'){leaveLocal();return;}
   if(m.type==='ejected'){leaveLocal();toast(m.reason||'أُتيح المقعد بعد عدم اللعب');return;}
   if(m.type!=='state')return;
   if(B.state?.room===m.room&&m.seq<B.state.seq)return;
   if(B.drag&&(!['play','collect'].includes(m.game?.phase)||m.me!==B.state?.me||m.game?.id!==B.drag.match||m.game?.round!==B.drag.round||m.game?.turn!==B.drag.turn||m.auto[m.me]||!m.game?.myHand.includes(B.drag.card)))cancelDrag();endLoad('room');clearTimeout(B.syncTimer);B.restoring=false;clearTimeout(B.restoreTimer);const previous=B.state;B.state=m;if(m.me>=0&&FB.ready&&user()&&B.friendPresence!==user().uid+':'+m.room){const key=user().uid+':'+m.room;B.friendPresence=key;FB.db.collection('players').doc(user().uid).set({activeGame:'baloot',activeRoom:null},{merge:true}).catch(()=>{if(B.friendPresence===key)B.friendPresence=null;});}B.offset=m.now-Date.now();B.pending=null;clearTimeout(B.pendingTimer);
   if(m.game?.phase==='matchEnd'&&!m.game.claimReviewUntil){B.profileAt=0;B.resume=null;}else B.resume={uid:user()?.uid,id:m.room,at:Date.now(),spectate:m.me<0};
+  B.connections=m.connections||B.connections||{};configureReturn();if(window.UISessionReturn?.handle('baloot',m)===true)return;
   updateExtras(previous,m);
-  const signature=JSON.stringify([m.room,m.seats,m.owner,m.me,m.game?.seq,m.auto,m.settled,m.progression,m.seatChoice,m.seatSwap,m.rematch]);
+  const signature=JSON.stringify([m.room,m.seats,m.owner,m.me,m.game?.seq,m.game?.deadline,m.game?.resultPresentation?.returned,m.auto,m.settled,m.progression,m.seatChoice,m.seatSwap,m.rematch]);
   if(signature!==B.signature){B.signature=signature;if(B.drag)B.renderAfterDrag=true;else render();}
-  if(m.game)window.BalootAudio?.sync(m.game,m.me,previous?.game,m.now,{motionEffects:!!B.motion});if(m.me>=0&&m.auto[m.me]&&!previous?.auto?.[m.me])sound('auto_play');if(m.game?.turn===m.me&&['play','bid','double'].includes(m.game.phase)&&previous?.game?.turn!==m.me)sound('turn_alert');renderChat();connection();clock();flushPreparedProjects();flushPreselect();
+  if(m.game)syncGameAudio(m,previous);if(m.me>=0&&m.auto[m.me]&&!previous?.auto?.[m.me])sound('auto_play');if(!resultPresentation(m.game)&&m.game?.turn===m.me&&['play','bid','double'].includes(m.game.phase)&&previous?.game?.turn!==m.me)sound('turn_alert');renderChat();connection();clock();if(!window.UISessionReturn?.blocked('baloot')){flushPreparedProjects();flushPreselect();}window.UIConnectionQuality?.paintSakka(B.state,B.connections,m.now);
  }
  async function join(id,spectate=false,watchUid){
   if(document.hidden)return false;
-  clearCardMotion();
+  window.UISessionReturn?.reset('baloot');B.connections={};B.resultOverlayKey=null;B.dismissedResultKey=null;B.presentedAudioGame=null;B.heldResultAudio=null;B.projectBar=false;clearCardMotion();
   if(needsChoice()){goHome();return;}
   id=String(id||'').trim().toUpperCase();if(!/^[A-Z0-9]{8}$/.test(id)){toast('رمز الجلسة من 8 أحرف وأرقام');return;}
   if(typeof ONL!=='undefined'&&ONL.active){toast('غادر جلسة مجابيد أولًا');return;}
@@ -272,14 +295,16 @@
   if(!sendRoom({type:'leave'})){B.leaving=false;endLoad('leave');connection();}
  }
  function connection(){const el=$('#blConnection');if(el)el.innerHTML=B.room?.ready?'':'<span>جارٍ استعادة الاتصال بالطاولة…</span>'+btn('إعادة الاتصال','reconnect');queueView();}
- function leaveLocal({navigate=true,refresh=true}={}){clearCardMotion();B.leaving=false;clearTimeout(B.publicInviteTimer);clearTimeout(B.inviteLookupTimer);B.publicInvitePending=null;B.publicInviteAck=null;B.inviteLookup=null;cancelDrag();endLoad();clearTimeout(B.syncTimer);B.suspendedRoom=null;B.resume=null;B.resumeRequested=false;B.restoring=false;if(B.queue)stopQueue();B.preselect=null;B.akka=false;hideChat();window.BalootAudio?.stop();try{localStorage.removeItem(resumeKey());}catch(_){}closeLink('room');B.state=null;B.pending=null;B.projectDraft=null;B.first=null;B.second=null;B.claimKey=null;B.evidencePending=false;clearTimeout(B.pendingTimer);clearTimeout(B.restoreTimer);B.signature='';$('#blGame').hidden=true;closeModal();clearInterval(B.clock);B.clock=null;if(navigate)goHome();if(refresh)loadProfile();}
+ function leaveLocal({navigate=true,refresh=true}={}){window.UISessionReturn?.reset('baloot');B.connections={};B.resultOverlayKey=null;B.dismissedResultKey=null;B.presentedAudioGame=null;B.heldResultAudio=null;B.projectBar=false;clearCardMotion();B.leaving=false;clearTimeout(B.publicInviteTimer);clearTimeout(B.inviteLookupTimer);B.publicInvitePending=null;B.publicInviteAck=null;B.inviteLookup=null;cancelDrag();endLoad();clearTimeout(B.syncTimer);B.suspendedRoom=null;B.resume=null;B.resumeRequested=false;B.restoring=false;if(B.queue)stopQueue();B.preselect=null;B.akka=false;hideChat();window.BalootAudio?.stop();try{localStorage.removeItem(resumeKey());}catch(_){}closeLink('room');B.state=null;B.pending=null;B.projectDraft=null;B.first=null;B.second=null;B.claimKey=null;B.evidencePending=false;clearTimeout(B.pendingTimer);clearTimeout(B.restoreTimer);B.signature='';$('#blGame').hidden=true;closeModal();clearInterval(B.clock);B.clock=null;if(navigate)goHome();if(refresh)loadProfile();}
  function startClock(){if(!B.clock)B.clock=setInterval(clock,250);}
  function clock(){
+  resultPresentationClock();
+  if(!document.hidden&&Date.now()-(B.connectionPaintAt||0)>5000){B.connectionPaintAt=Date.now();window.UIConnectionQuality?.paintSakka(B.state,B.connections,Date.now()+B.offset);}
   document.querySelectorAll('[data-bl-rematch-clock]').forEach(el=>el.textContent=Math.max(0,Math.ceil((+el.dataset.blRematchClock-Date.now()-B.offset)/1000))+' ث');
   document.querySelectorAll('[data-bl-seat-clock]').forEach(el=>el.textContent=Math.max(0,Math.ceil((+el.dataset.blSeatClock-Date.now()-B.offset)/1000))+' ث');
   document.querySelectorAll('[data-bl-ban],[data-bl-return]').forEach(el=>{const seconds=Math.max(0,Math.ceil((+(el.dataset.blBan||el.dataset.blReturn)-Date.now()-(el.dataset.blReturn?B.offset:0))/1000));el.textContent=el.dataset.blBan?Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0'):seconds+' ث';});
   const g=B.state?.game;if(g?.deadline){const left=Math.max(0,Math.ceil((g.deadline-Date.now()-B.offset)/1000));document.querySelectorAll('[data-bl-clock]').forEach(el=>el.textContent=left+' ث');const turnKey=g.id+':'+g.round+':'+g.turn+':'+g.deadline+':'+left;if(B.room?.ready&&g.turn===B.state.me&&g.phase==='play'&&left<=5&&left>0&&B.lastClockSound!==turnKey){B.lastClockSound=turnKey;sound(left===5?'five_seconds':'countdown_tick');}}
-  if(B.queue){const el=$('#blQueueTime');if(el){const secs=Math.max(0,Math.floor((Date.now()-(B.queueAt||Date.now()))/1000));el.textContent=String(Math.floor(secs/60)).padStart(2,'0')+':'+String(secs%60).padStart(2,'0');}}
+  if(B.queue){const el=$('#blQueueTime');if(el){const secs=Math.max(0,Math.floor((Date.now()-(B.queueAt||Date.now()))/1000));el.textContent=B.queueWaitingForHuman&&B.queueDeadline?'نبدأ خلال '+Math.max(0,Math.ceil((B.queueDeadline-Date.now()-B.offset)/1000))+' ث':String(Math.floor(secs/60)).padStart(2,'0')+':'+String(secs%60).padStart(2,'0');}}
   // Project badges stay visible through the round, including the announcing player.
   if(B.revealUntil&&Date.now()>B.revealUntil){B.revealUntil=0;$('#blSpread')?.remove();}if(B.notice&&Date.now()>B.notice.until){B.notice=null;$('#blProjectNotice')?.remove();}paintChatBubbles();
   const week=$('#blWeekTime');if(week?.dataset.end){const n=Math.max(0,+week.dataset.end-Date.now());week.textContent='يتجدد خلال '+Math.floor(n/86400000)+' يوم و'+Math.floor(n/3600000)%24+' ساعة';}
@@ -333,13 +358,13 @@
 
  function render(){
   const d=B.state,root=$('#blGame');if(!d)return;root.hidden=false;const motion=cardMotion(),before=B.motionState||null,captured=motion?.capture(before);reconcileCardMotion();
-  if(d.me<0){hideChat();if(['declare','projects','claimReason','kasho'].includes(B.modal))closeModal();}
-  if(!d.game){clearCardMotion();if(['result','claim','double','sawa','claimReason','declare','projectReview'].includes(B.modal)||B.modal==='invites'&&!lobbyInviteAvailable())closeModal();renderLobby();return;}const g=d.game;root.dataset.phase=g.phase;root.dataset.spectator=String(d.me<0);root.classList.toggle('blSawaReveal',verifiedSawa(g));const me=d.me,mine=me>=0?me%2:0,turn=g.turn===me&&!d.auto[me],sorted=g.myHand.slice().sort((a,b)=>'CSHD'.indexOf(a.at(-1))-'CSHD'.indexOf(b.at(-1))||rank(b)-rank(a)).reverse();
+  if(d.me<0){hideChat();if(['declare','declareQuick','projects','claimReason','kasho'].includes(B.modal))closeModal();}
+  if(!d.game){clearCardMotion();if(['result','claim','double','sawa','claimReason','declare','declareQuick','projectReview'].includes(B.modal)||B.modal==='invites'&&!lobbyInviteAvailable())closeModal();renderLobby();return;}const g=d.game;root.dataset.phase=g.phase;root.dataset.spectator=String(d.me<0);root.classList.toggle('blSawaReveal',verifiedSawa(g));const me=d.me,mine=me>=0?me%2:0,turn=g.turn===me&&!d.auto[me],sorted=g.myHand.slice().sort((a,b)=>'CSHD'.indexOf(a.at(-1))-'CSHD'.indexOf(b.at(-1))||rank(b)-rank(a)).reverse();
   const phaseText={kasho:'كاشو · كشف أوراق الجميع',bid:g.sunResponse?.pending?'طلبك صن · بانتظار حسم الأولوية':g.sunResponse&&g.bidOptions?.includes('sun')&&!d.auto[me]?'يمكنك طلب الصن الآن':g.bidStage==='priority'?(turn?'دورك في قبلك':'قبلك · بانتظار '+(d.seats[g.turn]?.name||'اللاعب')):turn?'دورك في الشراء':'بانتظار شراء '+(d.seats[g.turn]?.name||'اللاعب'),double:turn?'دورك في التدبيل':'بانتظار رد '+(d.seats[g.turn]?.name||'اللاعب'),trump:turn?'سمِّ الحكم':'بانتظار تسمية الحكم من '+(d.seats[g.turn]?.name||'المشتري'),play:turn?'دورك · اختر ورقتك':'دور '+(d.seats[g.turn]?.name||''),collect:'الأكلة لـ '+(d.seats[g.turn]?.name||''),review:'مهلة القيد قبل احتساب النتيجة',sawa:verifiedSawa(g)?'سوا · كشف أوراق الجميع':'عرض السوا · انتظار الخصم',claim:'طلب قيد',roundEnd:'نتيجة التوزيعة',matchEnd:'انتهت الصكة'}[g.phase]||'';
   patchGame(root,'<div class="blTable"></div><div class="blTop">'+btn($('#oExit')?.innerHTML||'خروج','leave','blExit exitLike','aria-label="مغادرة الجلسة"')+'<div class="blScore"><span>لنا<b>'+g.scores[mine]+'</b></span><span>لهم<b>'+g.scores[1-mine]+'</b></span></div>'+btn(soundIcon(),'mute','blMute','aria-label="'+(B.muted?'تشغيل الصوت':'كتم الصوت')+'" aria-pressed="'+!B.muted+'"')+'</div><div class="blRound">'+(d.mode==='competitive'?'تنافسي':'ودية')+' · '+contractText(g)+' · التوزيعة '+g.round+'</div><div id="blConnection" class="blConnection"></div>'+d.seats.map((p,i)=>seatHTML(p,i,g)).join('')+'<div class="blField">'+g.trick.map(p=>'<img class="blPlayed blCardFace" data-card="'+p.card+'" data-seat="'+p.seat+'" data-pos="'+pos(p.seat)+'" src="cards/'+p.card+'.png" alt="'+p.card+'">').join('')+'</div>'+
    (['bid','double','trump'].includes(g.phase)?'<div class="blPurchase">'+img(g.up)+'<small>'+contractText(g)+'</small></div>':'')+
-   '<div class="blStatus '+(['bid','double','trump'].includes(g.phase)?'blPurchaseStatus':verifiedSawa(g)?'blSawaStatus':'')+'" role="status">'+E(phaseText)+(g.phase==='review'?' · <b data-bl-clock></b>':'')+'</div><div class="blHandLabel">'+(me<0?'مشاهد':'')+'</div><div class="blHand '+(turn&&g.phase==='play'?'':'waiting')+'" style="--overlap:'+overlap(sorted.length)+'px">'+sorted.map((id,i)=>'<button data-bl="card" data-card="'+id+'" style="--ha:'+((i-(sorted.length-1)/2)*2.6)+'deg;--hy:'+Math.round(Math.abs(i-(sorted.length-1)/2)*2)+'px" aria-label="العب '+id+'">'+img(id)+'</button>').join('')+'</div>'+(me>=0?'<div class="blActions">'+btn('قيدها','claim','',(!['play','collect','review'].includes(g.phase)&&!verifiedSawa(g))||me<0||d.auto[me]?'disabled':'')+btn(B.projectDraft?'المشاريع · جاهزة':'المشاريع','projects','',!(canPrepareProjects(g,me)||turn&&g.phase==='play'&&g.history.length===1&&g.projectContest?.eligible.includes(me)&&!g.revealed[me].length)?'disabled':'')+(canRequestSawa(g)?btn('سوا','sawa','blPrimary'):'')+btn($('#oChatBtn')?.innerHTML||'💬','chat','blChatButton','aria-label="الشات"')+'</div>':'')+
-   '');
+   '<div class="blStatus '+(['bid','double','trump'].includes(g.phase)?'blPurchaseStatus':verifiedSawa(g)?'blSawaStatus':'')+'" role="status">'+E(phaseText)+(g.phase==='review'?' · <b data-bl-clock></b>':'')+'</div><div class="blHandLabel">'+(me<0?'مشاهد':'')+'</div><div class="blHand '+(turn&&g.phase==='play'?'':'waiting')+'" style="--overlap:'+overlap(sorted.length)+'px">'+sorted.map((id,i)=>'<button data-bl="card" data-card="'+id+'" style="--ha:'+((i-(sorted.length-1)/2)*2.6)+'deg;--hy:'+Math.round(Math.abs(i-(sorted.length-1)/2)*2)+'px" aria-label="العب '+id+'">'+img(id)+'</button>').join('')+'</div>'+(me>=0?'<div class="blActions">'+btn('قيدها','claim','',(!['play','collect','review'].includes(g.phase)&&!verifiedSawa(g))||me<0||d.auto[me]?'disabled':'')+btn(B.projectDraft?'مشروع · جاهز':'مشروع','projects','',!canPrepareProjects(g,me)?'disabled':'')+(canRequestSawa(g)?btn('سوا','sawa','blPrimary'):'')+btn($('#oChatBtn')?.innerHTML||'💬','chat','blChatButton','aria-label="الشات"')+'</div>':'')+
+   projectToolbarHTML());
   root.insertAdjacentHTML('beforeend',collectHTML()+(g.canKasho&&me>=0&&!d.auto[me]?'<div class="blKashoAction">'+btn('كاشو · إعادة التوزيع','kasho')+'</div>':'')+spreadHTML()+noticeHTML()+(g.phase==='review'?advanceHTML():verifiedSawa(g)?sawaPromptHTML():''));paintPreselect();paintChatBubbles();
   if(g.phase==='bid'&&me>=0&&!d.auto[me]&&g.bidOptions?.length){const choices=g.bidOptions.map(k=>btn({pass:g.bidRound===2&&!g.offer?'ولا':'بس',qablak:'قبلك',sun:'صن',hokum:g.bidStage==='confirm'?'تأكيد الحكم':g.bidRound===2?'حكم ثاني':'حكم',ashkal:'أشكل'}[k],'bid',k==='sun'?'blPrimary':'','data-kind="'+k+'"')).join('');root.insertAdjacentHTML('beforeend','<div class="blBidActions">'+(g.bidStage==='priority'?'<p class="blBidHint">'+E(d.seats[g.offer.seat]?.name)+(g.offer.qablak?' قال قبلك':' طلب صن')+(turn?' · دورك في الرجوع':' · يمكنك طلب صن الآن')+(turn&&g.priority?.seats?.length>1?' · بعدك '+E(d.seats[g.priority.seats[1]]?.name):turn&&g.priority?' · آخر أولوية':'')+'</p>':g.bidStage==='confirm'?'<p class="blBidHint">'+(g.bidOptions.includes('sun')?'تأكيد الحكم أو تحويله صن':'تأكيد الحكم')+'</p>':g.offer?'<p class="blBidHint">'+E(d.seats[g.offer.seat]?.name)+(g.bidRound===2?' طلب حكم ثاني':' طلب حكم '+suitHTML(g.offer.trump))+(g.bidOptions.includes('sun')?' · يمكنك أخذها صن':/^A[SHDC]$/.test(g.up)&&me!==(g.dealer+1)%4?' · صن الآكة لـ '+E(d.seats[(g.dealer+1)%4]?.name)+' فقط (يمين الموزّع)':'')+'</p>':'')+choices+'</div>');}
   if(g.phase==='trump'&&turn)root.insertAdjacentHTML('beforeend','<div class="blBidActions blTrumpActions"><p class="blBidHint">'+(g.counts.every(n=>n===5)?'سمِّ الحكم قبل تكملة التوزيع':'سمِّ الحكم')+'</p>'+Object.keys(S).filter(x=>x!==g.up.at(-1)).map(x=>btn(suitHTML(x)+' '+({S:'سبيت',H:'هاص',D:'دايمن',C:'شيريا'})[x],'trump','blPrimary','data-suit="'+x+'"')).join('')+'</div>');
@@ -347,14 +372,14 @@
   root.classList.toggle('blHokum',g.contract?.mode==='hokum');
   if(B.modal==='kasho'&&(!g.canKasho||d.auto[me]))closeModal();
   if(B.modal==='sawaConfirm'&&(!turn||!g.canSawa))closeModal();
-  if(g.phase==='kasho')renderKasho();
-  else if(g.phase==='sawa'){if(verifiedSawa(g)){if(['sawa','sawaConfirm','result','kashoReveal','declare','reveal','projects','double'].includes(B.modal))closeModal();}else renderSawa();}
+  if(resultPresentation(g))renderResult(resultPresentation(g));
+  else if(g.phase==='kasho')renderKasho();
+  else if(g.phase==='sawa'){if(verifiedSawa(g)){if(['sawa','sawaConfirm','result','kashoReveal','declare','declareQuick','reveal','projects','double'].includes(B.modal))closeModal();}else renderSawa();}
   else if(g.phase==='claim')renderClaim();
   else if(['roundEnd','matchEnd'].includes(g.phase))renderResult();
-  else if(B.modal==='declare'&&canPrepareProjects(g,me))revealDialog();
   else if(B.modal==='projectReview'&&['play','collect','review'].includes(g.phase)&&g.declared[B.reviewProjectSeat]?.length)projectReview(B.reviewProjectSeat);
-  else if(['claim','result','projects','declare','reveal','sawa','projectReview','kashoReveal'].includes(B.modal)||B.modal==='double'&&(!turn||g.phase!=='double')||B.modal==='claimReason'&&!['play','collect','review'].includes(g.phase)&&!verifiedSawa(g)||B.modal==='invites'&&!lobbyInviteAvailable())closeModal();
-  paintPreselect();applyTheme();connection();clock();motion?.update(before,d,captured,{origin:B.playVisual});B.motionState=d;const visual=B.playVisual;if(visual&&!g.myHand.includes(visual.card))clearPlayVisual();
+  else if(['claim','result','projects','declare','declareQuick','reveal','sawa','projectReview','kashoReveal'].includes(B.modal)||B.modal==='double'&&(!turn||g.phase!=='double')||B.modal==='claimReason'&&!['play','collect','review'].includes(g.phase)&&!verifiedSawa(g)||B.modal==='invites'&&!lobbyInviteAvailable())closeModal();
+  paintProjectToolbar();paintPreselect();applyTheme();connection();clock();motion?.update(before,d,captured,{origin:B.playVisual});B.motionState=d;const visual=B.playVisual;if(visual&&!g.myHand.includes(visual.card))clearPlayVisual();
  }
  function applyTheme(){try{const theme=SHOP_THEMES.find(t=>t.id===uiThemeResolve());if(theme?.bg)$('#blGame').style.backgroundImage='url("'+theme.bg+'")';const table=$('#blGame .blTable');if(table)table.style.backgroundImage='url("'+(theme?.table||'ui-art/rooms-v362/cafe-table.webp')+'")';}catch(_){}}
  function rank(id){const r=id.slice(0,-1);return {J:11,Q:12,K:13,A:14}[r]||+r;}
@@ -372,11 +397,11 @@
   const count=(g.history||[]).filter(h=>h.winner===seat).length+(g.sawa?.complete&&!g.sawa.verified&&g.sawa.by===seat?g.sawa.cards.length:0);
   return count?'<span class="blTaken" data-taken="'+seat+'" role="img" aria-label="'+E(B.state.seats[seat]?.name)+' لديه '+count+' أكلات" title="'+count+' أكلات"><i aria-hidden="true"></i><b aria-hidden="true">'+count+'</b></span>':'';
  }
- function seatHTML(p,i,g){if(!p)return '';const here=pos(i),current=g.turn===i&&['bid','play','double','trump'].includes(g.phase),decl=unspreadProjects(g,i).length?unspreadProjects(g,i).map((x,j)=>'<span class="blProjectPart">'+(j?'<span class="blProjectPlus" aria-hidden="true"> + </span>':'')+'<span>'+E(N[x])+'</span></span>').join(''):'',shown=decl||purchaseAnnouncement(g,i);return '<div class="blSeat '+(current?'active':'')+'" data-pos="'+here+'" data-seat="'+i+'"'+(current?' aria-current="true"':'')+'>'+(!decl&&shown?'<div class="blBubble">'+shown+'</div>':'')+(here?'<div class="blBacks">'+Array.from({length:g.counts[i]},(_,j)=>'<i style="--tilt:'+((j-(g.counts[i]-1)/2)*10)+'deg"></i>').join('')+'</div>':'')+'<span class="blAvatarFrame">'+avatar(p)+(current?'<span class="blTurnRing" aria-hidden="true"></span><span class="blCountdown" data-bl-clock aria-label="الوقت المتبقي للدور"></span>':'')+'</span>'+('<span class="blName">')+(p.balootRank?crestHTML(p.balootRank.tier):'')+E(p.name)+(i===B.state.me?' · أنت':'')+('</span>')+(decl&&['play','collect','review'].includes(g.phase)?'<div class="blProjectLabel" data-project-seat="'+i+'" aria-label="مشاريع '+E(p.name)+'">'+decl+'</div>':'')+'<span class="blRole">'+(p.bot?'كمبيوتر':B.state.auto[i]?'تحكم تلقائي':i%2===(B.state.me>=0?B.state.me%2:0)?'فريقنا':'الفريق الآخر')+(i===g.dealer?' · الموزع':'')+'</span>'+takenHTML(g,i)+sawaFanHTML(g,i)+(i===B.state.me&&B.state.auto[i]&&!['matchEnd','roundEnd'].includes(g.phase)?btn(B.restoring?'جارٍ الاستعادة…':'أستعيد التحكم','takeControl','blResumeControl',B.restoring?'disabled':'')+(B.state.returnUntil?'<small class="blReturnTime">مهلة العودة <b data-bl-return="'+B.state.returnUntil+'"></b></small>':''):'')+'</div>';}
+ function seatHTML(p,i,g){if(!p)return '';const here=pos(i),current=g.turn===i&&['bid','play','double','trump'].includes(g.phase),decl=unspreadProjects(g,i).length?unspreadProjects(g,i).map((x,j)=>'<span class="blProjectPart">'+(j?'<span class="blProjectPlus" aria-hidden="true"> + </span>':'')+'<span>'+E(N[x])+'</span></span>').join(''):'',shown=decl||purchaseAnnouncement(g,i);return '<div class="blSeat '+(current?'active':'')+'" data-pos="'+here+'" data-seat="'+i+'"'+(current?' aria-current="true"':'')+'>'+(!decl&&shown?'<div class="blBubble">'+shown+'</div>':'')+(here?'<div class="blBacks">'+Array.from({length:g.counts[i]},(_,j)=>'<i style="--tilt:'+((j-(g.counts[i]-1)/2)*10)+'deg"></i>').join('')+'</div>':'')+'<span class="blAvatarFrame">'+avatar(p)+(current?'<span class="blTurnRing" aria-hidden="true"></span><span class="blCountdown" data-bl-clock aria-label="الوقت المتبقي للدور"></span>':'')+'</span>'+('<span class="blName">')+(p.balootRank?crestHTML(p.balootRank.tier):'')+E(p.name)+(i===B.state.me?' · أنت':'')+('</span>')+(decl&&['play','collect','review'].includes(g.phase)?'<div class="blProjectLabel" data-project-seat="'+i+'" aria-label="مشاريع '+E(p.name)+'">'+decl+'</div>':'')+'<span class="blRole">'+[p.bot?'':B.state.auto[i]?'تحكم تلقائي':i%2===(B.state.me>=0?B.state.me%2:0)?'فريقنا':'الفريق الآخر',i===g.dealer?'الموزع':''].filter(Boolean).join(' · ')+'</span>'+takenHTML(g,i)+sawaFanHTML(g,i)+(i===B.state.me&&B.state.auto[i]&&!['matchEnd','roundEnd'].includes(g.phase)?btn(B.restoring?'جارٍ الاستعادة…':'أستعيد التحكم','takeControl','blResumeControl',B.restoring?'disabled':'')+(B.state.returnUntil?'<small class="blReturnTime">مهلة العودة <b data-bl-return="'+B.state.returnUntil+'"></b></small>':''):'')+'</div>';}
  function renderLobby(){
   const d=B.state,r=d.rematch,owner=d.me>=0&&d.owner===user()?.uid,canChoose=d.seatChoice&&d.me>=0&&!r?.startAt,swap=d.seatSwap,uid=user()?.uid;
   const request=swap?'<aside class="blSeatRequest" role="status"><b>'+E(d.seats[swap.fromSeat]?.name)+' يطلب تبديل المقعد مع '+E(d.seats[swap.toSeat]?.name)+'</b><small>ينتهي الطلب خلال <span data-bl-seat-clock="'+swap.expiresAt+'"></span></small>'+(swap.toUid===uid?'<div class="blInline">'+btn('أوافق','seatReply','blPrimary','data-id="'+E(swap.id)+'" data-accept="1"')+btn('أرفض','seatReply','','data-id="'+E(swap.id)+'" data-accept="0"')+'</div>':swap.fromUid===uid?btn('إلغاء الطلب','seatReply','','data-id="'+E(swap.id)+'" data-accept="0"'):'')+'</aside>':'';
-  const team=t=>'<section class="blLobbyTeam" data-team="'+t+'"><div class="blTeamHeading"><h3>الفريق '+(t===0?'الأول':'الثاني')+'</h3><small>شريكان متقابلان</small></div>'+[t,t+2].map(i=>{const p=d.seats[i],self=i===d.me,ready=r?.ready.includes(i);return '<div class="blLobbySeat '+(self?'isMe':'')+'" data-seat="'+i+'"><div class="blSeatIdentity">'+(p?avatar(p):'<span class="blEmptySeat" aria-hidden="true">＋</span>')+'<div><b title="'+E(p?.name||'مقعد متاح')+'">'+(p?E(p.name)+(self?' · أنت':''):'مقعد متاح')+'</b><small>المقعد '+(i+1)+(p?.bot?' · كمبيوتر':p?.uid===d.owner?' · صاحب الطاولة':'')+'</small></div></div>'+(r&&p?'<span class="blReadyStatus '+(ready?'ready':'')+'">'+(ready?'✓ جاهز':'بانتظار الاستعداد')+'</span>':'')+'<div class="blSeatTools">'+(canChoose&&!self?btn(p&&!p.bot?'طلب تبديل':'أجلس هنا','chooseSeat','','data-seat="'+i+'" aria-label="'+(p&&!p.bot?'طلب تبديل مع '+E(p.name):'أجلس في المقعد '+(i+1))+'" '+(swap?'disabled':'')):'')+(owner&&(!p||p.bot)?btn(p?'إزالة':'＋ كمبيوتر','bot','blBotSeat','data-seat="'+i+'" data-remove="'+(p?1:0)+'" aria-label="'+(p?'إزالة الكمبيوتر من':'إضافة كمبيوتر إلى')+' المقعد '+(i+1)+'" '+(swap||r?.startAt?'disabled':'')):'')+'</div></div>';}).join('')+'</section>';
+  const team=t=>'<section class="blLobbyTeam" data-team="'+t+'"><div class="blTeamHeading"><h3>'+(d.me>=0?(t===d.me%2?'لنا':'لهم'):'الفريق '+(t===0?'الأول':'الثاني'))+'</h3><small>شريكان متقابلان</small></div>'+[t,t+2].map(i=>{const p=d.seats[i],self=i===d.me,ready=r?.ready.includes(i);return '<div class="blLobbySeat '+(self?'isMe':'')+'" data-seat="'+i+'"><div class="blSeatIdentity">'+(p?avatar(p):'<span class="blEmptySeat" aria-hidden="true">＋</span>')+'<div><b title="'+E(p?.name||'مقعد متاح')+'">'+(p?E(p.name)+(self?' · أنت':''):'مقعد متاح')+'</b><small>المقعد '+(i+1)+(p?.uid===d.owner?' · صاحب الطاولة':'')+'</small></div></div>'+(r&&p?'<span class="blReadyStatus '+(ready?'ready':'')+'">'+(ready?'✓ جاهز':'بانتظار الاستعداد')+'</span>':'')+'<div class="blSeatTools">'+(canChoose&&!self?btn(p&&!p.bot?'طلب تبديل':'أجلس هنا','chooseSeat','','data-seat="'+i+'" aria-label="'+(p&&!p.bot?'طلب تبديل مع '+E(p.name):'أجلس في المقعد '+(i+1))+'" '+(swap?'disabled':'')):'')+(owner&&(!p||p.bot)?btn(p?'إزالة':'＋ كمبيوتر','bot','blBotSeat','data-seat="'+i+'" data-remove="'+(p?1:0)+'" aria-label="'+(p?'إزالة الكمبيوتر من':'إضافة كمبيوتر إلى')+' المقعد '+(i+1)+'" '+(swap||r?.startAt?'disabled':'')):'')+'</div></div>';}).join('')+'</section>';
   const readiness=r?'<section class="blRematchStatus" role="status">'+(r.startAt?'<small>الجميع جاهز</small><b>تبدأ الصكة خلال <span data-bl-rematch-clock="'+r.startAt+'"></span></b>':'<b>استعداد '+r.ready.length+' من 4</b><small>بعد اكتمال الاستعداد · عدّاد 5 ثوانٍ</small>')+'</section>':'';
   const start=r?(d.me>=0?btn(r.ready.includes(d.me)?'إلغاء الاستعداد':'أنا جاهز','rematchReady',r.ready.includes(d.me)?'':'blPrimary','aria-pressed="'+r.ready.includes(d.me)+'"'):'<p>بانتظار استعداد اللاعبين</p>'):owner?btn('ابدأ الصكة','start','blPrimary',d.seats.some(p=>!p)||swap?'disabled':''):'<p role="status">بانتظار بدء '+E(d.seats.find(p=>p?.uid===d.owner)?.name||'صاحب الطاولة')+'</p>';
   const root=$('#blGame');root.classList.remove('blSawaReveal');root.dataset.phase='lobby';root.dataset.spectator=String(d.me<0);
@@ -407,7 +432,7 @@
  }
  function resultLedgerHTML(d,g,r,me){
   const c=r.contract,m=Number(c.multiplier)||1,committed=m>1&&m%2===0&&Number.isInteger(c.doubler)?c.doubler:c.buyer,committedTeam=committed%2;
-  const teamName=t=>d.me<0?'الفريق '+(t+1):t===me?'فريقنا':'فريقهم',teams=[me,1-me],projects=r.projects||[[],[]];
+  const teamName=t=>d.me<0?'الفريق '+(t+1):t===me?'لنا':'لهم',teams=[me,1-me],projects=r.projects||[[],[]];
   const pair=values=>Array.isArray(values)&&values.length===2&&values.every(Number.isFinite);
   const projectRaw=pair(r.projectRaw)?r.projectRaw:projects.map(list=>list.reduce((sum,p)=>sum+({sira:20,fifty:50,hundred:100,fourHundred:200,baloot:20}[p.type]||0),0));
   // Raw card totals already include the final trick bonus; separate it only for display.
@@ -419,13 +444,44 @@
   const notes=[r.claim?'تُعتمد نتيجة القيد الموضّحة أدناه':m===5?'القهوة تحسم الصكة':m>1?'النتيجة تشمل '+({2:'الدبل',3:'الثري',4:'الفور'})[m]:r.reverseSweep?'كبوت مقلوب':r.sweep?'كبوت':null].filter(Boolean);
   return '<div class="blPurchaseSummary"><div><span>اللعبة</span><strong>'+contractText({contract:c})+'</strong></div><div><span>'+(m>1?'المشتري أو المدبل':'المشتري')+'</span><strong>'+E(teamName(committedTeam))+'</strong><small>'+E(d.seats[committed]?.name)+'</small></div><p data-purchase-result="'+(purchaseWon?'won':'lost')+'">نتيجة الشراء <b>'+(purchaseWon?'رابحة':'خاسرة')+'</b></p></div><table class="blScoreLedger" aria-label="نشرة حساب التوزيعة"><thead><tr><th scope="col">النشرة</th><th scope="col">'+(d.me<0?'الفريق ١':'لنا')+'</th><th scope="col">'+(d.me<0?'الفريق ٢':'لهم')+'</th></tr></thead><tbody><tr data-ledger-row="tricks"><th scope="row">الأكلات</th>'+cells(tricks)+'</tr><tr data-ledger-row="ground"><th scope="row">الأرض</th>'+cells(ground)+'</tr><tr data-ledger-row="projects"><th scope="row">المشاريع</th>'+projectCells+'</tr><tr class="blLedgerRaw" data-ledger-row="raw"><th scope="row">الأبناط</th>'+cells(raw.map((v,t)=>v+projectRaw[t]))+'</tr><tr class="blLedgerFinal" data-ledger-row="points"><th scope="row">النتيجة</th>'+cells(r.won)+'</tr></tbody></table>'+(notes.length?'<p class="blLedgerNote">'+notes.map(E).join(' · ')+'</p>':'');
  }
- function renderResult(){
-  const d=B.state,g=d.game,r=g.roundResult;if(!r)return;if(g.claimReviewUntil&&r.claim?.valid){renderClaimReview();return;}const me=d.me>=0?d.me%2:0,end=g.phase==='matchEnd',won=end?g.winner===me:r.winner===me;
+ function resultPresentationKey(p){return p?p.match+':'+p.round+':'+p.until:'';}
+ function resultPresentation(g=B.state?.game){
+  const p=g?.resultPresentation,me=B.state?.me;if(!p||p.match!==g.id||p.round!==g.round-1||!p.roundResult||!Number.isFinite(p.until)||p.until<=Date.now()+B.offset)return null;
+  if(p.returned?.includes(me)||B.dismissedResultKey===resultPresentationKey(p))return null;return p;
+ }
+ function resultReturnHTML(p){return '<div class="blResultContinue blQuickResultReturn">'+btn('عودة','resultReturn','blPrimary')+'<p>العودة تلقائيًا خلال <b data-bl-result-clock="'+p.until+'"></b></p></div>';}
+ function returnFromResult(){
+  const g=B.state?.game,p=resultPresentation(g);if(!p)return;
+  if(B.state.me>=0&&!sendRoom({type:'resultReturn',match:p.match,round:p.round})){toast('انتظر عودة الاتصال');return;}
+  B.dismissedResultKey=resultPresentationKey(p);B.resultOverlayKey=null;closeModal();render();syncGameAudio(B.state);if(g.turn===B.state.me&&['bid','double','trump'].includes(g.phase))sound('turn_alert');
+ }
+ function resultPresentationClock(){
+  document.querySelectorAll('[data-bl-result-clock]').forEach(el=>el.textContent=Math.max(0,Math.ceil((+el.dataset.blResultClock-Date.now()-B.offset)/1000))+' ث');
+  if(B.resultOverlayKey&&!resultPresentation()){B.resultOverlayKey=null;if(B.modal==='result'){closeModal();render();syncGameAudio(B.state);const g=B.state?.game;if(g?.turn===B.state.me&&['bid','double','trump'].includes(g.phase))sound('turn_alert');}}
+ }
+ function syncGameAudio(d,previous){
+  if(!d?.game)return;const p=resultPresentation(d.game),g=d.game;
+  let shown=p?{...g,round:p.round,phase:'roundEnd',turn:null,deadline:p.until,roundResult:p.roundResult,history:p.history||[],cues:(g.cues||[]).filter(e=>e.round===undefined||e.round<=p.round),cueSeq:Math.max(0,...(g.cues||[]).filter(e=>e.round===undefined||e.round<=p.round).map(e=>e.id))}:g;
+  if(p)B.heldResultAudio=resultPresentationKey(p);
+  else if(B.heldResultAudio){
+   const held=B.heldResultAudio;B.heldResultAudio=null;
+   // The server prepared these cards five seconds ago, but this is their first
+   // local presentation. Release only the opening cue; consume earlier queued
+   // bids without replaying them. Original cue ids still prevent duplicates.
+   const deal=held===resultPresentationKey(g.resultPresentation)&&g.phase==='bid'&&!g.contract&&g.bidRound!==2?(g.cues||[]).find(e=>e.round===g.round&&e.type==='deal'):null;
+   if(deal)shown={...g,cues:[{...deal,at:Date.now()+B.offset}]};
+  }
+  const before=B.presentedAudioGame?.id===g.id?B.presentedAudioGame:previous?.game;
+  window.BalootAudio?.sync(shown,d.me,before,Date.now()+B.offset,{motionEffects:!!B.motion});B.presentedAudioGame=shown;
+ }
+
+ function renderResult(presentation=null){
+  const d=B.state,current=d.game,g=presentation?{...current,round:presentation.round,phase:'roundEnd',roundResult:presentation.roundResult,history:presentation.history||[],claimReviewUntil:null}:current,r=g.roundResult;if(!r)return;B.resultOverlayKey=presentation?resultPresentationKey(presentation):null;if(g.claimReviewUntil&&r.claim?.valid){renderClaimReview();return;}const me=d.me>=0?d.me%2:0,end=g.phase==='matchEnd',won=end?g.winner===me:r.winner===me;
   const round=resultLedgerHTML(d,g,r,me)+(r.claim?'<div class="blClaimResult"><b>'+E(r.reason)+'</b><br>'+E(r.claim.explanation)+(r.claim.first&&r.claim.second?'<div class="blClaimProof">'+img(r.claim.first)+img(r.claim.second)+'</div>':'')+'</div>':'');
-  const total=end?'<p class="blFinalCaption">النتيجة النهائية للصكة</p><div class="blFinalScore">'+[me,1-me].map(t=>'<div class="'+(t===g.winner?'winner':'')+'"><span>'+(d.me<0?'الفريق '+(t+1):t===me?'فريقنا':'الفريق الآخر')+'</span><strong>'+g.scores[t]+'</strong><small>'+[t,t+2].map(i=>E(d.seats[i]?.name)).join(' · ')+'</small>'+(t===g.winner?'<b>الفائز</b>':'')+'</div>').join('')+'</div>':'';
+  const total=end?'<p class="blFinalCaption">النتيجة النهائية للصكة</p><div class="blFinalScore">'+[me,1-me].map(t=>'<div class="'+(t===g.winner?'winner':'')+'"><span>'+(d.me<0?'الفريق '+(t+1):t===me?'لنا':'لهم')+'</span><strong>'+g.scores[t]+'</strong><small>'+[t,t+2].map(i=>E(d.seats[i]?.name)).join(' · ')+'</small>'+(t===g.winner?'<b>الفائز</b>':'')+'</div>').join('')+'</div>':'';
   const runningTotal='<div class="blRunningTotal"><span>مجموع الصكة</span><b>لنا '+g.scores[me]+'</b><b>لهم '+g.scores[1-me]+'</b></div>';
   const competitive=end&&d.mode==='competitive'&&(d.me>=0||d.progression?.forfeited);
-  const footer=end?'<div class="blNote">'+(d.mode==='competitive'?'':'جلسة ودية · لا تؤثر على الترتيب')+'</div><div class="blInline blResultActions">'+btn('الرئيسية','leave')+(d.me>=0&&d.mode==='friendly'?btn('صكة جديدة · استعداد','rematchLobby','blPrimary',d.settled?'':'disabled'):'')+'</div>':'<div class="blResultContinue">'+advanceHTML('المتابعة بنقرتين')+'<p>التوزيعة التالية خلال <b data-bl-clock></b></p></div>';
+  const footer=end?'<div class="blNote">'+(d.mode==='competitive'?'':'جلسة ودية · لا تؤثر على الترتيب')+'</div><div class="blInline blResultActions">'+btn('الرئيسية','leave')+(d.me>=0&&d.mode==='friendly'?btn('صكة جديدة · استعداد','rematchLobby','blPrimary',d.settled?'':'disabled'):'')+'</div>':presentation?resultReturnHTML(presentation):'<div class="blResultContinue">'+advanceHTML('المتابعة بنقرتين')+'<p>التوزيعة التالية خلال <b data-bl-clock></b></p></div>';
   const el=modal(end?(d.me<0?'انتهت الصكة':won?'فزتم بالصكة':'خسرتم الصكة'):'نشرة التوزيعة '+g.round,'<div class="blResult blClassicResult">'+(competitive?'<p class="blCompetitiveKicker">صكة تنافسية · '+(d.me<0?'انتهت مشاركتك':won?'فوز مستحق':'فرصة جديدة في الصكة القادمة')+'</p>'+rankResult():'')+total+(end?'<details class="blLastRound"><summary>تفاصيل الجولة الأخيرة</summary>'+round+'</details>':round+runningTotal)+footer+'</div>','result',false);el.classList.toggle('blMatchResult',end);el.classList.toggle('blRoundResult',!end);el.classList.toggle('blCompetitiveResult',!!competitive);el.dataset.result=competitive?(d.me<0?'departed':won?'win':'loss'):'';el.classList.remove('blClaimResultReview');
  }
  function sawaCardsHTML(g){return '<div class="blSawaCards">'+(g.sawa?.cards||[]).map(id=>img(id)).join('')+'</div>';}
@@ -455,7 +511,7 @@
  function autoClaimHTML(g){
   const p=g.claim.presentation||{stage:'reason'},selected=p.reason,first=p.first,second=p.second;
   if(g.claim.reason==='project'){const target=Number.isInteger(p.target)?p.target:null,items=target===null?[]:g.revealed[target];return '<p class="blClaimStep" role="status">'+({reason:'الكمبيوتر يختار سبب القيد…',first:'اختار مشروع غلط؛ يحدد صاحب المشروع…',second:'يراجع أوراق المشروع المفروش…',confirm:'الدليل مكتمل؛ جارٍ تأكيد القيد…'}[p.stage]||'جارٍ التحقق')+'</p>'+(selected?'<div class="blClaimReasons"><span class="selected">مشروع غلط</span></div>':'')+(target===null?'':'<section class="blProjectEvidence"><h3>مشروع '+E(B.state.seats[target]?.name)+'</h3>'+projectCardsHTML(items)+(items.length?'':'<p class="blNote">لم يُفرش المشروع في الأكلة الثانية.</p>')+'</section>')+'<p class="blNote">يعرض الاختيار نفسه لجميع اللاعبين والمشاهدين.</p>';}
-  return '<p class="blClaimStep" role="status">'+({reason:'الكمبيوتر يختار سبب القيد…',first:'اختار السبب؛ يحدد الورقة المخالفة…',second:'حدد الورقة المخالفة؛ يحدد ورقة الإثبات…',confirm:'الدليل مكتمل؛ جارٍ تأكيد القيد…'}[p.stage]||'جارٍ التحقق')+'</p><div class="blClaimReasons">'+Object.entries(C).filter(([k])=>k!=='sawa'&&(g.contract.mode==='hokum'||['cut','project'].includes(k))).map(([k,n])=>'<span class="'+(selected===k?'selected':'')+'" data-reason="'+k+'">'+E(n)+'</span>').join('')+'</div><div class="blEvidence blAutoEvidence"><div data-evidence="first"><b>الورقة المخالفة</b>'+(first?img(first):'<span>بانتظار التحديد</span>')+'</div><div data-evidence="second"><b>ورقة الإثبات</b>'+(second?img(second):'<span>'+(p.stage==='confirm'?'المخالفة ثابتة بموضع الإعلان':'بانتظار التحديد')+'</span>')+'</div></div><p class="blNote">يعرض الاختيار نفسه لجميع اللاعبين والمشاهدين.</p>';
+  return '<p class="blClaimStep" role="status">'+({reason:'الكمبيوتر يختار سبب القيد…',first:'اختار السبب؛ يحدد الورقة المخالفة…',second:'حدد الورقة المخالفة؛ يحدد ورقة الإثبات…',confirm:'الدليل مكتمل؛ جارٍ تأكيد القيد…'}[p.stage]||'جارٍ التحقق')+'</p><div class="blClaimReasons">'+Object.entries(C).filter(([k])=>k!=='sawa'&&(k!=='project'||g.autoProjects!==1)&&(g.contract.mode==='hokum'||['cut','project'].includes(k))).map(([k,n])=>'<span class="'+(selected===k?'selected':'')+'" data-reason="'+k+'">'+E(n)+'</span>').join('')+'</div><div class="blEvidence blAutoEvidence"><div data-evidence="first"><b>الورقة المخالفة</b>'+(first?img(first):'<span>بانتظار التحديد</span>')+'</div><div data-evidence="second"><b>ورقة الإثبات</b>'+(second?img(second):'<span>'+(p.stage==='confirm'?'المخالفة ثابتة بموضع الإعلان':'بانتظار التحديد')+'</span>')+'</div></div><p class="blNote">يعرض الاختيار نفسه لجميع اللاعبين والمشاهدين.</p>';
  }
  function renderClaim(){
   if(B.state.game.claim.reason==='sawa'){renderSawaClaim();return;}
@@ -469,24 +525,81 @@
  function projectClaimChoices(){const d=B.state,g=d.game;return d.seats.map((p,i)=>i%2!==d.me%2&&g.declared[i]?.length?'<section class="blProjectEvidence"><h3>'+E(p.name)+' · '+E(g.declared[i].map(k=>N[k]).join(' + '))+'</h3>'+projectCardsHTML(g.revealed[i])+(g.revealed[i].length?'':'<p class="blNote">لم تُفرش أوراق المشروع بعد.</p>')+btn('تأكيد القيد على '+E(p.name),'judgeProject','','data-seat="'+i+'"')+'</section>':'').join('');}
  function projectReview(seat){
   const d=B.state,g=d?.game;if(!g||!Number.isInteger(seat)||!g.declared[seat]?.length)return;
-  B.reviewProjectSeat=seat;const shown=g.revealed[seat]||[],own=seat===d.me,items=shown.length?shown:own?g.myProjectSelections||[]:[],canClaim=d.me>=0&&!d.auto[d.me]&&seat%2!==d.me%2&&['play','collect','review'].includes(g.phase);
+  B.reviewProjectSeat=seat;const shown=g.revealed[seat]||[],own=seat===d.me,items=shown.length?shown:own?g.myProjectSelections||[]:[],canClaim=g.autoProjects!==1&&d.me>=0&&!d.auto[d.me]&&seat%2!==d.me%2&&['play','collect','review'].includes(g.phase);
   modal('مشروع '+d.seats[seat].name,'<p>'+E(g.declared[seat].map(k=>N[k]).join(' + '))+'</p>'+projectCardsHTML(items)+(!shown.length?'<p class="blNote">'+(own?'هذه أوراقك المختارة. تُفرش مع ورقتك في الأكلة الثانية إذا كان فريقك صاحب المشروع الأكبر.':'لم تُفرش أوراق هذا اللاعب بعد؛ تُعرض مشاريع الفريق صاحب المشروع الأكبر في الأكلة الثانية.')+'</p>':'')+(canClaim?btn('قيد · مشروع غلط','claimReason','blPrimary','data-kind="project"')+'<p class="blNote">القيد الخاطئ يُحسب على فريق طالب القيد.</p>':''),'projectReview');
  }
- function canPrepareProjects(g,me){return !!g&&me>=0&&!B.state.auto[me]&&['play','double','trump'].includes(g.phase)&&!g.history.concat({plays:g.trick}).some(h=>h.plays.some(p=>p.seat===me));}
- function projectsDialog(){const g=B.state.game;if(!canPrepareProjects(g,B.state.me)&&g.myProjectSelections?.length){projectReview(B.state.me);return;}if(g.history.length===1&&!g.projectContest?.eligible.includes(B.state.me)){toast('الفرش للفريق صاحب المشروع الأكبر');return;}B.projectItems=(B.projectDraft?.items||g.myProjectSelections||[]).map(p=>({type:p.type,cards:p.cards.slice()}));B.projectCards=[];B.projectType='sira';revealDialog();}
- function flushPreparedProjects(){const d=B.projectDraft,g=B.state?.game;if(!d||d.sent||!g||B.pending||B.modal||document.hidden||!B.room?.ready)return;if(d.match!==g.id||d.round!==g.round||!canPrepareProjects(g,B.state.me)){B.projectDraft=null;return;}if(g.phase==='play'&&g.turn===B.state.me){d.sent=true;move({type:'declare',items:d.items});}}
- function revealDialog(){
-  const g=B.state.game,declaring=canPrepareProjects(g,B.state.me),stored=!declaring&&Array.isArray(g.myProjectSelections),played=g.history.flatMap(h=>h.plays).filter(p=>p.seat===B.state.me).map(p=>p.card),cards=[...g.myHand,...played].sort((a,b)=>'CSHD'.indexOf(a.at(-1))-'CSHD'.indexOf(b.at(-1))||rank(b)-rank(a));
-  const chosen='<div class="blProjectsList">'+B.projectItems.map((p,i)=>'<div class="blChosenProject"><b>'+E(N[p.type])+'</b><div>'+p.cards.map(c=>img(c)).join('')+'</div>'+(!stored?btn('حذف','projectRemove','','data-index="'+i+'"'):'')+'</div>').join('')+'</div>';
-  modal(declaring?'حدد أوراق المشروع':'فرش المشاريع','<p class="blNote">'+(declaring?'حدد أوراق كل مشروع، ثم نوعه واضغط «أضف المشروع». يمكنك التجهيز قبل دورك؛ يُرسل الإعلان عند بدء دورك ويظهر للجميع، وتُفرش الأوراق المختارة تلقائيًا مع ورقتك في الأكلة الثانية إذا كان فريقك صاحب المشروع الأكبر، حتى لو كان المشروع غير صحيح.':'تُعرض أوراقك المختارة كما أعلنتها، ويستطيع الخصم طلب القيد على المشروع المخالف.')+'</p>'+(!stored?'<div class="blSelectCards">'+cards.map(c=>'<button data-bl="projectCard" data-card="'+c+'" class="'+(B.projectCards.includes(c)?'on':'')+'">'+img(c)+'</button>').join('')+'</div><div id="blProjectType" class="blProjectTypes" role="group" aria-label="نوع المشروع">'+Object.entries(N).filter(([k])=>k!=='baloot'&&(k!=='fourHundred'||g.contract.mode==='sun')).map(([k,n])=>btn(n,'projectType',B.projectType===k?'blPrimary':'','data-type="'+k+'" aria-pressed="'+(B.projectType===k)+'"')).join('')+'</div><div class="blInline">'+btn('أضف المشروع','projectAdd')+'</div>':'')+chosen+btn(declaring?(g.turn===B.state.me&&g.phase==='play'?'أعلن المشاريع':'حفظ لدوري'):'افرش المشاريع',declaring?'declareSave':'revealSave','blPrimary',B.projectItems.length?'':'disabled'),declaring?'declare':'reveal');
+ // Quick declarations use only this player's own cards. The server remains the
+ // authority for project validity, priority, reveal timing and claims.
+ function quickProjectCandidates(hand,mode){
+  const found=[],value=id=>({A:14,K:13,Q:12,J:11}[id.slice(0,-1)]||Number(id.slice(0,-1))),id=(r,s)=>({14:'A',13:'K',12:'Q',11:'J'}[r]||r)+s;
+  for(const r of [10,11,12,13,14]){const cards=hand.filter(c=>value(c)===r);if(cards.length===4)found.push({type:r===14&&mode==='sun'?'fourHundred':'hundred',cards,high:r,kind:'four'});}
+  for(const suit of ['S','H','D','C']){const ranks=hand.filter(c=>c.at(-1)===suit).map(value).sort((a,b)=>a-b);for(let i=0;i<ranks.length;i++)for(let n=3;n<=5&&i+n<=ranks.length;n++){const run=ranks.slice(i,i+n);if(run.every((r,j)=>r===run[0]+j))found.push({type:n===3?'sira':n===4?'fifty':'hundred',cards:run.map(r=>id(r,suit)),high:run.at(-1),kind:'run'});}}
+  const power=p=>(p.type==='fourHundred'?600:p.type==='hundred'?(p.kind==='run'?500:400):p.type==='fifty'?300:200)+p.high;
+  return found.sort((a,b)=>power(b)-power(a));
  }
-
+ // Projects are chosen from the player's own hand; the server checks and pins
+ // the same cards. Previously announced projects are never reassigned.
+ function quickProjectItems(kinds,hand,mode,pinned=[]){
+  const available=quickProjectCandidates(hand,mode),remaining=kinds.slice(),items=pinned.map(p=>({type:p.type,cards:p.cards.slice()})),used=new Set();
+  for(const p of items){const i=remaining.indexOf(p.type);if(i<0||p.cards.some(c=>!hand.includes(c)||used.has(c)))return null;remaining.splice(i,1);p.cards.forEach(c=>used.add(c));}
+  for(const type of remaining){const p=available.find(p=>p.type===type&&p.cards.every(c=>!used.has(c)));if(!p)return null;items.push({type:p.type,cards:p.cards.slice()});p.cards.forEach(c=>used.add(c));}return items;
+ }
+ function quickProjectKinds(g=B.state?.game){const d=B.projectDraft;return d&&d.match===g?.id&&d.round===g?.round?d.kinds.slice():(g?.declared?.[B.state?.me]||[]).slice();}
+ function projectSelection(g=B.state?.game){
+  const d=B.projectDraft;if(d&&d.match===g?.id&&d.round===g?.round)return d.items;
+  const declared=g?.declared?.[B.state?.me]||[],selected=g?.myProjectSelections||[];
+  return selected.length===declared.length?selected:quickProjectItems(declared,g?.myHand||[],g?.contract?.mode);
+ }
+ function projectAvailable(type,g=B.state?.game){
+  if(!canPrepareProjects(g,B.state?.me)||!['sira','fifty','hundred','fourHundred'].includes(type)||type==='fourHundred'&&g.contract?.mode!=='sun')return false;
+  const kinds=quickProjectKinds(g),pinned=projectSelection(g);if(kinds.length>=4||!pinned||g.myAutoProjects&&g.myAutoProjects[type]!==true)return false;
+  return !!quickProjectItems(kinds.concat(type),g.myHand,g.contract.mode,pinned);
+ }
+ function quickProjectEdit(type){
+  const g=B.state?.game;if(!projectAvailable(type,g))return;
+  const kinds=quickProjectKinds(g).concat(type),items=quickProjectItems(kinds,g.myHand,g.contract.mode,projectSelection(g));if(!items)return;
+  B.projectDraft={match:g.id,round:g.round,kinds,items,auto:true,sent:false};
+  flushPreparedProjects();paintProjectToolbar();
+ }
+ function projectToolbarHTML(){
+  const g=B.state?.game;if(!B.projectBar||!canPrepareProjects(g,B.state?.me))return '';const kinds=quickProjectKinds(g);
+  return '<aside id="blProjectToolbar" role="group" aria-label="إعلان المشروع">'+[['sira','سرا'],['fifty','50'],['hundred','100'],['fourHundred','400']].map(([type,label])=>{
+   const count=kinds.filter(k=>k===type).length,available=projectAvailable(type,g);
+   return '<button type="button" data-bl="quickProject" data-type="'+type+'" class="blProjectTile '+(count?'selected':'')+'" aria-label="'+E(N[type])+'؛ العدد '+count+(available?'؛ إضافة':'؛ غير متاح')+'"'+(available?'':' disabled')+'><span>'+label+'</span><b aria-label="العدد">'+count+'</b></button>';
+  }).join('')+'</aside>';
+ }
+ function paintProjectToolbar(){
+  const root=$('#blGame');if(!root)return;const html=projectToolbarHTML(),current=$('#blProjectToolbar');root.classList.toggle('blProjectsOpen',!!html);
+  if(!html)current?.remove();else if(current){const template=document.createElement('template');template.innerHTML=html;patchGameNode(current,template.content.firstElementChild);}else root.insertAdjacentHTML('beforeend',html);
+  const toggle=root.querySelector('.blActions [data-bl="projects"]');if(toggle){toggle.setAttribute('aria-expanded',String(!!html));toggle.classList.toggle('on',!!html);}
+ }
+ function closeProjectToolbar(){if(!B.projectBar)return;B.projectBar=false;paintProjectToolbar();}
+ function projectToolbarContainsEvent(event){
+  const selector='#blProjectToolbar,.blHand,[data-bl="projects"]';
+  // A card can be reconciled by its own click handler. The dispatch path keeps
+  // the original hand ancestor even when the target is no longer mounted.
+  return (event.composedPath?.()||[event.target]).some(node=>node?.matches?.(selector)||node===event.target&&node?.closest?.(selector));
+ }
+ function quickProjectsDialog(){projectsDialog();}
+ function canPrepareProjects(g,me){return !!g&&me>=0&&!B.state.auto[me]&&g.myHand?.length===8&&['play','double'].includes(g.phase)&&!g.history.concat({plays:g.trick}).some(h=>h.plays.some(p=>p.seat===me));}
+ function projectsDialog(){if(!canPrepareProjects(B.state?.game,B.state?.me))return;B.projectBar=!B.projectBar;paintProjectToolbar();}
+ function flushPreparedProjects(force=false){
+  const d=B.projectDraft,g=B.state?.game;if(!d||d.sent||!g||B.pending||B.modal||document.hidden||!B.room?.ready)return;
+  if(d.match!==g.id||d.round!==g.round||!canPrepareProjects(g,B.state.me)){B.projectDraft=null;paintProjectToolbar();return;}
+  if(g.phase==='play'&&g.turn===B.state.me){
+   const items=quickProjectItems(d.kinds,g.myHand,g.contract.mode,g.myProjectSelections||[]);if(!items){B.projectDraft=null;paintProjectToolbar();return;}d.items=items;
+   // Commit one addition at a time, even if several taps were prepared before
+   // this turn. Each ACK fixes those exact cards before the next choice is sent.
+   d.sentKinds=d.kinds.slice(0,(g.declared[B.state.me]||[]).length+1);
+   d.sent=move({type:'declare',auto:true,quick:true,items:d.sentKinds.map(type=>({type}))})===true;
+  }
+ }
 
  function board(data){
   const body='<div class="blTabs">'+btn('العام','board','','data-period="all"')+btn('الأسبوعي','board','','data-period="week"')+'</div>'+(data?.endAt?'<p class="blNote" id="blWeekTime" data-end="'+data.endAt+'"></p>':'<p class="blNote">ترتيب صكة المستقل · العام لا يتصفر</p>')+(data?(data.rows.length?data.rows.map(r=>'<div class="blLine"><span>'+r.position+'</span>'+avatar(r)+'<b>'+E(r.name)+(r.weeklyChampion?'<small class="blWeeklyTitle">بطل الأسبوع</small>':'')+'</b>'+crestHTML(r.rank?.tier)+'<span>'+r.points+'</span></div>').join(''):'<p class="blEmpty">لم تُسجّل نتائج بعد</p>'):loadingHTML('نجهّز صدارة صكة…'));
   modal('صدارة صكة',body,'board');$('#blModal [data-period="'+B.board+'"]').classList.add('on');startClock();clock();
  }
- function rules(){modal('صكة · لعب البلوت الحر','<p>أربعة لاعبين، كل لاعبين متقابلين فريق. الصكة إلى 152، والأعلى يفوز إذا تجاوزها الفريقان؛ التعادل يستكمل اللعب. حساب الأبناط وفق لائحة هيئة الترفيه السعودية. الشراء صن أو حكم، ثم التدبيل والمشاريع واللعب.</p><p>الأوراق متاحة في دورك حتى لو كانت مخالفة. الخصم يطلب «قيدها» ويحدد السبب والورقتين. فتح القيد يكشف الورق؛ القيد الخاطئ أو تركه حتى تنتهي المهلة يُحسب على فريق طالبه.</p><p>حدد أوراق مشروعك ونوعه قبل ورقتك الأولى؛ تُفرش الأوراق المختارة كما هي حتى لو كانت مخالفة، ولا يُلغى مشروع خاطئ إلا بالقيد عليه. في الأكلة الثانية تُفرش المشاريع المختارة تلقائيًا مع نزول ورقة صاحبها إذا كان فريقه صاحب أكبر مشروع، وتبقى أوراق الخصم مخفية. تختفي أسماء مشاريع الفريق الآخر بعد حسم أفضلية الفرش، ويختفي إعلان المشروع بعد فرشه. الأسماء للعرض فقط ولا تفتح أوراقًا عند الضغط عليها؛ طلب قيد «مشروع غلط» من زر «قيدها». عند التعادل تُقارن أعلى ورقة ثم ترتيب المقاعد من يمين الموزع. البلوت يُذكر تلقائيًا لصاحبه مع الورقة الثانية من الشايب والبنت من الحكم، بأي ترتيب، مرة واحدة ودون اختيار إعلان. ويُحتسب تلقائيًا إذا ظهر مع مشروع متسلسل. أكّه: في الحكم، قبل افتتاح الأكلة بورقة غير حكم هي الأعلى الباقية من نوعها؛ الأكة مؤككة بنفسها دون ضغط الزر، وإذا لم يملك خويك نوعها وكانت الأكلة لكم فلا يجب عليه ضربها بحكم. التأكيك المخالف قابل للقيد، ولا يُعلن في الأكلة الأخيرة. إذا كانت الأكلة لخويك بحكم فلا يلزمك التكبير عليه، لكن تتبع الحكم إذا بدأ به اللعب. وإذا كان الخصم هو الآكل بحكم يجب التكبير عند توفر الأعلى؛ وعند غياب لون البداية وعدم وجود حكم أعلى يجوز الحرق. في الشراء الأول، عند طلب الصن يرجع «قبلك / بس» إلى اللاعب الذي يسبقه مباشرة، ثم الذي قبله حتى يمين الموزع؛ يشمل الخوي ومن قال بس. يستمر الرجوع حتى لو قال أحدهم «قبلك»، ولا تُستكمل الأوراق إلا بعد رد جميع أصحاب الأولوية؛ يكون آخر من أخذها صاحب أولوية أعلى والمشتري النهائي وصاحب ورقة المشترى. الشراء المباشر للصن في الثاني لا يفتح رجوعًا جديدًا. في صكة، الحكم الأول والثاني يفتحان فرصة جديدة للصن لكل لاعب فور الإعلان، بما في ذلك الشريك ومن مرّر في الشراء الأساسي. رفض الصن بقول بس في هذه الفرصة يسقط حق الرد عليها. إذا طلب لاعب الصن تُحسم قبلك حسب أولوية المقاعد قبل إكمال التوزيع، وإذا رفض الجميع يُسمّي مشتري الحكم الثاني نوع الحكم وهو يحمل الخمس الأولى، ثم تُستكمل الأوراق ويبدأ التدبيل؛ أما الحكم على آكة في الدورتين فلا يقلبه صنًا إلا يمين الموزع. لا سحب بعد إكمال التوزيع. الأشكال بعد حكم الخصم وللموزع أو اللاعب عن يساره، وفي الدورة الثانية لا يحق لمن قال ولا أن يعود للأشكال. إذا مرّ الجميع في دورتي الشراء تُعاد التوزيعة بلا نقاط وينتقل الموزع.</p><p>كاشو (البوشات) في صكة: يظهر لصاحب الخمس الأولى إذا كانت كلها من ٧ و٨ و٩، أثناء الشراء وقبل تكملة التوزيع. العشرة ليست بوش. بالضغط تُكشف الخمس الموزعة لكل لاعب مدة خمس ثوانٍ، ثم يعيد الموزع نفسه التوزيع بلا نقاط. لا يتاح الكاشو بعد تكملة الأوراق. الأكلة تبقى خمس ثوانٍ على الأرض أو يجمعها صاحبها بنقرتين. الورقة في يدك تُحدد بلمسة وتؤكد بالثانية؛ إذا كانت الأكلة لك تجمعها اللمسة الثانية وتلعب الورقة معًا. أول ورقة لكل لاعب لها ٢٠ ثانية لترتيب المشاريع، ثم ١٠ ثوانٍ لكل دور.</p><p>السوا من يد واحدة: يظهر زرها في دورك قبل افتتاح أكلة جديدة عندما تبقى معك ورقتان أو ثلاث أو أربع أوراق وتضمن أخذ جميع الأكلات المتبقية بنفسك بترتيب لعب قانوني، مهما كانت ردود اللاعبين؛ لا يكفي أن يأخذها شريكك. بالضغط تُكشف أوراق اللاعبين الأربعة بجوار مقاعدهم لمدة خمس ثوانٍ. يمكن اختصار العرض إذا نقر كل لاعب يتحكم بيده مرتين للمتابعة؛ وإلا ينتهي العرض تلقائيًا. تُحتسب الأكلات المتبقية وعشرة الأرض بالحسبة المعتادة، ثم تظهر نتيجة التوزيعة أولًا قبل الانتقال للتالية. لا تحتاج السوا المضمونة إلى قبول الخصمين، ولا يُطلب القيد على السوا نفسها، لكن يبقى القيد على مخالفة سابقة متاحًا أثناء العرض. لا تُحتسب كبوتًا إلا إذا جمع فريقك الأكلات الثماني. تظهر الخاصية عندما يستخدم جميع اللاعبين نسخة تدعم السوا الجديدة.</p><p>الأسبوعي يتجدد الخميس الساعة 7 صباحًا بتوقيت السعودية، والعام مستمر. نقاط الترقية تُعتمد بعد الصكة الكاملة بحسب شريحتك عند البداية، وحدود الرتب محمية. آخر ثلاث شارات تتطلب ٦٠ و٩٠ و١٢٠ يوم لعب مؤهل. الأسبوعي مستقل: ١٠ نقاط لكل فوز، وصاحب صدارة الأسبوع السابق يحمل لقب «بطل الأسبوع» حتى التجديد التالي. الودي والكمبيوتر لا يمنحان نقاطًا. مهلة العودة للتنافسي ٦٠ ثانية؛ بعدها خصم ٥٠ نقطة مع حماية حد الرتبة وإيقاف البحث ١٠ دقائق، ويُستثنى العطل المؤكد.</p><p>هذه النسخة بلا رسوم أو جوائز ذهب للبلوت. رصيدك ومتجرك واشتراكك وأصدقاؤك مشتركون مع مجابيد.</p>','rules');}
+ function rules(){modal('صكة · لعب البلوت الحر','<p>أربعة لاعبين، كل لاعبين متقابلين فريق. الصكة إلى 152، والأعلى يفوز إذا تجاوزها الفريقان؛ التعادل يستكمل اللعب. حساب الأبناط وفق لائحة هيئة الترفيه السعودية. الشراء صن أو حكم، ثم التدبيل والمشاريع واللعب. ينتظر البحث انضمام أربعة لاعبين أو مرور ٣٠ ثانية، ثم تبدأ الصكة بالمقاعد المكتملة.</p><p>الأوراق متاحة في دورك حتى لو كانت مخالفة. الخصم يطلب «قيدها» ويحدد السبب والورقتين. فتح القيد يكشف الورق؛ القيد الخاطئ أو تركه حتى تنتهي المهلة يُحسب على فريق طالبه.</p><p>اضغط «مشروع» واختر سرا أو ٥٠ أو ١٠٠ أو ٤٠٠ قبل ورقتك الأولى. يتاح النوع المطابق لأوراقك فقط، وتكرار الضغط يضيف مشروعًا آخر إذا كان موجودًا دون مشاركة أوراق المشروع السابق. تُختار الأوراق ويُعلن المشروع تلقائيًا عند دورك؛ المشاريع المعتمدة لا تتغير، ولا تحتاج تحديد الأوراق أو زر تأكيد. في الأكلة الثانية تُفرش المشاريع المختارة تلقائيًا مع نزول ورقة صاحبها إذا كان فريقه صاحب أكبر مشروع، وتبقى أوراق الخصم مخفية. تختفي أسماء مشاريع الفريق الآخر بعد حسم أفضلية الفرش، ويختفي إعلان المشروع بعد فرشه. الأسماء للعرض فقط ولا تفتح أوراقًا عند الضغط عليها. تُراجع صحة المشاريع تلقائيًا في الصكات الجديدة، ولذلك لا يظهر قيد «مشروع غلط» فيها؛ تبقى بقية مخالفات اللعب قابلة للقيد. عند التعادل تُقارن أعلى ورقة ثم ترتيب المقاعد من يمين الموزع. البلوت يُذكر تلقائيًا لصاحبه مع الورقة الثانية من الشايب والبنت من الحكم، بأي ترتيب، مرة واحدة ودون اختيار إعلان. ويُحتسب تلقائيًا إذا ظهر مع مشروع متسلسل. أكّه: في الحكم، قبل افتتاح الأكلة بورقة غير حكم هي الأعلى الباقية من نوعها؛ الأكة مؤككة بنفسها دون ضغط الزر، وإذا لم يملك خويك نوعها وكانت الأكلة لكم فلا يجب عليه ضربها بحكم. التأكيك المخالف قابل للقيد، ولا يُعلن في الأكلة الأخيرة. إذا كانت الأكلة لخويك بحكم فلا يلزمك التكبير عليه، لكن تتبع الحكم إذا بدأ به اللعب. وإذا كان الخصم هو الآكل بحكم يجب التكبير عند توفر الأعلى؛ وعند غياب لون البداية وعدم وجود حكم أعلى يجوز الحرق. في الشراء الأول، عند طلب الصن يرجع «قبلك / بس» إلى اللاعب الذي يسبقه مباشرة، ثم الذي قبله حتى يمين الموزع؛ يشمل الخوي ومن قال بس. يستمر الرجوع حتى لو قال أحدهم «قبلك»، ولا تُستكمل الأوراق إلا بعد رد جميع أصحاب الأولوية؛ يكون آخر من أخذها صاحب أولوية أعلى والمشتري النهائي وصاحب ورقة المشترى. الشراء المباشر للصن في الثاني لا يفتح رجوعًا جديدًا. في صكة، الحكم الأول والثاني يفتحان فرصة جديدة للصن لكل لاعب فور الإعلان، بما في ذلك الشريك ومن مرّر في الشراء الأساسي. رفض الصن بقول بس في هذه الفرصة يسقط حق الرد عليها. إذا طلب لاعب الصن تُحسم قبلك حسب أولوية المقاعد قبل إكمال التوزيع، وإذا رفض الجميع يُسمّي مشتري الحكم الثاني نوع الحكم وهو يحمل الخمس الأولى، ثم تُستكمل الأوراق ويبدأ التدبيل؛ أما الحكم على آكة في الدورتين فلا يقلبه صنًا إلا يمين الموزع. لا سحب بعد إكمال التوزيع. الأشكال بعد حكم الخصم وللموزع أو اللاعب عن يساره، وفي الدورة الثانية لا يحق لمن قال ولا أن يعود للأشكال. إذا مرّ الجميع في دورتي الشراء تُعاد التوزيعة بلا نقاط وينتقل الموزع.</p><p>كاشو (البوشات) في صكة: يظهر لصاحب الخمس الأولى إذا كانت كلها من ٧ و٨ و٩، أثناء الشراء وقبل تكملة التوزيع. العشرة ليست بوش. بالضغط تُكشف الخمس الموزعة لكل لاعب مدة خمس ثوانٍ، ثم يعيد الموزع نفسه التوزيع بلا نقاط. لا يتاح الكاشو بعد تكملة الأوراق. تُجمع الأكلة بعد ٣ ثوانٍ أو يجمعها صاحبها بنقرتين. الورقة في يدك تُحدد بلمسة وتؤكد بالثانية؛ إذا كانت الأكلة لك تجمعها اللمسة الثانية وتلعب الورقة معًا. أول ورقة لكل لاعب لها ١٠ ثوانٍ لترتيب المشاريع، ثم ٥ ثوانٍ لكل دور. بعد جمع الأكلة الأخيرة توجد ٥ ثوانٍ لطلب القيد قبل ظهور النتيجة. زر «عودة» يغلق النتيجة فورًا، وتغلق تلقائيًا بعد ٥ ثوانٍ؛ تكون التوزيعة التالية جاهزة. الجلسة الجارية تحتفظ بتوقيتها حتى تنتهي.</p><p>السوا من يد واحدة: يظهر زرها في دورك قبل افتتاح أكلة جديدة عندما تبقى معك ورقتان أو ثلاث أو أربع أوراق وتضمن أخذ جميع الأكلات المتبقية بنفسك بترتيب لعب قانوني، مهما كانت ردود اللاعبين؛ لا يكفي أن يأخذها شريكك. بالضغط تُكشف أوراق اللاعبين الأربعة بجوار مقاعدهم لمدة خمس ثوانٍ. يمكن اختصار العرض إذا نقر كل لاعب يتحكم بيده مرتين للمتابعة؛ وإلا ينتهي العرض تلقائيًا. تُحتسب الأكلات المتبقية وعشرة الأرض بالحسبة المعتادة، ثم تظهر نتيجة التوزيعة أولًا قبل الانتقال للتالية. لا تحتاج السوا المضمونة إلى قبول الخصمين، ولا يُطلب القيد على السوا نفسها، لكن يبقى القيد على مخالفة سابقة متاحًا أثناء العرض. لا تُحتسب كبوتًا إلا إذا جمع فريقك الأكلات الثماني. تظهر الخاصية عندما يستخدم جميع اللاعبين نسخة تدعم السوا الجديدة.</p><p>الأسبوعي يتجدد الخميس الساعة 7 صباحًا بتوقيت السعودية، والعام مستمر. نقاط الترقية تُعتمد بعد الصكة الكاملة بحسب شريحتك عند البداية، وحدود الرتب محمية. آخر ثلاث شارات تتطلب ٦٠ و٩٠ و١٢٠ يوم لعب مؤهل. الأسبوعي مستقل: ١٠ نقاط لكل فوز، وصاحب صدارة الأسبوع السابق يحمل لقب «بطل الأسبوع» حتى التجديد التالي. الجلسات الودية لا تمنح نقاط ترتيب. تُحتسب نتيجة اللاعب في التنافسي حتى مع اكتمال بعض المقاعد تلقائيًا. مهلة العودة للتنافسي ٦٠ ثانية؛ بعدها خصم ٥٠ نقطة مع حماية حد الرتبة وإيقاف البحث ١٠ دقائق، ويُستثنى العطل المؤكد.</p><p>هذه النسخة بلا رسوم أو جوائز ذهب للبلوت. رصيدك ومتجرك واشتراكك وأصدقاؤك مشتركون مع مجابيد.</p>','rules');}
  function soundIcon(){return '<svg class="uiIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4 6 8H3v8h3l5 4V4Z"/>'+(B.muted?'<path d="m16 9 6 6m0-6-6 6"/>':'<path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/>')+'</svg>';}
  function canArmAkka(g,me){return !!g&&g.contract?.mode==='hokum'&&g.phase==='play'&&me>=0&&g.turn===me&&!g.trick.length&&g.history.length<7;}
  function naturalAkka(g,id){return g?.contract?.mode==='hokum'&&/^A[SHDC]$/.test(id||'')&&id.at(-1)!==g.contract.trump;}
@@ -494,6 +607,7 @@
  function queueOrPlay(card){
   const g=B.state?.game;if(!g||!g.myHand.includes(card)||B.state.me<0||B.state.auto[B.state.me]||B.pending||B.playVisual)return;
   const akka=B.preselect?.card===card?B.preselect.akka:B.akka;B.akka=false;
+  if(B.projectDraft&&canPrepareProjects(g,B.state.me)){B.preselect={match:g.id,round:g.round,card,akka:!!akka,confirmed:true};flushPreparedProjects(true);paintPreselect();return;}
   if(g.turn===B.state.me&&(g.phase==='play'||g.phase==='collect'&&g.canCollect)){if(submitCard({type:'play',card,akka:akka===true&&(canArmAkka(g,B.state.me)||g.phase==='collect'&&g.contract?.mode==='hokum'&&g.history.length<6),...(g.phase==='collect'?{collect:{match:g.id,round:g.round,trick:g.history.length}}:{})}))B.preselect=null;paintPreselect();}
   else if(['play','collect'].includes(g.phase)){B.preselect={match:g.id,round:g.round,card,akka:!!akka,confirmed:true};paintPreselect();}
  }
@@ -504,9 +618,10 @@
  }
  function flushPreselect(){if(B.projectDraft)return;const q=B.preselect,g=B.state?.game;if(q?.confirmed===true&&q.match===g?.id&&q.round===g?.round&&g.myHand.includes(q.card)&&(g.phase==='play'||g.phase==='collect'&&g.canCollect)&&g.turn===B.state.me&&B.room?.ready&&!B.state.auto[B.state.me]&&!document.hidden&&!B.pending&&!B.playVisual&&!B.modal)queueOrPlay(q.card);}
  function updateExtras(previous,m){
-  const g=m.game,q=B.preselect;if(previous?.game?.phase!==g?.phase){B.lastTap=null;B.readySent=null;B.collectTap=null;}if(verifiedSawa(g)){B.preselect=null;B.akka=false;B.projectDraft=null;B.revealUntil=0;B.revealSeat=null;cancelDrag();clearCardMotion();}if(q&&(!g||q.match!==g.id||q.round!==g.round||!g.myHand.includes(q.card)||!['play','collect'].includes(g.phase)))B.preselect=null;
-  if(previous?.game?.id!==g?.id||previous?.game?.round!==g?.round){B.projectDraft=null;B.projectItems=[];B.projectCards=[];B.claimKey=null;B.evidencePending=false;B.revealUntil=0;B.revealSeat=null;B.declareUntil={};B.notice=null;B.lastTap=null;B.readySent=null;B.akka=false;}
-  if(B.projectDraft&&g?.myProjectSelections&&JSON.stringify(g.myProjectSelections)===JSON.stringify(B.projectDraft.items))B.projectDraft=null;
+  const g=m.game,q=B.preselect;if(previous?.game?.phase!==g?.phase){B.projectBar=false;B.lastTap=null;B.readySent=null;B.collectTap=null;}if(verifiedSawa(g)){B.preselect=null;B.akka=false;B.projectDraft=null;B.revealUntil=0;B.revealSeat=null;cancelDrag();clearCardMotion();}if(q&&(!g||q.match!==g.id||q.round!==g.round||!g.myHand.includes(q.card)||!['play','collect'].includes(g.phase)))B.preselect=null;
+  if(previous?.game?.id!==g?.id||previous?.game?.round!==g?.round){B.projectBar=false;B.projectDraft=null;B.projectItems=[];B.projectCards=[];B.claimKey=null;B.evidencePending=false;B.revealUntil=0;B.revealSeat=null;B.declareUntil={};B.notice=null;B.lastTap=null;B.readySent=null;B.akka=false;}
+  if(B.projectDraft&&g){if(JSON.stringify(g.declared[m.me])===JSON.stringify(B.projectDraft.kinds))B.projectDraft=null;else if(B.projectDraft.sentKinds&&JSON.stringify(g.declared[m.me])===JSON.stringify(B.projectDraft.sentKinds))B.projectDraft.sent=false;}
+  if(!canPrepareProjects(g,m.me))B.projectBar=false;
   if(m.auto[m.me]){B.projectDraft=null;B.preselect=null;B.akka=false;}if(!canArmAkka(g,m.me)){B.akka=false;if(B.preselect)B.preselect.akka=false;}
   if(B.modal&&['bid','double'].includes(B.modal)&&(!g||g.id!==previous?.game?.id||g.round!==previous?.game?.round||g.turn!==m.me||B.modal==='bid'&&g.phase!=='bid'||B.modal==='double'&&g.phase!=='double'))closeModal();
   if(g){const fresh=(g.cues||[]).filter(e=>e.id>(previous?.game?.cueSeq||g.cueSeq)&&m.now-e.at<4000);
@@ -556,7 +671,7 @@
  async function click(event){
   const b=event.target.closest('[data-bl]');if(!b||b.disabled)return;event.preventDefault();sound('click');const a=b.dataset.bl,g=B.state?.game;if(B.state?.me<0&&['chat','chatTab','quickChat','projects','claim','claimReason','declareSave','revealSave','sawa','kasho'].includes(a))return;
   if(a==='pickerClose'){if(!B.firstChoice)closePicker();}
-  else if(a==='close'){closeModal();flushPreparedProjects();flushPreselect();}
+  else if(a==='close'){closeModal();flushPreparedProjects(true);flushPreselect();}
   else if(a==='profile')openProfile();
   else if(a==='sessionsTab'){B.sessionsTab=b.dataset.tab;sessions();}
   else if(a==='invitePlayers')invitePlayers(b.dataset.tab||'online');
@@ -607,17 +722,14 @@
   else if(a==='sawaAccept'){if(g?.phase==='sawa'&&!verifiedSawa(g))move({type:'sawaReply',accept:true});}
   else if(a==='sawaChallenge'){if(g?.phase==='sawa'&&!verifiedSawa(g))move({type:'sawaReply',accept:false});}
   else if(a==='sawaJudge')move({type:'judge'});
-  else if(a==='claim'&&g&&!B.state.auto[B.state.me]&&(['play','collect','review'].includes(g.phase)||verifiedSawa(g)))modal('سبب القيد','<p class="blNote">اختر السبب بعد التأكد. كشف الورق يلزم إكمال الطلب خلال دقيقة.</p><div class="blChoices">'+Object.entries(C).filter(([k])=>k!=='sawa'&&(g.contract.mode==='hokum'||['cut','project'].includes(k))).map(([k,n])=>btn(n,'claimReason','','data-kind="'+k+'"')).join('')+'</div>','claimReason');
-  else if(a==='claimReason'&&g&&!B.state.auto[B.state.me]&&(['play','collect','review'].includes(g.phase)||verifiedSawa(g))){B.first=null;B.second=null;B.slot='first';closeModal();move({type:'claim',reason:b.dataset.kind});}
+  else if(a==='claim'&&g&&!B.state.auto[B.state.me]&&(['play','collect','review'].includes(g.phase)||verifiedSawa(g)))modal('سبب القيد','<p class="blNote">اختر السبب بعد التأكد. كشف الورق يلزم إكمال الطلب خلال دقيقة.</p><div class="blChoices">'+Object.entries(C).filter(([k])=>k!=='sawa'&&(k!=='project'||g.autoProjects!==1)&&(g.contract.mode==='hokum'||['cut','project'].includes(k))).map(([k,n])=>btn(n,'claimReason','','data-kind="'+k+'"')).join('')+'</div>','claimReason');
+  else if(a==='claimReason'&&g&&(b.dataset.kind!=='project'||g.autoProjects!==1)&&!B.state.auto[B.state.me]&&(['play','collect','review'].includes(g.phase)||verifiedSawa(g))){B.first=null;B.second=null;B.slot='first';closeModal();move({type:'claim',reason:b.dataset.kind});}
   else if(a==='slot'){B.slot=b.dataset.slot;renderClaim();}
   else if(a==='evidence'){const slot=B.slot,id=b.dataset.card;B[slot]=id;if(B.first===B.second)B[slot==='first'?'second':'first']=null;if(slot==='first')B.slot='second';B.evidencePending=sendRoom({type:'claimEvidence',match:g.id,round:g.round,startedAt:g.claim.startedAt,slot,card:id});renderClaim();}
   else if(a==='judge')move({type:'judge',first:B.first,second:B.second});else if(a==='judgeProject')move({type:'judge',target:+b.dataset.seat});
+  else if(a==='resultReturn')returnFromResult();
   else if(a==='projects')projectsDialog();else if(a==='declareAdd')return;
-  else if(a==='declareClear'){B.projectItems=[];revealDialog();}else if(a==='declareSave'){B.projectDraft={match:g.id,round:g.round,items:structuredClone(B.projectItems),sent:false};closeModal();flushPreparedProjects();if(!B.projectDraft?.sent)toast('مشاريعك جاهزة؛ تُعلن عند بدء دورك');render();}
-  else if(a==='projectCard'){const c=b.dataset.card;B.projectCards=B.projectCards.includes(c)?B.projectCards.filter(x=>x!==c):B.projectCards.concat(c);revealDialog();}
-  else if(a==='projectType'){B.projectType=b.dataset.type;revealDialog();}
-  else if(a==='projectAdd'){if(B.projectItems.length>=4){toast('الحد الأقصى أربعة مشاريع');return;}if(B.projectCards.length<3||B.projectCards.length>5){toast('حدد 3 إلى 5 أوراق للمشروع');return;}B.projectItems.push({type:B.projectType,cards:B.projectCards.slice()});B.projectCards=[];revealDialog();}
-  else if(a==='projectRemove'){B.projectItems.splice(+b.dataset.index,1);revealDialog();}else if(a==='revealSave'){closeModal();move({type:'reveal',items:B.projectItems});}
+  else if(a==='quickProject')quickProjectEdit(b.dataset.type);
   else if(a==='chat'){B.chatOpen=!B.chatOpen;renderChat();}
   else if(a==='chatTab'){B.chatTab=b.dataset.tab;renderChat();}
   else if(a==='chatClose')hideChat();
@@ -810,7 +922,7 @@
   const rank=document.createElement('span');rank.id='blHomeRank';$('#hName').parentElement.append(rank);
   const hero=document.createElement('div');hero.id='blHomeHero';hero.innerHTML='<div class="blHeroArt" aria-hidden="true">'+img('KH')+img('AS')+img('QD')+'</div><h1>صكة</h1><p>ورقة بذكاء… وجولة مع الربع</p>';logo.append(hero);
   const menu=document.createElement('div');menu.id='blHomeMenu';menu.innerHTML='<button class="blPlayCard" data-bl="competitive"><span class="blPlayTop">تنافسي <i></i> 2 ضد 2</span><strong>العب الآن</strong><span class="blPlayBottom"><span id="blSearchingCount">جارٍ تحديث عدد الباحثين…</span> '+icon('home')+'</span><span class="blPlaySuit" aria-hidden="true">♠</span></button><div class="blMenuSection"><span>على كيفك</span><i></i></div><div class="blTwo"><button class="blCta" data-bl="sessions"><span class="blTileIcon">'+icon('sessions')+'</span><strong>جلسات ودية</strong><small id="blSessionCount">جارٍ تحديث الجلسات…</small></button><button class="blCta" data-bl="createDialog"><span class="blTileIcon">'+icon('friends')+'</span><strong>اجمع ربعك</strong><small>أنشئ طاولة خاصة</small></button></div><div class="blHomeShortcuts"><button data-bl="board">'+icon('board')+'<span>الصدارة</span></button><button data-bl="joinDialog">'+icon('inbox')+'<span>دخول برمز</span></button></div><button id="blResume" class="blBtn blResumeSession" data-bl="resume" hidden>جلستك بانتظارك <span>متابعة اللعب ←</span></button>';$('#home .hMenu').append(menu);menu.addEventListener('click',click);
-  const queue=document.createElement('section');queue.id='blQueue';queue.hidden=true;queue.setAttribute('aria-label','البحث عن لاعبي صكة');queue.innerHTML='<div class="blQueueWrap"><header>'+btn('→','queueCancel','','aria-label="إلغاء البحث والرجوع"')+'<h2>البحث عن لاعبين</h2><span>صكة · 2 ضد 2</span></header><div class="blSearchCards" aria-hidden="true"><span class="uiMatchCard">♠</span><span class="uiMatchCard">♦</span><span class="uiMatchCard">♣</span></div><h3 id="blQueueStatus" role="status">نجهّز طاولتك…</h3><p>تبدأ المباراة عند اكتمال أربعة لاعبين</p><div class="blQueueProgress"><b id="blQueueCount"></b><span id="blQueueSteps" aria-hidden="true"></span></div><div id="blQueueSeats"></div><div class="blSearchTime">وقت البحث <b id="blQueueTime" dir="ltr">00:00</b></div><button id="blQueueRetry" class="blBtn" data-bl="queueRetry" hidden>إعادة الاتصال</button>'+btn('إلغاء البحث','queueCancel','blQueueCancel')+'</div>';frame().append(queue);queue.addEventListener('click',click);
+  const queue=document.createElement('section');queue.id='blQueue';queue.hidden=true;queue.setAttribute('aria-label','البحث عن لاعبي صكة');queue.innerHTML='<div class="blQueueWrap"><header>'+btn('→','queueCancel','','aria-label="إلغاء البحث والرجوع"')+'<h2>البحث عن لاعبين</h2><span>صكة · 2 ضد 2</span></header><div class="blSearchCards" aria-hidden="true"><span class="uiMatchCard">♠</span><span class="uiMatchCard">♦</span><span class="uiMatchCard">♣</span></div><h3 id="blQueueStatus" role="status">نجهّز طاولتك…</h3><p>تبدأ عند اكتمال اللاعبين أو انتهاء ٣٠ ثانية</p><div class="blQueueProgress"><b id="blQueueCount"></b><span id="blQueueSteps" aria-hidden="true"></span></div><div id="blQueueSeats"></div><div class="blSearchTime">وقت البحث <b id="blQueueTime" dir="ltr">00:00</b></div><button id="blQueueRetry" class="blBtn" data-bl="queueRetry" hidden>إعادة الاتصال</button>'+btn('إلغاء البحث','queueCancel','blQueueCancel')+'</div>';frame().append(queue);queue.addEventListener('click',click);
   const root=document.createElement('section');root.id='blGame';root.hidden=true;root.setAttribute('aria-label','طاولة صكة');frame().append(root);root.addEventListener('click',e=>{if(!e.target.closest('[data-bl="chat"]'))hideChat();click(e);});root.addEventListener('pointerup',advanceTap);installCardDrag(root);
   new ResizeObserver(()=>{const hand=$('#blGame .blHand');if(hand&&B.state?.game)hand.style.setProperty('--overlap',overlap(B.state.game.myHand.length)+'px');}).observe(root);
   socialHooks();
@@ -839,13 +951,15 @@
   if(typeof lgAutoAllowed==='function'){const oldAllowed=lgAutoAllowed;lgAutoAllowed=function(){return B.selected!=='baloot'&&oldAllowed.apply(this,arguments);};}
   if(typeof uiLeagueProfile==='function'){const oldLeagueProfile=uiLeagueProfile;uiLeagueProfile=function(){if(B.selected==='baloot')return;return oldLeagueProfile.apply(this,arguments);};}
   if(typeof lgOpen==='function'){const oldLeagueOpen=lgOpen;lgOpen=function(){if(B.selected==='baloot')return;return oldLeagueOpen.apply(this,arguments);};}
+  document.addEventListener('click',event=>{if(B.projectBar&&!projectToolbarContainsEvent(event))closeProjectToolbar();},{passive:true});
   document.addEventListener('visibilitychange',()=>document.hidden?background():foreground());
   document.addEventListener('pause',background);document.addEventListener('resume',foreground);
   window.addEventListener('online',()=>{foreground();if(B.queue&&!B.hub?.ready){closeLink('hub');connect('hub','/baloot/hub').catch(()=>queueView());}});
   window.addEventListener('offline',()=>{clearCardMotion();B.preselect=null;B.akka=false;paintPreselect();if(B.loading)loadError('أنت غير متصل بالإنترنت');connection();});
-  window.addEventListener('pagehide',()=>{background();closeLink('hub');closeLink('room');clearInterval(B.clock);B.clock=null;});
+  window.addEventListener('pagehide',()=>{background();closeLink('hub');if(!window.UISessionReturn?.blocked('baloot'))closeLink('room');clearInterval(B.clock);B.clock=null;});
   window.addEventListener('pageshow',foreground);
   home();if(B.selected==='baloot')loadProfile();window.MajabeedBaloot={state:B,select,join,receive,render,close:leaveLocal,needsChoice,routeFor,friendActivity,watchFriend};
  }
+ const renderWithConnections=render;render=function(){const result=renderWithConnections.apply(this,arguments);window.UIConnectionQuality?.paintSakka(B.state,B.connections,Date.now()+B.offset);return result;};
  init();
 })();

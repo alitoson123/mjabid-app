@@ -499,3 +499,39 @@ img.blDragCard.blCardFace{background-color:#fff;border-radius:7px}
 @media(max-height:720px){
  #blGame.blSawaReveal .blSeat[data-pos="2"]{top:calc(var(--bl-round-top) + var(--bl-opposite-clearance))}
 }
+
+/* V405: one project chooser; repeated taps increment an explicit count. */
+#blModal[data-kind="declareQuick"]{place-items:start center;padding-top:calc(24px + var(--ui-safe-top,0px))}
+#blModal[data-kind="declareQuick"] .blPanel{width:min(100%,390px);padding:16px;background:linear-gradient(145deg,#254c37,#102e22)}
+.blQuickProjectHint{font:12px/1.7 var(--fb);color:#d7dfc5;margin:9px 0!important;text-align:center}
+.blQuickProjects{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.blQuickProjectChoice{display:flex;min-width:0;gap:4px;align-items:stretch}
+.blQuickProject{position:relative;display:flex;align-items:center;justify-content:center;gap:9px;min-height:68px;flex:1;min-width:0;border:1px solid #d7bd8466;border-radius:15px;background:#143628;color:#f4dfb0;font:800 18px/1.3 var(--fb);touch-action:manipulation}
+.blQuickProject.on{background:#efd39a;color:#183c28;border-color:#ffe7b7}
+.blQuickProject:disabled{opacity:.8}.blQuickProject small{font:20px var(--fb);opacity:.7}
+.blProjectCount{display:grid;place-items:center;flex:none;min-width:27px;height:27px;border-radius:50%;background:#173d2d;color:#ffedbf;font:800 17px var(--fh)}
+.blProjectMinus{flex:none;min-width:29px;padding:4px;border-radius:10px;border:1px solid #cfb87c55;background:#102c21;color:#efdbac;font:24px var(--fb);touch-action:manipulation}.blProjectMinus:disabled{opacity:.25}
+.blQuickProjectSummary{display:grid;gap:5px;text-align:center;padding:12px;border-radius:12px;background:#0d291e;border:1px solid #e1c18344;font:15px/1.6 var(--fb);color:#f6dfa9}.blQuickProjectSummary small{font-size:11px;color:#bdd2b8}
+.blQuickProjectSummary strong{min-height:48px;display:flex;align-items:center;justify-content:center}.blQuickProjectDetails{min-height:4.25em}.blProjectPlaceholder{visibility:hidden}
+#blModal[data-kind="declareQuick"] .blProjectManual{display:block;width:100%;min-height:40px;background:transparent;font-size:12px;border-color:#c9b67d55}
+@media(max-width:350px){#blModal[data-kind="declareQuick"] .blPanel{padding:12px}.blQuickProjects{gap:7px}.blQuickProject{font-size:15px;gap:5px;min-height:60px}.blProjectMinus{min-width:26px}.blQuickProjectHint{font-size:11px}}
+.blQuickResultReturn>.blBtn{display:block;width:100%;min-height:48px;background:linear-gradient(#f0daa9,#d6ba82);color:#203d2c;border-color:#f3dfad;border-radius:12px;font:700 17px/1.5 var(--fb)}
+
+/* V406: a stable, non-modal project row. The hand stays fully touchable above it. */
+#blProjectToolbar{position:absolute;z-index:10;left:10px;right:10px;bottom:calc(62px + var(--ui-safe-bottom,0px));height:48px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding:5px;border:1px solid #dcc18788;border-radius:14px;background:linear-gradient(145deg,#244e39f7,#102e23fa);box-shadow:0 4px 14px #0005;direction:rtl;animation:blProjectRise .15s ease-out both}
+@keyframes blProjectRise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){#blProjectToolbar{animation:none}}
+#blProjectToolbar .blProjectTile{display:flex;align-items:center;justify-content:center;gap:5px;min-width:0;border:1px solid #d8bf8666;border-radius:9px;background:#173b2c;color:#f3dcaa;padding:3px 4px;font:700 17px/1.2 var(--fb);touch-action:manipulation}
+#blProjectToolbar .blProjectTile b{display:grid;place-items:center;flex:none;width:19px;height:19px;border-radius:50%;font:700 11px/1 var(--fb);background:#0b251c;color:#f4dca5}
+#blProjectToolbar .blProjectTile.selected{background:#ead19b;color:#173b2c;border-color:#f3dda8}
+#blProjectToolbar .blProjectTile:disabled:not(.selected){color:#94a997;background:#143025;border-color:#a0b29433}
+#blProjectToolbar .blProjectTile:disabled b{color:inherit;background:#0b251c55}
+#blGame.blProjectsOpen .blHand{bottom:calc(117px + var(--ui-safe-bottom,0px))}
+#blGame.blProjectsOpen .blSeat[data-pos="0"]{bottom:calc(130px + var(--bl-card-h) + var(--ui-safe-bottom,0px))}
+#blGame.blProjectsOpen .blHandLabel,#blGame.blProjectsOpen .blAkka{bottom:calc(107px + var(--bl-card-h) + var(--ui-safe-bottom,0px))}
+#blGame .blActions [data-bl="projects"].on{background:#e7ce96;color:#173b2c;border-color:#f0dba8}
+/* This hint appears after the first tap and overlaps the cards' upper edge.
+   It is display-only and must never intercept the confirming second tap. */
+#blGame .blHandLabel{pointer-events:none}
+@media(max-width:350px){#blProjectToolbar{left:8px;right:8px;gap:4px;padding:4px}#blProjectToolbar .blProjectTile{font-size:15px;gap:3px;padding-inline:2px}#blProjectToolbar .blProjectTile b{width:17px;height:17px;font-size:10px}}
+@media(max-height:580px){#blProjectToolbar{bottom:calc(54px + var(--ui-safe-bottom,0px));height:44px}#blGame.blProjectsOpen .blHand{bottom:calc(106px + var(--ui-safe-bottom,0px))}#blGame.blProjectsOpen .blSeat[data-pos="0"]{bottom:calc(118px + var(--bl-card-h) + var(--ui-safe-bottom,0px))}}

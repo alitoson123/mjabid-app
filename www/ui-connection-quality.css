@@ -1,0 +1,36 @@
+/* V405: Majabeed reserves the avatar bottom for hand count and turn seconds. */
+.uiConnectionAnchor{position:relative}
+.uiConnectionBadge{position:absolute;left:-5px;bottom:-3px;z-index:9;display:grid;place-items:center;width:22px;height:17px;box-sizing:border-box;border:1px solid #a7b7a777;border-radius:6px;background:#112b24f5;color:#a8b8ad;box-shadow:0 1px 4px #0005;font:800 12px/1 var(--fb, sans-serif);pointer-events:none}
+.uiConnectionBars{display:flex;align-items:flex-end;gap:2px;height:10px;direction:ltr}
+.uiConnectionBars i{display:block;width:3px;border-radius:1px;background:#98b09e40}
+.uiConnectionBars i:nth-child(1){height:4px}.uiConnectionBars i:nth-child(2){height:7px}.uiConnectionBars i:nth-child(3){height:10px}
+.uiConnectionBars i.lit{background:currentColor}
+.uiConnectionBadge[data-quality="good"]{color:#9ce2ac}.uiConnectionBadge[data-quality="fair"]{color:#efd285}.uiConnectionBadge[data-quality="weak"],.uiConnectionBadge[data-quality="offline"]{color:#ff9b8a}.uiConnectionBadge[data-quality="away"]{color:#efd285}.uiConnectionBadge[data-quality="bot"]{color:#c9d4d0}
+.uiConnectionGlyph{display:block;line-height:1}.uiConnectionBadge[data-quality="offline"] .uiConnectionGlyph{font-size:17px}
+/* Sakka's timer sits above-right; its connection badge stays below-left.
+   Majabeed's counters sit below, so the connection badge has its own upper-right corner. */
+#onl .uiConnectionBadge{left:auto;right:-2px;top:-2px;bottom:auto;width:18px;height:14px;border-radius:5px;font-size:10px}
+#onl .uiConnectionBadge .uiConnectionGlyph{font-size:10px}
+#onl .uiConnectionBadge .uiConnectionBars{gap:1px;height:8px}
+#onl .uiConnectionBadge .uiConnectionBars i{width:2px}
+#onl .uiConnectionBadge .uiConnectionBars i:nth-child(1){height:3px}
+#onl .uiConnectionBadge .uiConnectionBars i:nth-child(2){height:5px}
+#onl .uiConnectionBadge .uiConnectionBars i:nth-child(3){height:8px}
+/* The four-seat hand count also gets its own upper-left corner; the turn's
+   seconds keep their original bottom-center position and numeric behavior. */
+#onl:not(.uiSixTable) .uiConnectionAnchor.avaWrap>.handCountBadge{left:-4px;right:auto;top:0;bottom:auto}
+/* Six-seat avatar rules style every direct span; keep this status badge compact. */
+#onl.uiSixTable .ava>.uiConnectionBadge{display:grid!important;font-size:10px!important}
+#onl.uiSixTable.uiSixTight .uiConnectionBadge{width:15px;height:12px;right:-2px;top:-3px;border-radius:4px}
+#onl.uiSixTable.uiSixTight .uiConnectionBadge .uiConnectionGlyph{font-size:9px}
+#uiReturnPrompt{position:absolute;inset:0;z-index:20000;display:grid;place-items:center;padding:22px;background:#061b16d9;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);isolation:isolate;touch-action:manipulation;box-sizing:border-box;color:#fff0ce;font-family:var(--fb,sans-serif)}
+.uiReturnPanel{width:100%;max-width:340px;max-height:100%;overflow:auto;box-sizing:border-box;text-align:center;background:linear-gradient(150deg,#244e40,#102d24);border:1px solid #dbc58b99;border-radius:25px;padding:24px 20px;box-shadow:0 18px 65px #0006;outline:none}
+.uiReturnIcon{display:grid;place-items:center;width:44px;height:44px;margin:0 auto 10px;border-radius:50%;background:#f1d69b1a;color:#f1d69b;font-size:30px}
+.uiReturnPanel h2{font-size:21px;line-height:1.5;margin:0 0 8px;font-weight:800;color:#fff0ce}.uiReturnPanel p{font-size:13px;line-height:1.8;margin:0;color:#d4dfcd}
+.uiReturnCountdown{display:flex;align-items:center;justify-content:center;gap:9px;margin:18px auto 4px;color:#e8d4a8;font-size:12px}.uiReturnCountdown b{display:grid;place-items:center;min-width:48px;height:46px;border-radius:13px;background:#f2d99f;color:#163c2d;font-size:27px;font-variant-numeric:tabular-nums}.uiReturnCountdown small{font-size:11px}
+.uiReturnPanel .uiReturnMessage{font-size:12px;min-height:22px;margin:7px 0;color:#f5d18a}
+.uiReturnPanel button{display:block;width:100%;min-height:44px;border-radius:13px;box-sizing:border-box;font:800 14px/1.5 var(--fb,sans-serif);padding:10px 8px;cursor:pointer}
+.uiReturnAccept{border:1px solid #f3dda9;background:linear-gradient(#f2dda9,#d3b87a);color:#153e2b;box-shadow:0 3px 0 #0c231c}.uiReturnAccept:disabled{opacity:.65;cursor:wait}
+.uiReturnLeave{margin-top:10px;border:1px solid #d4d9c43d;background:#ffffff08;color:#d9e1d2}.uiReturnPanel button:focus-visible{outline:3px solid #ffeca8;outline-offset:3px}
+@media(max-width:340px){#uiReturnPrompt{padding:14px}.uiReturnPanel{padding:18px 15px}.uiReturnPanel h2{font-size:19px}}
+@media(prefers-reduced-motion:reduce){#uiReturnPrompt{scroll-behavior:auto}}

@@ -16,3 +16,13 @@
 .uiSessionScorePending{font:500 11px/1.5 var(--fb);margin:0;color:#617461}
 /* Keep the visible card corners inside the hand, even with the dealer's sixteenth card. */
 #onl #oHand.uiFlexibleHand>.card,#onl.uiSixTable #oHand.uiFlexibleHand>.card{width:var(--ui-hand-width)!important;min-width:var(--ui-hand-width)!important;height:var(--ui-hand-height)!important;margin-inline:var(--ui-hand-overlap)!important;flex:none!important}
+
+.uiHandStepper{display:flex;align-items:center;gap:7px;direction:ltr;flex:none}
+.uiHandStepper button{width:36px;height:38px;border:1px solid #d6bd7966;background:#183f32;color:#f4dfaa;border-radius:10px;font:800 21px var(--fb)}
+.uiHandStepper button:disabled{opacity:.35}
+#uiFriendlyHandSelect{display:flex;align-items:center;justify-content:center;min-height:38px;width:44px;padding:2px;border:0;cursor:default}
+.uiSessionSettingsGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:0 0 10px;padding:10px;background:#f0f3e9;border:1px solid #c4cebc;border-radius:14px;color:#234738}
+.uiSessionSettingsGrid>div{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:3px 0;min-width:0}
+.uiSessionSettingsGrid dt{font:500 10px/1.5 var(--fb);color:#627663}
+.uiSessionSettingsGrid dd{font:800 11px/1.5 var(--fb);margin:0;text-align:end}
+.uiSessionHiddenScore{margin:0 0 10px;border:1px dashed #91a68d;border-radius:10px;padding:9px;text-align:center;background:#e9eee0;color:#345444;font:600 11px/1.7 var(--fb)}

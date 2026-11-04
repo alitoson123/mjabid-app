@@ -19,7 +19,8 @@ window.UITableHUD=(()=>{
    const v=ONL.view,my=Math.max(0,v.seats.indexOf(ONL.you))%2;
    for(const [i,team]of [my,1-my].entries()){
     const chip=score.children[i===0?0:2],total=v.seats.filter((_,k)=>k%2===team).reduce((n,p)=>n+(Number(v.piles[p]?.points)||0),0);
-    chip.dataset.team=String(team);text(chip.querySelector('span'),'الفريق '+(team+1));text(chip.querySelector('bdi'),toH(total));chip.setAttribute('aria-label','الفريق '+(team+1)+': '+toH(total)+' نقطة');
+    const caption=v.me&&v.seats.includes(ONL.you)?(team===my?'لنا':'لهم'):'الفريق '+(team+1);
+    chip.dataset.team=String(team);text(chip.querySelector('span'),caption);text(chip.querySelector('bdi'),v.hideScore===true?'مخفية':toH(total));chip.setAttribute('aria-label',caption+': '+(v.hideScore===true?'النتيجة مخفية':toH(total)+' نقطة'));
    }
    header();layout();
   }else if(deck.parentNode!==deckHome){deckHome.insertBefore(deck,deckNext?.parentNode===deckHome?deckNext:null);deck.classList.remove('uiHudStock');}

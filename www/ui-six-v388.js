@@ -41,11 +41,11 @@ window.MajabeedSix=(()=>{
   const my=Math.max(0,v.seats.indexOf(ONL.you))%2;
   const total=t=>v.seats.filter((_,i)=>i%2===t).reduce((n,p)=>n+(v.piles[p]?.points||0),0);
   score.hidden=true;
-  ids.forEach((id,k)=>{const el=document.getElementById(id);el.dataset.sixTeam=String((my+k)%2);el.setAttribute('aria-label',uiPlayerName(v,v.seats[(Math.max(0,v.seats.indexOf(ONL.you))+k)%6])+' · الفريق '+(((my+k)%2)+1));});
+  ids.forEach((id,k)=>{const el=document.getElementById(id);el.dataset.sixTeam=String((my+k)%2);el.setAttribute('aria-label',uiPlayerName(v,v.seats[(Math.max(0,v.seats.indexOf(ONL.you))+k)%6])+' · '+(v.me&&v.seats.includes(ONL.you)?(k%2===0?'لنا':'لهم'):'الفريق '+(((my+k)%2)+1)));});
  }
  function lobbySeats(lb){
   const slots=lb.sixSlots||Array(6).fill(null);
-  return [0,1].map(t=>`<section class="sixLobbyTeam" data-six-team="${t}"><h3>الفريق ${t+1}</h3>${[t,t+2,t+4].map(i=>{
+  return [0,1].map(t=>`<section class="sixLobbyTeam" data-six-team="${t}"><h3>${ONL.you&&slots.includes(ONL.you)?(slots.indexOf(ONL.you)%2===t?'لنا':'لهم'):'الفريق '+(t+1)}</h3>${[t,t+2,t+4].map(i=>{
    const pid=slots[i],name=pid?(lb.names?.[pid]||'لاعب'):'مقعد متاح';
    return `<button type="button" data-six-slot="${i}" ${!ONL.seats?.includes(ONL.you)?'disabled':''} class="sixLobbySeat ${pid===ONL.you?'isYou':''}"><span>${pid?avatarHTML(lb.avatars?.[pid],36):'＋'}</span><b>${name}</b><small>${pid===ONL.you?'أنت':pid?'تبديل المقعد':'ينضم لاعب أو كمبيوتر'}</small></button>`;
   }).join('')}</section>`).join('');

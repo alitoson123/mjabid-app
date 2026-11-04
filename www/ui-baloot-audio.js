@@ -146,8 +146,23 @@
  }
  function speak(ids,event={},startIn=1200){
   ids=ids.filter(id=>assets[id]?.speech);if(!ids.length||A.muted||A.paused||document.hidden)return;
-  if(!context())return;stopVoices();const now=Date.now(),group={ids,event,scope:A.snapshot,started:false,startBy:now+Math.max(0,startIn),until:now+Math.max(1500,ids.reduce((n,id)=>n+assets[id].duration*1000,0)+1200),generation:A.voiceGeneration};A.group=group;
+  if(!context())return;stopVoices();const now=Date.now(),group={ids,event,match:A.cursor?.match,round:event.round,scope:A.snapshot,started:false,startBy:now+Math.max(0,startIn),until:now+Math.max(1500,ids.reduce((n,id)=>n+assets[id].duration*1000,0)+1200),generation:A.voiceGeneration};A.group=group;
   (async()=>{const generation=A.generation;for(const id of ids){if(!eligible(group)||generation!==A.generation)break;await output(id,generation,.85,group);}if(A.group===group)A.group=null;})();
+ }
+ // Consecutive automatic project taps are independent server cues. Keep their
+ // validated deltas in one bounded group rather than cutting the first word.
+ function sameProject(group,event,match,round){return !!group&&group.event.type==='project'&&event.type==='project'&&Number.isInteger(event.seat)&&event.seat===group.event.seat&&group.match===match&&group.round===round&&eligible(group);}
+ function speakProjects(fresh,event,g,me,startIn){
+  const index=fresh.indexOf(event),events=[];
+  for(let i=index;i>=0;i--){const e=fresh[i];if(e.type!=='project'||e.seat!==event.seat)break;events.unshift(e);}
+  const group=A.group,append=sameProject(group,event,g.id,g.round),pending=append?events.filter(e=>!group.projectCues?.includes(e.id)):events;
+  if(!pending.length)return;
+  const ids=pending.flatMap(e=>plan(e,me).filter(id=>assets[id]?.speech));if(!ids.length)return;
+  // Four is the existing server declaration limit. Never grow a stale backlog
+  // by repeatedly replacing legacy declarations; normal newer bids still win.
+  if(append&&group.ids.length+ids.length<=4){group.ids.push(...ids);group.projectCues=(group.projectCues||[]).concat(pending.map(e=>e.id));group.until+=ids.reduce((n,id)=>n+assets[id].duration*1000,0);wake();return;}
+  const bounded=pending.slice(-4);speak(bounded.flatMap(e=>plan(e,me).filter(id=>assets[id]?.speech)).slice(-4),{...event,round:g.round},startIn);
+  if(A.group)A.group.projectCues=bounded.map(e=>e.id);
  }
  function play(id){
   if(A.muted||A.paused||document.hidden||!assets[id])return;
@@ -188,7 +203,7 @@
   if(!cursor||cursor.match!==g.id){try{cursor=JSON.parse(localStorage.getItem(key)||'null')}catch(_){}if(cursor?.match!==g.id){newMatch=true;cursor={match:g.id,seq:previous||g.round===1&&g.cues?.length===1?0:g.cueSeq};}A.cursor=cursor;}
   const unseen=(g.cues||[]).filter(e=>e.id>cursor.seq),latest=unseen.at(-1);
   cursor.seq=Math.max(cursor.seq,g.cueSeq||0);try{localStorage.setItem(key,JSON.stringify(cursor))}catch(_){}
-  const group=A.group,ownProject=group?.event.type==='project'&&previous?.id===g.id&&previous.round===g.round&&['play','collect'].includes(g.phase)&&unseen.every(e=>e.type==='collect'||e.type==='card'&&e.seat===group.event.seat&&!e.baloot&&!e.akka);
+  const group=A.group,ownProject=group?.event.type==='project'&&group.match===g.id&&group.round===g.round&&previous?.id===g.id&&previous.round===g.round&&['play','collect'].includes(g.phase)&&unseen.every(e=>e.type==='collect'||e.type==='card'&&e.seat===group.event.seat&&!e.baloot&&!e.akka||sameProject(group,e,g.id,g.round)&&(e.round===undefined||e.round===g.round)&&(!e.at||serverNow-e.at<1200));
   if(group&&(group.scope!==currentScope||latest)&&!ownProject)stopVoices();
   if(ownProject)group.scope=currentScope;A.snapshot=currentScope;
   // An ad before entering a brand-new match must not discard its fresh first deal.
@@ -204,6 +219,7 @@
   if(event.type==='purchase'&&event.kind==='hokum'&&event.bidRound===2){const bid=fresh.at(-2);event=bid?.type==='bid'?bid:null;}
   if(event?.type==='card'&&!event.baloot&&!event.akka){const project=fresh.at(-2);if(project?.type==='project'&&project.seat===event.seat)event=project;}
   if(!event)return;
+  if(event.type==='project'){speakProjects(fresh,event,g,me,1200-Math.max(0,serverNow-(event.at||serverNow)));return;}
   const spoken=plan(event.type==='result'?{buyer:g.roundResult?.contract?.buyer,...event,matchWinner:g.winner}:event,me).filter(id=>assets[id]?.speech);
   if(spoken.length)speak(spoken,event,1200-Math.max(0,serverNow-(event.at||serverNow)));
  }

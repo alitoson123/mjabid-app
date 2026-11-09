@@ -14,8 +14,8 @@ function uiProfileOpen(){
  const membership=document.getElementById('vipProfile');if(membership){if(other)document.getElementById('pfPanelOverview').append(membership);else document.querySelector('#pfPanelAccount .pfPageTitle').after(membership);}
  document.getElementById('pfTabHistory').hidden=other;
  document.getElementById('pfTabAccount').hidden=other;
- const league=document.getElementById('lgProfile');
- if(league)document.getElementById('pfPanelAchievements').prepend(league);
+ const cup=document.getElementById('mcProfileTitles');
+ if(cup)document.getElementById('pfPanelAchievements').prepend(cup);
  const actions=document.getElementById('pfProfileActions');actions.hidden=!other;
  for(const id of ['pfAddFriend','pfReport']){const button=document.getElementById(id);if(button)actions.appendChild(button);}
  document.getElementById('pfHistoryEmpty').hidden=document.getElementById('pfHistory').style.display!=='none';

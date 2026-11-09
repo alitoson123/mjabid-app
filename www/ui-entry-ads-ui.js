@@ -2,7 +2,8 @@
 (function(root){
  'use strict';
  if(!root.MajabeedEntryAds?.create)return;
- const selectors='#hOnl,#hSessions,#blHomeMenu [data-bl="competitive"],#blHomeMenu [data-bl="sessions"],#blHomeMenu [data-bl="createDialog"],#blModal [data-bl="create"]';
+ const selectors='#hOnl,#hSessions,#hTournament,#majabeedCup [data-mc="start"],#majabeedCup [data-mc="join"],#blHomeMenu [data-bl="competitive"],#blHomeMenu [data-bl="sessions"],#blHomeMenu [data-bl="createDialog"],#blModal [data-bl="create"]';
+ const plusBadgeSelectors='#hOnl,#blHomeMenu [data-bl="competitive"]';
  const account=()=>typeof FB!=='undefined'?FB.user?.uid||null:null;
  let gate=null,queued=false,serial=0;
  function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;refresh();});}
@@ -53,6 +54,7 @@
   chooseEntry,
   openStore:()=>{goHome();openShop('gold');},
   showAd:()=>root.showInterstitialAd?.(),
+  onAdUnavailable:()=>{if(typeof toast2==='function')toast2('تعذّر عرض الإعلان. لم يتم بدء اللعب؛ حاول مرة أخرى.');},
   storage:()=>root.localStorage,
   onChange:schedule
  });
@@ -64,12 +66,19 @@
   const label=kind==='free'?(remaining===2?'متبقي دخولان بلا إعلان':'متبقي دخول واحد بلا إعلان')+'؛ الرصيد مشترك بين خيارات اللعب.':kind==='due'?'الدخول التالي بعد الإعلان؛ بعد عرضه يعود رصيد دخولين بلا إعلان.':kind==='exempt'?'بلس · دخول دون إعلان':'الدخول من المتصفح دون إعلان';
   for(const button of document.querySelectorAll(selectors)){
    let badge=button.querySelector(':scope > .mjEntryAdBadge');
+   const visible=!!uid&&(kind!=='exempt'||button.matches(plusBadgeSelectors));
+   button.classList.add('mjEntryGateTarget');
+   button.classList.toggle('mjHasEntryAd',visible);
+   if(button.dataset.entryBusy!==String(!!state.busy))button.dataset.entryBusy=String(!!state.busy);
+   if(!visible){
+    if(badge){badge.hidden=true;const ids=(button.getAttribute('aria-describedby')||'').split(/\s+/).filter(id=>id&&id!==badge.id);if(ids.length)button.setAttribute('aria-describedby',ids.join(' '));else button.removeAttribute('aria-describedby');}
+    continue;
+   }
    if(!badge){
     badge=document.createElement('span');badge.className='mjEntryAdBadge';badge.id='mj-entry-ad-'+(++serial);badge.setAttribute('role','img');button.append(badge);
-    const described=(button.getAttribute('aria-describedby')||'').split(/\s+/).filter(Boolean);described.push(badge.id);button.setAttribute('aria-describedby',[...new Set(described)].join(' '));
    }
-   button.classList.toggle('mjHasEntryAd',!!uid);badge.hidden=!uid;
-   if(button.dataset.entryBusy!==String(!!state.busy))button.dataset.entryBusy=String(!!state.busy);
+   badge.hidden=false;
+   const described=(button.getAttribute('aria-describedby')||'').split(/\s+/).filter(Boolean);described.push(badge.id);button.setAttribute('aria-describedby',[...new Set(described)].join(' '));
    const renderKey=[kind,remaining,uid||''].join(':');
    if(badge.dataset.renderKey===renderKey)continue;
    badge.dataset.renderKey=renderKey;badge.dataset.state=kind;badge.dataset.remaining=String(remaining);badge.setAttribute('aria-label',label);badge.title=label;

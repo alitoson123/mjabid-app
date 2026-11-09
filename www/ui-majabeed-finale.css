@@ -1,0 +1,5 @@
+/* A short review of the authoritative last action, above the hand and clear of the pile. */
+#uiFinaleNotice{position:absolute;z-index:55;left:50%;bottom:35%;transform:translateX(-50%);max-width:88%;width:max-content;padding:9px 16px;border:1px solid #d7be7c66;border-radius:16px;background:#102e26ed;color:#f6df9f;font-family:var(--fh);font-weight:700;font-size:clamp(14px,3.6vw,18px);line-height:1.5;text-align:center;pointer-events:none;box-shadow:0 4px 16px #0003}
+#onl[data-finale] #oHint,#onl[data-finale] #oWaqfBanner,#onl[data-finale] #oTimer,#onl[data-finale] #oTimerTop,#onl[data-finale] #oWaqfActionWrap{visibility:hidden!important}
+#onl[data-finale] #oHand,#onl[data-finale] #oWaqfStack,#onl[data-finale] #oField,#onl[data-finale] .pileBox{pointer-events:none!important}
+@media(max-height:620px){#uiFinaleNotice{bottom:25%;padding:5px 12px;font-size:13px}}

@@ -11,7 +11,9 @@ function uiOnlineCanPlay(){
 function uiSyncOnlineAudience(){
   const root=document.getElementById('onl');if(!root)return;
   const canPlay=uiOnlineCanPlay();
-  root.classList.toggle('uiSpectating',!canPlay);
+  const finale=window.MajabeedFinale?.presentation();
+  const finalePlayer=!!(finale?.view?.me&&finale.view.me===ONL.you&&finale.view.seats?.includes(ONL.you));
+  root.classList.toggle('uiSpectating',!(canPlay||finalePlayer));
   const live=typeof ONL!=='undefined'&&ONL.active&&ONL.status==='playing'&&!!ONL.view;
   const bar=document.getElementById('uiSpectatorBar');if(bar)bar.hidden=!live||canPlay;
   if(canPlay){

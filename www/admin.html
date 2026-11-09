@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>لوحة تحكم — مجابيد</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,7 +23,7 @@
   #loginBox button{width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(#e2925c,#d67f48);color:#fff7ef;font-family:var(--fh);font-size:18px;cursor:pointer;margin-top:6px}
   #loginErr{color:var(--red);font-size:12.5px;font-weight:700;text-align:center;margin-top:10px;min-height:16px}
   #app{display:none;min-height:100vh}
-  #topbar{background:var(--clay);color:#fff7ef;padding:calc(14px + env(safe-area-inset-top, 0px)) calc(20px + env(safe-area-inset-right, 0px)) 14px calc(20px + env(safe-area-inset-left, 0px));display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 3px 10px rgba(0,0,0,.15)}
+  #topbar{background:var(--clay);color:#fff7ef;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 3px 10px rgba(0,0,0,.15)}
   #topbar h1{font-family:var(--fh);font-size:22px;margin:0}
   #topbar button{background:rgba(255,255,255,.15);color:#fff7ef;border:none;border-radius:999px;padding:7px 16px;font-family:var(--fb);font-weight:700;font-size:12.5px;cursor:pointer}
   #tabs{display:flex;gap:6px;padding:14px 20px 0;overflow-x:auto}
@@ -55,20 +55,26 @@
   .tierEdit{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:10px}
   .tierEdit label{font-size:11.5px;font-weight:800;color:#8a7a63;display:block;margin-bottom:4px}
   .tierEdit input{width:100%;padding:9px 10px;border:1.5px solid var(--line);border-radius:10px;font-family:var(--fb);font-size:13.5px}
-  .saveBar{position:sticky;bottom:0;background:#fff;padding:12px calc(18px + env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) calc(18px + env(safe-area-inset-left, 0px));box-shadow:0 -3px 10px rgba(0,0,0,.08);border-radius:16px 16px 0 0;margin-top:16px}
+  .saveBar{position:sticky;bottom:0;background:#fff;padding:12px 18px;box-shadow:0 -3px 10px rgba(0,0,0,.08);border-radius:16px 16px 0 0;margin-top:16px}
   .saveBar button{width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(#e2925c,#d67f48);color:#fff7ef;font-family:var(--fh);font-size:18px;cursor:pointer}
   .roomChip{display:inline-flex;align-items:center;gap:6px;background:#efe0c4;color:var(--clay);padding:5px 12px;border-radius:999px;font-size:12px;font-weight:800;margin:3px}
   .empty{text-align:center;padding:40px 20px;color:#8a7a63;font-weight:700}
-  .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom, 0px));left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;font-weight:700;z-index:100;opacity:0;transition:opacity .3s;pointer-events:none}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;font-weight:700;z-index:100;opacity:0;transition:opacity .3s;pointer-events:none}
   .toast.show{opacity:1}
 </style>
+
+<link rel="stylesheet" href="admin-notices.css?v=347">
+<link rel="stylesheet" href="admin-dashboard.css?v=366">
+<link rel="stylesheet" href="admin-weekly-prizes.css?v=371">
+<link rel="stylesheet" href="admin-commerce.css?v=373">
+<script src="image-cache.js"></script>
 </head>
 <body>
 
 <div id="loginScreen">
   <div id="loginBox">
     <h1>🃏 لوحة التحكم</h1>
-    <p>وقّف بيلوت — دخول إداري</p>
+    <p>مجابيد — دخول الإدارة</p>
     <input id="liEmail" type="email" placeholder="البريد الإلكتروني" autocomplete="username">
     <input id="liPass" type="password" placeholder="كلمة المرور" autocomplete="current-password">
     <button id="liBtn">دخول</button>
@@ -78,45 +84,85 @@
 
 <div id="app">
   <div id="topbar">
-    <h1>🃏 لوحة التحكم</h1>
-    <button id="logoutBtn">خروج</button>
+    <div class="adBrand"><span class="adBrandMark" aria-hidden="true">♠</span><div><h1>مجابيد</h1><span>إدارة اللعبة</span></div></div>
+    <div class="adTopActions"><span class="adVersion">لوحة الإدارة · v366</span><button id="logoutBtn">تسجيل الخروج</button></div>
   </div>
   <div id="tabs">
     <button class="tab on" data-tab="overview">نظرة عامة</button>
     <button class="tab" data-tab="players">اللاعبون</button>
     <button class="tab" data-tab="economy">الاقتصاد</button>
+    <button class="tab" data-tab="commerce">الشراء ورسوم الجلسات</button>
+    <button class="tab" data-tab="weekly-prizes">الجوائز الأسبوعية</button>
+    <button class="tab" data-tab="monthly-prizes">الجوائز الشهرية</button>
     <button class="tab" data-tab="rooms">الغرف النشطة</button>
+
     <button class="tab" data-tab="reports">البلاغات</button>
     <button class="tab" data-tab="visits">الزيارات</button>
     <button class="tab" data-tab="version">تحديث التطبيق</button>
+    <button class="tab" data-tab="notices">الإعلانات والمثبتة</button>
     <button class="tab" data-tab="messages">الرسائل</button>
   </div>
 
   <div class="panel" id="panel-overview">
-    <div class="cards">
-      <div class="statCard"><div class="num" id="statTotal">—</div><div class="lbl">إجمالي اللاعبين</div></div>
-      <div class="statCard"><div class="num" id="statActive">—</div><div class="lbl">بالطاولة الآن</div></div>
-      <div class="statCard"><div class="num" id="statBanned">—</div><div class="lbl">محظورون</div></div>
+    <div class="adHeading"><div><span class="adEyebrow">متابعة وإدارة</span><h2>نبض مجابيد وصكة</h2><p>اللعب الآن، نشاط الأيام الماضية، ومؤشرات النمو.</p></div><button id="adMetricsRefresh" class="miniBtn adPrimary">تحديث المؤشرات</button></div>
+    <p id="adMetricsStatus" class="adStatus" role="status"></p>
+    <div class="cards adMetrics">
+      <div class="statCard adStatLive"><span class="adMetricIcon" aria-hidden="true">◉</span><div class="lbl">مجابيد · نشطون في الطاولات والبحث</div><div class="num" id="statActive">—</div><small>اتصال مؤكد ضمن العينة</small></div>
+      <div class="statCard"><span class="adMetricIcon" aria-hidden="true">♠</span><div class="lbl">يلعبون التنافسي الآن</div><div class="num" id="adCompetitive">—</div><small>لاعبون بشر داخل مباراة تنافسية</small></div>
+      <div class="statCard"><span class="adMetricIcon" aria-hidden="true">✓</span><div class="lbl">المباريات المكتملة اليوم</div><div class="num" id="adCompleted">—</div><small id="adCompletedNote">توقيت السعودية</small></div>
+      <div class="statCard"><span class="adMetricIcon" aria-hidden="true">◎</span><div class="lbl">إجمالي حسابات اللاعبين</div><div class="num" id="statTotal">—</div><small>كل الحسابات المسجلة</small></div>
     </div>
-    <div class="card">
-      <h3>ملاحظة مهمة</h3>
-      <p style="font-size:13px;line-height:1.9;color:#54433a;font-weight:600;margin:0">
-        هذي اللوحة تدير بيانات اللاعبين (Firestore) مباشرة. تعديل الذهب هنا يكتب بالحساب فورًا.
-        لتوزيع الجوائز التلقائي والتحقق الكامل من الذهب أثناء اللعب، يحتاج ربط إضافي بالخادم (Cloudflare) — راجع مع Claude.
-      </p>
+    <div class="adCoverage" id="adLiveCoverage">جارٍ التحقق من تغطية المؤشرات…</div>
+    <div class="adSecondaryStats"><div><span>في البحث</span><b id="adSearching">—</b></div><div><span>طاولات جارية ضمن العينة</span><b id="adRoomsPlaying">—</b></div><div><span>حسابات محظورة</span><b id="statBanned">—</b></div><button class="miniBtn" id="adOpenReports">مراجعة البلاغات ←</button></div>
+        <section class="card adSakkaMetrics" aria-labelledby="adSakkaTitle">
+      <div class="adCardHeading"><div><span class="adEyebrow">صكة · نشاط اللاعبين</span><h3 id="adSakkaTitle">اليوم والآن</h3></div><span class="adTag">أندرويد وآيفون</span></div>
+      <div class="adGrowthStats"><div><b id="adSakkaToday">—</b><span>لاعبو صكة اليوم</span></div><div><b id="adSakkaCurrent">—</b><span>متصلون الآن</span></div><div><b id="adSakkaPlaying">—</b><span>داخل الصكة الآن</span></div></div>
+      <div class="adSecondaryStats"><div><span>يبحثون عن مباراة</span><b id="adSakkaSearching">—</b></div><div><span>طاولات جارية</span><b id="adSakkaRooms">—</b></div></div>
+      <p id="adSakkaNote" class="adNote">جارٍ تحميل نشاط صكة…</p>
+    </section>
+    <div class="adChartGrid">
+      <section class="card"><div class="adCardHeading"><div><span class="adEyebrow">حركة اللعب</span><h3>المباريات المكتملة</h3></div><span class="adTag">آخر 14 يومًا</span></div><div id="adMatchesChart" class="adChart"></div><div id="adMatchBreakdown" class="adBreakdown"></div><p id="adTrackingNote" class="adNote"></p></section>
+      <section class="card"><div class="adCardHeading"><div><span class="adEyebrow">نشاط اللاعبين</span><h3>الحسابات المرصودة يوميًا</h3></div><span class="adTag">آخر 14 يومًا</span></div><div id="adGrowthChart" class="adChart"></div><p class="adNote">رصد الزيارات المتاح؛ لا يمثل عدد المتصلين الآن، وقد يختلف عن إجمالي النشاط الفعلي.</p></section>
     </div>
+    <section class="card"><div class="adCardHeading"><div><span class="adEyebrow">اتجاه النمو</span><h3>مقارنة آخر 7 أيام بالـ7 السابقة</h3></div><span id="adGrowthDelta" class="adChange">—</span></div><div class="adGrowthStats"><div><b id="adObservedToday">—</b><span>حسابات مرصودة اليوم</span></div><div><b id="adObservedWeek">—</b><span>حسابات مرصودة آخر 7 أيام</span></div><div><b id="adReturning">—</b><span>حسابات ظهرت في الفترتين</span></div></div><p id="adGrowthNote" class="adNote"></p></section>
+    <details class="card adDefinitions"><summary>كيف تُحسب المؤشرات؟</summary><p>النشاط الآن يعتمد على اتصالات مؤكدة داخل الطاولات والبحث ضمن عينة محدودة. وجود اللاعب في الرئيسية وحدها لا يُقاس هنا. الأرقام مسبوقة بـ ≥ لأنها حد أدنى للرصد.</p><p>تُسجل المباراة عند اكتمالها على السيرفر؛ المباريات السابقة لبدء التتبع غير متاحة. الزيارات مأخوذة من الرصد القديم بحسب تاريخ جهاز اللاعب؛ مقارنة الفترتين مؤشر تقريبي للنمو والعودة، وليست قياس احتفاظ كاملًا.</p><p>التحديث عند فتح الصفحة أو الضغط على «تحديث المؤشرات»، مع كاش قصير. لا يوجد تحديث دوري أو قراءة لكل ملفات اللاعبين.</p></details>
+  </div>
+
+  <div class="panel hidden" id="panel-monthly-prizes">
+    <div class="adHeading"><div><h2>الجوائز الشهرية</h2><p>كل يوم 1 الساعة 7 صباحًا بتوقيت السعودية. الأول 20,000، الثاني 10,000، الثالث 5,000 ذهب.</p></div><button id="mpRefresh" class="miniBtn">تحديث الحالة</button></div>
+    <p id="mpStatus" role="status"></p><div id="mpRuns"></div>
+    <button id="mpResume" class="miniBtn">استئناف جوائز الأشهر المنتهية</button>
+  </div>
+  <div class="panel hidden" id="panel-weekly-prizes">
+    <div class="adHeading"><div><span class="adEyebrow">صرف موثّق — v371</span><h2>الجوائز الأسبوعية</h2><p>الخميس، الساعة 7 صباحًا بتوقيت السعودية. الأول 5,000، الثاني 3,000، الثالث 2,000 ذهب. المعاينات القديمة تحتفظ بقيمها المحفوظة.</p></div><button id="wpRefresh" class="miniBtn">تحديث الحالة</button></div>
+    <p id="wpStatus" class="adStatus" role="status" aria-live="polite"></p>
+    <section class="card"><h3 id="wpWeek">جارٍ قراءة حالة الأسبوع…</h3><p id="wpSummary"></p><p id="wpWarning" class="wpWarning"></p>
+      <div id="wpPrepare" class="adButtonRow" hidden><button id="wpHistorical" class="miniBtn adPrimary">معاينة ترتيب الخميس</button><button id="wpExtended" class="miniBtn">معاينة تسوية متأخرة بالنقاط الحالية</button></div>
+      <p class="adNote">الجوائز: الأول 20,000، الثاني 15,000، الثالث 10,000، الرابع 5,000 ذهب. إنجازات حتى أفضل 30 لاعبًا. أصحاب صفر نقطة غير مؤهلين.</p>
+    </section>
+    <section id="wpPreview" class="card" hidden><h3>المعاينة المحفوظة</h3><p id="wpSnapshot"></p><p id="wpProgress" role="status"></p><div class="wpTableWrap"><table><thead><tr><th>الترتيب</th><th>اللاعب</th><th>النقاط</th><th>الجائزة</th></tr></thead><tbody id="wpWinners"></tbody></table></div>
+      <div id="wpChecks" hidden><label id="wpLegacyLabel"><input id="wpLegacyCheck" type="checkbox"> راجعت سجل الصرف وأؤكد أن جوائز هذه الدورة لم تُصرف، بما فيها أي صرف جزئي بالطريقة القديمة.</label><label id="wpExtendedLabel"><input id="wpExtendedCheck" type="checkbox"> أوافق على تسوية هذه الدورة وفق النقاط المتراكمة حتى وقت اللقطة، وقد تشمل نقاطًا بعد الخميس؛ ليست استعادة لترتيب الخميس.</label></div>
+      <div class="adButtonRow"><button id="wpStart" class="miniBtn adPrimary" hidden>تأكيد توزيع الجوائز</button><button id="wpResume" class="miniBtn adPrimary" hidden>استئناف التوزيع</button></div>
+      <p class="adNote">المعاينة لا تصرف الذهب. بعد الاعتماد، التوزيع قابل للاستئناف ولا يمكن إلغاء ما صُرف. لا تغلق الصفحة أثناء التنفيذ؛ عند انقطاع الرد استخدم «تحديث الحالة» ثم «استئناف التوزيع».</p>
+    </section>
   </div>
 
   <div class="panel hidden" id="panel-players">
     <div class="card">
-      <input id="searchBox" placeholder="ابحث بالاسم أو اسم المستخدم...">
+      <input id="searchBox" placeholder="ابحث بالاسم أو اسم المستخدم أو معرّف الحساب...">
+      <p id="adManualLookupHint" class="adNote" role="status" hidden></p>
       <div id="playersList"></div>
     </div>
   </div>
 
+  <div class="panel hidden" id="panel-commerce">
+    <div class="card"><h3>رسوم الجلسات وعروض الكوينز</h3><p>تسري رسوم الإنشاء الجديدة على الجلسات الجديدة فقط. يحتفظ كل طلب شراء بالعرض الذي تأكد عند بدء الدفع.</p><button class="miniBtn" id="cmReload" type="button">إعادة تحميل</button><p id="cmStatus" role="status"></p></div>
+    <form id="cmForm"><div class="card"><h3>إنشاء جلسة الأصدقاء</h3><label class="cmFee">السعر بالذهب — يشمل مقعد المنشئ<input id="cmCreatorFee" type="number" min="0" max="100000" step="1" required></label><p>0 يجعل الإنشاء مجانيًا. دخول بقية اللاعبين يبقى 100 ذهب، ومكافأة الفوز 250 ذهب.</p></div><div class="card"><h3>عرض خاص للكوينز</h3><p>أضف ذهبًا مجانيًا إلى الباقة بالسعر نفسه، وحدد اسم العرض ومدته. شراء التطبيقات ينتظر اكتمال ربط Apple وGoogle.</p><div class="cmOffers" id="cmOffers"></div></div><div class="saveBar"><button type="submit">حفظ الرسوم والعروض</button></div></form>
+    <div class="card"><h3>سجل الذهب وVIP — أحدث 100 عملية</h3><button type="button" class="miniBtn" id="cmPurchasesReload">تحديث السجل</button><div style="overflow:auto"><table><thead><tr><th>الوقت</th><th>اللاعب</th><th>المنصة</th><th>الذهب / الاشتراك</th><th>المبلغ وعملته</th><th>العرض / المنتج</th><th>الحالة</th><th>الطلب</th></tr></thead><tbody id="cmPurchases"></tbody></table></div></div>
+  </div>
   <div class="panel hidden" id="panel-economy">
     <div class="card">
-      <h3>أسعار الطبقات</h3>
+      <h3>أسعار الساحات</h3>
       <div id="tiersEditor"></div>
     </div>
     <div class="saveBar"><button id="saveTiers">حفظ التعديلات</button></div>
@@ -124,25 +170,24 @@
 
   <div class="panel hidden" id="panel-rooms">
     <div class="card">
-      <h3>الغرف النشطة الآن</h3>
+      <div class="adCardHeading"><h3>قائمة الطاولات</h3><button id="adRoomsRefresh" class="miniBtn">تحديث القائمة</button></div>
       <div id="roomsList"></div>
     </div>
   </div>
 
   <div class="panel hidden" id="panel-reports">
-    <div class="card">
-      <div style="display:flex;gap:8px;margin-bottom:14px">
-        <button class="tab on" id="repFilterOpen" style="padding:7px 16px">مفتوحة</button>
-        <button class="tab" id="repFilterAll" style="padding:7px 16px">الكل</button>
-      </div>
-      <div id="reportsList"></div>
+    <div class="adHeading"><div><span class="adEyebrow">سلامة المجتمع</span><h2>البلاغات والشكاوى</h2><p>افتح حساب المُبلَّغ عليه لمراجعته واتخاذ الإجراء.</p></div><button class="miniBtn" id="adReportsRefresh">تحديث البلاغات</button></div>
+    <div class="card"><div class="adReportsToolbar"><div class="adSegments"><button class="tab on" id="repFilterOpen">مفتوحة</button><button class="tab" id="repFilterAll">الكل</button></div><button class="miniBtn" id="adCloseAll">إغلاق كل المفتوحة</button></div>
+      <p id="adReportsStatus" class="adStatus" role="status"></p>
+      <div id="adBulkBox" class="adBulkBox" hidden><p id="adBulkText"></p><div class="adButtonRow"><button class="miniBtn adPrimary" id="adBulkConfirm">تأكيد الإغلاق</button><button class="miniBtn" id="adBulkCancel">إلغاء</button></div></div>
+      <div id="reportsList"></div><button id="adReportsMore" class="miniBtn adWide" hidden>تحميل المزيد</button>
     </div>
   </div>
 
   <div class="panel hidden" id="panel-visits">
     <div class="cards" id="visitsCards"></div>
     <div class="card">
-      <h3>آخر 14 يوم</h3>
+      <h3>رصد الزيارات — آخر 14 يومًا</h3><p class="adNote">تاريخ السجل يعتمد على جهاز اللاعب؛ هذه البيانات ليست عدّاد المتصلين الآن.</p>
       <div id="visitsList"></div>
     </div>
   </div>
@@ -170,6 +215,7 @@
     </div>
   </div>
 
+<div class="panel hidden" id="panel-notices"><div class="card"><h3>إعلانات الرئيسية ورسالة الشات المثبتة</h3><p>يمكن تفعيل كل بطاقة وإخفاؤها مستقلًا. النصوص تظهر لجميع المنصات. الرابط اختياري ويُفتح فقط عند الضغط على الزر. التحديث عند العودة للصفحة، مع كاش حتى نحو 2 دقيقة؛ لا تحديث دوري أثناء اللعب.</p><button id="anReload" class="miniBtn">إعادة تحميل الإعدادات</button><p id="anStatus" role="status"></p></div><div class="anGrid"><form id="anForm-home" class="card anForm"><fieldset><h3>إعلان الرئيسية</h3><label><input type="checkbox" name="enabled"> تفعيل العرض للاعبين</label><label>العنوان<input name="title" maxlength="70"></label><label>النص<textarea name="body" maxlength="300" rows="4"></textarea></label><label>نص الزر — اختياري<input name="button" maxlength="30"></label><label>رابط الزر — اختياري<input name="url" type="url" maxlength="500" placeholder="https://"></label><div id="anPreview-home" class="anPreview"><small></small><h4></h4><p></p><span hidden></span></div><button type="submit">حفظ إعلان الرئيسية</button></fieldset><p id="anNote-home" role="status"></p></form><form id="anForm-chat" class="card anForm"><fieldset><h3>رسالة الشات المثبتة</h3><label><input type="checkbox" name="enabled"> تفعيل العرض للاعبين</label><label>العنوان<input name="title" maxlength="70"></label><label>النص<textarea name="body" maxlength="300" rows="4"></textarea></label><label>نص الزر — اختياري<input name="button" maxlength="30"></label><label>رابط الزر — اختياري<input name="url" type="url" maxlength="500" placeholder="https://"></label><div id="anPreview-chat" class="anPreview"><small></small><h4></h4><p></p><span hidden></span></div><button type="submit">حفظ رسالة الشات المثبتة</button></fieldset><p id="anNote-chat" role="status"></p></form></div></div>
   <div class="panel hidden" id="panel-messages">
     <div class="card">
       <h3>إرسال رسالة جديدة</h3>
@@ -203,10 +249,12 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<div id="adPlayerDialog" class="adDialogBackdrop" hidden><section class="adDialog" role="dialog" aria-modal="true" aria-labelledby="adPlayerTitle" tabindex="-1"><header><div><span class="adEyebrow">إدارة الحساب</span><h2 id="adPlayerTitle">ملف اللاعب</h2></div><button id="adPlayerClose" class="miniBtn" aria-label="إغلاق ملف اللاعب">✕</button></header><div id="adPlayerContent"></div><button id="adPlayerReload" class="miniBtn">إعادة التحقق من الحساب</button><p id="adPlayerStatus" class="adStatus" role="status"></p><form id="adBanForm" hidden><label for="adBanReason">سبب الإجراء</label><textarea id="adBanReason" maxlength="300" rows="3" placeholder="مثال: إساءة متكررة في الدردشة"></textarea><p class="adNote" id="adBanScope">الحظر على الحساب. قد يستغرق تطبيقه على اتصال قديم حتى 60 ثانية.</p><button id="adBanSubmit" class="miniBtn danger adWide" type="submit">تأكيد الحظر</button></form></section></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="admin-dashboard.js?v=407-admin-profile-1"></script>
 <script>
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCZZrU2tip4efYEfYhUi9F_DNfuRZ22adU",
@@ -247,6 +295,8 @@ auth.onAuthStateChanged(async (user) => {
   if(user && ADMIN_UIDS.includes(user.uid)){
     $('#loginScreen').style.display = 'none';
     $('#app').style.display = 'block';
+    AdminDashboard.reset(user.uid);
+    resetAdminPlayers();
     loadOverview();
   }else if(user){
     $('#loginErr').textContent = 'هذا الحساب ليس له صلاحية إدارية';
@@ -254,146 +304,145 @@ auth.onAuthStateChanged(async (user) => {
   }else{
     $('#loginScreen').style.display = 'flex';
     $('#app').style.display = 'none';
+    AdminDashboard.reset(null);
+    resetAdminPlayers();
   }
 });
 
 // ===== التبويبات =====
-document.querySelectorAll('.tab').forEach(t => {
+document.querySelectorAll('#tabs .tab[data-tab]').forEach(t => {
   t.onclick = () => {
-    document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x===t));
+    document.querySelectorAll('#tabs .tab').forEach(x => x.classList.toggle('on', x===t));
     document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
     $('#panel-'+t.dataset.tab).classList.remove('hidden');
+    if(t.dataset.tab==='overview') loadOverview();
     if(t.dataset.tab==='players') loadPlayers();
     if(t.dataset.tab==='economy') loadEconomy();
     if(t.dataset.tab==='rooms') loadRooms();
+
     if(t.dataset.tab==='reports') loadReports();
     if(t.dataset.tab==='visits') loadVisits();
     if(t.dataset.tab==='version') loadVersion();
+    if(t.dataset.tab==='notices') loadAdminNotices();
     if(t.dataset.tab==='messages'){ loadMessages(); loadGifts(); }
   };
 });
 
 // ===== نظرة عامة =====
-async function loadOverview(){
-  try{
-    const snap = await db.collection('players').get();
-    let total=0, active=0, banned=0;
-    const staleCutoff = Date.now() - 3*60*60*1000;
-    snap.forEach(doc=>{
-      const d = doc.data();
-      total++;
-      if(d.activeRoom && !(d.activeSince && d.activeSince < staleCutoff)) active++;
-      if(d.banned) banned++;
-    });
-    $('#statTotal').textContent = total;
-    $('#statActive').textContent = active;
-    $('#statBanned').textContent = banned;
-  }catch(e){ toast('تعذّر تحميل الإحصائيات'); }
-}
+async function loadOverview(){ return AdminDashboard.loadOverview(); }
 
 // ===== اللاعبون =====
 let ALL_PLAYERS = [];
-// NEW CODE — تحميل تدريجي بدفعات عبر مؤشر Firestore حقيقي (startAfter) بدل سقف 200 صامت،
-// والبحث يكمل تحميل الدفعات تلقائياً بالخلفية لحد ما يلقى تطابقاً أو تنتهي القاعدة كاملة.
-let PLAYERS_CURSOR = null;
-let PLAYERS_DONE = false;
-let SEARCH_TOKEN = 0;
+let PLAYERS_CURSOR = null, PLAYERS_DONE = false, PLAYERS_EPOCH = 0, PLAYERS_JOB = null;
 const PLAYERS_BATCH = 200;
+const adminText = value => typeof value==='string' ? value : '';
+const adminNumber = value => (typeof value==='number'||typeof value==='string')&&Number.isFinite(Number(value)) ? Number(value) : 0;
+function playerFromDocument(doc){
+  const data=doc.data()||{};
+  // The document path is the authority; a legacy/user-writable uid field is not.
+  return {...data,uid:doc.id,name:adminText(data.name),username:adminText(data.username),avatar:adminText(data.avatar),banReason:adminText(data.banReason),activeRoom:adminText(data.activeRoom),banned:data.banned===true,
+    gold:adminNumber(data.gold),xp:adminNumber(data.xp),rank:adminNumber(data.rank),games:adminNumber(data.games),wins:adminNumber(data.wins),activeSince:adminNumber(data.activeSince)};
+}
+function resetAdminPlayers(){
+  PLAYERS_EPOCH++;PLAYERS_JOB=null;ALL_PLAYERS=[];PLAYERS_CURSOR=null;PLAYERS_DONE=false;
+  const list=document.getElementById('playersList');if(list)list.replaceChildren();
+  const hint=document.getElementById('adManualLookupHint');if(hint){hint.hidden=true;hint.textContent='';}
+}
+function playerReadCurrent(epoch,uid){return epoch===PLAYERS_EPOCH&&auth.currentUser?.uid===uid&&ADMIN_UIDS.includes(uid);}
 async function loadPlayers(){
-  ALL_PLAYERS = []; PLAYERS_CURSOR = null; PLAYERS_DONE = false;
-  $('#playersList').innerHTML = '<div class="empty">جارٍ التحميل...</div>';
-  await loadPlayersBatch();
+  resetAdminPlayers();
+  $('#playersList').innerHTML='<div class="empty">جارٍ التحميل...</div>';
+  return loadPlayersBatch();
 }
 async function loadPlayersBatch(){
-  try{
-    let q = db.collection('players').orderBy(firebase.firestore.FieldPath.documentId()).limit(PLAYERS_BATCH);
-    if(PLAYERS_CURSOR) q = q.startAfter(PLAYERS_CURSOR);
-    const snap = await q.get();
-    snap.forEach(doc => ALL_PLAYERS.push({uid: doc.id, ...doc.data()}));
-    if(snap.docs.length){ PLAYERS_CURSOR = snap.docs[snap.docs.length-1]; }
-    if(snap.docs.length < PLAYERS_BATCH) PLAYERS_DONE = true;
-    await applyPlayersFilter();
-  }catch(e){ $('#playersList').innerHTML = '<div class="empty">تعذّر التحميل: '+escHtml(e.message||'')+'</div>'; }
+  if(PLAYERS_JOB)return PLAYERS_JOB;
+  const epoch=PLAYERS_EPOCH,uid=auth.currentUser?.uid;
+  if(!playerReadCurrent(epoch,uid)||PLAYERS_DONE)return;
+  const job=(async()=>{
+    try{
+      let q=db.collection('players').orderBy(firebase.firestore.FieldPath.documentId()).limit(PLAYERS_BATCH);
+      if(PLAYERS_CURSOR)q=q.startAfter(PLAYERS_CURSOR);
+      const snap=await q.get();if(!playerReadCurrent(epoch,uid))return;
+      const known=new Set(ALL_PLAYERS.map(p=>p.uid));
+      snap.forEach(doc=>{if(!known.has(doc.id)){ALL_PLAYERS.push(playerFromDocument(doc));known.add(doc.id);}});
+      if(snap.docs.length)PLAYERS_CURSOR=snap.docs[snap.docs.length-1];
+      if(snap.docs.length<PLAYERS_BATCH)PLAYERS_DONE=true;
+      applyPlayersFilter();
+    }catch(error){if(playerReadCurrent(epoch,uid))$('#playersList').innerHTML='<div class="empty">تعذّر التحميل: '+escHtml(error.message||'')+'</div>';}
+  })();
+  PLAYERS_JOB=job;try{return await job;}finally{if(PLAYERS_JOB===job)PLAYERS_JOB=null;}
 }
-async function applyPlayersFilter(){
-  const q = $('#searchBox').value.trim().toLowerCase();
-  const myToken = ++SEARCH_TOKEN;
-  const matches = () => ALL_PLAYERS.filter(p =>
-    (p.name||'').toLowerCase().includes(q) || (p.username||'').toLowerCase().includes(q)
-  );
-  if(!q){ renderPlayers(ALL_PLAYERS); return; }
-  let list = matches();
-  while(!list.length && !PLAYERS_DONE){
-    $('#playersList').innerHTML = `<div class="empty">جارٍ البحث... (${ALL_PLAYERS.length} مُحمَّل حتى الآن)</div>`;
-    await loadPlayersBatch();
-    if(myToken !== SEARCH_TOKEN) return;
-    list = matches();
+function applyPlayersFilter(){
+  const query=$('#searchBox').value.trim().toLowerCase();
+  renderPlayers(query?ALL_PLAYERS.filter(p=>[p.name,p.username,p.uid].some(v=>adminText(v).toLowerCase().includes(query))):ALL_PLAYERS);
+}
+$('#searchBox').oninput=applyPlayersFilter;
+function avaHtml(player){
+  const avatar=adminText(player?.avatar).trim();
+  if(!avatar)return '😎';
+  if(avatar.includes('/')||/\.(png|jpg|jpeg|webp|gif)$/i.test(avatar)){
+    let source=avatar;
+    try{
+      if(window.MajabeedImages?.source)source=window.MajabeedImages.source(avatar,46);
+      const url=new URL(source,document.baseURI);
+      if(url.username||url.password||!(url.protocol==='https:'||(url.protocol==='http:'&&url.origin===location.origin)))return '😎';
+      source=url.href;
+    }catch(_){return '😎';}
+    const attr=window.MajabeedImages?.storageURL?.(source)?'data-mj-avatar':'src';
+    return `<img ${attr}="${escHtml(source)}" data-admin-avatar alt="" loading="lazy" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:999px;object-fit:cover">`;
   }
-  if(myToken !== SEARCH_TOKEN) return;
-  renderPlayers(list);
+  return escHtml(avatar.slice(0,80));
 }
-$('#searchBox').oninput = applyPlayersFilter;
-// NEW CODE — عرض الأفاتار: مسارات الصور تُعرض كصورة <img> فعلية (كانت تُطبَع كنص خام فتتراكب مع بيانات اللاعب)
-function avaHtml(p){
-  const a = p.avatar||'';
-  if(a && (a.includes('/') || /\.(png|jpg|jpeg|webp|gif)$/i.test(a))){
-    return `<img src="${escHtml(a)}" style="width:100%;height:100%;border-radius:999px;object-fit:cover" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'😎'}))">`;
-  }
-  return escHtml(a||'😎');
-}
+document.addEventListener('error',event=>{
+  const image=event.target;
+  if(image?.matches?.('img[data-admin-avatar]'))image.replaceWith(Object.assign(document.createElement('span'),{textContent:'😎'}));
+},true);
 function renderPlayers(list){
-  const el = $('#playersList');
-  if(!list.length){ el.innerHTML = '<div class="empty">لا يوجد لاعبون مطابقون</div>'; return; }
-  el.innerHTML = list.map(p => `
-    <div class="pRow">
-      <div class="pAva">${avaHtml(p)}</div>
-      <div class="pInfo">
-        <div class="pName">${escHtml(p.name||'لاعب')} ${p.banned?'🚫 محظور'+(p.banReason?(' — '+escHtml(p.banReason)):''):''}</div>
-        <div class="pMeta">🪙 ${(p.gold||0).toLocaleString('en')} · ⭐ ${(p.xp||0).toLocaleString('en')} XP · 🏆 ${(p.rank||0).toLocaleString('en')} رتبة · مباريات ${p.games||0} · فوز ${p.wins||0} ${p.activeRoom?' · 🟢 بطاولة':''}</div>
-        ${p.activeRoom?`<div class="pMeta" style="opacity:.65;font-size:11px">🔧 تشخيص: activeRoom="${escHtml(p.activeRoom)}" · activeSince=${p.activeSince?new Date(p.activeSince).toLocaleTimeString('ar-SA'):'—'} (منذ ${p.activeSince?Math.round((Date.now()-p.activeSince)/1000):'?'}ث)</div>`:''}
-      </div>
-      <div class="pActions">
-        <button class="miniBtn" onclick="toggleEdit('${p.uid}')">تعديل</button>
-      </div>
-    </div>
-    <div class="editRow" id="edit-${p.uid}">
-      <label>الذهب</label>
-      <input type="number" id="gold-${p.uid}" value="${p.gold||0}">
-      <label>نقاط الخبرة (XP)</label>
-      <input type="number" id="xp-${p.uid}" value="${p.xp||0}">
-      <label>نقاط الرتبة التنافسية</label>
-      <input type="number" id="rank-${p.uid}" value="${p.rank||0}">
-      <label>سبب الحظر (اختياري — يظهر للاعب لو مفعّل الحظر)</label>
-      <input type="text" id="banReason-${p.uid}" value="${escHtml(p.banReason||'')}" placeholder="مثلاً: إساءة بالدردشة">
-      <div style="display:flex;gap:8px">
-        <button class="miniBtn ok" onclick="saveStats('${p.uid}')">حفظ الكل</button>
-        <button class="miniBtn ${p.banned?'ok':'danger'}" onclick="toggleBan('${p.uid}', ${!p.banned})">${p.banned?'رفع الحظر':'حظر الحساب'}</button>
-      </div>
-    </div>
-  `).join('') + (PLAYERS_DONE ? '' : `<button class="miniBtn" id="loadMorePlayers" style="width:100%;margin-top:10px">تحميل المزيد (${ALL_PLAYERS.length} مُحمَّل حتى الآن)</button>`);
-  const lm=$('#loadMorePlayers'); if(lm) lm.onclick=async()=>{ lm.textContent='جارٍ التحميل...'; lm.disabled=true; await loadPlayersBatch(); };
+  const el=$('#playersList');
+  if(!list.length){
+    el.innerHTML='<div class="empty">لا توجد مطابقة في الدفعات المحمّلة</div>'+(PLAYERS_DONE?'':'<button class="miniBtn" data-player-action="more">ابحث في الدفعة التالية (200)</button>');return;
+  }
+  el.innerHTML=list.map(p=>{
+    const id=escHtml(p.uid),n=value=>adminNumber(value).toLocaleString('en');
+    const since=adminNumber(p.activeSince),date=new Date(since);
+    const diagnostic=p.activeRoom?`<div class="pMeta" style="opacity:.65;font-size:11px">🔧 تشخيص: activeRoom="${escHtml(p.activeRoom)}" · activeSince=${since&&Number.isFinite(date.getTime())?date.toLocaleTimeString('ar-SA'):'—'}</div>`:'';
+    return `<div class="pRow"><div class="pAva">${avaHtml(p)}</div><div class="pInfo">
+      <div class="pName"><button class="adNameButton" data-ad-player="${id}">${escHtml(p.name||'لاعب')}</button> ${p.banned?'🚫 محظور'+(p.banReason?' — '+escHtml(p.banReason):''):''}</div>
+      <div class="pMeta">🪙 ${n(p.gold)} · ⭐ ${n(p.xp)} XP · 🏆 ${n(p.rank)} رتبة · مباريات ${n(p.games)} · فوز ${n(p.wins)} ${p.activeRoom?' · 🟢 بطاولة':''}</div>${diagnostic}
+      </div><div class="pActions"><button class="miniBtn" data-player-action="edit" data-player-uid="${id}">تعديل</button></div></div>
+      <div class="editRow" id="edit-${id}"><label>الذهب</label><input type="number" id="gold-${id}" value="${adminNumber(p.gold)}" min="0" step="1">
+      <label>نقاط الخبرة (XP)</label><input type="number" id="xp-${id}" value="${adminNumber(p.xp)}" min="0" step="1">
+      <label>نقاط الرتبة التنافسية</label><input type="number" id="rank-${id}" value="${adminNumber(p.rank)}" min="0" step="1">
+      <label>سبب الحظر (اختياري — يظهر للاعب لو مفعّل الحظر)</label><input type="text" id="banReason-${id}" value="${escHtml(p.banReason||'')}" maxlength="300" placeholder="مثلاً: إساءة بالدردشة">
+      <div style="display:flex;gap:8px"><button class="miniBtn ok" data-player-action="save" data-player-uid="${id}">حفظ الكل</button>
+      <button class="miniBtn ${p.banned?'ok':'danger'}" data-player-action="ban" data-player-uid="${id}">${p.banned?'رفع الحظر':'حظر الحساب'}</button></div></div>`;
+  }).join('')+(PLAYERS_DONE?'':`<button class="miniBtn" data-player-action="more" style="width:100%;margin-top:10px">تحميل المزيد (${ALL_PLAYERS.length} مُحمَّل حتى الآن)</button>`);
 }
-function toggleEdit(uid){ $('#edit-'+uid).classList.toggle('show'); }
+$('#playersList').addEventListener('click',async event=>{
+  const button=event.target.closest('[data-player-action]');if(!button||button.disabled||!$('#playersList').contains(button))return;
+  const action=button.dataset.playerAction,uid=button.dataset.playerUid;
+  if(action==='edit'){toggleEdit(uid);return;}
+  if(action==='ban'){const player=ALL_PLAYERS.find(p=>p.uid===uid);if(player)toggleBan(uid,!player.banned);return;}
+  button.disabled=true;try{if(action==='more')await loadPlayersBatch();else if(action==='save')await saveStats(uid);}finally{if(button.isConnected)button.disabled=false;}
+});
+function toggleEdit(uid){document.getElementById('edit-'+uid)?.classList.toggle('show');}
 async function saveStats(uid){
-  const gold = parseInt($('#gold-'+uid).value, 10) || 0;
-  const xp = parseInt($('#xp-'+uid).value, 10) || 0;
-  const rank = parseInt($('#rank-'+uid).value, 10) || 0;
+  const actor=auth.currentUser?.uid,epoch=PLAYERS_EPOCH;
+  if(!playerReadCurrent(epoch,actor)||!ALL_PLAYERS.some(p=>p.uid===uid))return;
+  const values={};
+  for(const key of ['gold','xp','rank']){
+    const input=document.getElementById(key+'-'+uid),value=Number(input?.value);
+    if(!input||!input.value.trim()||!Number.isSafeInteger(value)||value<0){toast('أدخل أعدادًا صحيحة موجبة أو صفرًا');return;}
+    values[key]=value;
+  }
   try{
-    await db.collection('players').doc(uid).set({gold, xp, rank}, {merge:true});
-    toast('تم تحديث البيانات');
-    loadPlayers();
-  }catch(e){ toast('فشل الحفظ'); }
+    await db.collection('players').doc(uid).set(values,{merge:true});
+    if(!playerReadCurrent(epoch,actor))return;
+    toast('تم تحديث البيانات');await loadPlayers();
+  }catch(_){if(playerReadCurrent(epoch,actor))toast('فشل الحفظ');}
 }
-async function toggleBan(uid, banned){
-  try{
-    const reasonEl = $('#banReason-'+uid);
-    const banReason = banned ? ((reasonEl&&reasonEl.value.trim())||'') : '';
-    await db.collection('players').doc(uid).set({banned, banReason}, {merge:true});
-    toast(banned?('تم حظر الحساب'+(banReason?' — السبب: '+banReason:'')):'تم رفع الحظر');
-    loadPlayers();
-  }catch(e){ toast('فشل التنفيذ'); }
-}
-function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+async function toggleBan(uid,banned){return AdminDashboard.openPlayer({uid,desiredBan:banned,reason:document.getElementById('banReason-'+uid)?.value||''});}
+function escHtml(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
 // ===== الاقتصاد =====
 const TIER_KEYS = [
@@ -440,40 +489,7 @@ $('#saveTiers').onclick = async () => {
 // NEW CODE — قراءة مباشرة من active_rooms: المجموعة اللي يديرها السيرفر نفسه (server.js → _syncActiveRoomListing)
 // بكل نقطة تغيير حقيقية بحياة الغرفة (انضمام/بدء/إغلاق/انسحاب) — مصدر حقيقة واحد موثوق، لا كتابة متفرقة من كل
 // متصفح لنفسه. يحل جذرياً مشكلة انقسام نفس الطاولة لعدة "غرف" وهمية، ويُظهر البوتات بأسمائها الحقيقية.
-const ONLINE_STALE_MS = 3*60*1000; // NEW CODE — لعدّاد "المتصلون الآن" العام فقط (يشمل من هو بالقائمة الرئيسية، لا بطاولة بالضرورة) — يعتمد على نبضة activeSince
-async function loadRooms(){
-  $('#roomsList').innerHTML = '<div class="empty">جارٍ التحميل...</div>';
-  try{
-    const [roomsSnap, playersSnap] = await Promise.all([
-      db.collection('active_rooms').orderBy('updatedAt','desc').limit(100).get(),
-      db.collection('players').limit(500).get() // NEW CODE — بس لعدّاد "متصل الآن" العام، منفصل عن تجميع الغرف
-    ]);
-    let onlineCount = 0;
-    const onlineCutoff = Date.now() - ONLINE_STALE_MS;
-    playersSnap.forEach(doc => { const d=doc.data(); if(d.activeSince && d.activeSince>=onlineCutoff) onlineCount++; });
-    const onlineBanner = `<div class="pRow" style="background:var(--sand2)"><div class="pInfo"><div class="pName">🟢 المتصلون الآن: ${onlineCount}</div><div class="pMeta">آخر نبضة خلال ${Math.round(ONLINE_STALE_MS/60000)} دقائق (كل مكان بالتطبيق، لا بطاولة بالضرورة)</div></div></div>`;
-    const rooms = []; roomsSnap.forEach(doc => rooms.push({id: doc.id, ...doc.data()}));
-    if(!rooms.length){ $('#roomsList').innerHTML = onlineBanner+'<div class="empty">لا توجد طاولات نشطة الآن</div>'; return; }
-    const totalReal = rooms.reduce((sum,r)=>sum+(r.seats||[]).filter(s=>s&&!s.isBot).length,0);
-    const botOnly = rooms.filter(r=>(r.seats||[]).length && (r.seats||[]).every(s=>s&&s.isBot)); // NEW CODE — طاولات كلها بوتات (عالقة غالباً)
-    const totalsBanner = `<div class="pRow" style="background:var(--sand2)"><div class="pInfo"><div class="pName">🎮 طاولات نشطة: ${rooms.length} — لاعبون حقيقيون بها: ${totalReal}</div>
-      ${botOnly.length?`<div class="pMeta">⚠️ ${botOnly.length} طاولة كلها بوتات (بلا أي لاعب حقيقي) — <button class="miniBtn danger" onclick="deleteBotOnlyRooms()">🧹 حذفها كلها</button></div>`:''}
-    </div></div>`; // NEW CODE — زر حذف جماعي للعالقة
-    $('#roomsList').innerHTML = onlineBanner + totalsBanner + rooms.map(r => {
-      const seats = r.seats||[];
-      const realCount = seats.filter(s=>s&&!s.isBot).length;
-      const names = seats.length ? seats.map(s=>s?(escHtml(s.name)+(s.isBot?' 🤖':'')):'—فاضي—').join('، ') : '—';
-      const statusTxt = r.status==='playing'?'🎮 جارية':'⏳ لوبي (بانتظار البدء)';
-      return `<div class="pRow">
-        <div class="pInfo">
-          <div class="pName">${statusTxt} — ${escHtml(r.name||r.id)} <span style="opacity:.55;font-size:11px">(${escHtml(r.id)})</span></div>
-          <div class="pMeta">${realCount} لاعب حقيقي من ${seats.length||4}: ${names}</div>
-        </div>
-        <div class="pActs"><button class="miniBtn danger" onclick="deleteRoom('${escHtml(r.id)}')">🗑 حذف من القائمة</button></div>
-      </div>`; // NEW CODE — زر حذف لكل غرفة
-    }).join('');
-  }catch(e){ $('#roomsList').innerHTML = '<div class="empty">تعذّر التحميل: '+escHtml(e.message||'')+'</div>'; }
-}
+async function loadRooms(){ return AdminDashboard.loadRooms(); }
 // NEW CODE — حذف إعلان غرفة من active_rooms (القائمة فقط — لا يمس الطاولة الحية نفسها لو كانت فعلاً جارية:
 // أي غرفة حية تعيد نشر نفسها تلقائياً مع أول تغيير بمقاعدها؛ الغرف الميتة/العالقة تختفي نهائياً)
 async function deleteRoom(id){
@@ -498,69 +514,11 @@ async function deleteBotOnlyRooms(){
 let REPORTS_FILTER = 'open';
 $('#repFilterOpen').onclick = () => { REPORTS_FILTER='open'; $('#repFilterOpen').classList.add('on'); $('#repFilterAll').classList.remove('on'); loadReports(); };
 $('#repFilterAll').onclick = () => { REPORTS_FILTER='all'; $('#repFilterAll').classList.add('on'); $('#repFilterOpen').classList.remove('on'); loadReports(); };
-async function loadReports(){
-  $('#reportsList').innerHTML = '<div class="empty">جارٍ التحميل...</div>';
-  try{
-    let q = db.collection('reports').orderBy('ts','desc').limit(100);
-    if(REPORTS_FILTER==='open') q = db.collection('reports').where('status','==','open').orderBy('ts','desc').limit(100);
-    const snap = await q.get();
-    const items = [];
-    snap.forEach(doc => items.push({id:doc.id, ...doc.data()}));
-    if(!items.length){ $('#reportsList').innerHTML = '<div class="empty">لا توجد بلاغات</div>'; return; }
-    $('#reportsList').innerHTML = items.map(r => {
-      const isMsg = r.kind==='message';
-      const isProfile = r.kind==='profile';
-      const title = isMsg ? `⚑ بلاغ رسالة من ${escHtml(r.reporterName||'لاعب')} ضد ${escHtml(r.reportedName||'لاعب')}`
-                    : isProfile ? `👤 بلاغ حساب من ${escHtml(r.reporterName||'لاعب')} ضد ${escHtml(r.reportedName||'لاعب')}`
-                    : `${r.category==='bug'?'🐞':'💡'} ${r.category==='bug'?'مشكلة':'اقتراح'} من ${escHtml(r.reporterName||'لاعب')}`;
-      const body = isMsg ? `الرسالة: "${escHtml(r.messageText||'')}"${r.reason?'<br>السبب: '+escHtml(r.reason):''}`
-                   : isProfile ? '(بلاغ على الحساب — الاسم أو الصورة الشخصية)'
-                   : escHtml(r.text||'');
-      return `<div class="pRow" style="align-items:flex-start;flex-direction:column;gap:6px">
-        <div class="pName">${title} ${r.status==='resolved'?'<span style="color:var(--sage);font-size:11px">✓ تم الحل</span>':''}</div>
-        <div class="pMeta" style="white-space:normal;line-height:1.6">${body}</div>
-        <div class="pActions">
-          ${r.status!=='resolved'?`<button class="miniBtn ok" onclick="resolveReport('${r.id}')">تحديد كمُعالَج</button>`:''}
-        </div>
-      </div>`;
-    }).join('');
-  }catch(e){ $('#reportsList').innerHTML = '<div class="empty">تعذّر التحميل (قد تحتاج فهرس Firestore — راجع Console)</div>'; }
-}
-async function resolveReport(id){
-  try{ await db.collection('reports').doc(id).set({status:'resolved'},{merge:true}); toast('تم التحديث'); loadReports(); }
-  catch(e){ toast('فشل التحديث'); }
-}
+async function loadReports(){ return AdminDashboard.loadReports(REPORTS_FILTER); }
+async function resolveReport(id){ return AdminDashboard.resolveReport(id); }
 
 // ===== الزيارات =====
-async function loadVisits(){
-  $('#visitsCards').innerHTML = '<div class="empty">جارٍ التحميل...</div>';
-  $('#visitsList').innerHTML = '';
-  try{
-    const today = new Date();
-    const days = [];
-    for(let i=0;i<14;i++){
-      const d = new Date(today); d.setDate(d.getDate()-i);
-      days.push(`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`);
-    }
-    const docs = await Promise.all(days.map(k => db.collection('visits').doc(k).get()));
-    const rows = days.map((k,i) => {
-      const d = docs[i];
-      const data = d.exists ? d.data() : {};
-      return {day:k, total: data.total||0, unique: (data.uniqueUids||[]).length};
-    });
-    $('#visitsCards').innerHTML = `
-      <div class="statCard"><div class="num">${rows[0].total}</div><div class="lbl">زيارات اليوم</div></div>
-      <div class="statCard"><div class="num">${rows[0].unique}</div><div class="lbl">لاعبون فريدون اليوم</div></div>
-      <div class="statCard"><div class="num">${rows.reduce((s,r)=>s+r.total,0)}</div><div class="lbl">إجمالي آخر 14 يوم</div></div>
-    `;
-    $('#visitsList').innerHTML = rows.map(r => `
-      <div class="pRow">
-        <div class="pInfo"><div class="pName">${r.day}</div></div>
-        <div class="pMeta">👁️ ${r.total} زيارة · 👤 ${r.unique} فريد</div>
-      </div>
-    `).join('');
-  }catch(e){ $('#visitsCards').innerHTML = '<div class="empty">تعذّر التحميل</div>'; }
-}
+async function loadVisits(){ return AdminDashboard.loadVisits(); }
 
 // ===== التحديث الإجباري =====
 async function loadVersion(){
@@ -661,5 +619,10 @@ async function deleteGift(id){
   catch(e){ toast('فشل الحذف'); }
 }
 </script>
+
+<script src="admin-notices.js?v=347"></script>
+<script src="admin-weekly-prizes.js?v=371"></script>
+<script src="admin-monthly-prizes.js?v=378"></script>
+<script src="admin-commerce.js?v=373"></script>
 </body>
 </html>

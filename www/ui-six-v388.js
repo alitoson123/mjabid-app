@@ -85,11 +85,12 @@ function renderOnlSix(){
   if(typeof uiSyncOnlineAudience==='function')uiSyncOnlineAudience();
   if(!ONL.active)return;
   if(typeof uiPlayerPanelsRoom==='function')uiPlayerPanelsRoom('online:'+ONL.room);
-  const st=ONL.status;
+  const finale=window.MajabeedFinale?.presentation();
+  const st=finale?'playing':ONL.status;
   if(st==='lobby'||st==='waiting'){renderLobbySix();return}
   $('#onlWait').classList.add('hidden');
   if(st==='over'){renderOver();return}
-  let v=ONL.view; if(!v)return;
+  let v=finale?.view||ONL.view; if(!v)return;
   if(v.phase==='waqf'&&ONL._lastPhase!=='waqf')closeChatPanels();
   ONL._lastPhase=v.phase;
   const chatWrapEl=$('#oChatWrap'); if(chatWrapEl)chatWrapEl.style.display=(v.isFriendly&&!!v.me)?'':'none';
@@ -142,7 +143,7 @@ function renderOnlSix(){
     if(ONL._prevFieldCount!=null&&fc===ONL._prevFieldCount+1&&!(v.lastSettle&&v.lastSettle.seq!==ONL._prevSettleSeqForThrow))GameSoundManager.playActionSound();
     ONL._prevFieldCount=fc; ONL._prevSettleSeqForThrow=v.lastSettle?v.lastSettle.seq:null;
   }
-  uiRenderMatchHeader(v,true);$('#uiOnlineMode').textContent='جماعي ٣ ضد ٣';
+  uiRenderMatchHeader(v,true);
   const specEl=$('#oSpecCount');
   if(ONL.spectators>0){ $('#oSpecN').textContent=ONL.spectators; specEl.classList.remove('hidden'); }
   else specEl.classList.add('hidden');
@@ -365,9 +366,9 @@ function renderOnlSix(){
 function renderLobbySix(){
   $('#onlWait').classList.remove('hidden');
   $('#oOver').classList.add('hidden');$('#oWaqf').classList.add('hidden');
-  const wait=$('#onlWait');wait.classList.toggle('uiLobbyCompact',!ONL.league);
+  const wait=$('#onlWait');wait.classList.toggle('uiLobbyCompact',!ONL.cup);
   const paidNotice=document.getElementById('uiFriendlyLobbyEconomy');if(paidNotice)paidNotice.hidden=true;
-  if(ONL.league&&typeof lgRenderLobby==='function'){$('#lobbyPlayers')._uiSeatFingerprint='';uiLobbySetTab('seats');lgRenderLobby(ONL);return;}
+  if(ONL.cup&&typeof uiCupLobby==='function'){$('#lobbyPlayers')._uiSeatFingerprint='';uiLobbySetTab('seats');uiCupLobby(ONL);return;}
   if(wait.dataset.uiLobbyRoom!==ONL.room){wait.dataset.uiLobbyRoom=ONL.room||'';uiLobbySetTab('seats');}
   const lb=ONL.lobby||{mode:'solo',creator:null,names:{}};
   const seats=ONL.seats||[],isCreator=!!ONL.you&&lb.creator===ONL.you;
@@ -394,7 +395,7 @@ function renderLobbySix(){
     tb.style.display='flex';
   }else{const tb=$('#lobbyTierTag');if(tb)tb.style.display='none';}
   let economy=document.getElementById('uiFriendlyLobbyEconomy');
-  const friendlyPolicy=!ONL.league&&!ONL.tournament&&!lb.tier?.fee&&uiFriendlyEconomy(lb.friendlyEconomy||ONL.friendlyEconomy);
+  const friendlyPolicy=!ONL.cup&&!ONL.league&&!ONL.tournament&&!lb.tier?.fee&&uiFriendlyEconomy(lb.friendlyEconomy||ONL.friendlyEconomy);
   if(friendlyPolicy){
     if(!economy){economy=document.createElement('div');economy.id='uiFriendlyLobbyEconomy';economy.style.cssText='padding:12px 14px;margin:10px 0;border:1px solid #d5ba7455;border-radius:16px;background:#082c24;color:#f7e7ba;font-size:12px;line-height:1.9;text-align:center';const start=document.getElementById('lobbyStart');start.parentNode.insertBefore(economy,start);}
     economy.innerHTML='<b>رسوم الجلسة مرة واحدة</b><br>المنشئ <bdi>'+toH(friendlyPolicy.creatorFee)+'</bdi> ذهب وتشمل مقعده · كل لاعب آخر <bdi>'+toH(friendlyPolicy.entryFee)+'</bdi> ذهب<br><small>تُخصم عند أول مشاركة. لكل فائز <bdi>'+toH(friendlyPolicy.winGold)+'</bdi> ذهب في كل جولة · بلا نقاط تنافسية</small>';economy.hidden=false;

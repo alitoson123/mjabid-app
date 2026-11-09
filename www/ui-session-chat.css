@@ -1,0 +1,18 @@
+.uiRoomChatSetting{margin:10px 0;padding:12px;border:1px solid #e0c38445;border-radius:16px;background:#08291fcc;color:#f5e7c6;box-sizing:border-box;font-family:var(--fb,sans-serif);direction:rtl}
+.uiRoomChatSetting[hidden],.uiRoomChatClosed[hidden]{display:none!important}
+.uiRoomChatRow{display:flex;align-items:center;justify-content:space-between;gap:10px}.uiRoomChatTitle{display:flex;align-items:center;gap:8px;min-width:0}.uiRoomChatTitle svg{width:23px;height:23px;color:#ddc187;flex:none}.uiRoomChatTitle b{display:block;font-size:13px}.uiRoomChatTitle small{display:block;font-size:9px;color:#b8c8b4;margin-top:3px;line-height:1.5}
+.uiRoomChatChoices{display:flex;gap:3px;padding:3px;border:1px solid #dfc48838;border-radius:12px;background:#071e1880;flex:none}.uiRoomChatChoices button{min-width:57px;min-height:36px;border:0;border-radius:9px;background:transparent;color:#bdcbb5;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer;touch-action:manipulation}.uiRoomChatChoices button[aria-pressed=true]{background:linear-gradient(130deg,#f1daa4,#cfad6c);color:#18382a}.uiRoomChatChoices button:disabled{cursor:default;opacity:.65}.uiRoomChatChoices button:disabled[aria-pressed=true]{opacity:.9}.uiRoomChatChoices button:focus-visible{outline:2px solid #fff1bf;outline-offset:2px}
+.uiRoomChatHelp{margin:8px 0 0;color:#c4d1be;font-size:10px;line-height:1.6}.uiRoomChatHelp[role=alert]{color:#ffd6bd}.uiRoomChatClosed{margin:0;padding:9px 12px;background:#173e30;color:#f2da9c;border-bottom:1px solid #d9bc7040;text-align:center;font-size:11px;font-weight:700}
+#blChatForm input:disabled,#blChatForm button:disabled,#blChatQuickTab button:disabled,#oChatQuickTab button:disabled{opacity:.45;cursor:default}
+[data-chat-closed=true]{position:relative}[data-chat-closed=true]::after{content:'×';position:absolute;inset-inline-end:0;top:0;border:1px solid #e4c78d;background:#204032;color:#f4d89a;border-radius:50%;width:15px;height:15px;display:grid;place-items:center;font:bold 11px sans-serif}
+#oReactBtn:disabled{opacity:.4;cursor:default}.uiRoomChatCreate{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:14px 0;padding:12px;border-radius:14px;background:#092b21;border:1px solid #dec68a45;color:#f3e5c3;font-size:13px}.uiRoomChatCreate small{display:block;font-size:10px;color:#bfd0bb;line-height:1.5;margin-top:3px}
+@media(max-width:350px){.uiRoomChatSetting{padding:10px}.uiRoomChatTitle svg{display:none}.uiRoomChatChoices button{min-width:49px}.uiRoomChatTitle small{font-size:8px}}
+/* The one-screen Sakka lobby reserves space for all four seat controls. */
+#blGame .blLobbyCompact .uiRoomChatSetting{position:relative;flex:none;margin:0;padding:5px 8px;border-radius:12px}
+#blGame .blLobbyCompact .uiRoomChatTitle svg{width:18px;height:18px}
+#blGame .blLobbyCompact .uiRoomChatTitle b{font-size:11px}
+#blGame .blLobbyCompact .uiRoomChatTitle small,#blGame .blLobbyCompact .uiRoomChatHelp{display:none}
+#blGame .blLobbyCompact .uiRoomChatChoices{padding:2px;border-radius:9px}
+#blGame .blLobbyCompact .uiRoomChatChoices button{min-height:30px;min-width:48px;padding:3px 7px;font-size:10px}
+#blGame .blLobbyCompact .uiRoomChatSetting[aria-busy=true] .uiRoomChatHelp,#blGame .blLobbyCompact .uiRoomChatHelp[role=alert]{position:absolute;top:100%;left:-1px;right:-1px;z-index:2;display:block;margin:3px 0 0;padding:6px 8px;border:1px solid #d9bc7055;border-radius:9px;background:#123b2f;box-shadow:0 3px 7px #0004}
+@media(max-height:650px){#blGame .blLobbyCompact>.blPanel{gap:4px}#blGame .blLobbyCompact .blLobbyInvites>b{display:none}}

@@ -5,11 +5,11 @@ window.MajabeedFriendlyHands=(()=>{
  const valid=n=>Number.isInteger(n)&&n>=7&&n<=15;
  const count=n=>valid(n)?n:9;
  const number=n=>toH(n);
- const friendlyLobby=()=>!!ONL.active&&['lobby','waiting'].includes(ONL.status)&&!!ONL.room&&!ONL.room.startsWith('pub-')&&!ONL.league&&!ONL.tournament&&!ONL.lobby?.tier?.fee&&ONL.lobby?.handCardsEditable!==false;
- const friendlyPlay=()=>!!ONL.active&&ONL.status==='playing'&&!!ONL.view&&ONL.view.isFriendly!==false&&!ONL.room?.startsWith('pub-')&&(ONL.view.isFriendlySession===true||(ONL.view.isFriendlySession==null&&ONL.view.isFriendly===true))&&!ONL.league&&!ONL.tournament;
+ const friendlyLobby=()=>!!ONL.active&&['lobby','waiting'].includes(ONL.status)&&!!ONL.room&&!ONL.room.startsWith('pub-')&&!ONL.cup&&!ONL.league&&!ONL.tournament&&!ONL.lobby?.tier?.fee&&ONL.lobby?.handCardsEditable!==false;
+ const friendlyPlay=()=>!!ONL.active&&ONL.status==='playing'&&!!ONL.view&&ONL.view.isFriendly!==false&&!ONL.room?.startsWith('pub-')&&(ONL.view.isFriendlySession===true||(ONL.view.isFriendlySession==null&&ONL.view.isFriendly===true))&&!ONL.cup&&!ONL.league&&!ONL.tournament;
  const editable=()=>friendlyLobby()&&ONL.status==='lobby'&&!!ONL.you&&ONL.lobby?.creator===ONL.you&&ONL.lobby?.handCardsEditable===true&&!ONL.paymentPending&&!UI_SESSION_START.pending&&ONL.lobby?.handCardsLocked!==true;
  const settings=document.createElement('div');settings.id='uiFriendlyHandSettings';settings.hidden=true;
- settings.innerHTML='<div class="uiHandSettingRow"><span>عدد الأوراق لكل لاعب</span><div class="uiHandStepper" role="group" aria-label="عدد أوراق اليد"><button id="uiFriendlyHandLess" type="button" aria-label="تقليل أوراق اليد">−</button><output id="uiFriendlyHandSelect" aria-live="polite"></output><button id="uiFriendlyHandMore" type="button" aria-label="زيادة أوراق اليد">+</button></div></div><p id="uiFriendlyHandHelp"></p>';
+ settings.innerHTML='<div class="uiHandSettingRow"><span>عدد الورق</span><div class="uiHandStepper" role="group" aria-label="عدد أوراق اليد"><button id="uiFriendlyHandLess" type="button" aria-label="تقليل أوراق اليد">−</button><output id="uiFriendlyHandSelect" aria-live="polite"></output><button id="uiFriendlyHandMore" type="button" aria-label="زيادة أوراق اليد">+</button></div></div><p id="uiFriendlyHandHelp"></p>';
  document.getElementById('lobbyPublic').before(settings);
  const select=settings.querySelector('output'),help=settings.querySelector('p'),less=settings.querySelector('#uiFriendlyHandLess'),more=settings.querySelector('#uiFriendlyHandMore');
  let pendingHand=null,pendingTimer=null;
@@ -27,8 +27,8 @@ window.MajabeedFriendlyHands=(()=>{
   const show=friendlyLobby();settings.hidden=!show;
   if(pendingHand&&(!show||pendingHand.room!==ONL.room||!editable()||count(ONL.lobby?.handCards)===pendingHand.value))clearPendingHand();
   if(!show)return;
-  const n=count(ONL.lobby?.handCards);select.textContent=number(n);less.disabled=!!pendingHand||!editable()||n<=7;more.disabled=!!pendingHand||!editable()||n>=15;
-  help.textContent='الموزّع '+number(n+1)+' ورقة. تتجدد اليد إلى '+number(n+1)+' في دورك ما دامت الرزمة متاحة.';
+  const n=count(ONL.lobby?.handCards);select.textContent=number(n+1);less.disabled=!!pendingHand||!editable()||n<=7;more.disabled=!!pendingHand||!editable()||n>=15;
+  help.textContent='تتجدد اليد إلى '+number(n+1)+' ورقة في دورك ما دامت الرزمة متاحة.';
   if(pendingHand)help.textContent='جارٍ حفظ عدد أوراق اليد…';
   settings.dataset.handCards=String(n);
  }
@@ -38,7 +38,7 @@ window.MajabeedFriendlyHands=(()=>{
   const basras=integer(order?.basraCount,5,32)?order.basraCount:order?32:null;
   const jokers=integer(order?.jokerCount,0,100)?order.jokerCount:null;
   const layout={fixed:'الرص المعتمد',custom:'رص مخصص',random:'خلط عشوائي'}[order?.mode]||'إعداد الجلسة';
-  const info=[['البواصر',basras===null?'غير محدد':number(basras)],['الجواكر',jokers===null?'غير محدد':number(jokers)],['أوراق اليد',number(n)],['الموزّع',number(n+1)],['طريقة الرص',layout],['النتيجة',d.hideScore===true?'مخفية أثناء اللعب':'ظاهرة']];
+  const info=[['البواصر',basras===null?'غير محدد':number(basras)],['الجواكر',jokers===null?'غير محدد':number(jokers)],['عدد الورق',number(n+1)],['طريقة الرص',layout],['النتيجة',d.hideScore===true?'مخفية أثناء اللعب':'ظاهرة']];
   const summary='<dl class="uiSessionSettingsGrid">'+info.map(([label,value])=>'<div><dt>'+label+'</dt><dd>'+value+'</dd></div>').join('')+'</dl>';
   if(d.hideScore===true&&d.status!=='over')return summary+'<p class="uiSessionHiddenScore">النتيجة مخفية · تظهر عند نهاية المباراة</p>';
   let body='<p class="uiSessionScorePending">'+(d.status==='lobby'?'تبدأ النتيجة عند اللعب':'النتيجة غير متاحة الآن')+'</p>';
@@ -67,14 +67,15 @@ window.MajabeedFriendlyHands=(()=>{
  applyHandSpacing=applySpacing;
  const lobbyFour=renderLobby;renderLobby=function(){const result=lobbyFour.apply(this,arguments);renderLobbySetting();return result;};
  const lobbySix=renderLobbySix;renderLobbySix=function(){const result=lobbySix.apply(this,arguments);renderLobbySetting();return result;};
- const render=renderOnl;renderOnl=function(){
-  const result=render.apply(this,arguments);
+ // Render pipeline hook: friendly-hand.
+ window.MajabeedRenderPipeline.registerOnline('friendly-hand',40,next=>function(){
+  const result=next.apply(this,arguments);
   if(friendlyPlay()){
    const mode=document.getElementById('uiOnlineMode'),n=count(ONL.view.handCards);
-   if(mode){const label=ONL.view.mode==='team'?(ONL.view.seats?.length===6?'3 ضد 3':'2 ضد 2'):'فردي';mode.textContent=label+' · '+number(n)+' ورقة';mode.title='التوزيع: '+number(n)+' لكل لاعب، والموزّع '+number(n+1);}
+   if(mode){const label=ONL.view.mode==='team'?(ONL.view.seats?.length===6?'3 ضد 3':'2 ضد 2'):'فردي';mode.textContent=label+' · عدد الورق '+number(n+1);mode.title='عدد الورق '+number(n+1);}
   }else if(!ONL.active||ONL.status!=='playing'){hand.classList.remove('uiFlexibleHand');}
   renderLobbySetting();return result;
- };
+ });
  let lastWidth=0,queued=false;
  if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>{
   if(hand.clientWidth===lastWidth||queued)return;lastWidth=hand.clientWidth;queued=true;

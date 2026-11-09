@@ -1,0 +1,124 @@
+/* Scoped to the Majabeed Cup. Existing game tables and daily tournament stay independent. */
+#majabeedCup[hidden]{display:none!important}#majabeedCup{position:fixed;inset:0;z-index:12000;background:#061e18;color:#f8efd5;font-family:var(--fb,sans-serif);font-size:15px;line-height:1.5;overflow:hidden}#majabeedCup *{box-sizing:border-box}#majabeedCup button{font:inherit;cursor:pointer;touch-action:manipulation}#majabeedCup button:disabled{opacity:.5;cursor:default}#majabeedCup button:focus-visible{outline:3px solid #fff1c5;outline-offset:3px}.mcShell{height:100%;height:100dvh;max-width:600px;margin:auto;display:flex;flex-direction:column;background:radial-gradient(ellipse at 85% 15%,#285c43,transparent 65%),linear-gradient(155deg,#153c2e,#09271e 80%);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}.mcHeader{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 18px 10px;flex:none}.mcHeader h1{margin:1px 0 0;font-family:var(--fh,sans-serif);font-size:26px;line-height:1.3;color:#f4d99a}.mcHeader small{font-size:11px;color:#b8cdbb}.mcHeader button{border:1px solid #cfb16b42;background:#09291e;color:#ebd69c;border-radius:15px;width:43px;height:43px;font-size:28px;flex:none}.mcTabs{display:flex;flex:none;margin:0 18px 6px;background:#061e187d;border:1px solid #d9be7c26;border-radius:16px;padding:4px;gap:3px}.mcTabs button{flex:1;border:0;border-radius:12px;padding:9px 3px;background:transparent;color:#bacbbf;font-weight:bold;font-size:13px}.mcTabs .selected{background:#ead39c;color:#123a2a;box-shadow:0 3px 8px #0002}.mcScroll{overflow-y:auto;overscroll-behavior:contain;min-height:0;flex:1;padding:8px 18px 18px;scrollbar-width:thin;scrollbar-color:#cdb77b44 transparent}.mcScroll::-webkit-scrollbar{width:3px}.mcScroll::-webkit-scrollbar-thumb{background:#cdb77b44;border-radius:8px}#mcMessage{background:#5e372e;border:1px solid #e9b18b66;border-radius:12px;padding:10px 13px;font-size:13px;margin-bottom:12px}.mcHero{display:flex;align-items:center;justify-content:center;gap:20px;padding:9px 0 14px}.mcTrophy{width:82px;height:91px;flex:none;filter:drop-shadow(0 8px 15px #001b1680)}.mcTrophy svg{height:100%;width:100%}.mcHero small{font-size:12px;color:#d4c79f}.mcHero strong{display:block;font-size:34px;color:#f8df9f;line-height:1.25}.mcHero strong span{font-size:18px}.mcHero p{font-size:11px;margin:4px 0;color:#bed0bd}.mcProfile{display:flex;align-items:center;gap:10px;padding:12px;border-radius:18px;border:1px solid #d7bc7733;background:#061f1866}.mcAvatar{position:relative;display:grid;place-items:center;width:42px;height:42px;flex:none;border-radius:50%;background:#486b4b;color:#f1d491;border:1px solid #d6bc74;overflow:hidden;font-size:20px}.mcAvatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}.mcAvatar>span{line-height:1}.mcProfile>div{flex:1;min-width:0}.mcProfile b{font-size:14px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mcProfile small{display:block;color:#bacabd;font-size:10px}.mcProfile>span:last-child{text-align:left;color:#efcf81;font-size:21px}.mcStageIntro{display:flex;align-items:baseline;justify-content:space-between;margin:20px 0 11px}.mcStageIntro h2{font-size:17px;margin:0}.mcStageIntro>span{font-size:11px;color:#aec3b4}.mcStages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.mcStage{padding:12px 4px 10px;border:1px solid #b8ccba33;background:#0a241c66;border-radius:16px;text-align:center;display:flex;align-items:center;flex-direction:column;gap:4px}.mcStage.current{border-color:#e6c87c;background:linear-gradient(145deg,#486849,#244f39);box-shadow:0 0 0 2px #e6c87c14}.mcStage.complete{background:#285a3f;border-color:#83ba7c}.mcStage.locked{opacity:.58}.mcStageNumber{width:27px;height:27px;border-radius:50%;display:grid;place-items:center;border:1px solid #d5b875;color:#eed295;font-size:14px;margin-bottom:4px}.current .mcStageNumber,.complete .mcStageNumber{background:#e9cc87;color:#173d29}.mcStage b{font-size:11px;white-space:nowrap}.mcStage>span{font-size:11px;color:#d0dbc9}.mcStage small{font-size:10px;color:#dcc78b}.mcWins{display:flex;justify-content:center;gap:5px;height:11px;margin:4px 0 6px;direction:ltr}.mcWins i{width:8px;height:8px;border:1px solid #d2c59688;background:#06291e;border-radius:50%}.mcWins .earned{background:#f2d593;border-color:#f8e7b6;box-shadow:0 0 5px #ebcd6a44}.mcAttempt{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0 14px;border-bottom:1px solid #e4ce8b24}.mcAttempt b{font-size:13px}.mcAttempt p{font-size:11px;color:#bacabd;margin:4px 0 0;max-width:240px}.mcHearts{display:inline-flex;gap:5px;direction:ltr;font-size:22px;color:#dfaf73;white-space:nowrap}.mcHearts .spent{color:#d8d7c22e}.mcGameRules{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;font-size:11px;padding:13px 0 0;color:#bacabd}.mcGameRules b{display:block;color:#f3ddb0;font-size:16px}.mcRankNote{text-align:center;font-size:12px;color:#e5d4a7;margin:13px 0 0}.mcRankNote small{font-size:10px;color:#abc0b2}#mcFooter{flex:none;background:#0b281ff5;border-top:1px solid #d4bd7a33;padding:10px 18px 15px;box-shadow:0 -5px 20px #061e1822}.mcPrimary,.mcSecondary{display:block;border-radius:15px;padding:12px 16px;text-align:center;min-height:48px;font-family:var(--fh,sans-serif)!important;font-weight:bold}.mcPrimary{width:100%;border:1px solid #ffe7af;background:linear-gradient(115deg,#ecd49a,#d8b96d);color:#153d2a;box-shadow:inset 0 1px 0 #fff7da55,0 4px 12px #0002;font-size:17px!important}.mcSecondary{width:100%;background:#244b38;color:#f0dfaf;border:1px solid #ddc68c55;font-size:14px!important}.mcEntryNote{margin:0 0 8px;text-align:center;color:#d4d7bd;font-size:11px}.mcCommitNote{font-size:10px;display:block;text-align:center;color:#c1cdb9}.mcCommitNote:empty{display:none}.mcConfirm>b{color:#f2d491;font-size:17px}.mcConfirm p{font-size:12px;margin:6px 0 12px}.mcConfirm>div{display:flex;gap:8px}.mcConfirm .mcSecondary{width:65px;flex:none}.mcConfirm .mcPrimary{font-size:13px!important;padding-inline:7px}.mcQueue{display:flex;align-items:center;justify-content:center;gap:12px;margin:4px 0 13px}.mcQueue b{font-size:14px}.mcQueue small{display:block;font-size:11px;color:#bfd0bb;margin-top:3px}.mcSpinner{height:24px;width:24px;border:2px solid #b89d5d44;border-top-color:#f2d18b;border-radius:50%;animation:mcSpin 1s linear infinite;flex:none}@keyframes mcSpin{to{transform:rotate(1turn)}}.mcEmpty{text-align:center;padding:35px 10px}.mcEmpty .mcTrophy{margin:10px auto 24px}.mcEmpty h2{font-size:20px;color:#edcf8c}.mcEmpty p{font-size:13px;color:#b5c9b9}.mcLeadersIntro{padding:14px 0}.mcLeadersIntro h2{margin:0;color:#edd49b;font-size:23px}.mcLeadersIntro p{margin:4px 0;font-size:12px;color:#b3cbb9}.mcLeaders{list-style:none;padding:0;margin:0;display:grid;gap:10px}.mcLeaders li{display:flex;align-items:center;gap:9px;border-radius:17px;border:1px solid #b6c7b626;background:#0b291f88;padding:12px}.mcLeaders .leader{background:linear-gradient(110deg,#594f28,#254630);border-color:#e5c88077}.mcLeaders .runner{border-color:#ccd9d566}.mcPosition{font-size:15px;color:#d1bf8e;width:15px;flex:none;text-align:center}.mcLeaders li>div{flex:1;min-width:0}.mcLeaders strong{font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mcLeaders small{font-size:11px;color:#c9d3bf;display:block}.mcLeaders li>span:last-child{text-align:center;color:#efd393}.mcLeaders li>span:last-child b{font-size:21px}.mcRules h2{font-size:22px;color:#efd491}.mcRules ol{padding-right:20px;font-size:14px;line-height:1.85;color:#c9d6c8}.mcRules li{padding:0 5px 14px}.mcResult{padding:14px;margin:12px 0;border:1px solid #e2c98d77;border-radius:16px;background:#153e2e;color:#f4e2bb;text-align:center}.mcResult h3{margin:0 0 7px;font-size:18px}.mcResult p,.mcResult small{font-size:13px}.mcResultAmounts{display:flex;gap:20px;justify-content:center;padding:5px}.mcResultAmounts bdi{font-weight:bold;color:#efd28c;font-size:21px}.mcResult button{margin-top:9px}.mcProfileTitles{padding:8px 12px;margin:8px 0;border-radius:12px;color:#efd18b;background:#183e2d;text-align:center}.mcLobbyPlayer{border:1px solid #c5b27c55;border-radius:14px;padding:12px;background:#173b2d;text-align:center}.mcLobbyPlayer small{display:block;color:#cfba88}.mcLobbyPlayer span{font-weight:bold}#onlWait[data-majabeed-cup="true"] .uiLobbyTabs{display:none}#onl[data-majabeed-cup="true"] #lobbyStart{display:none!important}@media(max-width:350px){.mcHeader{padding:10px 12px 8px;gap:8px}.mcHeader h1{font-size:22px}.mcHeader small{font-size:10px}.mcTabs{margin-inline:12px}.mcTabs button{font-size:12px}.mcScroll{padding-inline:12px}.mcHero{gap:14px;padding-top:3px}.mcHero strong{font-size:29px}.mcHero p{font-size:10px}.mcTrophy{width:70px;height:78px}.mcStages{gap:6px}.mcStage b{font-size:10px}.mcStage>span{font-size:10px}.mcProfile{padding:10px}.mcHearts{font-size:18px;gap:3px}#mcFooter{padding:9px 12px 12px}.mcLeaders li{padding:10px;gap:7px}.mcAvatar{width:38px;height:38px}}@media(prefers-reduced-motion:reduce){.mcSpinner{animation:none}}
+#onl[data-majabeed-cup="true"] #lobbyMode,#onl[data-majabeed-cup="true"] #lobbyTierTag,#onl[data-majabeed-cup="true"] #uiFriendlyLobbyEconomy{display:none!important}
+.mcForfeitReason{padding:7px 9px;border-radius:10px;background:#77533055;color:#ffe3a2}
+/* The shared room policy also closes retained friendly panels before the next paint. */
+#onl[data-cup-chat-disabled="true"] #oChatWrap,
+#onl[data-cup-chat-disabled="true"] #oChatBtn,
+#onl[data-cup-chat-disabled="true"] #oChatPanel,
+#onl[data-cup-chat-disabled="true"] #oChatBubble,
+#onl[data-cup-chat-disabled="true"] #oReactBtn,
+#onl[data-cup-chat-disabled="true"] .oppBubble{display:none!important}
+/* Reuse the home Cup tile footprint; its status belongs to the current account. */
+#home #hTournament.mcHasHomeState{gap:8px;min-height:80px;padding:8px 12px}
+#hTournament.mcHasHomeState .cupButtonText>small{display:none}
+#hTournament.mcHasHomeState .cupButtonText>b{font-size:17px;line-height:1.4}
+#hTournament .mcHomeMeta{display:block;font-size:11px;line-height:1.55;color:#f1dfad}
+#hTournament .mcHomeMeta>span{display:block}
+#hTournament .mcHomeEntry{color:#b8cfbf;font-size:10px}
+#home #hTournament.mcHasHomeState .cupButtonIcon{flex:0 0 42px;flex-direction:column;gap:4px}
+#hTournament .mcHomeHearts{display:flex;gap:2px;direction:ltr;color:#f0cb80;font-size:11px;line-height:1}
+#hTournament .mcHomeHearts i{font-style:normal}
+#hTournament .mcHomeHearts .spent{color:#c2c8aa40}
+#hTournament.mcHasHomeState .cupButtonTime{padding:5px 7px;text-align:center;line-height:1.35;flex:none}
+#hTournament.mcHasHomeState .cupButtonTime bdi{display:block;font-size:14px;color:#f5d799;font-weight:bold;direction:ltr}
+#hTournament.mcHasHomeState .cupButtonTime>span{display:block;font-size:9px;color:#bfceb8}
+@media(max-width:350px){#home #hTournament.mcHasHomeState{padding:8px;gap:6px}#hTournament .mcHomeMeta{font-size:10px}#hTournament .mcHomeEntry{font-size:9px}#hTournament.mcHasHomeState .cupButtonTime{padding:5px}#hTournament.mcHasHomeState .cupButtonTime bdi{font-size:12px}}
+/* A fixed Cup journey: all controls stay in view; long lists scroll inside the frame. */
+#majabeedCup .mcScroll{overscroll-behavior:none}
+#majabeedCup[data-tab="journey"] .mcScroll{display:flex;flex-direction:column;overflow:hidden;padding-top:6px;padding-bottom:8px}
+#majabeedCup[data-tab="journey"] #mcMessage{flex:none;margin-bottom:6px;padding:6px 10px;font-size:11px;line-height:1.4}
+#majabeedCup[data-tab="journey"] #mcBody{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:min-content;align-content:center;gap:8px}
+#majabeedCup[data-tab="journey"] #mcBody>*{grid-column:1/-1;min-width:0}
+#majabeedCup[data-tab="journey"] #mcBody>.mcHero{grid-column:1;order:0;gap:7px;padding:4px 0;min-height:68px;justify-content:flex-start}
+#majabeedCup[data-tab="journey"] .mcHero .mcTrophy{width:42px;height:50px}
+#majabeedCup[data-tab="journey"] .mcHero small{font-size:10px}
+#majabeedCup[data-tab="journey"] .mcHero strong{font-size:23px;line-height:1.25}
+#majabeedCup[data-tab="journey"] .mcHero strong span{font-size:12px}
+#majabeedCup[data-tab="journey"] .mcHero p{font-size:9px;line-height:1.25;margin:2px 0 0}
+#majabeedCup[data-tab="journey"] #mcBody>.mcProfile{grid-column:2;order:1;display:grid;grid-template-columns:28px minmax(0,1fr);gap:3px 6px;padding:7px;border-radius:14px}
+#majabeedCup[data-tab="journey"] .mcProfile .mcAvatar{width:28px;height:28px;font-size:15px}
+#majabeedCup[data-tab="journey"] .mcProfile b{font-size:11px}
+#majabeedCup[data-tab="journey"] .mcProfile small{font-size:9px;line-height:1.3}
+#majabeedCup[data-tab="journey"] .mcProfile>span:last-child{grid-column:1/-1;display:flex;align-items:baseline;justify-content:center;gap:5px;font-size:16px;text-align:center}
+#majabeedCup[data-tab="journey"] .mcStageIntro{order:3;margin:4px 0 0}
+#majabeedCup[data-tab="journey"] .mcStageIntro h2{font-size:15px}
+#majabeedCup[data-tab="journey"] .mcStages{order:4;gap:7px}
+#majabeedCup[data-tab="journey"] .mcStage{padding:8px 3px 6px;gap:3px;border-radius:14px}
+#majabeedCup[data-tab="journey"] .mcStageNumber{width:23px;height:23px;font-size:12px;margin-bottom:1px}
+#majabeedCup[data-tab="journey"] .mcStage b{font-size:11px}
+#majabeedCup[data-tab="journey"] .mcStage>span{font-size:10px}
+#majabeedCup[data-tab="journey"] .mcStage small{font-size:9px}
+#majabeedCup[data-tab="journey"] .mcWins{margin:2px 0 3px;height:8px}
+#majabeedCup[data-tab="journey"] .mcAttempt{order:5;padding:7px 10px;background:#09271e7a;border:1px solid #d4bd7a26;border-radius:12px}
+#majabeedCup[data-tab="journey"] .mcAttempt b{font-size:12px}
+#majabeedCup[data-tab="journey"] .mcAttempt p{font-size:10px;line-height:1.4;margin:2px 0 0}
+#majabeedCup[data-tab="journey"] .mcHearts{font-size:19px;gap:3px}
+#majabeedCup[data-tab="journey"] .mcGameRules{order:6;padding:0;gap:5px;font-size:10px}
+#majabeedCup[data-tab="journey"] .mcGameRules b{display:inline;font-size:13px;margin-inline-end:3px}
+#majabeedCup[data-tab="journey"] .mcRankNote{order:7;margin:0;font-size:11px;line-height:1.4}
+#majabeedCup[data-tab="journey"] .mcRankNote small{font-size:9px}
+#majabeedCup[data-tab="journey"] #mcFooter{padding:8px 18px 10px}
+#majabeedCup[data-tab="journey"] .mcEntryNote{font-size:10px;margin-bottom:5px}
+#majabeedCup[data-tab="journey"] .mcPrimary,#majabeedCup[data-tab="journey"] .mcSecondary{min-height:44px;padding:9px 12px}
+#majabeedCup[data-tab="journey"] .mcQueue{margin:0 0 6px}
+#majabeedCup[data-footer="confirm"] .mcHero,#majabeedCup[data-footer="confirm"] .mcProfile,#majabeedCup[data-footer="confirm"] .mcRankNote{display:none}
+#home #hTournament.mcHasHomeState{position:relative;min-height:80px}
+#hTournament.mcHasHomeState .cupButtonTime{align-self:flex-start;min-width:44px;margin-bottom:22px}
+#home #hTournament.mcHasHomeState>.mjEntryAdBadge{position:absolute;top:auto;bottom:8px;left:8px;max-width:50px;min-height:18px;font-size:8px;pointer-events:none}
+#mcFooter [data-mc="start"],#mcFooter [data-mc="join"]{display:flex;align-items:center;justify-content:center;gap:8px}
+#mcFooter [data-mc="start"]>.mjEntryAdBadge,#mcFooter [data-mc="join"]>.mjEntryAdBadge{flex:0 0 auto;max-width:104px;min-height:18px;font-size:10px}
+@media(max-height:740px){
+ #majabeedCup .mcHeader{padding:8px 12px 6px}#majabeedCup .mcHeader h1{font-size:22px}#majabeedCup .mcHeader small{font-size:10px}
+ #majabeedCup .mcTabs{margin:0 12px 4px}#majabeedCup .mcTabs button{padding:7px 3px;font-size:12px}
+ #majabeedCup[data-tab="journey"] #mcBody{gap:5px}
+ #majabeedCup[data-tab="journey"] .mcHero{min-height:54px}
+ #majabeedCup[data-tab="journey"] .mcHero .mcTrophy{width:35px;height:42px}
+ #majabeedCup[data-tab="journey"] .mcHero p,#majabeedCup[data-tab="journey"] .mcStageIntro{display:none}
+ #majabeedCup[data-tab="journey"] .mcStage{padding:6px 2px 5px;gap:2px}
+ #majabeedCup[data-tab="journey"] .mcStageNumber{height:20px;width:20px;font-size:11px}
+ #majabeedCup[data-tab="journey"] .mcAttempt{padding:5px 8px}
+ #majabeedCup[data-tab="journey"] .mcAttempt b{font-size:11px}
+ #majabeedCup[data-tab="journey"] .mcRankNote{font-size:10px}
+ #majabeedCup[data-tab="journey"][data-message="true"] .mcRankNote{display:none}
+ #majabeedCup[data-tab="journey"] #mcFooter{padding:6px 12px 8px}
+}
+@media(max-height:620px){
+ #majabeedCup .mcHeader{padding-block:5px}#majabeedCup .mcHeader h1{font-size:20px}#majabeedCup .mcHeader small{display:none}#majabeedCup .mcHeader button{width:36px;height:36px}
+ #majabeedCup .mcTabs button{padding-block:5px}
+ #majabeedCup[data-tab="journey"] .mcRankNote{display:none}
+ #majabeedCup[data-tab="journey"] .mcHero{min-height:46px}
+ #majabeedCup[data-tab="journey"] .mcProfile{padding:4px 6px;gap:1px 5px}
+ #majabeedCup[data-tab="journey"] .mcHero strong{font-size:21px}
+ #majabeedCup[data-tab="journey"] .mcAttempt p{font-size:9px}
+ #majabeedCup[data-footer="search"] .mcHero,#majabeedCup[data-footer="search"] .mcProfile{display:none}
+}
+
+/* Lock only the Cup page. Long rankings and rules retain their internal scroll. */
+html.mcPageLocked{overflow:hidden!important;overscroll-behavior:none}
+body.mcPageLocked{position:fixed;inset:0;width:100%;overflow:hidden!important;overscroll-behavior:none}
+#majabeedCup .mcScroll{scrollbar-width:none;-ms-overflow-style:none}
+#majabeedCup .mcScroll::-webkit-scrollbar{display:none;width:0;height:0}
+/* Preserve the existing vertical journey on normal phones; compact only short screens. */
+@media(min-height:741px){
+ #majabeedCup[data-tab="journey"] #mcBody{grid-template-columns:1fr;gap:6px}
+ #majabeedCup[data-tab="journey"] #mcBody>.mcHero{grid-column:1;justify-content:center;gap:14px;min-height:75px;padding:4px 0}
+ #majabeedCup[data-tab="journey"] .mcHero .mcTrophy{width:55px;height:64px}
+ #majabeedCup[data-tab="journey"] .mcHero strong{font-size:29px}
+ #majabeedCup[data-tab="journey"] .mcHero p{font-size:11px}
+ #majabeedCup[data-tab="journey"] #mcBody>.mcProfile{grid-column:1;display:flex;gap:10px;padding:10px}
+ #majabeedCup[data-tab="journey"] .mcProfile .mcAvatar{width:36px;height:36px}
+ #majabeedCup[data-tab="journey"] .mcProfile>div{flex:1}
+ #majabeedCup[data-tab="journey"] .mcProfile>span:last-child{font-size:21px}
+ #majabeedCup[data-footer="confirm"] #mcBody>.mcHero,#majabeedCup[data-footer="confirm"] #mcBody>.mcProfile{display:none}
+ #majabeedCup[data-tab="journey"][data-message="true"] .mcRankNote{display:none}
+}
+
+/* Status changes stay visible while Close remains available during pending work. */
+.mcHeaderSpace{width:42px;height:42px;flex:none}
+#majabeedCup[data-loading="true"] #mcMessage::before{content:"";display:inline-block;width:10px;height:10px;margin-inline-end:7px;border:2px solid #ead29a55;border-top-color:#ead29a;border-radius:50%;animation:mcSpin .8s linear infinite;vertical-align:middle}
+#majabeedCup .mcTabs button:disabled{opacity:.65;cursor:wait}
+#mcFooter>.mcSecondary{margin-top:6px}
+#mcFooter .mcPrimary .mcSpinner{display:inline-block;width:15px;height:15px;vertical-align:middle;margin-inline-end:7px}
+@media(max-height:620px){.mcHeaderSpace{width:36px;height:36px}}
+@media(prefers-reduced-motion:reduce){#majabeedCup[data-loading="true"] #mcMessage::before{animation:none}}

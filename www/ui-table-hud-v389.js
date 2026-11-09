@@ -7,8 +7,10 @@ window.UITableHUD=(()=>{
  root.appendChild(score);
  const inset=document.createElement('div');inset.style.cssText='position:absolute;visibility:hidden;pointer-events:none;height:var(--ui-safe-bottom,0px);width:0';root.appendChild(inset);
  let pendingTeamRoom=null,requestedTeam=false,frame=0;
- const active=()=>ONL.active&&ONL.status==='playing'&&ONL.view?.mode==='team'&&!ONL.league&&!ONL.tournament;
- const centeredFour=()=>ONL.active&&ONL.status==='playing'&&ONL.view?.mode==='team'&&ONL.view.seats?.length===4&&!window.MajabeedSix?.active();
+ const view=()=>window.MajabeedFinale?.presentation()?.view||ONL.view;
+ const playing=()=>ONL.status==='playing'||!!window.MajabeedFinale?.presentation();
+ const active=()=>ONL.active&&playing()&&view()?.mode==='team'&&!ONL.league&&!ONL.tournament;
+ const centeredFour=()=>ONL.active&&playing()&&view()?.mode==='team'&&view().seats?.length===4&&!window.MajabeedSix?.active();
  const set=(name,n)=>{const value=Math.round(n*10)/10+'px';if(root.style.getPropertyValue(name)!==value)root.style.setProperty(name,value);};
  const text=(el,t)=>{if(el.textContent!==String(t))el.textContent=String(t);};
  function prepare(){
@@ -16,7 +18,7 @@ window.UITableHUD=(()=>{
   const on=!!active();root.classList.toggle('uiTeamHUD',on);score.hidden=!on;
   if(on){
    if(deck.parentNode!==score.children[1])score.children[1].appendChild(deck);
-   const v=ONL.view,my=Math.max(0,v.seats.indexOf(ONL.you))%2;
+   const v=view(),my=Math.max(0,v.seats.indexOf(ONL.you))%2;
    for(const [i,team]of [my,1-my].entries()){
     const chip=score.children[i===0?0:2],total=v.seats.filter((_,k)=>k%2===team).reduce((n,p)=>n+(Number(v.piles[p]?.points)||0),0);
     const caption=v.me&&v.seats.includes(ONL.you)?(team===my?'لنا':'لهم'):'الفريق '+(team+1);
@@ -44,9 +46,9 @@ window.UITableHUD=(()=>{
  }
  function header(){
   if(!active())return;
-  const labels=uiMatchLabels(ONL.view);
-  text(byId('uiOnlineTitle'),labels.title==='جلسة ودية'?'طاولة ودية':labels.title);
-  text(byId('uiOnlineMode'),ONL.view.tableFormat==='3v3'?'3 ضد 3':'2 ضد 2');
+  const labels=uiMatchLabels(view());
+  text(byId('uiOnlineTitle'),ONL.cup?'كأس مجابيد'+(ONL.cup.test?' · تجربة':''):(labels.title==='جلسة ودية'?'طاولة ودية':labels.title));
+  text(byId('uiOnlineMode'),labels.detail);
  }
  function layout(){
   if(!active()||!root.clientHeight)return;
@@ -80,7 +82,7 @@ window.UITableHUD=(()=>{
   if(!active())return null;
   deck.classList.remove('uiStockHidden');deck.classList.add('uiStockBadge','uiHudStock');
   if(!deck.querySelector('.uiStockLabel')){const label=document.createElement('span');label.className='uiStockLabel';label.textContent='الرزمة';deck.prepend(label);}
-  const count=Number(ONL.view.deckCount)||0;deck.setAttribute('aria-label','الرزمة المتبقية: '+count+' ورقة');
+  const count=Number(view().deckCount)||0;deck.setAttribute('aria-label','الرزمة المتبقية: '+count+' ورقة');
   const r=deck.getBoundingClientRect(),rr=root.getBoundingClientRect();return{x:r.x-rr.x,y:r.y-rr.y,w:r.width,h:r.height};
  }
  function handSpacing(hand,count){
@@ -112,6 +114,12 @@ window.UITableHUD=(()=>{
  const resize=()=>{if(frame)return;frame=requestAnimationFrame(()=>{frame=0;if(active()||centeredFour()){layout();renderOnl();}});};
  if(typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(resize);observer.observe(root);observer.observe(bar);observer.observe(inset);observer.observe(root.querySelector('.tableWood'));}
  window.addEventListener('resize',resize);
- const original=renderOnl;renderOnl=function(){prepare();const result=original.apply(this,arguments);finish();return result;};
+ // Render pipeline hook: table-hud (closest to the base renderer).
+ window.MajabeedRenderPipeline.registerOnline('table-hud',10,next=>function(){
+  prepare();
+  const result=next.apply(this,arguments);
+  finish();
+  return result;
+ });
  return {active,centeredFour,prepare,layout,placeStock,handSpacing,fieldLayout,chooseFour(){pendingTeamRoom=ONL.room;requestedTeam=false;}};
 })();

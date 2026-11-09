@@ -64,10 +64,10 @@ function uiShowResultRewards(scope){
 function uiSetupResult(scope,opts){
   const online=scope==='online',p=online?'o':'l',root=document.getElementById(online?'oOver':'results');
   root.dataset.outcome=opts.draw?'draw':opts.won?'win':'loss';
-  root.dataset.kind=online&&ONL.league?'league':online&&ONL.tournament?'tournament':opts.competitive?'competitive':online?'friendly':'practice';
+  root.dataset.kind=online&&ONL.cup?'majabeed-cup':online&&ONL.tournament?'tournament':opts.competitive?'competitive':online?'friendly':'practice';
   root.dataset.financial=String(!!opts.competitive||!!opts.friendlyPaid);
   const kind=document.getElementById(p+'ResultKind');
-  if(kind)kind.textContent=online&&ONL.league?'مباراة دوري':online&&ONL.tournament?'بطولة التاسعة · نتيجة المباراة':opts.watching?'مشاهدة · نهاية الجولة':opts.competitive?'نتيجة اللعب التنافسي':online?'جمعتكم أحلى · جلسة ودية':'تدريب · نهاية الجولة';
+  if(kind)kind.textContent=online&&ONL.cup?'نتيجة كأس مجابيد':online&&ONL.tournament?'بطولة التاسعة · نتيجة المباراة':opts.watching?'مشاهدة · نهاية الجولة':opts.competitive?'نتيجة اللعب التنافسي':online?'جمعتكم أحلى · جلسة ودية':'تدريب · نهاية الجولة';
   const art=document.getElementById(p+'ResultArt');if(art)art.innerHTML=uiResultArt(online&&!opts.competitive?'friendly':'competitive');
   const goldIcon=document.querySelector('#'+p+'GoldReward .uiRewardIcon');if(goldIcon)goldIcon.innerHTML=uiGoldCoin();
   const title=document.getElementById(online?'oResTtl':'resTtl');
@@ -81,8 +81,8 @@ function uiBeginOnlineResult(r,seated,key){
   uiCancelResultPreparation();
   const base=uiRewardSnapshot();
   const draw=!!r.draw||r.winnerTeam==='draw',won=r.mode==='team'?r.teams?.[r.winnerTeam]?.includes(ONL.you):r.winner===ONL.you;
-  const competitive=!ONL.league&&!ONL.tournament&&!!r.tier?.fee;
-  const friendlyPaid=!ONL.league&&!ONL.tournament&&!competitive&&!!uiFriendlyEconomy(ONL.friendlyEconomy);
+  const competitive=!ONL.cup&&!ONL.league&&!ONL.tournament&&!!r.tier?.fee;
+  const friendlyPaid=!ONL.cup&&!ONL.league&&!ONL.tournament&&!competitive&&!!uiFriendlyEconomy(ONL.friendlyEconomy);
   UI_RESULT.online={key,seated,uid:FB.user?.uid,rewardKey:ONL.reward?.key||null,base,current:{...base},synced:false,competitive,friendlyPaid,financial:competitive||friendlyPaid,won:!!won&&!draw,
     receiptStatus:ONL.reward?.status||null,received:{entry:null,gold:!friendlyPaid&&(draw||!won||r.tier?.win===0)?0:null,rank:!friendlyPaid&&draw?0:null},entry:null,payout:null,delta:{gold:null,rank:null},applied:{},revision:0,lastReadRevision:-1,fetching:false,exhausted:false};
   for(const label of ['Gold','Xp','Rank'])for(const suffix of ['Num','Delta']){const el=document.getElementById('oMy'+label+suffix);if(el){if(el._uiFrame)cancelAnimationFrame(el._uiFrame);el._uiFrame=0;el._uiValue=suffix==='Num'?base[label.toLowerCase()]:0;}}
@@ -239,9 +239,11 @@ function uiRenderThemePreview(){
   const theme=SHOP_THEMES.find(t=>t.id===UI_SHOP.preview)||SHOP_THEMES.find(t=>t.id===UI_FREE_THEME);
   const access=uiThemeAccess(theme.id),active=uiThemeResolve()===theme.id;
   const scene=document.getElementById('uiShopScene');
-  scene.classList.toggle('uiIllustratedRoom',!!theme.bg&&theme.bg.startsWith('ui-art/rooms-v362/'));
+  const fullScene=theme.surface==='scene'&&window.MajabeedSessionTheme?.valid(theme.id)===true;
+  scene.classList.toggle('uiIllustratedRoom',fullScene||!!theme.bg&&theme.bg.startsWith('ui-art/rooms-v362/'));
+  window.MajabeedSessionTheme?.applySurface(scene,theme);
   scene.style.backgroundImage=`linear-gradient(0deg,#071c17aa,transparent 75%),url("${theme.preview||theme.bg}")`;
-  scene.innerHTML='<img class="uiPreviewTable" src="'+(theme.table||'bg/table-center.png'+BGV)+'" alt=""><div class="uiPreviewCards" aria-hidden="true"><i>♦</i><i>♣</i><i>♥</i></div><span class="uiSceneBadge">'+(active?'خلفيتك الحالية':access.source==='free'?(theme.id===UI_FREE_THEME?'المجانية الأساسية':'خلفية مجانية'):access.permanent?'ملكية سابقة':access.active?'جاهزة للتفعيل':'إيجار لمدة 7 أيام')+'</span>';
+  scene.innerHTML=(fullScene?'':'<img class="uiPreviewTable" src="'+(theme.table||'bg/table-center.png'+BGV)+'" alt="">')+'<div class="uiPreviewCards" aria-hidden="true"><i>♦</i><i>♣</i><i>♥</i></div><span class="uiSceneBadge">'+(active?'خلفيتك الحالية':access.source==='free'?(theme.id===UI_FREE_THEME?'المجانية الأساسية':'خلفية مجانية'):access.permanent?'ملكية سابقة':access.active?'جاهزة للتفعيل':'إيجار لمدة 7 أيام')+'</span>';
   document.getElementById('uiShopSceneName').textContent=theme.name;
   const note=document.getElementById('uiShopSceneNote');note.dataset.themeRemaining=theme.id;note.textContent=uiThemeAccessText(theme.id);
   const button=document.getElementById('uiShopActivate');

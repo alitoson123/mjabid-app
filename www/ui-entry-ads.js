@@ -2,7 +2,7 @@
 (function(root){
  'use strict';
  root.MajabeedEntryAds={
-  create({getUser,isNative=()=>!!root.Capacitor?.isNativePlatform?.(),isExempt=async()=>false,exempt=()=>false,chooseEntry=async()=>'watch',openStore=()=>{},showAd=async()=>false,storage=()=>root.localStorage,onChange=()=>{}}){
+  create({getUser,isNative=()=>!!root.Capacitor?.isNativePlatform?.(),isExempt=async()=>false,exempt=()=>false,chooseEntry=async()=>'watch',openStore=()=>{},showAd=async()=>false,onAdUnavailable=()=>{},storage=()=>root.localStorage,onChange=()=>{}}){
    const memory=new Map(),unsaved=new Set(),prefix='mj-entry-ads-v398:';let busy=false;
    const user=()=>{try{const uid=getUser();return typeof uid==='string'&&uid?uid:null;}catch(_){return null;}};
    const native=()=>{try{return isNative()===true;}catch(_){return false;}};
@@ -25,7 +25,7 @@
      doc.addEventListener('visibilitychange',ready);doc.addEventListener('resume',ready);root.addEventListener('pageshow',ready);ready();
     });
    }
-   async function run(work,{isCurrent=()=>true}={}){
+   async function run(work,{isCurrent=()=>true,beforeStore=()=>{}}={}){
     const uid=user(),current=()=>{try{return user()===uid&&isCurrent()!==false;}catch(_){return false;}};
     if(busy||!uid||typeof work!=='function'||!current())return false;
     busy=true;notify();
@@ -38,13 +38,15 @@
       // Declining the offer is not an ad failure: it must never admit a player.
       let choice='cancel';try{choice=await chooseEntry({isCurrent:current});}catch(_){}
       if(!current())return false;
-      if(choice==='store'){await openStore();return false;}
+      if(choice==='store'){await beforeStore();await openStore();return false;}
       if(choice!=='watch')return false;
       let shown=false;try{shown=(await showAd())===true;}catch(_){}
       if(user()!==uid)return false;
+      // Failed or cancelled native presentation cannot reserve a seat or start a paid entry.
+      if(!shown){if(current())try{onAdUnavailable();}catch(_){}return false;}
       // A completed ad earns two future entries, including when the pending
       // destination was cancelled while it played. A failed ad earns none.
-      if(shown)save(uid,2);
+      save(uid,2);
       if(!current())return false;
       await afterAdForeground();
       if(!current())return false;

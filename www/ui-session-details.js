@@ -2,7 +2,7 @@
 (function(root){
  'use strict';
  const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const num=n=>String(n).replace(/\d/g,c=>'٠١٢٣٤٥٦٧٨٩'[Number(c)]);
+ const num=n=>String(n);
  const validInt=(n,min,max)=>Number.isInteger(n)&&n>=min&&n<=max;
  function describe(view){
   if(!view||!Array.isArray(view.seats)||![4,6].includes(view.seats.length)||!validInt(view.handCards,7,15))return null;
@@ -11,11 +11,11 @@
   const ranks=order&&Array.isArray(order.ranks)&&order.ranks.length===13&&new Set(order.ranks).size===13&&order.ranks.every(n=>validInt(n,2,14))?order.ranks.slice():null;
   const jokerCount=order&&validInt(order.jokerCount,0,100)?order.jokerCount:null;
   const basras=order&&validInt(order.basraCount,5,32)?order.basraCount:null;
-  return {handCards:view.handCards,dealerCards:view.handCards+1,players:view.seats.length,jokerCount,basras,mode,ranks,hideScore:view.hideScore===true};
+  return {handCards:view.handCards,dealerCards:view.handCards+1,players:view.seats.length,jokerCount,basras,mode,ranks,hideScore:view.hideScore===true,chatEnabled:view.friendlyChatEnabled!==false};
  }
  function detailsHTML(info){
   if(!info)return '';
-  const rows=[['كل لاعب',num(info.handCards)+' أوراق'],['الموزّع',num(info.dealerCards)+' ورقة'],['الجواكر',info.jokerCount===null?'غير متاح':num(info.jokerCount)],['اللاعبون',num(info.players)],['النتيجة',info.hideScore?'مخفية حتى النهاية':'ظاهرة']];
+  const rows=[['عدد الورق',num(info.dealerCards)],['الجواكر',info.jokerCount===null?'غير متاح':num(info.jokerCount)],['اللاعبون',num(info.players)],['النتيجة',info.hideScore?'مخفية حتى النهاية':'ظاهرة'],['شات الجلسة',info.chatEnabled?'مفتوح':'مغلق']];
   if(info.basras!==null)rows.splice(3,0,['البواصر',num(info.basras)]);
   const mode={fixed:'الرص المعتمد',custom:'رص مخصص',random:'خلط عشوائي'}[info.mode]||'غير متاح لهذه الجلسة';
   const pattern=info.mode==='random'?'<p class="uiSessionPatternNote">الأوراق مخلوطة؛ لا يوجد ترتيب ثابت للرتب.</p>':info.ranks?'<ol class="uiSessionRankPattern" aria-label="ترتيب الرص من البداية">'+info.ranks.map((rank,index)=>'<li'+(rank>=10?' class="isPicture"':'')+' aria-label="الموضع '+num(index+1)+': '+(rank>=10?'صورة':num(rank))+'">'+(rank>=10?'صورة':num(rank))+'</li>').join('')+'</ol><p class="uiSessionPatternNote">الصورة: عشرة، ولد، بنت، شايب أو آكة. الجواكر موزعة تلقائيًا بين أوراق الرزمة.</p>':'<p class="uiSessionPatternNote">تفاصيل الرص غير متاحة لهذه الجلسة القديمة.</p>';
@@ -52,7 +52,14 @@
  root.UISessionDetails={describe,detailsHTML,open,close,refresh};
  if(typeof document==='undefined')return;
  // A single presentation hook follows the existing 4/6-seat render path. No sockets or timers.
- if(typeof renderOnl==='function'){const render=renderOnl;renderOnl=function(){const result=render.apply(this,arguments);refresh();const s=state();if(s?.active)root.UIConnectionQuality?.paintMajabeed(s.view,s.you,s.connections,Date.now()+(s.offset||0));return result;};}
+ // Render pipeline hook: session-details (outermost presentation layer).
+ if(typeof renderOnl==='function')root.MajabeedRenderPipeline.registerOnline('session-details',70,next=>function(){
+  const result=next.apply(this,arguments);
+  refresh();
+  const s=state();
+  if(s?.active)root.UIConnectionQuality?.paintMajabeed(s.view,s.you,s.connections,Date.now()+(s.offset||0));
+  return result;
+ });
  document.addEventListener('keydown',event=>{
   if(!dialog)return;
   event.stopImmediatePropagation();

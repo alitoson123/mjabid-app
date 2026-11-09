@@ -12,9 +12,13 @@ window.MajabeedFriendlySession=(()=>{
    else if(el.dataset.uiHiddenScore){el.removeAttribute('aria-hidden');delete el.dataset.uiHiddenScore;}
   });
  }
- const previous=renderOnl;renderOnl=function(){
+ // Render pipeline hook: friendly-session.
+ window.MajabeedRenderPipeline.registerOnline('friendly-session',60,next=>function(){
   // Set visibility before the existing renderer runs, including its early returns.
-  refresh();const value=previous.apply(this,arguments);refresh();return value;
- };
+  refresh();
+  const value=next.apply(this,arguments);
+  refresh();
+  return value;
+ });
  refresh();return {hidden,refresh};
 })();

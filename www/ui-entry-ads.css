@@ -18,7 +18,7 @@
 .mjEntryAdDot{display:block;box-sizing:border-box;width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:#b5ad9240;border:1px solid #d7c39477;box-shadow:none}
 .mjEntryAdDot.available{background:linear-gradient(145deg,#ffe7a7,#d6a646);border-color:#ffe9aa;box-shadow:0 0 7px #f9d77d40}
 .mjEntryAdBadge[data-state="exempt"],.mjEntryAdBadge[data-state="web"]{border-color:#b8c9b333;background:#15352699;color:#d3dfc5;font-size:9px!important}
-.mjHasEntryAd[data-entry-busy="true"]{pointer-events:none}
+.mjEntryGateTarget[data-entry-busy="true"]{pointer-events:none}
 #home #hOnl.mjHasEntryAd>.mjEntryAdBadge{position:absolute;top:5px;right:14px;color:#27422a;border-color:#41644333;background:#42613b16;z-index:1}
 #home #hOnl.mjHasEntryAd>.mjEntryAdBadge[data-state="free"]{background:transparent;border-color:transparent}
 #home #hOnl.mjHasEntryAd .mjEntryAdDot{background:#34503a29;border-color:#42624066}

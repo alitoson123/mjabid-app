@@ -26,14 +26,15 @@ window.UICardFlow=(()=>{
   function context(id){if(!contexts.has(id))contexts.set(id,{id,previous:null,geometry:null,capture:null,flights:new Map(),frame:0,paint:0});return contexts.get(id);}
   function clear(ctx){for(const flight of [...ctx.flights.values()])flight.stop();ctx.previous=null;ctx.geometry=null;ctx.capture=null;ctx.frame=0;ctx.paint=0;}
   function online(){
-    if(typeof ONL==='undefined'||!ONL.active||ONL.status!=='playing'||!ONL.view)return null;
-    const v=ONL.view, seats=v.seats||[];const six=v.tableFormat==='3v3'&&seats.length===6;if(seats.length!==4&&!six)return null;
+    const finale=window.MajabeedFinale?.presentation();
+    if(typeof ONL==='undefined'||!ONL.active||(!finale&&ONL.status!=='playing')||!ONL.view)return null;
+    const v=finale?.view||ONL.view, seats=v.seats||[];const six=v.tableFormat==='3v3'&&seats.length===6;if(seats.length!==4&&!six)return null;
     const bottom=seats.includes(ONL.you)?ONL.you:seats[0], index=seats.indexOf(bottom);
     return {id:'online',identity:ONL.room+'|'+ONL.you+'|'+bottom,root:'onl',bottom,six,
       seats:(six?[0,1,2,3,4,5]:[0,1,2,3]).map(k=>seats[(index+k)%seats.length]),field:list(v.field),hand:list(v.myHand),
       piles:Object.fromEntries(seats.map(pid=>[pid,{count:v.piles[pid]?.count||0,top:copy(v.piles[pid]?.top)}])),
       handCounts:{...v.handCounts},waqf:v.waqf?{cards:list(v.waqf.contested),holder:v.waqf.holder,from:[...(v.waqf.fromPids||[])],grabs:v.waqf.grabs||0,capturePiles:claims(v.waqf)}:null,
-      settle:v.lastSettle?{seq:v.lastSettle.seq,holder:v.lastSettle.holder,cards:list(v.lastSettle.cards),from:[...(v.lastSettle.fromPids||[])],capturePiles:claims(v.lastSettle)}:null,lastEater:v.lastEater};
+      settle:v.lastSettle?{seq:v.lastSettle.seq,finalPresentation:v.lastSettle.finalPresentation===true,holder:v.lastSettle.holder,cards:list(v.lastSettle.cards),from:[...(v.lastSettle.fromPids||[])],capturePiles:claims(v.lastSettle)}:null,lastEater:v.lastEater};
   }
   function local(){
     if(typeof G==='undefined'||!G.players||(!visible(document.getElementById('game'))&&!visible(document.getElementById('waqf'))))return null;
@@ -332,7 +333,7 @@ window.UICardFlow=(()=>{
       }
       if(top&&!cards.some(c=>key(c)===key(top)))cards.push(top);
       const finalPlayed=settlement.cards[settlement.cards.length-1];
-      const atomicBid=finalPlayed&&!held.has(key(finalPlayed))&&!geo.stack.has(key(finalPlayed));
+      const atomicBid=!settlement.finalPresentation&&finalPlayed&&!held.has(key(finalPlayed))&&!geo.stack.has(key(finalPlayed));
       cards.forEach((c,i)=>{
         const owner=held.get(key(c)),lands=top&&key(c)===key(top);
         if(owner&&String(owner.pid)===String(settlement.holder))return;
@@ -407,8 +408,11 @@ window.UICardFlow=(()=>{
     window.UITablePresentation?.refresh();
     return result;
   }
-  const originalOnline=renderOnl, originalLocal=render, originalWaqf=renderWaqf;
-  renderOnl=function(){return around('online',online,originalOnline,this,arguments);};
+  // Render pipeline hook: card-motion. Keep capture/cleanup around the HUD and base.
+  window.MajabeedRenderPipeline.registerOnline('card-motion',20,next=>function(){
+    return around('online',online,next,this,arguments);
+  });
+  const originalLocal=render, originalWaqf=renderWaqf;
   render=function(){return around('local',local,originalLocal,this,arguments);};
   renderWaqf=function(){return around('local',local,originalWaqf,this,arguments);};
   const reset=()=>{for(const ctx of contexts.values())clear(ctx);};

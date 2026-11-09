@@ -3,7 +3,7 @@ const UI_NAV={screen:'home',active:'home',open:false,trigger:null,locked:[],badg
 const UI_NAV_ICONS={
  home:'<rect x="3" y="5" width="11" height="16" rx="2" transform="rotate(-12 8 13)"/><rect x="10" y="3" width="11" height="16" rx="2" transform="rotate(10 15 11)"/><path d="m15.5 7 2.5 4-2.5 4-2.5-4 2.5-4Z"/>',
  chat:'<path d="M21 11a8 8 0 0 1-8 8H7l-5 3V11a9 9 0 0 1 19 0Z"/><path d="M7 10h10M7 14h6"/>',
- leagues:'<path d="M8 3h8v5a4 4 0 0 1-8 0V3ZM8 5H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4M12 12v7m-4 2h8M3 17h3m12 0h3"/>',
+ cup:'<path d="M7 3h10v5a5 5 0 0 1-10 0V3ZM7 5H3v2a5 5 0 0 0 5 5m9-7h4v2a5 5 0 0 1-5 5M12 13v6m-4 2h8m-4-16 1 2 2 .3-1.5 1.4.3 2L12 9.7l-1.8 1 .3-2L9 7.3 11 7l1-2"/>',
  friends:'<circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6M21 20v-2a6 6 0 0 0-4-5.65"/>',
  more:'<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',
  profile:'<circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/>',
@@ -18,7 +18,7 @@ const UI_NAV_ICONS={
 };
 const NAV_ITEMS=[
  {k:'chat',label:'الدردشة',go:()=>openChat()},
- {k:'leagues',label:'الدوريات',go:()=>lgOpen()},
+ {k:'cup',label:'كأس مجابيد',go:()=>uiCupOpen()},
  {k:'home',label:'الرئيسية',go:()=>goHome()},
  {k:'friends',label:'الأصدقاء',go:()=>openFriends()},
  {k:'more',label:'المزيد',go:trigger=>uiNavOpenMore(trigger)}
@@ -56,7 +56,7 @@ function mountNav(screenId,active){
   button.onclick=()=>{
    const item=NAV_ITEMS.find(it=>it.k===key);if(!item||(on&&key!=='more'))return;
    SFX.tick();uiNavCloseMore(false);item.go(button);
-   if(key!=='more'&&key!=='leagues')uiNavFocusCurrent();
+   if(key!=='more'&&key!=='cup')uiNavFocusCurrent();
   };
  });
  uiNavRefreshBadges();
@@ -123,6 +123,7 @@ function uiNavRoute(id,overlay=false){
  uiNavCloseMore(false);UI_NAV.animation?.cancel();UI_NAV.animation=null;
  if(overlay)return;
  UI_NAV.screen=id;
+ window.MajabeedCup?.homeChanged(id);
  if(['profile','awardsScr','shop','lboard'].includes(id))mountNav(id,{profile:'profile',awardsScr:'awards',shop:'shop',lboard:'board'}[id]);
  const screen=document.getElementById(id);
  if(window.MajabeedBaloot?.state.selected!=='baloot'&&['home','chat','friends','profile','shop','lboard','awardsScr'].includes(id)&&screen?.animate&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){

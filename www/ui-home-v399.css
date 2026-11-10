@@ -126,3 +126,50 @@
  #home.blHome .blHomeShortcuts,#home.blHome #blResume{flex-basis:40px;height:40px;min-height:40px}
  #home.blHome .blHomeShortcuts button{min-height:40px}
 }
+
+/* V414 HOME 2: iPhone home menu is a fixed layout, not an inner scroller.
+   Reserve the actual Cup tile minimum and shrink decorative art first. */
+#home:not(.blHome) .homeWrap{overflow:hidden;overscroll-behavior:none;touch-action:none;padding-bottom:4px}
+#home:not(.blHome) .hMenu{overflow:hidden;overscroll-behavior:none;touch-action:none;-webkit-overflow-scrolling:auto;scrollbar-width:none;max-height:none;grid-template-rows:minmax(76px,1.15fr) minmax(44px,.65fr) minmax(112px,1.15fr) minmax(80px,1fr);gap:6px;padding-block:6px}
+#home:not(.blHome) .hMenu::-webkit-scrollbar{display:none}
+#home:not(.blHome) .hLogo{min-height:0;height:auto;padding-block:4px}
+#home:not(.blHome) .hLogoCards{height:clamp(36px,calc(var(--ui-home-height) - 680px),78px)}
+#home:not(.blHome) .hLogoCards img{height:clamp(34px,calc(var(--ui-home-height) - 686px),70px)}
+#home:not(.blHome) .hTitle{font-size:clamp(28px,calc(var(--ui-home-height) / 20),40px);line-height:1.5}
+#home:not(.blHome) .hMenu.uiHasNotice{grid-template-rows:minmax(44px,auto) minmax(72px,1.15fr) minmax(44px,.65fr) minmax(112px,1.15fr) minmax(80px,1fr)}
+#home:not(.blHome) .uiHomeNotice{min-height:0;max-height:64px;overflow:auto;touch-action:pan-y;padding:5px 10px}
+@media(max-height:700px){
+ #home:not(.blHome) .hHead{padding-top:calc(4px + var(--ui-safe-top))}
+ #home:not(.blHome) #hProfBtn{min-height:48px;padding-block:3px}
+ #home:not(.blHome) #hAvaWrap{width:38px;height:38px;min-width:38px}
+ #home:not(.blHome) .hLogoCards,#home:not(.blHome) .hTitle{display:none}
+ #home:not(.blHome) .hSide{top:calc(66px + var(--ui-safe-top));gap:4px}
+ #home:not(.blHome) .hSideBtn{width:32px;height:32px;border-radius:10px}
+ #home:not(.blHome) .hMenu .row2 .hBig{padding:6px 8px!important;gap:2px!important}
+ #home:not(.blHome) .hMenu{gap:4px;padding-block:4px}
+}
+
+@media(max-height:620px){
+ #home:not(.blHome) .hLogo #blSelector{min-height:44px;margin-bottom:2px;padding-block:2px}
+ #home:not(.blHome) #blSelector .blSwitchHint{display:none}
+ #home:not(.blHome) .hMenu{grid-template-rows:minmax(72px,1fr) minmax(44px,.6fr) minmax(96px,1.1fr) minmax(72px,1fr)}
+ #home:not(.blHome) #hTournament.mcHasHomeState{min-height:72px;padding-block:4px}
+ #home:not(.blHome) #hSessions{padding-block:4px}
+ #home:not(.blHome) .hMenu .row2 .hBig{gap:1px!important;padding-block:4px!important}
+}
+/* A published notice gets its own bounded area; decorative art yields first. */
+#home:not(.blHome):has(.hMenu.uiHasNotice) .hLogoCards,
+#home:not(.blHome):has(.hMenu.uiHasNotice) .hTitle{display:none}
+
+@media(max-height:620px){
+ #home:not(.blHome) #hDaily .uiHomeAdClock{top:auto;bottom:-2px;left:-2px;right:-2px;width:auto;min-width:0;padding:0 2px;border-radius:5px;font-size:7px;line-height:1.2;transform:none}
+ #home:not(.blHome) #hDaily .uiHomeAdClock small{display:none}
+ #home:not(.blHome) #hDaily>svg{width:17px;height:17px;transform:translateY(-3px)}
+ #home:not(.blHome):has(.hMenu.uiHasNotice) #hProfBtn{min-height:32px;padding-block:1px}
+ #home:not(.blHome):has(.hMenu.uiHasNotice) #hAvaWrap{width:28px;height:28px;min-width:28px}
+ #home:not(.blHome):has(.hMenu.uiHasNotice) #hRankBadge{display:none}
+ #home:not(.blHome):has(.hMenu.uiHasNotice) #hGoldBtn{min-height:32px;padding-block:2px}
+ #home:not(.blHome):has(.hMenu.uiHasNotice) .hLogo #blSelector{min-height:32px;padding-block:0}
+ #home:not(.blHome):has(.hMenu.uiHasNotice) #blSelector .blSwitchGame{min-height:28px;padding-block:2px}
+ #home:not(.blHome) .hMenu.uiHasNotice{grid-template-rows:36px minmax(72px,1fr) minmax(44px,.6fr) minmax(96px,1.1fr) minmax(72px,1fr)}
+}

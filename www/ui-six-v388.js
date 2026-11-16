@@ -91,7 +91,7 @@ function renderOnlSix(){
   $('#onlWait').classList.add('hidden');
   if(st==='over'){renderOver();return}
   let v=finale?.view||ONL.view; if(!v)return;
-  if(v.phase==='waqf'&&ONL._lastPhase!=='waqf')closeChatPanels();
+  // Keep an open composer in place when another player starts a bid.
   ONL._lastPhase=v.phase;
   const chatWrapEl=$('#oChatWrap'); if(chatWrapEl)chatWrapEl.style.display=(v.isFriendly&&!!v.me)?'':'none';
   if(v.lastSettle&&v.lastSettle.seq!==ONL._lastSettleSeq){

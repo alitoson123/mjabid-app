@@ -54,6 +54,23 @@
 /* Najd remains the exact approved artwork, with an invisible matching element. */
 #game[data-majabeed-table=theme-najd] .tableWood,#onl[data-majabeed-table=theme-najd] .tableWood{visibility:hidden;box-shadow:none!important}
 
+/* V417: fine geometric ornament, drawn above the existing fabric and below the cards.
+ * Only pseudo-elements paint it: table bounds, source art and drop targets stay unchanged.
+ * The flight scene already contains its own lattice, so it receives no second pattern. */
+#game[data-table-ornament],#onl[data-table-ornament],#blGame[data-table-ornament]{--mj-ornament:none;--mj-ornament-size:88px;--mj-ornament-opacity:.13}
+[data-table-ornament=theme-persian]{--mj-ornament:url('ui-art/table-patterns-v417/persian-rosette.svg')!important;--mj-ornament-size:88px!important}
+[data-table-ornament=theme-midnight]{--mj-ornament:url('ui-art/table-patterns-v417/cafe-quatrefoil.svg')!important;--mj-ornament-size:78px!important;--mj-ornament-opacity:.12!important}
+[data-table-ornament=theme-emerald]{--mj-ornament:url('ui-art/table-patterns-v417/diwaniya-octagon.svg')!important;--mj-ornament-size:84px!important}
+[data-table-ornament=theme-royal]{--mj-ornament:url('ui-art/table-patterns-v417/camp-star.svg')!important;--mj-ornament-size:90px!important;--mj-ornament-opacity:.12!important}
+[data-table-ornament=theme-popular]{--mj-ornament:url('ui-art/table-patterns-v417/sadu-diamond.svg')!important;--mj-ornament-size:76px!important;--mj-ornament-opacity:.14!important}
+[data-table-ornament=theme-hijaz]{--mj-ornament:url('ui-art/table-patterns-v417/hijaz-lattice.svg')!important;--mj-ornament-size:82px!important;--mj-ornament-opacity:.14!important}
+[data-table-ornament=theme-oasis]{--mj-ornament:url('ui-art/table-patterns-v417/oasis-petals.svg')!important;--mj-ornament-size:92px!important}
+[data-table-ornament=theme-najd]{--mj-ornament:url('ui-art/table-patterns-v417/najd-step.svg')!important;--mj-ornament-size:82px!important;--mj-ornament-opacity:.16!important}
+#game[data-table-ornament] .tableWood::after,#onl[data-table-ornament] .tableWood::after,#blGame[data-table-ornament] .blTable::after{content:"";position:absolute;inset:14px;z-index:1;border-radius:3px;visibility:visible;pointer-events:none;background-image:var(--mj-ornament);background-size:var(--mj-ornament-size) var(--mj-ornament-size);background-position:center;background-repeat:repeat;opacity:var(--mj-ornament-opacity);-webkit-mask-image:radial-gradient(ellipse at center,#000 25%,#000d 68%,transparent 100%);mask-image:radial-gradient(ellipse at center,#000 25%,#000d 68%,transparent 100%)}
+#blGame[data-table-ornament] .blTable::after{inset:10% 8% 12%;border-radius:50%;z-index:0}
+#blGame[data-scene-theme][data-table-ornament] .blTable::after{inset:3% 5%;border-radius:12px}
+#game[data-table-ornament=theme-flight] .tableWood::after,#onl[data-table-ornament=theme-flight] .tableWood::after,#blGame[data-table-ornament=theme-flight] .blTable::after{content:none}
+
 /* Keep the existing drop target geometry and make its cue fit the scene. */
 #blGame[data-scene-theme].blDragging .blTable{visibility:visible;background:none!important;border-radius:14px!important;outline:2px solid #ffe0a399;outline-offset:3px;box-shadow:0 0 15px #ffe0a31a!important}
 #uiShopScene[data-scene-theme]{aspect-ratio:1/1.85;background-size:100% 100%!important;background-position:center!important}

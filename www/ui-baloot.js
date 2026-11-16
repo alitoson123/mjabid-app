@@ -87,6 +87,7 @@
   if(B.profileUid!==(user()?.uid||null)){B.profile=null;B.profileUid=user()?.uid||null;B.profileAt=0;B.profileLoading=false;B.profileError=false;}
   const el=$('#profile'),other=typeof viewedProfile!=='undefined'&&viewedProfile,mine=!other,on=B.selected==='baloot'&&(mine||other.game==='baloot');el?.classList.toggle('blProfile',on);if($('#pfGameLabel'))$('#pfGameLabel').textContent=on?'صكة':'مجابيد';
   const label=$('#stBest')?.parentElement?.querySelector('span:last-child');if(label){B.bestLabel=B.bestLabel||label.textContent;label.textContent=on?'نقاط الترتيب':B.bestLabel;}
+  window.MajabeedTrophies?.contextChanged();
   const achievements=$('#pfAchievements');if(achievements)achievements.hidden=on;
   const historyEmpty=$('#pfHistoryEmpty');if(historyEmpty){B.historyEmptyText=B.historyEmptyText||historyEmpty.textContent;if(!on)historyEmpty.textContent=B.historyEmptyText;}if(!on||!el||el.classList.contains('hidden'))return;
   let box=$('#blProfileRank');if(!box){box=document.createElement('section');box.id='blProfileRank';$('#pfStats').before(box);box.addEventListener('click',click);}
@@ -140,7 +141,8 @@
   });
  }
 
- function background(){
+ function background(source){
+  if(window.MajabeedFriendlyVoice?.deferLifecycle(source))return;
   cancelPublicProfile();cancelDrag();clearCardMotion();
   clearTimeout(B.syncTimer);
   B.preselect=null;B.akka=false;B.restoring=false;clearTimeout(B.restoreTimer);hideChat();paintPreselect();
@@ -172,7 +174,7 @@
   B.resume=null;B.resumeRequested=false;try{localStorage.removeItem('mj-baloot-room:'+uid);}catch(_){}
   B.selected=rememberedGame(uid)||'majabeed';
  }
- function rememberGame(game){const uid=user()?.uid;if(!uid)return;if(B.selected!==game)cancelPublicProfile();sessionChoices.set(uid,game);B.choiceUid=uid;B.selected=game;try{localStorage.setItem('mj-game',game);if(uid)localStorage.setItem(choiceKey(uid),game);}catch(_){} }
+ function rememberGame(game){const uid=user()?.uid;if(!uid)return;if(B.selected!==game)cancelPublicProfile();sessionChoices.set(uid,game);B.choiceUid=uid;B.selected=game;window.MajabeedTrophies?.contextChanged();try{localStorage.setItem('mj-game',game);if(uid)localStorage.setItem(choiceKey(uid),game);}catch(_){} }
  function closePicker(restoreFocus=true){const el=$('#blGamePicker');if(el)el.hidden=true;$('#home')?.removeAttribute('inert');B.pickerUid=null;B.firstChoice=false;if(restoreFocus)$('#blSelector')?.focus({preventScroll:true});}
  function selector(first=false){
   const uid=user()?.uid;if(!uid||B.room||B.queue||typeof ONL!=='undefined'&&ONL.active||typeof MATCH!=='undefined'&&MATCH.on)return;
@@ -191,7 +193,7 @@
 
  const resumeKey=()=> 'mj-baloot-room:'+user()?.uid;
  function readResume(){const v=B.resume;return v&&v.uid===user()?.uid&&/^[A-Z0-9]{8}$/.test(v.id)&&Date.now()-v.at<7200000?v:null;}
- function closeLink(kind){const link=B[kind];if(!link)return;link.closed=true;if(!link.ready)link.reject?.(Error('cancelled'));if(kind==='hub'&&B.profileLoading){B.profileLoading=false;B.profileAt=0;clearTimeout(B.profileTimer);}clearTimeout(link.retry);clearTimeout(link.timeout);clearInterval(link.ping);try{link.ws?.close()}catch(_){}B[kind]=null;}
+ function closeLink(kind){if(kind==='room')window.MajabeedFriendlyVoice?.disconnect('sakka');const link=B[kind];if(!link)return;link.closed=true;if(!link.ready)link.reject?.(Error('cancelled'));if(kind==='hub'&&B.profileLoading){B.profileLoading=false;B.profileAt=0;clearTimeout(B.profileTimer);}clearTimeout(link.retry);clearTimeout(link.timeout);clearInterval(link.ping);try{link.ws?.close()}catch(_){}B[kind]=null;}
  async function connect(kind,path,options={}){
   const u=user();if(!u){toast('سجّل دخولك للعب صكة');throw Error('login required');}
   const existing=B[kind];if(existing?.path===path&&existing.uid===u.uid&&existing.options.spectate===options.spectate&&existing.options.watchUid===options.watchUid){if(existing.ready)return existing;return existing.promise;}
@@ -216,7 +218,7 @@
      receive(kind,m);
     };
     ws.onclose=event=>{
-     if(ws!==link.ws||link.closed)return;link.connecting=false;if(kind==='room'){window.UISessionReturn?.disconnected('baloot');const own=B.state?.seats?.[B.state.me]?.uid;if(own){B.connections={...B.connections,[own]:{quality:'offline',updatedAt:Date.now()+B.offset}};window.UIConnectionQuality?.paintSakka(B.state,B.connections,Date.now()+B.offset);}clearCardMotion();B.preselect=null;B.akka=false;paintPreselect();}link.ready=false;clearInterval(link.ping);clearTimeout(link.timeout);
+     if(ws!==link.ws||link.closed)return;link.connecting=false;if(kind==='room'){window.UISessionReturn?.disconnected('baloot');window.MajabeedFriendlyVoice?.disconnect('sakka');const own=B.state?.seats?.[B.state.me]?.uid;if(own){B.connections={...B.connections,[own]:{quality:'offline',updatedAt:Date.now()+B.offset}};window.UIConnectionQuality?.paintSakka(B.state,B.connections,Date.now()+B.offset);}clearCardMotion();B.preselect=null;B.akka=false;paintPreselect();}link.ready=false;clearInterval(link.ping);clearTimeout(link.timeout);
      if(event.code===4001){finishWatchSeatAttempt(B.watchSeatAttempt);link.closed=true;link.reject(Error('فتحت اللعبة في اتصال آخر'));toast('فتحت اللعبة في اتصال آخر');connection();return;}
      if(event.code===4004){link.closed=true;link.reject(Error('انتهت الجلسة'));toast('انتهت الجلسة');leaveLocal();return;}
      link.tries++;connection();if(link.tries<=6)link.retry=setTimeout(link.open,Math.min(15000,1000*2**(link.tries-1)));else{link.reject(Error('تعذّر الاتصال'));toast('تعذّر الاتصال؛ اضغط إعادة الاتصال');}
@@ -278,7 +280,7 @@
   updateExtras(previous,m);
   const signature=JSON.stringify([m.room,m.seats,m.owner,m.me,m.game?.seq,m.game?.deadline,m.game?.resultPresentation?.returned,m.auto,m.settled,m.progression,m.seatChoice,m.seatSwap,m.rematch,m.friendlyChatEnabled,m.friendlyChatEditable]);
   if(signature!==B.signature){B.signature=signature;if(B.drag)B.renderAfterDrag=true;else render();}
-  if(m.game)syncGameAudio(m,previous);if(m.me>=0&&m.auto[m.me]&&!previous?.auto?.[m.me])sound('auto_play');if(!resultPresentation(m.game)&&m.game?.turn===m.me&&['play','bid','double'].includes(m.game.phase)&&previous?.game?.turn!==m.me)sound('turn_alert');window.MajabeedSessionChat?.syncSakka(m,sendRoom);renderChat();connection();clock();if(!window.UISessionReturn?.blocked('baloot')){flushPreparedProjects();flushPreselect();}window.UIConnectionQuality?.paintSakka(B.state,B.connections,m.now);
+  if(m.game)syncGameAudio(m,previous);if(m.me>=0&&m.auto[m.me]&&!previous?.auto?.[m.me])sound('auto_play');if(!resultPresentation(m.game)&&m.game?.turn===m.me&&['play','bid','double'].includes(m.game.phase)&&previous?.game?.turn!==m.me)sound('turn_alert');window.MajabeedSessionChat?.syncSakka(m,sendRoom);window.MajabeedFriendlyVoice?.syncSakka(m,!B.leaving&&!!B.room?.ready&&!B.room?.closed&&B.room?.ws?.readyState===1);renderChat();connection();clock();if(!window.UISessionReturn?.blocked('baloot')){flushPreparedProjects();flushPreselect();}window.UIConnectionQuality?.paintSakka(B.state,B.connections,m.now);
  }
  function watchSeatAvailable(){
   const d=B.state,link=B.room;
@@ -353,11 +355,11 @@
   if(B.leaving)return;
   if(B.watchSeatAttempt){cancelWatchSeatAttempt();leaveLocal();return;}
   if(!B.room?.ready||B.room.ws.readyState!==1){if(!active())leaveLocal();else connection();return;}
-  closeModal();B.leaving=true;beginLoad('leave','جارٍ الخروج من الطاولة…',()=>{B.leaving=false;requestLeave();});
+  closeModal();B.leaving=true;window.MajabeedFriendlyVoice?.disconnect('sakka');beginLoad('leave','جارٍ الخروج من الطاولة…',()=>{B.leaving=false;requestLeave();});
   if(!sendRoom({type:'leave'})){B.leaving=false;endLoad('leave');connection();}
  }
  function connection(){const el=$('#blConnection');if(el)el.innerHTML=B.room?.ready?'':'<span>جارٍ استعادة الاتصال بالطاولة…</span>'+btn('إعادة الاتصال','reconnect');queueView();}
- function leaveLocal({navigate=true,refresh=true}={}){cancelWatchSeatAttempt();window.UISessionReturn?.reset('baloot');B.connections={};B.resultOverlayKey=null;B.dismissedResultKey=null;B.presentedAudioGame=null;B.heldResultAudio=null;B.projectBar=false;clearCardMotion();B.leaving=false;clearTimeout(B.publicInviteTimer);clearTimeout(B.inviteLookupTimer);B.publicInvitePending=null;B.publicInviteAck=null;B.inviteLookup=null;cancelDrag();endLoad();clearTimeout(B.syncTimer);B.suspendedRoom=null;B.resume=null;B.resumeRequested=false;B.restoring=false;if(B.queue)stopQueue();B.preselect=null;B.akka=false;hideChat();window.BalootAudio?.stop();if(typeof uiStopVoices==='function')uiStopVoices();try{localStorage.removeItem(resumeKey());}catch(_){}closeLink('room');B.state=null;B.pending=null;B.projectDraft=null;B.first=null;B.second=null;B.claimKey=null;B.evidencePending=false;clearTimeout(B.pendingTimer);clearTimeout(B.restoreTimer);B.signature='';$('#blGame').hidden=true;closeModal();clearInterval(B.clock);B.clock=null;if(navigate)goHome();if(refresh)loadProfile();}
+ function leaveLocal({navigate=true,refresh=true}={}){window.MajabeedFriendlyVoice?.disconnect('sakka');cancelWatchSeatAttempt();window.UISessionReturn?.reset('baloot');B.connections={};B.resultOverlayKey=null;B.dismissedResultKey=null;B.presentedAudioGame=null;B.heldResultAudio=null;B.projectBar=false;clearCardMotion();B.leaving=false;clearTimeout(B.publicInviteTimer);clearTimeout(B.inviteLookupTimer);B.publicInvitePending=null;B.publicInviteAck=null;B.inviteLookup=null;cancelDrag();endLoad();clearTimeout(B.syncTimer);B.suspendedRoom=null;B.resume=null;B.resumeRequested=false;B.restoring=false;if(B.queue)stopQueue();B.preselect=null;B.akka=false;hideChat();window.BalootAudio?.stop();if(typeof uiStopVoices==='function')uiStopVoices();try{localStorage.removeItem(resumeKey());}catch(_){}closeLink('room');B.state=null;B.pending=null;B.projectDraft=null;B.first=null;B.second=null;B.claimKey=null;B.evidencePending=false;clearTimeout(B.pendingTimer);clearTimeout(B.restoreTimer);B.signature='';$('#blGame').hidden=true;closeModal();clearInterval(B.clock);B.clock=null;if(navigate)goHome();if(refresh)loadProfile();}
  function startClock(){if(!B.clock)B.clock=setInterval(clock,250);}
  function clock(){
   resultPresentationClock();
@@ -442,7 +444,7 @@
   else if(['roundEnd','matchEnd'].includes(g.phase))renderResult();
   else if(B.modal==='projectReview'&&['play','collect','review'].includes(g.phase)&&g.declared[B.reviewProjectSeat]?.length)projectReview(B.reviewProjectSeat);
   else if(['claim','result','projects','declare','declareQuick','reveal','sawa','projectReview','kashoReveal'].includes(B.modal)||B.modal==='double'&&(!turn||g.phase!=='double')||B.modal==='claimReason'&&!['play','collect','review'].includes(g.phase)&&!verifiedSawa(g)||B.modal==='invites'&&!lobbyInviteAvailable())closeModal();
-  paintProjectToolbar();paintPreselect();applyTheme();window.MajabeedSessionChat?.syncSakka(d,sendRoom);connection();clock();motion?.update(before,d,captured,{origin:B.playVisual});B.motionState=d;const visual=B.playVisual;if(visual&&!g.myHand.includes(visual.card))clearPlayVisual();
+  paintProjectToolbar();paintPreselect();applyTheme();window.MajabeedSessionChat?.syncSakka(d,sendRoom);window.MajabeedFriendlyVoice?.syncSakka(d,!B.leaving&&!!B.room?.ready&&!B.room?.closed&&B.room?.ws?.readyState===1);connection();clock();motion?.update(before,d,captured,{origin:B.playVisual});B.motionState=d;const visual=B.playVisual;if(visual&&!g.myHand.includes(visual.card))clearPlayVisual();
  }
  function applyTheme(){try{const own=uiThemeResolve(),shared=window.MajabeedSessionTheme?.resolve('baloot',B.state,own)||own;const theme=SHOP_THEMES.find(t=>t.id===shared);if(theme?.bg)$('#blGame').style.backgroundImage='url("'+theme.bg+'")';const table=$('#blGame .blTable');if(table)table.style.backgroundImage='url("'+(theme?.table||'ui-art/rooms-v362/cafe-table.webp')+'")';window.MajabeedSessionTheme?.applySurface($('#blGame'),theme);}catch(_){}}
  function rank(id){const r=id.slice(0,-1);return {J:11,Q:12,K:13,A:14}[r]||+r;}
@@ -468,7 +470,7 @@
   const readiness=r?'<section class="blRematchStatus" role="status">'+(r.startAt?'<small>الجميع جاهز</small><b>تبدأ الصكة خلال <span data-bl-rematch-clock="'+r.startAt+'"></span></b>':'<b>استعداد '+r.ready.length+' من 4</b><small>بعد اكتمال الاستعداد · عدّاد 5 ثوانٍ</small>')+'</section>':'';
   const start=r?(d.me>=0?btn(r.ready.includes(d.me)?'إلغاء الاستعداد':'أنا جاهز','rematchReady',r.ready.includes(d.me)?'':'blPrimary','aria-pressed="'+r.ready.includes(d.me)+'"'):'<p>بانتظار استعداد اللاعبين</p>'):owner?btn('ابدأ الصكة','start','blPrimary',d.seats.some(p=>!p)||swap?'disabled':''):'<p role="status">بانتظار بدء '+E(d.seats.find(p=>p?.uid===d.owner)?.name||'صاحب الطاولة')+'</p>';
   const root=$('#blGame');root.classList.remove('blSawaReveal');root.dataset.phase='lobby';root.dataset.spectator=String(d.me<0);
-  root.innerHTML='<div class="blModal blLobby blLobbyCompact"><div class="blPanel"><header><div><small>'+(r?'صكة جديدة مع ربعك':'طاولة صكة ودية')+'</small><h2>'+(r?'قائمة الاستعداد':'اجمع ربعك')+'</h2></div>'+btn('خروج','leave')+'</header><div class="blLobbyCode"><span>رمز الدعوة</span><b>'+E(d.room)+'</b>'+btn('نسخ','copyCode')+'</div><p class="blNote blLobbyNote">'+(r?'راجع فريقك ثم اضغط أنا جاهز.':canChoose?'اختر فريقك ومقعدك · التبديل بموافقة اللاعب':d.me<0?'أنت تشاهد الطاولة؛ ننتظر اكتمال اللاعبين.':'بانتظار تجهيز الطاولة.')+'</p>'+request+'<div class="blLobbyTeams">'+team(0)+team(1)+'</div><div class="blLobbyFooter">'+readiness+(d.me<0?watchSeatHTML(true):'')+'<div class="blInline blLobbyStart">'+start+(d.me>=0?btn($('#oChatBtn')?.innerHTML||'💬','chat','blChatButton','aria-label="الشات"'):'')+'</div>'+lobbyInvitations()+'</div><p id="blConnection" class="blError"></p></div></div>';window.MajabeedSessionTheme?.syncSakka(d,sendRoom);window.MajabeedSessionChat?.syncSakka(d,sendRoom);applyTheme();connection();clock();paintPublicInviteButtons();
+  root.innerHTML='<div class="blModal blLobby blLobbyCompact"><div class="blPanel"><header><div><small>'+(r?'صكة جديدة مع ربعك':'طاولة صكة ودية')+'</small><h2>'+(r?'قائمة الاستعداد':'اجمع ربعك')+'</h2></div>'+btn('خروج','leave')+'</header><div class="blLobbyCode"><span>رمز الدعوة</span><b>'+E(d.room)+'</b>'+btn('نسخ','copyCode')+'</div><p class="blNote blLobbyNote">'+(r?'راجع فريقك ثم اضغط أنا جاهز.':canChoose?'اختر فريقك ومقعدك · التبديل بموافقة اللاعب':d.me<0?'أنت تشاهد الطاولة؛ ننتظر اكتمال اللاعبين.':'بانتظار تجهيز الطاولة.')+'</p>'+request+'<div class="blLobbyTeams">'+team(0)+team(1)+'</div><div class="blLobbyFooter">'+readiness+(d.me<0?watchSeatHTML(true):'')+'<div class="blInline blLobbyStart">'+start+(d.me>=0?btn($('#oChatBtn')?.innerHTML||'💬','chat','blChatButton','aria-label="الشات"'):'')+'</div>'+lobbyInvitations()+'</div><p id="blConnection" class="blError"></p></div></div>';window.MajabeedSessionTheme?.syncSakka(d,sendRoom);window.MajabeedSessionChat?.syncSakka(d,sendRoom);window.MajabeedFriendlyVoice?.syncSakka(d,!B.leaving&&!!B.room?.ready&&!B.room?.closed&&B.room?.ws?.readyState===1);applyTheme();connection();clock();paintPublicInviteButtons();
  }
 
 
@@ -995,7 +997,7 @@
   const releaseDaily=()=>{const uid=B.dailyAfterChoice;if(uid&&!B.pickerUid&&uid===user()?.uid&&!$('#home').classList.contains('hidden')){B.dailyAfterChoice=null;showDailyReward();}};
   // Delay a pending daily reward until the player's first game choice is complete.
   new MutationObserver(releaseDaily).observe(frame(),{attributes:true,attributeFilter:['hidden'],subtree:true});
-  const oldHome=goHome;goHome=function(){transitionTo('نجهّز الرئيسية…',()=>{closeModal();oldHome.apply(this,arguments);welcomeChoice();});};
+  const oldHome=goHome;goHome=function(){window.MajabeedFriendlyVoice?.disconnect();transitionTo('نجهّز الرئيسية…',()=>{closeModal();oldHome.apply(this,arguments);welcomeChoice();});};
   const oldEnterOnline=enterOnline;enterOnline=function(){if(needsChoice()){goHome();return;}rememberGame('majabeed');home();return oldEnterOnline.apply(this,arguments);};
   const oldSessionsRender=renderSessionsList;renderSessionsList=function(){if(B.selected==='baloot'){if(B.modal==='sessions')sessions();return;}return oldSessionsRender.apply(this,arguments);};
   const oldSessionsClose=$('#sessionsClose').onclick;$('#sessionsClose').onclick=function(){if(B.modal==='sessions')closeModal();else oldSessionsClose?.call(this);};
@@ -1016,12 +1018,13 @@
   if(typeof uiCupProfile==='function'){const oldCupProfile=uiCupProfile;uiCupProfile=function(){if(B.selected==='baloot')return;return oldCupProfile.apply(this,arguments);};}
   if(typeof uiCupOpen==='function'){const oldCupOpen=uiCupOpen;uiCupOpen=function(){if(B.selected==='baloot')return;return oldCupOpen.apply(this,arguments);};}
   document.addEventListener('click',event=>{if(B.projectBar&&!projectToolbarContainsEvent(event))closeProjectToolbar();},{passive:true});
-  document.addEventListener('visibilitychange',()=>document.hidden?background():foreground());
-  document.addEventListener('pause',background);document.addEventListener('resume',foreground);
+  document.addEventListener('visibilitychange',()=>document.hidden?background('hidden'):foreground());
+  document.addEventListener('pause',()=>background('pause'));document.addEventListener('resume',foreground);
   window.addEventListener('online',()=>{foreground();if(B.queue&&!B.hub?.ready){closeLink('hub');connect('hub','/baloot/hub').catch(()=>queueView());}});
   window.addEventListener('offline',()=>{clearCardMotion();B.preselect=null;B.akka=false;paintPreselect();if(B.loading)loadError('أنت غير متصل بالإنترنت');connection();});
-  window.addEventListener('pagehide',()=>{background();closeLink('hub');if(!window.UISessionReturn?.blocked('baloot'))closeLink('room');clearInterval(B.clock);B.clock=null;});
+  window.addEventListener('pagehide',()=>{background('pagehide');closeLink('hub');if(!window.UISessionReturn?.blocked('baloot'))closeLink('room');clearInterval(B.clock);B.clock=null;});
   window.addEventListener('pageshow',foreground);
+  window.addEventListener('mj-voice-background',event=>{const c=event.detail;if(c?.game==='sakka'&&c.roomId===B.state?.room&&c.accountId===user()?.uid)background('native-background');});
   home();if(B.selected==='baloot')loadProfile();window.MajabeedBaloot={state:B,select,join,receive,render,close:leaveLocal,needsChoice,routeFor,friendActivity,watchFriend};
  }
  const renderWithConnections=render;render=function(){const result=renderWithConnections.apply(this,arguments);window.UIConnectionQuality?.paintSakka(B.state,B.connections,Date.now()+B.offset);return result;};

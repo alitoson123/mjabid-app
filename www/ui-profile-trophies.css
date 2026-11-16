@@ -1,0 +1,42 @@
+/* Presentation is confined to the profile; card art and game surfaces are untouched. */
+#pfAchievementsList.ptGallery{margin-top:12px;color:#f5e8c9}
+#pfAchievementsList.ptGallery[hidden]{display:none!important}
+.ptGallery .ptHeading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 13px;padding:16px 18px;border:1px solid #d8ba7370;border-radius:20px;background:linear-gradient(120deg,#254d3a,#102e24);box-shadow:0 5px 18px #15362413}
+.ptGallery .ptEyebrow{display:block;font:700 10px/1.5 var(--fb);letter-spacing:.5px;color:#c4d1b7}
+.ptGallery h3{margin:2px 0 0;font:800 20px/1.4 var(--fb);color:#f7e4ae}
+.ptGallery .ptHeadingMark{font-size:30px;color:#d4b467;opacity:.9}
+.ptGallery .ptGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;list-style:none;margin:0;padding:0}
+.ptGallery .ptCard{position:relative;min-width:0;overflow:hidden;padding:14px 9px 13px;border:1px solid #c9ad6c70;border-radius:20px;background:radial-gradient(ellipse at 50% 15%,#44634a 0,#203e2d 48%,#102c22 100%);text-align:center;box-shadow:0 5px 14px #173b281c}
+.ptGallery .ptCard:after{content:"";position:absolute;inset:5px;border:1px solid #ddc88f12;border-radius:15px;pointer-events:none}
+.ptGallery .ptArt{position:relative;display:grid;place-items:center;min-height:116px;margin-bottom:9px}
+.ptGallery .ptArt:before{content:"";position:absolute;bottom:2px;width:82px;height:12px;border-radius:50%;background:#d9c4861b;box-shadow:0 0 17px #d9c4861c}
+.ptGallery .ptArt img{position:relative;display:block;width:112px;height:112px;max-width:100%;object-fit:contain;filter:drop-shadow(0 6px 6px #00180e55);image-rendering:auto}
+.ptGallery .ptCardCopy{position:relative;min-width:0;z-index:1}
+.ptGallery .ptCardCopy>small{display:block;font:600 10px/1.5 var(--fb);color:#c3cfb5}
+.ptGallery h4{margin:5px 0 9px;font:800 14px/1.5 var(--fb);color:#f7e6bc;overflow-wrap:anywhere}
+.ptGallery .ptCount{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;gap:5px;min-height:26px;color:#e6c47c}
+.ptGallery .ptCount bdi{font:800 23px/1.2 var(--fb);font-variant-numeric:tabular-nums;max-width:100%;overflow-wrap:anywhere}
+.ptGallery .ptCount span{font:600 10px/1.5 var(--fb);color:#d1d8c1}
+.ptGallery .ptDate{margin:9px 0 0;font:500 9px/1.6 var(--fb);color:#becab1;overflow-wrap:anywhere}
+.ptGallery .ptCup{grid-column:1/-1;padding:18px;text-align:center;background:radial-gradient(ellipse at 50% 15%,#48654a 0,#244a35 45%,#123425 100%)}
+.ptGallery .ptCup .ptArt{min-height:132px;margin-bottom:10px}
+.ptGallery .ptCup .ptArt img{width:128px;height:128px}
+.ptGallery .ptCup h4{font-size:20px;margin:4px 0 9px}
+.ptGallery .ptCup .ptCount{justify-content:center}
+.ptGallery .ptCup .ptCount bdi{font-size:28px}
+.ptGallery .ptState{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:180px;gap:10px;padding:25px 18px;border:1px solid #d8ba7350;border-radius:20px;background:linear-gradient(145deg,#244a36,#102e24);color:#fff;text-align:center}
+.ptGallery .ptState strong{color:#fff;font:800 15px/1.6 var(--fb)}
+.ptGallery .ptState p{max-width:250px;margin:0;color:#fff;font:500 12px/1.8 var(--fb)}
+.ptGallery .ptEmpty>span{font-size:39px;line-height:1;color:#a58a4c}
+.ptGallery .ptLoadingMark{display:block;width:28px;height:28px;border:2px solid #d5dfc9;border-top-color:#a58a4c;border-radius:50%;animation:ptSpin 1s linear infinite}
+.ptGallery .ptState button{min-height:44px;margin-top:4px;padding:10px 21px;border:1px solid #bc9f5c;border-radius:12px;background:#234b35;color:#f8e8bd;font:800 12px/1.5 var(--fb);cursor:pointer}
+.ptGallery .ptState button:focus-visible{outline:3px solid #be8f3b;outline-offset:3px}
+.ptGallery .ptLegacy{display:flex;align-items:center;gap:12px;margin-top:15px;padding:13px 15px;border:1px solid #d9d0b7;border-radius:16px;background:#fbf7ea;color:#35523c;text-align:right}
+.ptGallery .ptLegacyMark{font-size:25px;color:#aa8b4d}
+.ptGallery .ptLegacy small{display:block;font:600 10px/1.5 var(--fb);color:#82734e}
+.ptGallery .ptLegacy strong{display:block;margin-top:2px;font:800 13px/1.6 var(--fb)}
+.ptGallery .ptLegacy p{margin:3px 0 0;font:500 10px/1.6 var(--fb);color:#6a765e}
+.ptGallery .ptCoverage{display:flex;flex-direction:column;gap:3px;margin:14px 4px 0;color:#6c785f;font:500 10px/1.7 var(--fb);text-align:center}
+@keyframes ptSpin{to{transform:rotate(360deg)}}
+@media(max-width:350px){.ptGallery .ptGrid{gap:8px}.ptGallery .ptCard{padding:11px 6px}.ptGallery .ptArt{min-height:100px}.ptGallery .ptArt img{width:96px;height:96px}.ptGallery h4{font-size:13px}.ptGallery .ptCup{padding:13px}.ptGallery .ptCup .ptArt{min-height:116px}.ptGallery .ptCup .ptArt img{width:112px;height:112px}.ptGallery .ptCup h4{font-size:18px}}
+@media(prefers-reduced-motion:reduce){.ptGallery .ptLoadingMark{animation:none}}

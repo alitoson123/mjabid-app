@@ -1,0 +1,971 @@
+{
+  "excluded": [
+    "APPLY_VERSION_2_2_5.cjs",
+    "CHANGED_FILES.txt",
+    "ORIGINAL_ASSETS_TO_KEEP.txt",
+    "SHA256SUMS.txt",
+    "START_HERE.md",
+    "V360_TO_V361.patch",
+    "history/v357/START_HERE.md",
+    "history/v357/V356_TO_V357.patch",
+    "history/v360/START_HERE.md",
+    "history/v360/V359_TO_V360.patch",
+    "history/v360/validation/top_badge_v360.py",
+    "history/v360/validation/v360-top-badge.json",
+    "ios/www/court_JOKER_v352.png",
+    "ios/www/image-cache.js",
+    "ios/www/index.html",
+    "ios/www/reactions/expressions-v321.png",
+    "ios/www/sw.js",
+    "ios/www/ui-art/gold-coin.svg",
+    "ios/www/ui-art/majlis-popular-realistic.png",
+    "ios/www/ui-art/popular-preview.svg",
+    "ios/www/ui-art/rank-0.svg",
+    "ios/www/ui-art/rank-1.svg",
+    "ios/www/ui-art/rank-2.svg",
+    "ios/www/ui-art/rank-3.svg",
+    "ios/www/ui-art/rank-4.svg",
+    "ios/www/ui-art/rank-5.svg",
+    "ios/www/ui-art/rank-6.svg",
+    "ios/www/ui-art/rank-7.svg",
+    "ios/www/ui-art/rank-banner-0.svg",
+    "ios/www/ui-art/rank-banner-1.svg",
+    "ios/www/ui-art/rank-banner-2.svg",
+    "ios/www/ui-art/rank-banner-3.svg",
+    "ios/www/ui-art/rank-banner-4.svg",
+    "ios/www/ui-art/rank-banner-5.svg",
+    "ios/www/ui-art/rank-banner-6.svg",
+    "ios/www/ui-art/rank-banner-7.svg",
+    "ios/www/ui-art/room-emerald.svg",
+    "ios/www/ui-art/room-midnight.svg",
+    "ios/www/ui-art/room-popular.svg",
+    "ios/www/ui-art/room-royal.svg",
+    "ios/www/ui-art/table-emerald.svg",
+    "ios/www/ui-art/table-midnight.svg",
+    "ios/www/ui-art/table-popular.svg",
+    "ios/www/ui-art/table-royal.svg",
+    "ios/www/ui-art/tier-amateur.svg",
+    "ios/www/ui-art/tier-beginner.svg",
+    "ios/www/ui-art/tier-crest-amateur-v349.svg",
+    "ios/www/ui-art/tier-crest-beginner-v349.svg",
+    "ios/www/ui-art/tier-crest-elite-v349.svg",
+    "ios/www/ui-art/tier-crest-legend-v349.svg",
+    "ios/www/ui-art/tier-crest-pro-v349.svg",
+    "ios/www/ui-art/tier-elite.svg",
+    "ios/www/ui-art/tier-legend.svg",
+    "ios/www/ui-art/tier-pro.svg",
+    "ios/www/ui-bid-stack-v354.css",
+    "ios/www/ui-bid-stack-v355.css",
+    "ios/www/ui-card-motion.css",
+    "ios/www/ui-card-motion.js",
+    "ios/www/ui-community.css",
+    "ios/www/ui-community.js",
+    "ios/www/ui-field-cards-v348.css",
+    "ios/www/ui-leagues.css",
+    "ios/www/ui-leagues.js",
+    "ios/www/ui-lobby-chat-v351.css",
+    "ios/www/ui-match-tiers-v349.css",
+    "ios/www/ui-pile-joker-v352.css",
+    "ios/www/ui-polish.css",
+    "ios/www/ui-polish.js",
+    "ios/www/ui-real-cards-v357.css",
+    "ios/www/ui-results-store.js",
+    "ios/www/ui-session-polish-v353.css",
+    "ios/www/ui-table-cards-v350.css",
+    "ios/www/ui-tournament.js",
+    "preview/README.md",
+    "preview/index.html",
+    "server/botLogic.js",
+    "server/chatFilter.js",
+    "server/db.js",
+    "server/gameLogic.js",
+    "server/leagueRoom.js",
+    "server/leagueRules.js",
+    "server/leagues.js",
+    "server/payments.js",
+    "server/server.js",
+    "server/siteNotices.js",
+    "server/tournament.js",
+    "server/tournamentWallet.js",
+    "tests/check-fixes.mjs",
+    "ui-bid-stack-v354.css",
+    "ui-commerce.css",
+    "ui-commerce.js",
+    "ui-six-v385.css",
+    "ui-six-v385.js",
+    "ui-six-v386.css",
+    "ui-six-v386.js",
+    "ui-six-v387.css",
+    "ui-six-v387.js",
+    "ui-table-hud-v386.css",
+    "ui-table-hud-v386.js",
+    "ui-table-hud-v387.css",
+    "ui-table-hud-v387.js",
+    "ui-tournament.js",
+    "validation/BUNDLE_VERIFICATION.json",
+    "validation/RUN_TESTS.md",
+    "validation/card_motion_v361.cjs",
+    "validation/tournament-ready/edited/server/botLogic.js",
+    "validation/tournament-ready/edited/server/db.js",
+    "validation/tournament-ready/edited/server/gameLogic.js",
+    "validation/tournament-ready/edited/server/package.json",
+    "validation/tournament-ready/edited/server/server.js",
+    "validation/tournament-ready/edited/server/tournament.js",
+    "validation/tournament-ready/edited/server/tournamentWallet.js",
+    "validation/tournament-ready/edited/server/wrangler.toml",
+    "validation/tournament-ready/edited/web/index.html",
+    "validation/tournament-ready/tests/gold-concurrency.cjs",
+    "validation/tournament-ready/tests/room.cjs",
+    "validation/tournament-ready/tests/tournament.cjs",
+    "validation/tournament-ready/tests/wallet.cjs",
+    "validation/v361-comparison.json",
+    "validation/v361-motion-ios.json",
+    "validation/v361-motion-web.json",
+    "validation/v361-pose-check.json",
+    "validation/validation.json",
+    "validation/verify_v361.py",
+    "web/admin-commerce.css",
+    "web/admin-commerce.js",
+    "web/admin-dashboard.css",
+    "web/admin-dashboard.js",
+    "web/admin-leagues.css",
+    "web/admin-leagues.js",
+    "web/admin-monthly-prizes.js",
+    "web/admin-notices.css",
+    "web/admin-notices.js",
+    "web/admin-weekly-prizes.css",
+    "web/admin-weekly-prizes.js",
+    "web/admin.html",
+    "web/admob-plugin.js",
+    "web/app-ads.txt",
+    "web/avatars.1390/avatar_1.png",
+    "web/avatars.1390/avatar_10.png",
+    "web/avatars.1390/avatar_11.png",
+    "web/avatars.1390/avatar_12.png",
+    "web/avatars.1390/avatar_2.png",
+    "web/avatars.1390/avatar_3.png",
+    "web/avatars.1390/avatar_4.png",
+    "web/avatars.1390/avatar_5.png",
+    "web/avatars.1390/avatar_6.png",
+    "web/avatars.1390/avatar_7.png",
+    "web/avatars.1390/avatar_8.png",
+    "web/avatars.1390/avatar_9.png",
+    "web/avatars/avatar_1.png",
+    "web/avatars/avatar_10.png",
+    "web/avatars/avatar_11.png",
+    "web/avatars/avatar_12.png",
+    "web/avatars/avatar_2.png",
+    "web/avatars/avatar_3.png",
+    "web/avatars/avatar_4.png",
+    "web/avatars/avatar_5.png",
+    "web/avatars/avatar_6.png",
+    "web/avatars/avatar_7.png",
+    "web/avatars/avatar_8.png",
+    "web/avatars/avatar_9.png",
+    "web/bg/Generated Image August 06, 2026 - 5_10AM.jpg",
+    "web/bg/majlis-club-preview.jpg",
+    "web/bg/majlis-club.jpg",
+    "web/bg/majlis-default-preview.jpg",
+    "web/bg/majlis-default.jpg",
+    "web/bg/majlis-desert-preview.jpg",
+    "web/bg/majlis-desert.jpg",
+    "web/bg/majlis-diwaniya-preview.jpg",
+    "web/bg/majlis-diwaniya.jpg",
+    "web/bg/majlis-diwaniya.jpg1",
+    "web/bg/majlis-oasis-preview.jpg",
+    "web/bg/majlis-oasis.jpg",
+    "web/bg/majlis-persian-preview.jpg",
+    "web/bg/majlis-persian.jpg",
+    "web/bg/majlis-popular-preview.jpg",
+    "web/bg/majlis-popular-preview.jpg1",
+    "web/bg/majlis-popular.jpg",
+    "web/bg/majlis-royal-preview.jpg",
+    "web/bg/majlis-royal.jpg",
+    "web/bg/majlis1-oasis.jpg",
+    "web/bg/table-center.png",
+    "web/bg/table-persian.png",
+    "web/cards/10C.png",
+    "web/cards/10D.png",
+    "web/cards/10H.png",
+    "web/cards/10S.png",
+    "web/cards/2C.png",
+    "web/cards/2D.png",
+    "web/cards/2H.png",
+    "web/cards/2S.png",
+    "web/cards/3C.png",
+    "web/cards/3D.png",
+    "web/cards/3H.png",
+    "web/cards/3S.png",
+    "web/cards/4C.png",
+    "web/cards/4D.png",
+    "web/cards/4H.png",
+    "web/cards/4S.png",
+    "web/cards/5C.png",
+    "web/cards/5D.png",
+    "web/cards/5H.png",
+    "web/cards/5S.png",
+    "web/cards/6C.png",
+    "web/cards/6D.png",
+    "web/cards/6H.png",
+    "web/cards/6S.png",
+    "web/cards/7C.png",
+    "web/cards/7D.png",
+    "web/cards/7H.png",
+    "web/cards/7S.png",
+    "web/cards/8C.png",
+    "web/cards/8D.png",
+    "web/cards/8H.png",
+    "web/cards/8S.png",
+    "web/cards/9C.png",
+    "web/cards/9D.png",
+    "web/cards/9H.png",
+    "web/cards/9S.png",
+    "web/cards/AC.png",
+    "web/cards/AD.png",
+    "web/cards/AH.png",
+    "web/cards/AS.png",
+    "web/cards/JC.png",
+    "web/cards/JD.png",
+    "web/cards/JH.png",
+    "web/cards/JS.png",
+    "web/cards/KC.png",
+    "web/cards/KD.png",
+    "web/cards/KH.png",
+    "web/cards/KS.png",
+    "web/cards/QC.png",
+    "web/cards/QD.png",
+    "web/cards/QH.png",
+    "web/cards/QS.png",
+    "web/court_J.png",
+    "web/court_JOKER.png",
+    "web/court_JOKER_v352.png",
+    "web/court_K.png",
+    "web/court_Q.png",
+    "web/entry-fonts/Baloo-OFL.txt",
+    "web/entry-fonts/Lalezar-OFL.txt",
+    "web/entry-fonts/baloo-bold.ttf",
+    "web/entry-fonts/baloo-regular.ttf",
+    "web/entry-fonts/lalezar.ttf",
+    "web/firebase-auth-plugin.js",
+    "web/icon192.png",
+    "web/icon512.png",
+    "web/icons/gold-coin.png",
+    "web/image-cache.js",
+    "web/index.html",
+    "web/manifest.json",
+    "web/privacy.html",
+    "web/ranks/tier0.jpg",
+    "web/ranks/tier1.jpg",
+    "web/ranks/tier2.jpg",
+    "web/ranks/tier3.jpg",
+    "web/ranks/tier4.jpg",
+    "web/ranks/tier5.jpg",
+    "web/ranks/tier6.jpg",
+    "web/ranks/tier7.jpg",
+    "web/reactions/expressions-v321.png",
+    "web/reactions/react-enough.png",
+    "web/reactions/react-howso.png",
+    "web/reactions/react-noway.png",
+    "web/reactions/react-ok.png",
+    "web/reactions/react-serious.png",
+    "web/reactions/react-sure.png",
+    "web/reactions/react-thanks.png",
+    "web/reactions/react-wait.png",
+    "web/reactions/react-welcome.png",
+    "web/reactions/react-wewon.png",
+    "web/sfx/alaykum-salam.wav",
+    "web/sfx/arrive.wav",
+    "web/sfx/atahadak-takhoz-ha.wav",
+    "web/sfx/bayyad-el-thib.wav",
+    "web/sfx/dahek.wav",
+    "web/sfx/drag.ogg",
+    "web/sfx/drop.wav",
+    "web/sfx/drop1.wav",
+    "web/sfx/drop2.wav",
+    "web/sfx/eat.wav",
+    "web/sfx/janb-warak.wav",
+    "web/sfx/joker.wav",
+    "web/sfx/ma-takhoza.wav",
+    "web/sfx/sahsah-yakhoy.wav",
+    "web/sfx/salam.wav",
+    "web/sfx/sar3.wav",
+    "web/sfx/throw.wav",
+    "web/sfx/waqf-taunt.wav",
+    "web/sw.js",
+    "web/terms.html",
+    "web/tiers/amateur.jpg",
+    "web/tiers/beginner.jpg",
+    "web/tiers/elite.jpg",
+    "web/tiers/legend.jpg",
+    "web/tiers/pro.jpg",
+    "web/ui-art/gold-coin.svg",
+    "web/ui-art/majlis-popular-realistic.png",
+    "web/ui-art/popular-preview.svg",
+    "web/ui-art/rank-0.svg",
+    "web/ui-art/rank-1.svg",
+    "web/ui-art/rank-2.svg",
+    "web/ui-art/rank-3.svg",
+    "web/ui-art/rank-4.svg",
+    "web/ui-art/rank-5.svg",
+    "web/ui-art/rank-6.svg",
+    "web/ui-art/rank-7.svg",
+    "web/ui-art/rank-banner-0.svg",
+    "web/ui-art/rank-banner-1.svg",
+    "web/ui-art/rank-banner-2.svg",
+    "web/ui-art/rank-banner-3.svg",
+    "web/ui-art/rank-banner-4.svg",
+    "web/ui-art/rank-banner-5.svg",
+    "web/ui-art/rank-banner-6.svg",
+    "web/ui-art/rank-banner-7.svg",
+    "web/ui-art/room-emerald.svg",
+    "web/ui-art/room-midnight.svg",
+    "web/ui-art/room-popular.svg",
+    "web/ui-art/room-royal.svg",
+    "web/ui-art/rooms-v362/cafe-room.webp",
+    "web/ui-art/rooms-v362/cafe-table.webp",
+    "web/ui-art/rooms-v362/camp-room.webp",
+    "web/ui-art/rooms-v362/camp-table.webp",
+    "web/ui-art/rooms-v362/diwaniya-room.webp",
+    "web/ui-art/rooms-v362/diwaniya-table.webp",
+    "web/ui-art/rooms-v362/sadu-room.webp",
+    "web/ui-art/rooms-v362/sadu-table.webp",
+    "web/ui-art/table-emerald.svg",
+    "web/ui-art/table-midnight.svg",
+    "web/ui-art/table-popular.svg",
+    "web/ui-art/table-royal.svg",
+    "web/ui-art/tier-amateur.svg",
+    "web/ui-art/tier-beginner.svg",
+    "web/ui-art/tier-crest-amateur-v349.svg",
+    "web/ui-art/tier-crest-beginner-v349.svg",
+    "web/ui-art/tier-crest-elite-v349.svg",
+    "web/ui-art/tier-crest-legend-v349.svg",
+    "web/ui-art/tier-crest-pro-v349.svg",
+    "web/ui-art/tier-elite.svg",
+    "web/ui-art/tier-legend.svg",
+    "web/ui-art/tier-pro.svg",
+    "web/ui-auth-v369.css",
+    "web/ui-bid-stack-v354.css",
+    "web/ui-bid-stack-v355.css",
+    "web/ui-card-motion.css",
+    "web/ui-card-motion.js",
+    "web/ui-commerce.css",
+    "web/ui-commerce.js",
+    "web/ui-community.css",
+    "web/ui-community.js",
+    "web/ui-entry-v380.css",
+    "web/ui-entry-v380.js",
+    "web/ui-field-cards-v348.css",
+    "web/ui-friendly-v369.css",
+    "web/ui-leagues.css",
+    "web/ui-leagues.js",
+    "web/ui-lobby-chat-v351.css",
+    "web/ui-match-tiers-v349.css",
+    "web/ui-navigation.css",
+    "web/ui-navigation.js",
+    "web/ui-pile-joker-v352.css",
+    "web/ui-player-panels.css",
+    "web/ui-player-panels.js",
+    "web/ui-polish.css",
+    "web/ui-polish.js",
+    "web/ui-real-cards-v357.css",
+    "web/ui-results-store.js",
+    "web/ui-session-ads-v380.js",
+    "web/ui-session-polish-v353.css",
+    "web/ui-table-cards-v350.css",
+    "web/ui-table-view.css",
+    "web/ui-table-view.js",
+    "web/ui-theme-rentals.js",
+    "web/ui-tournament.js",
+    "web/ui-vip.css",
+    "web/ui-vip.js",
+    "website-only/index.html",
+    "website-only/website-entry-v343.js"
+  ],
+  "protected": [
+    {
+      "path": "avatars.1390/avatar_1.png",
+      "bytes": 94390,
+      "sha256": "0d39b2abef3f05c6bc538155721e2d5cdf9f17a5e83e2797b7cc7b1a8a93ecdd"
+    },
+    {
+      "path": "avatars.1390/avatar_10.png",
+      "bytes": 94120,
+      "sha256": "2c69bcd3eea777fd82cf113a00b8afdeecd1fd03f19187bd69ebf90cca77deaa"
+    },
+    {
+      "path": "avatars.1390/avatar_11.png",
+      "bytes": 83960,
+      "sha256": "8c16da24c23147174dc209a14d24762535653558f6fcd36b041fd98c4fc9b106"
+    },
+    {
+      "path": "avatars.1390/avatar_12.png",
+      "bytes": 82440,
+      "sha256": "0d72f85046235469a7f7d0b269dd74c84c973cd38426234a697e7c7a2e103190"
+    },
+    {
+      "path": "avatars.1390/avatar_2.png",
+      "bytes": 91940,
+      "sha256": "135b3d852dad8bec2f7b0f13b78c8902b6fb972d93fe76b5836ab31afb5b0c7e"
+    },
+    {
+      "path": "avatars.1390/avatar_3.png",
+      "bytes": 97316,
+      "sha256": "4ee6a15adc2381000a405d067be297a965b7916c771492010051d5d66aa84d7d"
+    },
+    {
+      "path": "avatars.1390/avatar_4.png",
+      "bytes": 112300,
+      "sha256": "5ef2f3bcb9fd8d33933431927c7915f004887e9b886caee71c27e9c14588879d"
+    },
+    {
+      "path": "avatars.1390/avatar_5.png",
+      "bytes": 110010,
+      "sha256": "860549b6eb37a3121ee705d1284df47606f732ed1659ff5c2b0730482febf6aa"
+    },
+    {
+      "path": "avatars.1390/avatar_6.png",
+      "bytes": 99114,
+      "sha256": "a13c61020c9e482cab4f10cc4b3c50fe74a403f00ccf9e134f440be45cbd3e77"
+    },
+    {
+      "path": "avatars.1390/avatar_7.png",
+      "bytes": 90535,
+      "sha256": "096f28b5aa1beaf42a10c42aa7017d9eda8c491d98cd3ede591705e3675d0906"
+    },
+    {
+      "path": "avatars.1390/avatar_8.png",
+      "bytes": 98628,
+      "sha256": "205e216a5e8550d9fb3c1978e0c5a54d751bcf92f1e8823dd35876ae952dcaa0"
+    },
+    {
+      "path": "avatars.1390/avatar_9.png",
+      "bytes": 109809,
+      "sha256": "e1a9c5e87deb7bf9949a1623a97fe1bf683a06b31db0e7777d41a0c33d6b622e"
+    },
+    {
+      "path": "bg/Generated Image August 06, 2026 - 5_10AM.jpg",
+      "bytes": 2126572,
+      "sha256": "1603faf19f520d019e2156d643d46500f022bd52367b100d12daaf6212870135"
+    },
+    {
+      "path": "bg/majlis-club-preview.jpg",
+      "bytes": 83656,
+      "sha256": "10b1ff3e238fa537257eb83df2ef06ffb5d0eb7c091567879c37bc015038ae9c"
+    },
+    {
+      "path": "bg/majlis-club.jpg",
+      "bytes": 118299,
+      "sha256": "ad87511f63695f3a6c1920534de1a176151a32d9a4243e5debc5ba42c6c65d6f"
+    },
+    {
+      "path": "bg/majlis-default-preview.jpg",
+      "bytes": 40885,
+      "sha256": "dd450e03b3459cb1dfcd1cd1f33e797d435610087d99d6b28075c44a1b357996"
+    },
+    {
+      "path": "bg/majlis-default.jpg",
+      "bytes": 384302,
+      "sha256": "de63ee1581ed895247ebffafbbaf55998f906bda2b85c1f6a52ba9f113e89030"
+    },
+    {
+      "path": "bg/majlis-desert-preview.jpg",
+      "bytes": 401589,
+      "sha256": "a74ea7464b4bd28f3f32566b28bb3bcd5bc444931974cb7fb0534d4753ebc920"
+    },
+    {
+      "path": "bg/majlis-desert.jpg",
+      "bytes": 2650119,
+      "sha256": "1ad5e5e79228de3ce475f6102e3efb68c81be3cad45043ba92b927d2ee5d20bf"
+    },
+    {
+      "path": "bg/majlis-diwaniya-preview.jpg",
+      "bytes": 254384,
+      "sha256": "bbeb106b10fe1090e80099a5345b7857346960eeb4b3a188e960dd34c455c131"
+    },
+    {
+      "path": "bg/majlis-diwaniya.jpg",
+      "bytes": 318166,
+      "sha256": "bcd68cf7c5fa217a56ca91e448f89f63e1b3fe1f3a651910845c0d97ae75cc9b"
+    },
+    {
+      "path": "bg/majlis-diwaniya.jpg1",
+      "bytes": 318166,
+      "sha256": "bcd68cf7c5fa217a56ca91e448f89f63e1b3fe1f3a651910845c0d97ae75cc9b"
+    },
+    {
+      "path": "bg/majlis-oasis-preview.jpg",
+      "bytes": 150134,
+      "sha256": "afd532c0a63faf792404df3c4279f718eb1c984a3bdb4db9e1ceaefcb7b1c13c"
+    },
+    {
+      "path": "bg/majlis-oasis.jpg",
+      "bytes": 192596,
+      "sha256": "55c0dfbed31cfba905e292895511f48eb8fc411dbc467713416efafb7ef863a0"
+    },
+    {
+      "path": "bg/majlis-popular-preview.jpg",
+      "bytes": 2126572,
+      "sha256": "1603faf19f520d019e2156d643d46500f022bd52367b100d12daaf6212870135"
+    },
+    {
+      "path": "bg/majlis-popular-preview.jpg1",
+      "bytes": 35292,
+      "sha256": "1e7e0f7582f461843ef069dbfb180ce88d984c0893247956b37c8cb6a29138f2"
+    },
+    {
+      "path": "bg/majlis-popular.jpg",
+      "bytes": 203920,
+      "sha256": "11f9ef96704b758e6747decd71e5f1738dbe60aa0dc046138150a0405b7227d6"
+    },
+    {
+      "path": "bg/majlis-royal-preview.jpg",
+      "bytes": 153574,
+      "sha256": "7c37bf9da15624c76b2bb78b70956f24f5325a7664c9d0a4bbebef60fb0a5058"
+    },
+    {
+      "path": "bg/majlis-royal.jpg",
+      "bytes": 22841,
+      "sha256": "18ceaf6c5701a580d13d517362142e678fe9d81212d27e50b0d8bb9f0f443937"
+    },
+    {
+      "path": "bg/majlis1-oasis.jpg",
+      "bytes": 2837119,
+      "sha256": "77ba330f0eb736755bf0d54e709343900bd4e52ba1a3488f313dadad6e72f4a9"
+    },
+    {
+      "path": "bg/table-persian.png",
+      "bytes": 1157014,
+      "sha256": "7773ea13ef6b49f3c1d823a60d28784596dc08a041706d7701c9fb64e399f80a"
+    },
+    {
+      "path": "court_JOKER.png",
+      "bytes": 68120,
+      "sha256": "1d58643b88512ae45bb181d3f935fd98109748cb7647f83df4ae56de92a60458"
+    },
+    {
+      "path": "ranks/tier0.jpg",
+      "bytes": 21635,
+      "sha256": "f3093c4c2d3dd8ad603d776dff19be39a0c7c05257fa63af62443bcc2d3c49d1"
+    },
+    {
+      "path": "ranks/tier1.jpg",
+      "bytes": 30280,
+      "sha256": "0dd5da5c5135be0caede7b02bb99fed9906683da0cc0c28552bbace6b652bbe8"
+    },
+    {
+      "path": "ranks/tier2.jpg",
+      "bytes": 24089,
+      "sha256": "e1e589a1c487193b3307933fa9d14dea0f1a18bfaf35c7a99d77d279cdf4bddc"
+    },
+    {
+      "path": "ranks/tier3.jpg",
+      "bytes": 45710,
+      "sha256": "fe3a676381e81e653457f12ec679f8687b5e68be6cc4aa5f3334dc84802b81da"
+    },
+    {
+      "path": "ranks/tier4.jpg",
+      "bytes": 33924,
+      "sha256": "679317944159a09adaf99e2e806c193f4d46f3359640e7679cc17e820d2156ed"
+    },
+    {
+      "path": "ranks/tier5.jpg",
+      "bytes": 44839,
+      "sha256": "da81597c10ab4642a1e05ba7ddef0f8ccc28d81d35fd260e97ca6bbb112ebe8a"
+    },
+    {
+      "path": "ranks/tier6.jpg",
+      "bytes": 33586,
+      "sha256": "2adff9a774be4c8470338c3328c751fc6ea3b21acf9607a1615aa119ab7afe33"
+    },
+    {
+      "path": "ranks/tier7.jpg",
+      "bytes": 45630,
+      "sha256": "62edf9e9103e509aac9e6162565ed2a43cdc8c5c6808a63d4637f40c6d669e78"
+    },
+    {
+      "path": "sfx/baloot/bidding/ashkal.mp3",
+      "bytes": 20733,
+      "sha256": "22effa0080b8da5c1c4eae69cab91b8f1c9a0cb841f72e3d5c6e61157abc83f5"
+    },
+    {
+      "path": "sfx/baloot/bidding/first.mp3",
+      "bytes": 23867,
+      "sha256": "91e536c28b7f90a3b03c9f447eeb27c4acce2d5daf8b402d1845d5e2eab5c91f"
+    },
+    {
+      "path": "sfx/baloot/bidding/hokm.mp3",
+      "bytes": 20106,
+      "sha256": "13b554fe1e26b2bbc08ec3dc3188e08ead00d2df9b4d1c4737fff62ede51c69b"
+    },
+    {
+      "path": "sfx/baloot/bidding/hokm_second.mp3",
+      "bytes": 33898,
+      "sha256": "9f37f4d5c4e6124eccfc73473b0435bc97765c187580b37243def59348de1790"
+    },
+    {
+      "path": "sfx/baloot/bidding/pass.mp3",
+      "bytes": 20733,
+      "sha256": "c18e9d6c4d4cdfdcc34cf83099acb0b6f2fc78e8110d5aee8780b3281763f78c"
+    },
+    {
+      "path": "sfx/baloot/bidding/second.mp3",
+      "bytes": 27002,
+      "sha256": "6c3870260b3bafe86b5ccd3a04cd6e6232abd462d7fb17d7ba8af91d80c82588"
+    },
+    {
+      "path": "sfx/baloot/bidding/sun.mp3",
+      "bytes": 24494,
+      "sha256": "dca69716d5ddfb6383c04293a43975a1cc83a1ab5f1ad9e1b6b65452da4b3a66"
+    },
+    {
+      "path": "sfx/baloot/bidding/wala.mp3",
+      "bytes": 20733,
+      "sha256": "7e51be5ba539898b0ece7d6a738a5ed286bff48b655b1874f0906e212b4e0434"
+    },
+    {
+      "path": "sfx/baloot/doubling/closed.mp3",
+      "bytes": 23240,
+      "sha256": "e06598fe097ad1c2a74c09b60dcf0444f1b353aeb1f17fe0e74981654c727637"
+    },
+    {
+      "path": "sfx/baloot/doubling/double.mp3",
+      "bytes": 21360,
+      "sha256": "e1cd21fcc6d6adff09678fd375a74a3d220a4999683055fc32e91f1108849e1a"
+    },
+    {
+      "path": "sfx/baloot/doubling/double_closed.mp3",
+      "bytes": 33898,
+      "sha256": "cb4c6f4fbe437aff5151e5733a5abdd50617041322bc67726f4f21de75b880f4"
+    },
+    {
+      "path": "sfx/baloot/doubling/double_open.mp3",
+      "bytes": 34525,
+      "sha256": "52e784fd8fe3c75aed2a9a3be2df633dea7a0652e8658c95438f3ba95ec4d693"
+    },
+    {
+      "path": "sfx/baloot/doubling/four.mp3",
+      "bytes": 19479,
+      "sha256": "aef19496865d2909b08c8f33487d7a1988b33fe98eed991505b2a16b2a4ccebb"
+    },
+    {
+      "path": "sfx/baloot/doubling/four_closed.mp3",
+      "bytes": 39541,
+      "sha256": "df46b57b196eb2489bd1f40041345c7124cc84b9667a40db20653d0229e05d13"
+    },
+    {
+      "path": "sfx/baloot/doubling/four_open.mp3",
+      "bytes": 40168,
+      "sha256": "c3818f056311bd41bab6ee9348c1bbf33978d54936b12a09599f874ba2666ea9"
+    },
+    {
+      "path": "sfx/baloot/doubling/gahwa.mp3",
+      "bytes": 27002,
+      "sha256": "7f59633ca54a5ccdbf85d6baaeeb62fc584d30de507de348bbf371cfd1b74c08"
+    },
+    {
+      "path": "sfx/baloot/doubling/open.mp3",
+      "bytes": 21986,
+      "sha256": "21e435dfa7d53861e654f44950b3045362a351d5b85ae8244aef47f9bfc703b7"
+    },
+    {
+      "path": "sfx/baloot/doubling/triple.mp3",
+      "bytes": 20733,
+      "sha256": "a7aac2c724ae2d4fddeeb407506462c9f14d9d25f46b764ff8b2e8c88644f5c9"
+    },
+    {
+      "path": "sfx/baloot/play/agree.mp3",
+      "bytes": 29510,
+      "sha256": "4c5b06ea14cce718150c9f185f396d9419d403b842b208e156143afc68e8c1ff"
+    },
+    {
+      "path": "sfx/baloot/play/akka.mp3",
+      "bytes": 27002,
+      "sha256": "6d9a35a9cb81138afd97b11382487e5c65e9f199b18bcbae835c78ce9c075864"
+    },
+    {
+      "path": "sfx/baloot/play/disagree.mp3",
+      "bytes": 29510,
+      "sha256": "ad7fefedbe34d29de70e837ad9c417152298642c34a745904e80c4c5aac018d7"
+    },
+    {
+      "path": "sfx/baloot/play/kaboot.mp3",
+      "bytes": 28256,
+      "sha256": "19b9073b4eb2cfe58d7679a4b1fb0e9215d171a1e2ed48fbb98775a4d19c95f1"
+    },
+    {
+      "path": "sfx/baloot/play/sawa.mp3",
+      "bytes": 23867,
+      "sha256": "d1277ef1383a2c7752d700db843289853a90186082f6c325e0b5bfc356a2f216"
+    },
+    {
+      "path": "sfx/baloot/projects/baloot.mp3",
+      "bytes": 24494,
+      "sha256": "9df395ff466d034e10e53f113b42b87c7fcb49836527689bc4dfa39fdb031c19"
+    },
+    {
+      "path": "sfx/baloot/projects/fifty.mp3",
+      "bytes": 23867,
+      "sha256": "1f5ff5576ede1c9a882c552d44c816297733dad604a64008ef49d4312c6563ee"
+    },
+    {
+      "path": "sfx/baloot/projects/fifty_sara.mp3",
+      "bytes": 47064,
+      "sha256": "b32fe4cf6b9b0e2c1e0ed6d3676762a1413cfae64b314a9f063fef7c554c2102"
+    },
+    {
+      "path": "sfx/baloot/projects/four_hundred.mp3",
+      "bytes": 32644,
+      "sha256": "33afb7be112c5b1df09ba3af52b4813c314141dc17786e34a75709883fed380b"
+    },
+    {
+      "path": "sfx/baloot/projects/hundred.mp3",
+      "bytes": 21986,
+      "sha256": "817b8a8be6882c31627285751882dee5c3b1612a4901c4a5faa50ea5daeec10d"
+    },
+    {
+      "path": "sfx/baloot/projects/hundred_sara.mp3",
+      "bytes": 42049,
+      "sha256": "6787f34f24acd343f0a3b13cd0997e708792b5cda1d5cc5e47614d7be59602cd"
+    },
+    {
+      "path": "sfx/baloot/projects/sara.mp3",
+      "bytes": 21360,
+      "sha256": "1bfa85f3b52abd4fd0a60f5aeeabcf07ddf2a8c912edd2dc5a52930bdada1c68"
+    },
+    {
+      "path": "sfx/baloot/projects/two_sara.mp3",
+      "bytes": 48945,
+      "sha256": "2c20778b32a98c300fc06fd24562ea9dbea08839ddf370f9109813ed0a246c08"
+    },
+    {
+      "path": "sfx/baloot/qaid/choose_card.mp3",
+      "bytes": 38914,
+      "sha256": "3126f34314aedb97bc16195043c332517780c9054569b84b487cddaef36c74bc"
+    },
+    {
+      "path": "sfx/baloot/qaid/choose_reason.mp3",
+      "bytes": 42049,
+      "sha256": "9b3e91acb4a651f093e4874f19dd8bf2653fa76c1bfc38959727160a17c00c18"
+    },
+    {
+      "path": "sfx/baloot/qaid/qaid.mp3",
+      "bytes": 20733,
+      "sha256": "41b93409b1ef1f814f5f6a7c366c74e3f68fe8ea4e454268fc31fe6c4bad70c1"
+    },
+    {
+      "path": "sfx/baloot/qaid/qaid_invalid.mp3",
+      "bytes": 42675,
+      "sha256": "c3932493c1ab2e9bd88eed87f9bc73f6a1f5c218fee10179e078e9af9c0e6596"
+    },
+    {
+      "path": "sfx/baloot/qaid/qaid_valid.mp3",
+      "bytes": 32017,
+      "sha256": "9388a430c56b95dc44ecb8be5119d70d88c12cf6dcd553eb302b52e4d24c5ee0"
+    },
+    {
+      "path": "sfx/baloot/qaid/reveal_cards.mp3",
+      "bytes": 44556,
+      "sha256": "268b449e8be754217aa920917d4f6810b92e9a79e2d1e717c94262b9e12207f5"
+    },
+    {
+      "path": "sfx/baloot/ranks/eight.mp3",
+      "bytes": 31391,
+      "sha256": "e1ddc3095ce63cbb7472ac14942b07f658f238fe5734e090f4fb42b4a7701421"
+    },
+    {
+      "path": "sfx/baloot/ranks/jack.mp3",
+      "bytes": 19479,
+      "sha256": "2a4fa47a80e4b167fd8ce6b518379f8a24c06687da1d1a992073a366a955d81e"
+    },
+    {
+      "path": "sfx/baloot/ranks/king.mp3",
+      "bytes": 32644,
+      "sha256": "6f8ef989c027124fb7f19f1986948e6407cbe7aa0e8cfc609a1d6c3adce1d41e"
+    },
+    {
+      "path": "sfx/baloot/ranks/nine.mp3",
+      "bytes": 17598,
+      "sha256": "0e8f01f247301e23952e68e49f51af709c099b2d7c3a004a4d3e1e7e1a778a5c"
+    },
+    {
+      "path": "sfx/baloot/ranks/queen.mp3",
+      "bytes": 21360,
+      "sha256": "f043bba3a094711626ef4b1ce263ba760b4d4f9a448d278bbc7317e736b39181"
+    },
+    {
+      "path": "sfx/baloot/ranks/seven.mp3",
+      "bytes": 23240,
+      "sha256": "b995648db79593321112f887ad51a1937f5ba0702f67d6a3380c1510ded81bb6"
+    },
+    {
+      "path": "sfx/baloot/ranks/ten.mp3",
+      "bytes": 21360,
+      "sha256": "0adcd4852a6dc18c756c169a656a8048b7fc8f6abe8d04b219370b4dc3141de6"
+    },
+    {
+      "path": "sfx/baloot/status/auto_play.mp3",
+      "bytes": 73395,
+      "sha256": "6f12935f21d85f90815391cef64a3b044f1225eeb8bd9a0377e1a8b39d5ce2ae"
+    },
+    {
+      "path": "sfx/baloot/status/draw.mp3",
+      "bytes": 18852,
+      "sha256": "841130c6d10a8ac0c62950bf83d57468d8ee2b73276eb82de6cf0f763cfcd6ac"
+    },
+    {
+      "path": "sfx/baloot/status/five_seconds.mp3",
+      "bytes": 42049,
+      "sha256": "5392b1d714648d497c030add0ee10856ca508c6cc7b6e76f215218352ed83c7a"
+    },
+    {
+      "path": "sfx/baloot/status/lose.mp3",
+      "bytes": 33898,
+      "sha256": "7aafdcc33965b75e126de31b1c0ef5d70955286a45271feb7e9346b1035a8af4"
+    },
+    {
+      "path": "sfx/baloot/status/match_end.mp3",
+      "bytes": 29510,
+      "sha256": "02886ec3998a25edf91680dad563fb8b8b8df3eb0bb14c508bb33f6d57761246"
+    },
+    {
+      "path": "sfx/baloot/status/time_up.mp3",
+      "bytes": 29510,
+      "sha256": "11f59b4fa3d6187e976fc6b1d9ff959ad508c51316bd179b0cd8996fba78d806"
+    },
+    {
+      "path": "sfx/baloot/status/win.mp3",
+      "bytes": 26375,
+      "sha256": "92a2fd8dae6b0c63977a453d3ca18d81ed5f153197eef32c79395831192b7cb2"
+    },
+    {
+      "path": "sfx/baloot/status/your_turn.mp3",
+      "bytes": 26375,
+      "sha256": "5df5b202b50e984a383d9f16e4e83aac93f5cf586ae9aca80fa40dc4da8d4d70"
+    },
+    {
+      "path": "sfx/baloot/suits/clubs.mp3",
+      "bytes": 28256,
+      "sha256": "b03bc372e2cb43cad896babeda7f5d451f2b45ea1c3b25c058ca6a680a63514a"
+    },
+    {
+      "path": "sfx/baloot/suits/clubs_alt.mp3",
+      "bytes": 23867,
+      "sha256": "885130d460cccc4ca3672497273159f9d13a92848aa2b93b6b53e147ac68fd50"
+    },
+    {
+      "path": "sfx/baloot/suits/diamonds.mp3",
+      "bytes": 21360,
+      "sha256": "e7235a634b0e4360669f5522896dddba95ded85f111c79e173a1cb041bb1206d"
+    },
+    {
+      "path": "sfx/baloot/suits/hearts.mp3",
+      "bytes": 18852,
+      "sha256": "b9259abfe992ff8b0b679c259ebd61b39beac46eb2a72e16a42e203096903165"
+    },
+    {
+      "path": "sfx/baloot/suits/hokm_clubs.mp3",
+      "bytes": 28883,
+      "sha256": "101ecf4d895e0a0aec2c153224c726d88377bb90b765d286562ab8a2f082caea"
+    },
+    {
+      "path": "sfx/baloot/suits/hokm_diamonds.mp3",
+      "bytes": 35779,
+      "sha256": "f6e842d342270fc2e35192c3a64b7c347583887e20710a9a339f2f98662c41cb"
+    },
+    {
+      "path": "sfx/baloot/suits/hokm_hearts.mp3",
+      "bytes": 25748,
+      "sha256": "26c27445f0ea24412e165468196a98f12d1585a7a0da0e1a8ef519982355eb07"
+    },
+    {
+      "path": "sfx/baloot/suits/hokm_spades.mp3",
+      "bytes": 35152,
+      "sha256": "10278f546f57ef31a464365fca78a6ce7b7ae7f49b38063827255fa5d7be5bf7"
+    },
+    {
+      "path": "sfx/baloot/suits/spades.mp3",
+      "bytes": 20733,
+      "sha256": "3ab76847a63b00c732f4a52d61e8416324a1afcc09c7f1afaa98c34d5dc4aab2"
+    },
+    {
+      "path": "sfx/drop.wav",
+      "bytes": 139434,
+      "sha256": "435c525563c250e6b920dac19048ffe0f5dfe9abadcdfa2263d3f90fa93b5b97"
+    },
+    {
+      "path": "sfx/eat.wav",
+      "bytes": 26668,
+      "sha256": "b35db1ac822d2372096da314f17d214c5a886456d2db34939061b4c761507536"
+    },
+    {
+      "path": "tiers/amateur.jpg",
+      "bytes": 28932,
+      "sha256": "f3391e14bfe08f2460177b623167f77658a0ed4356b65c280a0e4c7d0346e859"
+    },
+    {
+      "path": "tiers/beginner.jpg",
+      "bytes": 32051,
+      "sha256": "eabbdedc7481303fb5cfb29918413aa455f17d7ce0202deaded4f7adc44f80d6"
+    },
+    {
+      "path": "tiers/elite.jpg",
+      "bytes": 31848,
+      "sha256": "2d628e7867db5c10bc6147fbe9d30b64f234717b939b04fa20e25b607b469d0a"
+    },
+    {
+      "path": "tiers/legend.jpg",
+      "bytes": 30904,
+      "sha256": "4acfd6638d9c7d9d2280e725d44afaa163883bc8bec9d67fa7793a54bb9b6996"
+    },
+    {
+      "path": "tiers/pro.jpg",
+      "bytes": 25395,
+      "sha256": "2c943e19093c1fde904c1f5189158b295cd7acf6c10599ef9dd976df5c3e5de3"
+    },
+    {
+      "path": "ui-art/majlis-popular-realistic.png",
+      "bytes": 3100506,
+      "sha256": "415e18ff94a047adede50a33a95f49f9c842ad4daa2636e1b69dc3b0e223a9dd"
+    },
+    {
+      "path": "ui-art/popular-preview.svg",
+      "bytes": 3215,
+      "sha256": "be8382f2cd72303694ad8b0b0093acf8c92e9b336a9ab79b3a586a0685530149"
+    },
+    {
+      "path": "ui-art/room-midnight.svg",
+      "bytes": 822,
+      "sha256": "c11da9ca37843a02d933c00b95877174c507ea48a1d21b98dc69fbc4efc7b8e6"
+    },
+    {
+      "path": "ui-art/room-popular.svg",
+      "bytes": 1720,
+      "sha256": "e85027d3bb91c41e68291e329b4ad006cddfb275ab249f40631f02d960bea2e1"
+    },
+    {
+      "path": "ui-art/room-royal.svg",
+      "bytes": 822,
+      "sha256": "44c44043f178d1e7a2fe8e25488f21cafae252cbb3b31eb598c98bfb7d8729f6"
+    },
+    {
+      "path": "ui-art/table-emerald.svg",
+      "bytes": 1136,
+      "sha256": "911d083f5f2c75b9a2a2f3f263dfadd54550f0d56b7ea63f76ed411d7a7699a1"
+    },
+    {
+      "path": "ui-art/table-midnight.svg",
+      "bytes": 1136,
+      "sha256": "f73054b3095c11832d2f90261d4b5f0731e345dfecfc9638daee1fdeb907404c"
+    },
+    {
+      "path": "ui-art/table-popular.svg",
+      "bytes": 1136,
+      "sha256": "b21c811b5722e21d22e5ca00063a8b5cb7bc29d805f47f9fe154e236d09099b8"
+    },
+    {
+      "path": "ui-art/table-royal.svg",
+      "bytes": 1136,
+      "sha256": "0d0aa5930f0c8f4790389d79d7d22d5d9ce0c267fc7990cbd10daa063740d307"
+    }
+  ]
+}

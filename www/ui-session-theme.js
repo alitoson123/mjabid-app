@@ -12,6 +12,8 @@
  const SCENE_IDS=new Set(['theme-hijaz','theme-flight','theme-oasis','theme-najd']);
  function applySurface(host,theme){
   if(!host?.style||!host?.dataset)return false;
+  // One presentation key lets both games share crisp, theme-specific surface ornament.
+  if(['game','onl','blGame'].includes(host.id))host.dataset.tableOrnament=valid(theme?.id)?theme.id:'theme-persian';
   const scene=SCENE_IDS.has(theme?.id)&&theme?.surface==='scene';
   if(scene){host.dataset.sceneTheme=theme.id;host.style.backgroundSize='100% 100%';host.style.backgroundPosition='center';}
   else if(host.dataset.sceneTheme){delete host.dataset.sceneTheme;host.style.backgroundSize='cover';host.style.backgroundPosition=host.id==='uiShopScene'?'center 40%':'center';}

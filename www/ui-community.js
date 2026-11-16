@@ -15,7 +15,7 @@ function uiProfileOpen(){
  document.getElementById('pfTabHistory').hidden=other;
  document.getElementById('pfTabAccount').hidden=other;
  const cup=document.getElementById('mcProfileTitles');
- if(cup)document.getElementById('pfPanelAchievements').prepend(cup);
+ if(cup){if(window.MajabeedTrophies)cup.remove();else document.getElementById('pfPanelAchievements').prepend(cup);}
  const actions=document.getElementById('pfProfileActions');actions.hidden=!other;
  for(const id of ['pfAddFriend','pfReport']){const button=document.getElementById(id);if(button)actions.appendChild(button);}
  document.getElementById('pfHistoryEmpty').hidden=document.getElementById('pfHistory').style.display!=='none';
@@ -67,6 +67,7 @@ async function uiNoticesLoad(){
  return m.pending;
 }
 function uiCommunityRoute(id){
+ window.MajabeedTrophies?.route(id);
  if(id==='profile')uiProfileOpen();else if(typeof uiClearProfilePassword==='function')uiClearProfilePassword();
  uiNoticesRender();
  if(id==='home'||(id==='chat'&&CHAT_MODE==='public'))uiNoticesLoad();

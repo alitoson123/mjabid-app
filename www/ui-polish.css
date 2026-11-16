@@ -163,7 +163,7 @@ button:disabled:active{transform:none}
 /* Second pass: menus, account, community and result surfaces. */
 :root{--ui-paper:#faf8f1;--ui-paper-line:#e1e5d8;--ui-text:#203b2d;--ui-secondary:#64745e;--ui-danger:#a43f36}
 #profile,#signup,#gcomplete,#addfr,#tiers{background:var(--ui-paper)}
-#chat,#friends,#match,#lboard>[data-navholder],#shop>[data-navholder],#awardsScr>[data-navholder]{background:radial-gradient(ellipse at 50% 0,#285442,#102d23 65%)!important}
+#chat,#friends,#match,#lboard>[data-navholder],#shop>[data-navholder]{background:radial-gradient(ellipse at 50% 0,#285442,#102d23 65%)!important}
 .qBtn{min-width:44px;min-height:44px;border-radius:14px!important;display:inline-flex;align-items:center;justify-content:center;flex:none}
 .qBtn svg{width:21px;height:21px;stroke-width:1.8}
 #chHead .t,#frHead .t{color:#f7e6c2;font-size:27px;text-shadow:none}
@@ -235,7 +235,6 @@ button:disabled:active{transform:none}
 #pfRankPtsNum{font-size:27px!important;color:#294d34!important}
 #pfRankRemain{font-size:14px!important;line-height:1.6}
 #pfHistoryRow{flex-wrap:wrap}
-#pfAchievementsList>div{border-radius:16px!important;border:1px solid #e0e5d5;box-shadow:none!important}
 #pfOut{margin:22px 16px 0;min-height:48px;height:48px;flex:none;border:1px solid #bccbb1;border-radius:15px;background:#eef2e7;color:#395237;font-size:14px}
 #pfDeleteAcc{width:calc(100% - 32px)!important;margin:10px 16px 0!important;min-height:44px;flex:none;color:#a43f36!important;font-size:13px!important;border-radius:14px;background:#a43f3607!important;text-decoration:none!important}
 /* Results preserve the actual score, prize and rank values. */
@@ -281,9 +280,9 @@ button:disabled:active{transform:none}
 .uiRankRow>div:nth-child(1){color:#7b714e!important;font-size:19px!important;flex:none}
 .uiRankRow>div:nth-child(3)>div:first-child{overflow-wrap:anywhere;line-height:1.5}
 .uiRankRow>div:nth-child(4){font-size:13px!important;color:#49603c!important;flex-wrap:wrap;justify-content:center;max-width:85px}
-#tiersList>div,#shopList>div,#awardsGrid>div{border-radius:20px!important;border:1px solid #d6dfcb;box-shadow:0 4px 12px #0002!important}
+#tiersList>div,#shopList>div{border-radius:20px!important;border:1px solid #d6dfcb;box-shadow:0 4px 12px #0002!important}
 #tiersList button,#shopList button{min-height:44px;border-radius:13px!important}
-#tiersList,#awardsGrid{padding-bottom:calc(96px + var(--ui-safe-bottom))!important}
+#tiersList{padding-bottom:calc(96px + var(--ui-safe-bottom))!important}
 .sessCard{margin-bottom:12px}
 .sessJoinBtn,.sessSpecBtn{min-height:44px;border-radius:13px;font-size:14px}
 .sessJoinBtn{background:#325c3d;color:#fff9e4}.sessSpecBtn{background:#eef2e6;color:#3e5835;border-color:#bdcbb0}
@@ -342,10 +341,6 @@ button:disabled:active{transform:none}
 .uiRankBadge{display:inline-flex;align-items:center;gap:4px;max-width:100%;font-weight:800;line-height:1.4;white-space:nowrap;border:1px solid var(--badge-color);border-radius:9px;padding:2px 7px 2px 3px;background:#f7f5ed;vertical-align:middle}
 .uiRankBadge img{width:24px;height:24px;object-fit:contain;flex:none}
 #hRankBadge .uiRankBadge,#rcBadge .uiRankBadge{background:#0b201de6;color:#f6e7c6!important}
-#ranksList{gap:12px!important;padding-bottom:calc(20px + var(--ui-safe-bottom))!important}
-#ranksList>div{min-height:86px;border-radius:17px!important}
-#ranksList>div>div:nth-child(2){left:16px!important;right:80px!important;overflow:visible!important}
-#ranksList>div>div:nth-child(2)>span{white-space:normal!important;line-height:1.6}
 #rankCard{background-position:center!important}
 #uiAppearanceBtn{display:flex;align-items:center;justify-content:center;gap:9px;margin:18px 16px 0;width:calc(100% - 32px);min-height:50px;border:1px solid #becdaf;background:#edf2e6;color:#305239;border-radius:15px;font-weight:800;cursor:pointer}
 #uiAppearance{position:absolute;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:calc(20px + var(--ui-safe-top)) 16px calc(20px + var(--ui-safe-bottom));background:#061813e8}
@@ -432,8 +427,6 @@ button:disabled:active{transform:none}
 #pfHistory{padding:16px;background:#fffdf5;border:1px solid #d9e1ce;border-radius:20px}
 #pfHistoryRow{gap:8px!important}#pfHistoryRow>div{border-radius:12px!important;min-height:44px;min-width:40px}
 #pfAchievements{padding:8px 0 0}#pfAchievements>.t{font-size:15px;margin-bottom:12px;color:#315339}
-#pfAchievementsList>div{background:#fffdf5!important;border-radius:17px!important;padding:14px!important;border-color:#d9e1ce!important}
-#pfAchievementsList b{font-size:16px!important}#pfAchievementsList span{line-height:1.7}
 #pfAddFriend{width:calc(100% - 32px)!important;min-height:50px;margin:18px 16px 0!important;background:#2a563b!important;border-radius:16px!important;box-shadow:0 3px 0 #193a27!important}
 #profile.uiOtherProfile #pfDeleteAcc,#profile.uiOtherProfile #uiAppearanceBtn{display:none!important}
 #pfOut{background:#e3eadd;border-color:#c5d2bb;margin-top:12px;border-radius:15px}

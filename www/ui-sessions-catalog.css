@@ -46,3 +46,7 @@
 #blGame .blSpectatorJoin.blSpectatorJoinLobby{position:static;margin:8px 0}
 
 .scChatStatus{display:flex;align-items:center;gap:5px}.scChatStatus .scIcon{width:15px;height:15px}
+.scVoiceStatus{display:flex;align-items:center;gap:6px;width:fit-content;max-width:100%;box-sizing:border-box;padding:6px 9px;border:1px solid #bdcdbb;border-radius:9px;background:#e9f0e5;color:#315433;font-size:11px;font-weight:700;line-height:1.6;text-align:start}
+.scVoiceStatus.isBlocked{border-color:#d3cbbb;background:#eeeae1;color:#625b4b}
+.scVoiceStatus .scIcon{flex-shrink:0;width:15px;height:15px}.scVoiceStatus>span{min-width:0;overflow-wrap:anywhere}
+.scRoomMeta>.scVoiceStatus{flex-basis:100%;gap:6px}

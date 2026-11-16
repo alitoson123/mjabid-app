@@ -1,0 +1,7 @@
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Majabeed local voice installer backups
+.majabeed-ios-voice-backups/
+.majabeed-ios-voice-install.lock

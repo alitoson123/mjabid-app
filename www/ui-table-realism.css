@@ -1,0 +1,75 @@
+/* Retain the original identity rails and pile rows; lower only the pile by 10px. */
+#onl:not(.uiSixTable) #oSeatL .pileBox,#game #seatL .pileBox{transform:translate(-5px,10px)!important}
+#onl:not(.uiSixTable) #oSeatR .pileBox,#game #seatR .pileBox{transform:translate(5px,10px)!important}
+#onl:not(.uiSixTable) #oSeat .pileBox,#game #seatT .pileBox{transform:translateY(8px)!important}
+#onl .holderVal,#game .holderVal{display:none!important}
+#hand .card.eatable::after,#oHand .card.eatable::after,#hand .card.waqfPlayable::after,#oHand .card.waqfPlayable::after{content:none!important;display:none!important}
+/* The capture cue belongs to the card face, not the surrounding count/label box. */
+#onl .pileBox.stealable,#game .pileBox.stealable{animation:none!important;outline:0!important;box-shadow:none!important}
+#onl .pileBox.stealable>.card,#game .pileBox.stealable>.card,#onl .pileBox.uiPileTarget>.card,#game .pileBox.uiPileTarget>.card,#oMyPile .uiPileTarget>.card,#myPile .uiPileTarget>.card{outline:2px solid #edcf87!important;outline-offset:-2px!important}
+#onl .pileBox.stealable.dropHighlight>.card,#game .pileBox.stealable.dropHighlight>.card{outline-color:#fff0bf!important;outline-width:3px!important;outline-offset:-3px!important}
+#hand .card.eatable,#oHand .card.eatable,#hand .card.waqfPlayable,#oHand .card.waqfPlayable,#hand .card.sel,#oHand .card.sel{outline:2px solid #ffe4a0;outline-offset:-2px;box-shadow:0 4px 8px #0005!important}
+/* Keep the auction caption inside the card face, using the top opponent's badge. */
+#game .pileBox.uiPileTarget>.uiAuctionTargetLabel,#onl .pileBox.uiPileTarget>.uiAuctionTargetLabel,#game #myPile .uiPileTarget>.uiAuctionTargetLabel,#onl #oMyPile .uiPileTarget>.uiAuctionTargetLabel{--ui-auction-card-w:44px;position:absolute!important;grid-area:1/1/2/2!important;top:auto!important;bottom:14px!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;width:calc(var(--ui-auction-card-w) - 4px)!important;max-width:calc(var(--ui-auction-card-w) - 4px)!important;min-width:0!important;height:auto!important;margin:0!important;padding:1px!important;border:1px solid rgba(229,199,126,.38)!important;border-radius:5px!important;background:#15392d;color:#f1dba2;font:700 8px/1.3 var(--fb)!important;box-sizing:border-box;white-space:normal!important;overflow-wrap:normal;overflow:hidden;text-align:center;direction:rtl;pointer-events:none}
+#game #myPile .uiPileTarget>.uiAuctionTargetLabel,#onl:not(.uiSixTable) #oMyPile .uiPileTarget>.uiAuctionTargetLabel{left:auto!important;right:2px!important;transform:none!important}
+#onl.uiSixTable .pileBox.uiPileTarget>.uiAuctionTargetLabel,#onl.uiSixTable #oMyPile .uiPileTarget>.uiAuctionTargetLabel{--ui-auction-card-w:var(--six-pile-w);--ui-auction-bottom:clamp(2px,calc(var(--six-pile-h) - 28px),14px);bottom:var(--ui-auction-bottom)!important;max-height:calc(var(--six-pile-h) - var(--ui-auction-bottom) - 2px)!important}
+/* Capture-ready cards and matching targets share a calm turquoise cue. */
+#hand .card.eatable:not(.waqfPlayable),#oHand .card.eatable:not(.waqfPlayable){outline:2px solid #2daa8a!important;outline-offset:-2px!important;box-shadow:inset 0 0 0 1px #176b53,0 4px 8px #0005!important}
+#game .pileBox.stealable>.card,#onl .pileBox.stealable>.card{outline-color:#2daa8a!important;box-shadow:inset 0 0 0 1px #176b53,0 3px 6px #0004!important}
+#game .pileBox.stealable.dropHighlight>.card,#onl .pileBox.stealable.dropHighlight>.card{outline-color:#82d8bf!important}
+#field .card.match,#oField .card.match{outline:2px solid #2daa8a!important;outline-offset:-2px!important;box-shadow:inset 0 0 0 1px #176b53,0 4px 8px #0005!important}
+/* Only large hands override the original single-row sizing and overlap. */
+/* The hand is guided by card highlights; omit the former instruction line. */
+#game #hint,#onl #oHint{display:none!important}
+#game #hand.uiTwoRowHand>.card,#onl #oHand.uiTwoRowHand>.card,#onl.uiSixTable #oHand.uiTwoRowHand>.card{width:var(--ui-hand-card-w,62px)!important;min-width:var(--ui-hand-card-w,62px)!important;height:var(--ui-hand-card-h,87px)!important;margin:0!important;flex:none!important}
+/* Reserve the chosen overlapping hand without shrinking its faces into miniature cards. */
+#game.uiDoubleHand #me,#onl.uiDoubleHand:not(.uiSixTable) #me2{height:calc(var(--ui-hand-block,151px) + 110px + var(--ui-safe-bottom,0px))!important;padding-bottom:0!important}
+#game.uiDoubleHand #thumb,#onl.uiDoubleHand:not(.uiSixTable) #oThumb{height:calc(var(--ui-hand-block,151px) + 44px + var(--ui-safe-bottom,0px))!important;min-height:0;padding:0!important;flex:none}
+#game.uiDoubleHand #actions,#onl.uiDoubleHand:not(.uiSixTable) #oActions{height:calc(44px + var(--ui-safe-bottom,0px))!important;padding:2px 14px calc(2px + var(--ui-safe-bottom,0px))!important;flex:none}
+#game.uiDoubleHand #actions button,#onl.uiDoubleHand:not(.uiSixTable) #oActions button{height:40px!important;min-height:40px!important}
+#game.uiDoubleHand #meTop,#onl.uiDoubleHand:not(.uiSixTable) #oMeTop{position:absolute;top:5px;left:0;right:0;height:51px;padding:0 14px;gap:6px}
+#game.uiDoubleHand #myPile,#onl.uiDoubleHand:not(.uiSixTable) #oMyPile{gap:4px;min-width:0}
+#game.uiDoubleHand #myPile .card,#onl.uiDoubleHand:not(.uiSixTable) #oMyPile .card{width:36px!important;height:51px!important}
+#game.uiDoubleHand #meIdent,#onl.uiDoubleHand:not(.uiSixTable) #oIdent{padding:4px 5px;gap:4px;max-width:49%}
+#game.uiDoubleHand #meIdent .ava,#onl.uiDoubleHand:not(.uiSixTable) #oIdent .ava{width:34px;height:34px}
+#game.uiDoubleHand #myPile .uiPileTarget>.uiAuctionTargetLabel,#onl.uiDoubleHand:not(.uiSixTable) #oMyPile .uiPileTarget>.uiAuctionTargetLabel{--ui-auction-card-w:36px}
+#game.uiDoubleHand #hint,#onl.uiDoubleHand:not(.uiSixTable) #oHint{position:absolute;top:56px;left:0;right:0;height:10px;min-height:10px;padding:0;font-size:10px;line-height:10px}
+#hand.uiTwoRowHand,#oHand.uiTwoRowHand{display:block!important;position:relative;flex:none!important;height:var(--ui-hand-block,151px)!important;min-height:var(--ui-hand-block,151px)!important;direction:ltr;padding:0!important}
+#game #hand.uiTwoRowHand>.card,#onl #oHand.uiTwoRowHand>.card,#onl.uiSixTable #oHand.uiTwoRowHand>.card{position:absolute!important;left:var(--ui-row-x)!important;top:var(--ui-row-y)!important;z-index:var(--ui-row-order)!important;transform-origin:50% 0}
+#game #hand.uiTwoRowHand>.card.waqfPlayable,#onl #oHand.uiTwoRowHand>.card.waqfPlayable{transform:translateY(calc(0px - var(--ui-card-bid-lift,10px)))}
+#game #hand.uiTwoRowHand>.card.sel,#onl #oHand.uiTwoRowHand>.card.sel{z-index:var(--ui-card-selected-order,500)!important;transform:translateY(calc(0px - var(--ui-card-lift,18px))) scale(var(--ui-hand-zoom,1.06))}
+#game #hand.uiTwoRowHand>.card.dragging,#onl #oHand.uiTwoRowHand>.card.dragging{z-index:9999!important}
+#hand.uiTwoRowHand .uiHandCorner,#oHand.uiTwoRowHand .uiHandCorner{position:absolute;top:1px;left:1px;width:18px;height:28px;display:flex;align-items:center;flex-direction:column;justify-content:center;background:#fffdf5;color:#16201b;border-radius:3px;pointer-events:none;direction:ltr;line-height:1;overflow:hidden;z-index:1}
+#hand.uiTwoRowHand .uiHandCorner b,#oHand.uiTwoRowHand .uiHandCorner b{font:700 14px/15px Georgia,serif}
+#hand.uiTwoRowHand .uiHandCorner small,#oHand.uiTwoRowHand .uiHandCorner small{font:14px/13px Georgia,serif}
+#hand.uiTwoRowHand .card.rd .uiHandCorner,#oHand.uiTwoRowHand .card.rd .uiHandCorner{color:#bd2028}
+#hand.uiTwoRowHand .card.jok .uiHandCorner,#oHand.uiTwoRowHand .card.jok .uiHandCorner{color:#8b492f}
+@media(max-height:740px){
+ #game.uiDoubleHand #me,#onl.uiDoubleHand:not(.uiSixTable) #me2{height:calc(var(--ui-hand-block,134px) + 92px + var(--ui-safe-bottom,0px))!important}
+ #game.uiDoubleHand #thumb,#onl.uiDoubleHand:not(.uiSixTable) #oThumb{height:calc(var(--ui-hand-block,134px) + 40px + var(--ui-safe-bottom,0px))!important}
+ #game.uiDoubleHand #actions,#onl.uiDoubleHand:not(.uiSixTable) #oActions{height:calc(40px + var(--ui-safe-bottom,0px))!important;padding:0 12px var(--ui-safe-bottom,0px)!important}
+ #game.uiDoubleHand #meTop,#onl.uiDoubleHand:not(.uiSixTable) #oMeTop{left:64px;right:64px;top:0;height:44px;padding:0;gap:4px}
+ #game.uiDoubleHand #myPile .card,#onl.uiDoubleHand:not(.uiSixTable) #oMyPile .card{width:31px!important;height:44px!important}
+ #game.uiDoubleHand #meIdent .ava,#onl.uiDoubleHand:not(.uiSixTable) #oIdent .ava{width:30px;height:30px}
+ #game.uiDoubleHand #meIdent,#onl.uiDoubleHand:not(.uiSixTable) #oIdent{padding:2px 4px;gap:4px}
+ #game.uiDoubleHand #myPile .uiPileTarget>.uiAuctionTargetLabel,#onl.uiDoubleHand:not(.uiSixTable) #oMyPile .uiPileTarget>.uiAuctionTargetLabel{--ui-auction-card-w:31px;bottom:7px!important}
+ #game.uiDoubleHand #hint,#onl.uiDoubleHand:not(.uiSixTable) #oHint{top:44px;height:8px;min-height:8px;font-size:10px;line-height:10px}
+}
+@media(max-height:620px){
+ #game.uiDoubleHand #me,#onl.uiDoubleHand:not(.uiSixTable) #me2{height:calc(var(--ui-hand-block,109px) + 70px + var(--ui-safe-bottom,0px))!important}
+ #game.uiDoubleHand #meTop,#onl.uiDoubleHand:not(.uiSixTable) #oMeTop{top:1px;height:30px}
+ #game.uiDoubleHand #myPile .card,#onl.uiDoubleHand:not(.uiSixTable) #oMyPile .card{width:21px!important;height:30px!important}
+ #game.uiDoubleHand #meIdent .ava,#onl.uiDoubleHand:not(.uiSixTable) #oIdent .ava{width:24px;height:24px}
+ #game.uiDoubleHand #meIdent,#onl.uiDoubleHand:not(.uiSixTable) #oIdent{padding:1px 3px;gap:3px}
+ #game.uiDoubleHand #meIdent .uiPlayerName,#onl.uiDoubleHand:not(.uiSixTable) #oIdent .uiPlayerName{font-size:10px;line-height:12px}
+ #game.uiDoubleHand #meIdent .uiSeatRank,#onl.uiDoubleHand:not(.uiSixTable) #oIdent .uiSeatRank{margin-top:0;min-height:12px}
+ #game.uiDoubleHand #myPile .uiPileTarget>.uiAuctionTargetLabel,#onl.uiDoubleHand:not(.uiSixTable) #oMyPile .uiPileTarget>.uiAuctionTargetLabel{--ui-auction-card-w:21px;bottom:3px!important;padding:0!important;font-size:6px!important;line-height:1.1!important;max-height:24px;overflow-wrap:anywhere}
+ #onl.uiDoubleHand:not(.uiSixTable) #oHint{display:none}
+ #game.uiDoubleHand #hint{top:auto;bottom:40px;left:64px;right:64px;height:12px;min-height:12px;font-size:10px;line-height:12px;z-index:30;background:#102e24ed;border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+/* Preserve input through the empty lanes around the unchanged side piles. */
+@media(max-height:740px){
+ #game.uiFullHand #me,#game.uiFullHand #thumb,#game.uiFullHand #hand,#game.uiFullHand #hint,#onl.uiFullHand:not(.uiSixTable) #me2,#onl.uiFullHand:not(.uiSixTable) #oThumb,#onl.uiFullHand:not(.uiSixTable) #oHand,#onl.uiFullHand:not(.uiSixTable) #oHint{pointer-events:none}
+ #game.uiFullHand #meTop,#game.uiFullHand #actions,#game.uiFullHand #hand>.card:not(.dimmed-card),#onl.uiFullHand:not(.uiSixTable) #oMeTop,#onl.uiFullHand:not(.uiSixTable) #oActions,#onl.uiFullHand:not(.uiSixTable) #oHand>.card:not(.dimmed-card){pointer-events:auto}
+ #game.uiDoubleHand #thumb,#onl.uiDoubleHand:not(.uiSixTable) #oThumb{background-size:calc(100% - 112px) 100%;background-repeat:no-repeat;background-position:center}
+}

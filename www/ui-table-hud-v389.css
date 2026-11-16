@@ -30,10 +30,17 @@
 }
 @media(max-width:380px) and (min-height:741px){#onl.uiFourCentered:not(.uiSixTable) #oFieldWrap{--ui-four-field-scale:.86}}
 #onl.uiTeamHUD:not(.uiSixTable) #oWaqfBanner,#onl.uiTeamHUD:not(.uiSixTable) #oSettleBanner{top:calc(var(--ui-score-bottom,102px) + 114px)!important}
+/* Cards cannot paint or receive taps over the chat button, including a new Joker. */
+#onl #oHand{isolation:isolate;z-index:0!important}
+#onl #oActions,#onl.uiSixTable #oActions{position:relative!important;z-index:2}
+#onl #oChatWrap{z-index:3;isolation:isolate}
 /* Chat has its own stacking context above all seats, auction labels and speech. */
 #onl.uiChatOpen #me2{z-index:80!important}
 #onl.uiChatOpen #oThumb,#onl.uiChatOpen #oActions,#onl.uiChatOpen #oChatWrap{z-index:81!important}
-#onl #oChatPanel{z-index:90!important;max-width:calc(100vw - 24px)!important;max-height:min(400px,calc(100dvh - var(--ui-safe-top) - var(--ui-safe-bottom) - 150px))!important}
+#onl #oChatPanel{z-index:90!important;left:var(--ui-chat-left,auto);right:auto;top:var(--ui-chat-top,auto);bottom:var(--ui-chat-bottom,56px);width:var(--ui-chat-width,280px);max-width:calc(100vw - 24px)!important;max-height:var(--ui-chat-max-h,400px)!important;pointer-events:auto;animation:none}
+#onl #oChatInput{font-size:16px}
+#onl #oChatHistory{min-height:0}
+#onl #oChatInputRow{position:relative;z-index:1;background:#fdf9f0}
 #onl.uiChatOpen .oppBubble,#onl.uiChatOpen #oChatBubble{visibility:hidden!important}
 #onl.uiTeamHUD .seat .pts b,#onl.uiTeamHUD #oMyPile .pts b{display:inline-flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:3px!important;line-height:18px!important;white-space:nowrap!important}
 #onl.uiTeamHUD .seat .pts small,#onl.uiTeamHUD #oMyPile .pts small{display:inline!important;line-height:18px!important;font-size:9px!important;white-space:nowrap!important;flex:none!important;color:#e1e8d9!important}

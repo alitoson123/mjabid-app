@@ -1,8 +1,9 @@
 {
   "name": "majabeed-app",
-  "version": "3.0.0",
+  "version": "2.2.49",
   "description": "Majabeed iOS App wrapped in Capacitor",
   "scripts": {
+    "test": "node --test tests/*.test.cjs tests/*.test.mjs",
     "postinstall": "node copy-plugins.js && npm run build:purchases",
     "copy-plugins": "node copy-plugins.js",
     "sync": "npm run build:purchases && cap sync",

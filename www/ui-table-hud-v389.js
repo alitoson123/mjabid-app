@@ -61,7 +61,7 @@ window.UITableHUD=(()=>{
   const tight=available<420;
   // The same 72×101 hand cards as the four-seat and local tables.
   const handW=72,handH=101;
-  const own=tight?32:64,hint=tight?12:20,handRow=handH+16,actions=tight?38:44;
+  const own=tight?32:64,hint=tight?12:20,handRow=(view()?.myHand?.length>10?(window.MajabeedTableRealism?.rowHeight(view().myHand.length,width-16)||159):handH+16),actions=tight?38:44;
   const selfH=own+hint+handRow+actions,selfTop=height-bottom-selfH;
   const seatH=Math.min(tight?82:130,Math.max(66,Math.floor((available-selfH-16)/2)));
   const seatW=width<350?72:82,y=hudBottom+10,lower=selfTop-8-seatH;
@@ -108,9 +108,24 @@ window.UITableHUD=(()=>{
   if(pendingTeamRoom===ONL.room&&ONL.status==='lobby'&&ONL.lobby?.mode!=='team'){byId('lobbyStart').disabled=true;text(byId('lobbyHint'),'جارٍ تجهيز طاولة 2 ضد 2…');}
   chatLayer();
  }
- function chatLayer(){const opened=!byId('oChatPanel').classList.contains('hidden');root.classList.toggle('uiChatOpen',opened);document.body.classList.toggle('uiOnlineChatOpen',opened&&!root.classList.contains('hidden'));}
+ let chatFrame=0;
+ function fitChat(){
+  const panel=byId('oChatPanel'),wrap=byId('oChatWrap');
+  if(panel.classList.contains('hidden')||root.classList.contains('hidden')||!wrap.getClientRects().length)return;
+  const r=root.getBoundingClientRect(),w=wrap.getBoundingClientRect(),v=window.visualViewport,scale=r.width/root.clientWidth||1;
+  const left=Math.max(r.left,v?.offsetLeft||0)+10,right=Math.min(r.right,(v?.offsetLeft||0)+(v?.width||innerWidth))-10;
+  const top=Math.max(r.top,v?.offsetTop||0)+10,bottom=Math.min(r.bottom,(v?.offsetTop||0)+(v?.height||innerHeight))-10;
+  const width=Math.max(1,Math.min(280,(right-left)/scale)),height=Math.max(1,Math.min(400,(bottom-top)/scale));
+  panel.style.setProperty('--ui-chat-width',width+'px');panel.style.setProperty('--ui-chat-max-h',height+'px');
+  const h=panel.getBoundingClientRect().height,x=Math.max(left,Math.min(right-width*scale,w.right-width*scale)),y=Math.max(top,Math.min(w.top-h-8,bottom-h));
+  panel.style.setProperty('--ui-chat-left',(x-w.left)/scale+'px');panel.style.setProperty('--ui-chat-top',(y-w.top)/scale+'px');panel.style.setProperty('--ui-chat-bottom','auto');
+ }
+ const queueChatFit=()=>{if(chatFrame)return;chatFrame=requestAnimationFrame(()=>{chatFrame=0;fitChat();});};
+ function chatLayer(){const opened=!byId('oChatPanel').classList.contains('hidden');root.classList.toggle('uiChatOpen',opened);document.body.classList.toggle('uiOnlineChatOpen',opened&&!root.classList.contains('hidden'));if(opened)fitChat();}
  const observeChat=new MutationObserver(chatLayer);observeChat.observe(byId('oChatPanel'),{attributes:true,attributeFilter:['class']});
- const observeVisibility=new MutationObserver(()=>{const opened=!byId('oChatPanel').classList.contains('hidden');document.body.classList.toggle('uiOnlineChatOpen',opened&&!root.classList.contains('hidden'));});observeVisibility.observe(root,{attributes:true,attributeFilter:['class']});
+ const observeVisibility=new MutationObserver(()=>{const opened=!byId('oChatPanel').classList.contains('hidden');document.body.classList.toggle('uiOnlineChatOpen',opened&&!root.classList.contains('hidden'));if(opened)queueChatFit();});observeVisibility.observe(root,{attributes:true,attributeFilter:['class']});
+ byId('oChatPanel').addEventListener('focusin',queueChatFit);byId('oChatPanel').addEventListener('focusout',queueChatFit);
+ window.visualViewport?.addEventListener('resize',queueChatFit);window.visualViewport?.addEventListener('scroll',queueChatFit);window.addEventListener('resize',queueChatFit);
  const resize=()=>{if(frame)return;frame=requestAnimationFrame(()=>{frame=0;if(active()||centeredFour()){layout();renderOnl();}});};
  if(typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(resize);observer.observe(root);observer.observe(bar);observer.observe(inset);observer.observe(root.querySelector('.tableWood'));}
  window.addEventListener('resize',resize);

@@ -47,6 +47,12 @@
 #onlWait.uiLobbyCompact .lmBtn:disabled{opacity:.7}
 #onlWait.uiLobbyCompact #lobbyTierTag{margin:0!important;padding:10px!important;display:flex;flex-wrap:wrap;gap:5px!important;border-radius:13px!important;background:#294633!important;color:#f4e3b3!important;font:700 11px/1.8 var(--fb)!important}
 #onlWait.uiLobbyCompact .uiLobbyFooter{flex:none;border-top:1px solid #c8bd8a26;padding-top:10px;width:100%;margin-top:auto}
+/* Fees and starting belong to the table tab; settings use the full remaining height. */
+#onlWait.uiLobbyCompact[data-lobby-tab="settings"] .uiLobbyFooter{display:none!important}
+#uiOnlineEntryError,#uiOnlineFeePending{font:600 14px/1.7 var(--fb);box-sizing:border-box}
+#uiOnlineEntryError h2{font:400 25px/1.4 var(--fh);margin:0 0 12px}
+#uiOnlineEntryError button,#uiOnlineFeePending button{min-height:44px;min-width:100px;padding:10px 16px;border:1px solid #d8bf7b;border-radius:14px;background:#dfc78d;color:#183d31;font:800 14px/1.4 var(--fb);cursor:pointer}
+#uiOnlineEntryError [data-entry-back]{background:transparent;color:#f8edcf;border-color:#d8bf7b80}
 #onlWait.uiLobbyCompact #lobbyStart{width:100%;max-width:none!important;min-height:48px;margin:0!important;padding:10px;border:1px solid #e9d18f;border-radius:14px;background:linear-gradient(115deg,#eedaa0,#dcb874);color:#153a2b;font:800 17px var(--fb);box-shadow:0 3px 0 #796132;cursor:pointer}
 #onlWait.uiLobbyCompact #lobbyHint{margin:7px 0 0!important;max-width:none;font-size:10px!important;line-height:1.6;color:#b7cbb1!important}
 #onlWait.uiLobbyCompact button:focus-visible,#chat button:focus-visible{outline:2px solid #f2d18a;outline-offset:2px}

@@ -1,0 +1,240 @@
+
+:is(#mjRanked,#majabeedCup.mcModern) { width:100%; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-preview-label { text-align:center; padding:8px 0 18px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-preview-area { padding:12px 0 18px; display:flex; justify-content:center; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-preview-nav { justify-content:center; margin-top:12px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-mode-nav { justify-content:center; margin-bottom:8px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-app { --mj-bg:#09251e; --mj-surface:#12352a; --mj-ink:#fff2d9; --mj-muted:#acc4b5; --mj-line:#315043; --mj-gold:#e6c68a; --mj-button:#dfbe7d; --mj-rank:#75bce9; --mj-radius:26px; width:min(100%,408px); min-width:0; box-sizing:border-box; border:1px solid var(--mj-line); border-radius:var(--mj-radius); overflow:hidden; color:var(--mj-ink); background:var(--mj-bg); font:400 14px/1.5 "Segoe UI",Tahoma,Arial,sans-serif; box-shadow:0 18px 45px #0000002e; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-app * { box-sizing:border-box; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-app.mj-cup { --mj-bg:#241d2c; --mj-surface:#322838; --mj-ink:#fff0d7; --mj-muted:#c8b9a7; --mj-line:#564552; --mj-gold:#e7c584; --mj-button:#e6c58b; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-hero { text-align:center; padding:18px 0 14px; background:radial-gradient(ellipse at 50% 40%,color-mix(in srgb,var(--mj-gold) 12%,transparent),transparent 70%); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-emblem { display:flex; justify-content:center; align-items:center; gap:7px; color:var(--mj-gold); margin:9px auto 5px; height:72px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-app .mj-cup-emblem svg { width:57px; height:57px; stroke-width:1.4; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-emblem span { width:27px; height:1px; background:var(--mj-gold); opacity:.5; transform:rotate(-35deg); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-emblem span:last-child { transform:rotate(35deg); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-hero h2 { font-size:27px; font-weight:700; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-hero p { font-size:12px; color:var(--mj-muted); margin-top:3px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-hearts { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 14px; border:1px solid var(--mj-line); border-radius:14px; background:var(--mj-surface); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-hearts strong { display:block; font-size:12px; font-weight:600; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-hearts small { font-size:11px; color:var(--mj-muted); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-heart-icons { display:flex; gap:6px; font-size:24px; color:#ee979a; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-heart-spent { color:var(--mj-muted); opacity:.6; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-route { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); position:relative; margin:18px 0; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-route:before { content:""; position:absolute; top:16px; left:16%; right:16%; height:1px; background:var(--mj-line); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-route>div { text-align:center; display:flex; flex-direction:column; align-items:center; position:relative; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-route>div>span { display:grid; place-items:center; width:33px; height:33px; border:1px solid var(--mj-line); border-radius:50%; background:var(--mj-bg); color:var(--mj-muted); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-route strong { font-size:11px; margin-top:6px; font-weight:600; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-route small { font-size:11px; color:var(--mj-muted); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-route .mj-stage-current>span { background:var(--mj-button); color:#3f2d20; border-color:var(--mj-button); box-shadow:0 0 0 4px color-mix(in srgb,var(--mj-gold) 13%,transparent); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-route .mj-stage-done>span { color:var(--mj-gold); border-color:var(--mj-gold); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-reward { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border:1px solid var(--mj-line); border-radius:15px; background:var(--mj-surface); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-reward>div>span { color:var(--mj-muted); font-size:11px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-reward strong { display:flex; gap:6px; align-items:baseline; font-size:22px; color:var(--mj-gold); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-reward small { font-size:11px; font-weight:400; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-reward>svg { width:29px; height:29px; color:var(--mj-gold); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-prize { display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px 8px; padding:12px 3px; font-size:11px; color:var(--mj-muted); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-prize strong { color:var(--mj-gold); font-weight:600; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-prize strong>span { color:var(--mj-muted); font-weight:400; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup .mj-radar-center svg { width:33px; height:33px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-app [hidden] { display:none!important; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-app h2,:is(#mjRanked,#majabeedCup.mcModern) .mj-app p { margin:0; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-app button,:is(#mjRanked,#majabeedCup.mcModern) .mj-app summary { font:inherit; -webkit-tap-highlight-color:transparent; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-app button:focus-visible,:is(#mjRanked,#majabeedCup.mcModern) .mj-app summary:focus-visible { outline:3px solid var(--mj-gold); outline-offset:3px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-app svg { width:18px; height:18px; flex:none; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--mj-line); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-brand { display:flex; gap:10px; align-items:center; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-brand-mark { color:var(--mj-gold); font-size:28px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-brand strong { font-size:18px; font-weight:700; display:block; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-brand small { display:block; font-size:11px; color:var(--mj-muted); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-wallet { display:flex; gap:7px; align-items:center; padding:8px 10px; background:var(--mj-surface); border:1px solid var(--mj-line); border-radius:12px; color:var(--mj-gold); font-weight:700; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-screen { padding:0 22px 20px; min-height:594px; display:flex; flex-direction:column; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-rank-hero { position:relative; text-align:center; padding:18px 0 12px; background:radial-gradient(ellipse at 50% 40%,color-mix(in srgb,var(--mj-rank) 12%,transparent),transparent 65%); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-hero-word { color:var(--mj-muted); font-size:12px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-crest-orbit { width:118px; height:104px; position:relative; margin:6px auto 0; display:grid; place-items:center; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-orbit-line { position:absolute; width:106px; height:72px; border:1px solid color-mix(in srgb,var(--mj-rank) 24%,transparent); border-radius:50%; transform:rotate(-22deg); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-rank-crest { width:68px; height:83px; clip-path:polygon(50% 0,94% 17%,88% 70%,50% 100%,12% 70%,6% 17%); background:linear-gradient(135deg,var(--mj-rank),color-mix(in srgb,var(--mj-rank) 35%,#07291f)); position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#082f2a; text-shadow:0 1px #ffffff44; filter:drop-shadow(0 4px 12px #00000033); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-rank-crest:before { content:""; position:absolute; inset:5px; clip-path:inherit; border:1px solid #ffffff77; background:linear-gradient(140deg,#ffffff44,transparent); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-rank-crest span { font-size:39px; line-height:1; z-index:1; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-rank-crest div { font-size:9px; letter-spacing:4px; padding-left:4px; margin-top:3px; z-index:1; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-rank-name { font-size:29px; font-weight:800; line-height:1.3; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-rank-caption { color:var(--mj-muted); font-size:12px; margin-top:5px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-rank-caption span { margin:0 5px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-rank-progress { margin:4px 0 18px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-progress-label { display:flex; flex-wrap:wrap; gap:4px 10px; justify-content:space-between; font-size:11px; color:var(--mj-muted); margin-bottom:9px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-progress-label b { font-weight:600; color:var(--mj-ink); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-track { height:5px; background:#24453a; border-radius:4px; overflow:hidden; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-track span { display:block; width:45%; height:100%; background:var(--mj-rank); border-radius:4px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-stakes { display:grid; grid-template-columns:1fr 1fr; background:var(--mj-surface); border:1px solid var(--mj-line); border-radius:17px; overflow:hidden; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-fee,:is(#mjRanked,#majabeedCup.mcModern) .mj-profit { padding:13px 14px 11px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-profit { border-right:1px solid var(--mj-line); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-fee>span,:is(#mjRanked,#majabeedCup.mcModern) .mj-profit>span { color:var(--mj-muted); font-size:12px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-stakes strong { display:flex; align-items:baseline; gap:6px; font-size:24px; margin-top:1px; font-weight:700; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-stakes strong small { font-size:11px; color:var(--mj-muted); font-weight:400; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-profit strong { color:var(--mj-gold); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-rank-deltas { grid-column:1/-1; display:flex; justify-content:space-around; gap:10px; border-top:1px solid var(--mj-line); padding:10px 8px; font-size:11px; color:var(--mj-muted); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-rank-deltas bdi { font-size:14px; color:var(--mj-ink); font-weight:700; margin-right:3px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-rank-deltas .mj-positive { color:#9bdbb1; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-details { margin:8px 0 7px; color:var(--mj-muted); font-size:11px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-details summary { list-style:none; display:flex; justify-content:center; gap:6px; align-items:center; min-height:36px; cursor:default; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-details summary::-webkit-details-marker { display:none; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-details summary svg { width:13px; height:13px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-details div { padding:8px 6px; line-height:1.8; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-rules { display:flex; justify-content:center; flex-wrap:wrap; gap:13px; color:var(--mj-muted); font-size:11px; padding:4px 0 17px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-rules span { display:flex; align-items:center; gap:5px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-rules svg { width:14px; height:14px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-action-area { margin-top:auto; text-align:center; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-primary { width:100%; min-height:56px; border:1px solid #edcf94; border-radius:15px; background:linear-gradient(130deg,#efd59d,var(--mj-button)); color:#193322; display:flex; justify-content:center; align-items:center; gap:10px; font-weight:800!important; font-size:17px!important; box-shadow:0 5px 0 #020f0b60,inset 0 1px #fff5de99; transition:transform .15s; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-primary:hover { transform:translateY(-1px); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-primary:active { transform:translateY(1px); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-primary svg:last-child { margin-right:auto; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-primary svg:first-child { margin-left:auto; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-primary svg { width:21px; height:21px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-action-area>p { color:var(--mj-muted); font-size:11px; padding-top:13px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-secondary { width:100%; min-height:46px; border:1px solid var(--mj-line); border-radius:13px; color:var(--mj-ink); background:var(--mj-surface); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-search-heading,:is(#mjRanked,#majabeedCup.mcModern) .mj-found-heading { text-align:center; padding-top:24px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-status-pill { display:inline-flex; align-items:center; gap:6px; color:var(--mj-gold); font-size:11px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-status-pill>span { width:5px; height:5px; border-radius:50%; background:currentColor; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-status-pill svg { width:14px; height:14px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-search-heading h2,:is(#mjRanked,#majabeedCup.mcModern) .mj-found-heading h2 { font-size:25px; font-weight:700; margin:7px 0 4px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-search-heading p,:is(#mjRanked,#majabeedCup.mcModern) .mj-found-heading p { color:var(--mj-muted); font-size:12px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-radar { position:relative; margin:17px auto 8px; width:162px; height:162px; display:grid; place-items:center; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-radar-ring { position:absolute; inset:0; border:1px solid color-mix(in srgb,var(--mj-gold) 27%,transparent); border-radius:50%; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-ring-inner { inset:23px; border-color:color-mix(in srgb,var(--mj-gold) 17%,transparent); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-radar-sweep { position:absolute; inset:1px; border-radius:50%; background:conic-gradient(from 0deg,transparent 0deg,transparent 260deg,color-mix(in srgb,var(--mj-gold) 18%,transparent) 359deg,transparent 360deg); animation:mj-ranked-sweep 4s linear infinite; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-radar-center { width:66px; height:66px; border:1px solid var(--mj-line); background:var(--mj-surface); border-radius:19px; transform:rotate(-8deg); display:grid; place-items:center; font-size:40px; color:var(--mj-gold); z-index:1; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-radar-dot { position:absolute; width:7px; height:7px; border-radius:50%; background:var(--mj-gold); box-shadow:0 0 0 5px color-mix(in srgb,var(--mj-gold) 12%,transparent); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-dot-one { top:22px; right:17px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-dot-two { bottom:31px; left:10px; opacity:.5; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-time-row { display:flex; gap:10px; align-items:center; justify-content:center; font-size:11px; color:var(--mj-muted); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-timer { font-size:22px; font-variant-numeric:tabular-nums; color:var(--mj-ink); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-search-slots { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; margin-top:23px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-slot { text-align:center; min-width:0; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-avatar { width:52px; height:52px; border-radius:18px; display:grid; place-items:center; margin:0 auto; background:var(--mj-surface); border:1px solid var(--mj-line); font-size:24px; color:var(--mj-ink); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-avatar-self { background:linear-gradient(135deg,#d8c695,#977d4b); color:#253b2c; border-color:#e6d2a2; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-empty { border-style:dashed; color:var(--mj-muted); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-empty svg { width:21px; height:21px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-slot strong { display:block; font-size:12px; font-weight:600; margin-top:7px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-slot small { font-size:11px; color:var(--mj-muted); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-filled small { color:#9ecaaa; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-search-count { text-align:center; font-size:12px; color:var(--mj-muted); padding:13px 0 17px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-search-count bdi { color:var(--mj-ink); font-weight:700; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-match-policy { display:flex; justify-content:center; align-items:center; gap:9px; padding:12px 6px; margin-bottom:20px; border-top:1px solid var(--mj-line); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-match-policy>svg { color:var(--mj-gold); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-match-policy strong { font-size:12px; font-weight:600; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-match-policy p { color:var(--mj-muted); font-size:11px; margin-top:2px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-versus-board { margin:22px 0 0; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-team { border:1px solid var(--mj-line); border-radius:18px; padding:12px 16px 15px; background:var(--mj-surface); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-your-team { border-color:color-mix(in srgb,var(--mj-gold) 45%,var(--mj-line)); background:linear-gradient(110deg,color-mix(in srgb,var(--mj-gold) 5%,var(--mj-surface)),var(--mj-surface)); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-team-label { color:var(--mj-muted); font-size:11px; text-align:center; margin-bottom:12px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-your-team .mj-team-label { color:var(--mj-gold); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-team-pair { display:grid; grid-template-columns:1fr 1fr; gap:15px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-player { text-align:center; display:flex; flex-direction:column; align-items:center; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-player strong { font-size:14px; margin-top:7px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-player strong small { color:var(--mj-gold); font-weight:400; font-size:11px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-player>span { color:var(--mj-muted); font-size:11px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-player em { display:flex; align-items:center; gap:4px; color:var(--mj-muted); font-size:11px; font-style:normal; margin-top:5px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-player em svg { width:12px; height:12px; color:var(--mj-gold); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-avatar-fahd { background:linear-gradient(140deg,#7a9d93,#44695c); color:#e9f4ec; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-avatar-khalid { background:linear-gradient(140deg,#9f8375,#68514f); color:#f9e7dc; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-avatar-nawaf { background:linear-gradient(140deg,#8393ab,#4b5a75); color:#edf0fc; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-versus { display:flex; align-items:center; justify-content:center; gap:12px; padding:8px 0; color:var(--mj-gold); font-size:12px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-versus span { width:32px; height:1px; background:var(--mj-line); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-found-footer { text-align:center; margin:auto 0 15px; padding-top:18px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-countdown { font-size:17px; font-weight:700; color:var(--mj-gold); }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-found-footer p { font-size:11px; color:var(--mj-muted); margin-top:5px; }
+:is(#mjRanked,#majabeedCup.mcModern) .mj-sr { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+@keyframes mj-ranked-sweep { to { transform:rotate(360deg); } }
+@media(max-width:360px) { :is(#mjRanked,#majabeedCup.mcModern) .mj-screen { padding-right:15px; padding-left:15px; } :is(#mjRanked,#majabeedCup.mcModern) .mj-header { padding:14px 15px; } :is(#mjRanked,#majabeedCup.mcModern) .mj-search-slots { gap:5px; } :is(#mjRanked,#majabeedCup.mcModern) .mj-avatar { width:46px; height:46px; border-radius:15px; } :is(#mjRanked,#majabeedCup.mcModern) .mj-rank-deltas { gap:5px; } }
+@media(prefers-reduced-motion:reduce) { :is(#mjRanked,#majabeedCup.mcModern) .mj-app * { animation:none!important; transition:none!important; } }
+
+html.mjRankedLocked,body.mjRankedLocked{overflow:hidden!important;overscroll-behavior:none}
+:is(#mjRanked,#majabeedCup.mcModern){box-sizing:border-box;width:auto}
+:is(#mjRanked,#majabeedCup.mcModern)[hidden]{display:none!important}
+:is(#mjRanked,#majabeedCup.mcModern){position:fixed;inset:0;z-index:18000;display:flex;align-items:flex-start;justify-content:center;overflow:auto;background:#061b16f7;padding:calc(env(safe-area-inset-top,0px) + 10px) 10px calc(env(safe-area-inset-bottom,0px) + 16px);overscroll-behavior:contain;color-scheme:dark}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-app{--fb:'Majabeed Text';width:min(100%,460px);flex:none;font-family:'Majabeed Text','Segoe UI',Tahoma,Arial,sans-serif}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-header{gap:12px;padding:14px 16px}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-brand{margin-left:auto}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-back{background:transparent;color:var(--mj-ink);border:1px solid var(--mj-line);border-radius:12px;font-size:28px;min-width:40px;min-height:44px}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-screen{min-height:min(594px,76dvh)}
+:is(#mjRanked,#majabeedCup.mcModern) button{cursor:pointer}:is(#mjRanked,#majabeedCup.mcModern) button:disabled{opacity:.55;cursor:default;transform:none}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-message{margin:12px 18px;padding:12px;background:var(--mj-surface);border:1px solid var(--mj-line);border-radius:12px;font-size:13px;line-height:1.8}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-message button{margin-top:8px}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-real-crest{height:98px;width:98px;object-fit:contain;z-index:1}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-emblem img{width:72px;height:80px;object-fit:contain}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-avatar{position:relative;overflow:hidden;flex:none}:is(#mjRanked,#majabeedCup.mcModern) .mj-avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-slot strong,:is(#mjRanked,#majabeedCup.mcModern) .mj-player strong{max-width:100%;overflow-wrap:anywhere}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-cup-reward>small{font-size:10px;color:var(--mj-muted);max-width:40%;text-align:left}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-empty-state{justify-content:center;gap:20px;text-align:center}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-found-footer{padding:20px 0}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-wallet small{font-size:10px}
+@media(max-width:360px){:is(#mjRanked,#majabeedCup.mcModern){padding-left:4px;padding-right:4px}:is(#mjRanked,#majabeedCup.mcModern) .mj-screen{padding-left:16px;padding-right:16px}:is(#mjRanked,#majabeedCup.mcModern) .mj-header{gap:7px;padding:12px}:is(#mjRanked,#majabeedCup.mcModern) .mj-wallet{padding:6px}:is(#mjRanked,#majabeedCup.mcModern) .mj-avatar{width:46px;height:46px}}
+@media(prefers-reduced-motion:reduce){:is(#mjRanked,#majabeedCup.mcModern) *,:is(#mjRanked,#majabeedCup.mcModern) *:before,:is(#mjRanked,#majabeedCup.mcModern) *:after{animation:none!important;transition:none!important}}
+/* The same champions view is reachable from the current and legacy cup journeys. */
+:is(#mjRanked,#majabeedCup.mcModern) .mj-champions-entry{margin:3px 0 14px}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-champions{padding-top:20px;gap:14px}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-champions-heading{text-align:center}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-champions-heading h2{font-size:24px;color:var(--mj-gold)}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-champions-heading p,:is(#mjRanked,#majabeedCup.mcModern) .mj-champions-status{font-size:12px;color:var(--mj-muted);line-height:1.8;text-align:center}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-champions-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-champions-list li{display:flex;align-items:center;gap:10px;padding:10px 9px;border:1px solid var(--mj-line);border-radius:14px;background:var(--mj-surface);min-width:0}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-champions-list .mj-avatar{width:42px;height:42px;border-radius:12px}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-champion-position{flex:0 0 27px;text-align:center;color:var(--mj-muted);font-size:14px}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-champion-name{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-champion-name strong{font-size:13px;overflow-wrap:anywhere}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-champion-name small{font-size:10px;color:var(--mj-muted)}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-champion-titles{display:flex;flex-direction:column;align-items:center;flex:0 0 40px;color:var(--mj-gold)}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-champion-titles bdi{font-size:17px;font-weight:700}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-champion-titles small{font-size:9px;color:var(--mj-muted)}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-champions-list .mj-champion-first{border-color:var(--mj-gold)}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-champion-first .mj-champion-position,:is(#mjRanked,#majabeedCup.mcModern) .mj-champion-second .mj-champion-position{color:var(--mj-gold)}
+
+/* The continuation controller uses the same Cup design without inheriting old fixed rows. */
+#majabeedCup.mcModern .mcShell.mj-app{height:auto;min-height:0;max-width:460px;margin:0;padding:0;display:block}
+#majabeedCup.mcModern .mcScroll{display:block;overflow:visible;padding:0;flex:none;overscroll-behavior:contain}
+#majabeedCup.mcModern #mcBody{display:block;min-height:0}
+#majabeedCup.mcModern #mcFooter{padding:0 22px 22px;background:transparent;border:0;box-shadow:none}
+#majabeedCup.mcModern #mcFooter:empty{display:none}
+#majabeedCup.mcModern #mcFooter button+button{margin-top:9px}
+#majabeedCup.mcModern #mcMessage{margin:12px 18px;padding:12px;font-size:13px;line-height:1.8}
+#majabeedCup.mcModern .mj-screen{min-height:0}
+#majabeedCup.mcModern .mj-search{min-height:min(510px,70dvh)}
+#majabeedCup.mcModern .mj-rules-note{font-size:12px;line-height:1.8;color:var(--mj-muted);margin:12px 0}
+:is(#mjRanked,#majabeedCup.mcModern) .mj-radar-center img{width:48px;height:54px;object-fit:contain}
+
+/* Cup stays anchored to the viewport; only its content scrolls on short screens. */
+#mjRanked.mjCupPage,#majabeedCup.mcModern{height:100%;height:100dvh;overflow:hidden;overscroll-behavior:none;align-items:stretch}
+#mjRanked.mjCupPage .mj-app,#majabeedCup.mcModern .mcShell.mj-app{height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+#mjRanked.mjCupPage .mj-header,#majabeedCup.mcModern .mj-header{flex:none}
+#mjRanked.mjCupPage #mjMessage,#majabeedCup.mcModern #mcMessage{flex:none;max-height:25%;overflow:auto}
+#mjRanked.mjCupPage #mjBody{display:flex;flex:1;min-height:0;overflow:hidden}
+#mjRanked.mjCupPage #mjBody>.mj-screen{flex:1;width:100%;height:100%;min-height:0;padding:0 18px;overflow:hidden}
+#mjRanked.mjCupPage .mj-cup-content{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#cdb77b44 transparent}
+#mjRanked.mjCupPage .mj-action-area{flex:none;margin-top:0;padding:12px 0 14px;border-top:1px solid var(--mj-line);background:var(--mj-bg)}
+#mjRanked.mjCupPage .mj-action-area p{font-size:12px;line-height:1.7;margin:9px 0 0;color:var(--mj-ink)}
+#mjRanked.mjCupPage #mjBody>.mj-champions{overflow:auto;padding:18px;overscroll-behavior:contain}
+#mjRanked.mjCupPage #mjBody>.mj-empty-state{padding:18px;overflow:auto}
+#majabeedCup.mcModern .mcScroll{display:flex;flex:1;min-height:0;flex-direction:column;overflow:hidden;padding:0}
+#majabeedCup.mcModern #mcBody{display:block;flex:1;min-height:0;overflow:auto;overscroll-behavior:contain}
+#majabeedCup.mcModern #mcBody>.mj-screen{min-height:100%;padding:0 18px 10px}
+#majabeedCup.mcModern #mcFooter{flex:none;margin:0 18px;padding:12px 0 14px;border-top:1px solid var(--mj-line);background:var(--mj-bg)}
+#majabeedCup.mcModern .mj-rules-note{text-align:center;color:var(--mj-ink);margin:9px 0 0}
+:is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-cup-hero{padding:10px 0 8px}
+:is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-cup-emblem{height:54px;margin:5px auto}
+:is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-cup-emblem img{width:50px;height:56px}
+:is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-cup-hero h2{font-size:25px}
+:is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-cup-route{margin:12px 0}
+:is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-cup-hearts{padding:9px 12px}
+:is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-cup-prize{padding:9px 3px}
+:is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-champions-entry{margin:3px 0 8px}
+:is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-rules{padding-bottom:10px}
+:is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-search-heading,:is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-found-heading{padding-top:18px}
+:is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-radar{width:clamp(100px,19dvh,162px);height:clamp(100px,19dvh,162px)}
+:is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-match-policy{margin-bottom:10px}
+@media(max-height:650px){
+ :is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-search-heading{padding-top:12px}
+ :is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-search-heading h2{font-size:23px}
+ :is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-radar{margin-top:10px}
+ :is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-search-slots{margin-top:12px}
+ :is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-search-count{padding:8px 0}
+ :is(#mjRanked.mjCupPage,#majabeedCup.mcModern) .mj-match-policy{padding:8px 6px;margin-bottom:5px}
+}

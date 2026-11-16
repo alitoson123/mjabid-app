@@ -20,21 +20,22 @@
 <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script src="image-cache.js?v=401-firebase-chat-1"></script>
-<link rel="stylesheet" href="ui-polish.css?v=401-weekly-hotfix-1">
+<link rel="stylesheet" href="ui-polish.css?v=421-levels-1">
 <link rel="stylesheet" href="ui-friendly-v369.css?v=370">
-<script defer src="ui-theme-rentals.js?v=401-flow-1"></script>
-<script defer src="ui-results-store.js?v=410-cup-1"></script>
+<script defer src="ui-theme-rentals.js?v=416-table-1"></script>
+<script defer src="ui-results-store.js?v=416-table-1"></script>
 <script defer src="ui-polish.js"></script>
-<script defer src="ui-navigation.js?v=411-finale-1"></script>
+<script defer src="ui-navigation.js?v=420-championships-1"></script>
 <script defer src="ui-player-panels.js?v=365"></script>
 <script defer src="ui-table-view.js?v=411-finale-1"></script>
 <link rel="stylesheet" href="ui-cup.css?v=411-finale-1">
 <link rel="stylesheet" href="ui-card-motion.css?v=357">
 <link rel="stylesheet" href="ui-community.css">
+<link rel="stylesheet" href="ui-profile-trophies.css?v=420-championships-1">
 <link rel="stylesheet" href="ui-field-cards-v348.css">
 <link rel="stylesheet" href="ui-match-tiers-v349.css">
 <link rel="stylesheet" href="ui-table-cards-v350.css">
-<link rel="stylesheet" href="ui-lobby-chat-v351.css">
+<link rel="stylesheet" href="ui-lobby-chat-v351.css?v=417-recovery-1">
 <link rel="stylesheet" href="ui-pile-joker-v352.css">
 <link rel="stylesheet" href="ui-session-polish-v353.css">
 <link rel="stylesheet" href="ui-bid-stack-v355.css">
@@ -56,16 +57,17 @@
 <script defer src="ui-vip.js?v=383"></script>
 <link rel="stylesheet" href="ui-vip.css?v=383">
 <link rel="stylesheet" href="ui-six-v388.css">
-<link rel="stylesheet" href="ui-table-hud-v389.css">
+<link rel="stylesheet" href="ui-table-hud-v389.css?v=417-recovery-1">
 <link rel="stylesheet" href="ui-baloot.css?v=406-projects-1">
 <link rel="stylesheet" href="ui-baloot-motion.css?v=400-stack-1">
 <link rel="stylesheet" href="ui-baloot-lobby-v398.css?v=399-project-1">
 <link rel="stylesheet" href="ui-game-help.css?v=399-project-1">
-<link rel="stylesheet" href="ui-player-experience-v398.css?v=2">
-<link rel="stylesheet" href="ui-home-v399.css?v=414-home-2">
-<link rel="stylesheet" href="ui-sessions-catalog.css?v=409-themes-chat-1">
-<link rel="stylesheet" href="ui-session-theme.css?v=412-table-bid-1">
+<link rel="stylesheet" href="ui-player-experience-v398.css?v=420-championships-1">
+<link rel="stylesheet" href="ui-home-v399.css?v=399-project-1">
+<link rel="stylesheet" href="ui-sessions-catalog.css?v=424-voice-status-1">
+<link rel="stylesheet" href="ui-session-theme.css?v=417-recovery-1">
 <link rel="stylesheet" href="ui-session-chat.css?v=409-themes-chat-1">
+<link rel="stylesheet" href="ui-player-levels.css?v=421-levels-1">
 </head>
 <body>
 <div id="frame">
@@ -98,13 +100,10 @@
     <button id="invYes" style="background:var(--clay);color:#fff;border:none;border-radius:99px;padding:7px 13px;font-family:var(--fb);font-weight:800;font-size:12px;cursor:pointer">قبول</button>
     <button id="invNo" style="background:none;border:1.5px solid var(--line);color:var(--mut);border-radius:99px;padding:7px 11px;font-family:var(--fb);font-weight:800;font-size:12px;cursor:pointer">رفض</button>
   </div>
-  <div id="ranksModal" class="hidden" style="position:absolute;inset:12px;z-index:60;border-radius:22px;box-shadow:0 20px 50px rgba(0,0,0,.5);display:flex;flex-direction:column;overflow:hidden;transition:background .3s">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:calc(6px + env(safe-area-inset-top, 47px)) 16px 10px"><!-- FIX — نفس معادلة زر العودة بالشات (#chWrap: 18px + المنطقة الآمنة)؛ النافذة تبدأ من 12px فتُطرح: 12+6 = 18 -->
-      <span style="font-family:Lalezar;font-size:20px;color:#ffc6a5">مستويات اللاعبين</span>
-      <button id="ranksClose" style="width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button><!-- FIX — 40px بنفس حجم زر العودة (.qBtn) ليتطابق مركزه معه -->
-    </div>
-    <div id="ranksList" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 14px 28px;display:flex;flex-direction:column;gap:8px"></div>
-  </div>
+  <section id="ranksModal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="ranksTitle" dir="rtl">
+    <header class="plHeader"><div><span class="plEyebrow">مجابيد · لعب التصنيف</span><h2 id="ranksTitle">مستويات اللاعبين</h2></div><button id="ranksClose" type="button" aria-label="إغلاق مستويات اللاعبين"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg></button></header>
+    <div id="ranksList" tabindex="0" aria-label="الرتبة الحالية وجميع مستويات اللاعبين"></div>
+  </section>
   <div id="forceUpdate" class="hidden" style="position:fixed;inset:0;z-index:200;background:rgba(15,10,5,.75);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:24px">
     <div style="width:100%;max-width:340px;background:#fdf9f0;border-radius:24px;padding:26px 22px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.5)">
       <div style="font-size:16px;font-weight:800;color:#5e2f0e;margin-bottom:18px">هناك نسخة جديدة من مجابيد و صكة</div>
@@ -507,7 +506,7 @@
       <nav id="pfTabs" role="tablist" aria-label="أقسام الملف الشخصي">
         <button id="pfTabOverview" role="tab" aria-controls="pfPanelOverview" aria-selected="true" data-pf-tab="overview">نظرة عامة</button>
         <button id="pfTabHistory" role="tab" aria-controls="pfPanelHistory" aria-selected="false" data-pf-tab="history" tabindex="-1">السجل</button>
-        <button id="pfTabAchievements" role="tab" aria-controls="pfPanelAchievements" aria-selected="false" data-pf-tab="achievements" tabindex="-1">الإنجازات</button>
+        <button id="pfTabAchievements" role="tab" aria-controls="pfPanelAchievements" aria-selected="false" data-pf-tab="achievements" tabindex="-1">البطولات</button>
         <button id="pfTabAccount" role="tab" aria-controls="pfPanelAccount" aria-selected="false" data-pf-tab="account" tabindex="-1">الحساب</button>
       </nav>
       <div id="pfPages">
@@ -540,12 +539,10 @@
         <div style="font-size:11.5px;font-weight:800;color:var(--mut);margin-bottom:7px">آخر 20 نتيجة محفوظة على هذا الجهاز</div>
         <div id="pfHistoryRow" style="display:flex;gap:7px"></div>
       </div>
-      <!-- NEW CODE — حُذفت حاوية "الأوسمة المكتسبة" نهائيًا (استُبدلت بقسم الإنجازات) -->
-      <!-- NEW CODE — قسم الإنجازات الجديد (عضو مؤسس + إنجازات الصدارة الأسبوعية) -->
       </section>
       <section id="pfPanelAchievements" role="tabpanel" aria-labelledby="pfTabAchievements" tabindex="0" hidden>
       <div id="pfAchievements" style="margin:14px 16px 0">
-        <div class="t">الإنجازات</div>
+        <div class="t">البطولات</div>
         <div id="pfAchievementsList"></div>
       </div>
       </section>
@@ -650,20 +647,6 @@
       <div id="lbPodium" style="display:flex;align-items:flex-end;justify-content:center;gap:14px;padding:24px 20px 4px;flex-shrink:0;position:relative;z-index:2"></div>
       <div id="lbList" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 18px 78px;display:flex;flex-direction:column;gap:9px;position:relative;z-index:1"></div>
       </div>
-    </div>
-  </div>
-  <!-- الأوسمة -->
-  <div class="screen hidden" id="awardsScr">
-    <div data-navholder style="position:absolute;inset:0;display:flex;flex-direction:column;background:radial-gradient(130% 90% at 50% 22%,#2f5138 0%,#16281c 85%)">
-      <div style="display:flex;align-items:center;gap:10px;padding:calc(18px + env(safe-area-inset-top, 47px)) 16px 0">
-        <button class="qBtn" id="awardsBack" style="width:40px;height:40px;border-radius:999px;border:0;background:rgba(0,0,0,.32);color:#ffc6a5;display:flex;align-items:center;justify-content:center;flex:none;font-size:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></button>
-        <span style="font-family:var(--fh);font-size:25px;color:#ffc6a5;text-shadow:0 2px 0 rgba(0,0,0,.35)">الإنجازات</span>
-      </div>
-      <div style="padding:6px 20px 0">
-        <div id="awardsProg" style="font-size:13px;font-weight:700;color:#b9caa2;margin-top:2px"></div>
-        <div id="awardsBarWrap" style="margin-top:10px;height:8px;border-radius:999px;background:rgba(0,0,0,.35);overflow:hidden"><span id="awardsBar" style="display:block;width:0%;height:100%;border-radius:999px;background:linear-gradient(90deg,#e2925c,#d67f48)"></span></div>
-      </div>
-      <div id="awardsGrid" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 18px 100px;display:grid;grid-template-columns:1fr 1fr;gap:13px;align-content:start"></div>
     </div>
   </div>
   <div class="screen hidden" id="tiers">
@@ -817,16 +800,15 @@
   </div>
 
 </div>
-<script src="game-core.js?v=414-home-2"></script>
+<script src="game-core.js?v=424-voice-status-1"></script>
 <script>
 if('serviceWorker' in navigator&&location.protocol==='https:'){
   navigator.serviceWorker.register('sw.js').catch(()=>{});
+  fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
+    const m=t.match(/waggif-v(\d+)/); const bt=document.getElementById('buildTag');
+    if(m&&bt)bt.textContent='build v'+m[1];
+  }).catch(()=>{});
 }
-// iOS serves bundled assets using capacitor://; display the build without a service worker.
-fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
-  const m=t.match(/waggif-v([0-9A-Za-z-]+)/); const bt=document.getElementById('buildTag');
-  if(m&&bt)bt.textContent='build v'+m[1];
-}).catch(()=>{});
 </script>
 <!-- ============ تكامل AdMob الفعلي — النسخة الصحيحة المؤكَّدة من فحص ملف plugin.js الفعلي ============ -->
 <!-- FIX — المحاولة الأولى (استيراد ES module) لم تعمل: هذا المشروع بلا أداة تجميع، فـimport يفشل صامتاً حتى
@@ -911,22 +893,26 @@ fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
 <link rel="stylesheet" href="ui-connection-quality.css?v=405-speed-1">
 <script src="ui-connection-quality.js?v=404-return-1"></script>
 <script src="ui-session-return.js?v=404-return-1"></script>
-<script src="ui-six-v388.js?v=412-table-bid-1"></script>
+<script src="ui-six-v388.js?v=417-recovery-1"></script>
 <script src="ui-render-pipeline.js?v=414-play-1"></script>
-<script src="ui-table-hud-v389.js?v=414-play-1"></script>
-<script src="ui-card-motion.js?v=414-play-1"></script>
+<script src="ui-table-hud-v389.js?v=417-recovery-1"></script>
+<script src="ui-card-motion.js?v=416-table-3"></script>
 <link rel="stylesheet" href="ui-majabeed-finale.css?v=411-finale-1">
 <script src="ui-majabeed-finale.js?v=414-play-1"></script>
-<script src="ui-community.js?v=410-cup-1"></script>
-<script src="ui-cup.js?v=412-table-bid-1"></script>
+<script src="ui-profile-trophies.js?v=419-trophies-1"></script>
+<script src="ui-community.js?v=419-trophies-1"></script>
+<script src="ui-cup.js?v=419-trophies-1"></script>
 <script src="ui-baloot-sounds.js?v=398-social-1"></script>
 <script src="ui-baloot-audio.js?v=406-projects-1"></script>
 <script src="ui-baloot-ranks.js?v=398"></script>
 <script src="ui-baloot-motion.js?v=400-stack-1"></script>
-<script src="ui-sessions-catalog.js?v=412-table-bid-1"></script>
-<script src="ui-session-theme.js?v=412-table-bid-1"></script>
+<script src="ui-sessions-catalog.js?v=424-voice-status-1"></script>
+<script src="ui-session-theme.js?v=417-recovery-1"></script>
 <script src="ui-session-chat.js?v=411-finale-1"></script>
-<script src="ui-baloot.js?v=412-table-bid-1"></script>
+<link rel="stylesheet" href="ui-friendly-voice.css?v=424-voice-status-1">
+<script src="ui-friendly-voice-config.js?v=424-voice-status-1"></script>
+<script src="ui-friendly-voice.js?v=424-voice-status-1"></script>
+<script src="ui-baloot.js?v=424-voice-status-1"></script>
 <script src="ui-game-help.js?v=399-project-1"></script>
 <script src="ui-entry-ads-ui.js?v=411-finale-1"></script>
 <script src="ui-friendly-hand.js?v=414-play-1"></script>
@@ -934,5 +920,9 @@ fetch('sw.js',{cache:'no-store'}).then(r=>r.text()).then(t=>{
 <script src="ui-friendly-session.js?v=414-play-1"></script>
 <link rel="stylesheet" href="ui-session-details.css?v=404-return-1">
 <script src="ui-session-details.js?v=414-play-1"></script>
+<link rel="stylesheet" href="ui-ranked.css?v=420-championships-1">
+<script src="ui-ranked.js?v=421-levels-1"></script>
+<link rel="stylesheet" href="ui-table-realism.css?v=417-recovery-1">
+<script src="ui-table-realism.js?v=416-table-5"></script>
 </body>
 </html>

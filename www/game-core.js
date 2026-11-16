@@ -37,7 +37,7 @@ const $=s=>document.querySelector(s);
 // ⚠️ الصق مفاتيح مشروعك هنا (من إعدادات Firebase → تطبيق الويب).
 // هذه المفاتيح آمنة للنشر في كود الواجهة (مصمّمة لذلك).
 // رقم إصدار التطبيق — يُحدَّث يدويًا مع كل نسخة تُرفع للمتاجر (مو نفس رقم كاش الـSW)
-const APP_VERSION='3.0.0'; // V413: bundle cleanup and behavior-preserving code organization.
+const APP_VERSION='2.2.49'; // V423 FRIENDLY VOICE2: permission lifecycle.
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCZZrU2tip4efYEfYhUi9F_DNfuRZ22adU",
   authDomain: "jops-e508d.firebaseapp.com",
@@ -224,6 +224,7 @@ function uiCostStop(){
   _inviteListening=false;_freqListening=false;_friendsListening=false;
 }
 function uiCostReset(uid){
+  window.MajabeedTrophies?.accountChanged(uid);
   window.VipClient?.reset();
   if(document.getElementById('uiFriendlyEntry'))uiFriendlyEntryCancel(true);
   if(typeof UI_HOME_WALLET!=='undefined')uiHomeWalletAccount(uid);
@@ -673,7 +674,7 @@ async function uiAudioResponseBytes(response,src){
 
 class SoundManager {
   constructor(){
-    this.ctx=null;this.buffers={};this.sounds={drop1:'sfx/drop1.wav',drop2:'sfx/drop2.wav',arrive:'sfx/arrive.wav'};
+    this.ctx=null;this.buffers={};this.sounds={drop1:'sfx/drop1.wav',drop2:'sfx/drop2.wav',arrive:'sfx/arrive.wav',joker:'sfx/joker.wav'};
     this._dropToggle=0;this.activeSources=[];this.timerInterval=null;this._loading={};this._retryAfter={};this._generation=0;this._requests={};
   }
   init(gesture=false){
@@ -704,17 +705,17 @@ class SoundManager {
     if(uiAudioBlocked()||!UI_AUDIO.gestured)return null;
     if(!this.ctx||this.ctx.state==='closed')this.init();
     const context=this.ctx;if(!context)return null;
-    const generation=this._generation,epoch=UI_AUDIO.generation,at=Date.now(),channel=bufferKey==='arrive'?'arrive':'action';
+    const generation=this._generation,epoch=UI_AUDIO.generation,at=Date.now(),channel=bufferKey==='joker'?'joker':bufferKey==='arrive'?'arrive':'action';
     const request=this._requests[channel]=(this._requests[channel]||0)+1;
     const start=()=>{
-      if(uiAudioBlocked()||this.ctx!==context||context.state!=='running'||!this.buffers[bufferKey]||generation!==this._generation||epoch!==UI_AUDIO.generation||Date.now()-at>600)return null;
+      if(uiAudioBlocked()||this.ctx!==context||context.state!=='running'||!this.buffers[bufferKey]||generation!==this._generation||epoch!==UI_AUDIO.generation||Date.now()-at>(options.maxAge||600)||options.isCurrent&&!options.isCurrent())return null;
       const source=context.createBufferSource();source.buffer=this.buffers[bufferKey];
       if(options.randomPitch)source.playbackRate.value=0.9+Math.random()*0.2;
       else if(options.playbackRate)source.playbackRate.value=options.playbackRate;
       if(options.loop)source.loop=true;
       source.connect(context.destination);this.activeSources.push(source);
       source.onended=()=>{this.activeSources=this.activeSources.filter(s=>s!==source);try{source.disconnect();}catch(_){}};
-      try{source.start(0);return source;}catch(_){source.onended();return null;}
+      try{source.start(0);options.onStart?.(source);return source;}catch(_){source.onended();return null;}
     };
     if(context.state==='running'&&this.buffers[bufferKey])return start();
     if(options.loop)return null;
@@ -805,7 +806,14 @@ function uiStopVoices(){
   for(const state of _voicePlayback.values()){state.current=null;state.pending=[];}
   for(const a of Object.values(_voiceCache))try{a.onended=null;a.onerror=null;a.pause();a.currentTime=0;}catch(_){}
 }
+let uiJokerSequence=0,uiJokerSource=null;
+function uiStopJoker(){uiJokerSequence++;if(uiJokerSource){try{uiJokerSource.stop();}catch(_){}uiJokerSource=null;}}
+function uiPlayJoker(isCurrent=()=>true){
+  uiStopJoker();const sequence=uiJokerSequence;
+  return GameSoundManager._playSound('joker',{maxAge:450,isCurrent:()=>sequence===uiJokerSequence&&isCurrent(),onStart:source=>{uiJokerSource=source;}});
+}
 function playVoice(key,{eventId}={}){
+  if(key==='joker')return uiPlayJoker();
   if(!VOICE_FILES[key])return;
   // Identify deliveries, never phrase text: two distinct sends may use the same clip.
   if(eventId!=null){
@@ -1677,7 +1685,7 @@ function show(id,overlay){
   id=window.MajabeedBaloot?.routeFor?.(id,overlay)||id;
   if(!overlay&&document.getElementById('uiFriendlyEntry'))uiFriendlyEntryCancel(true);
   if(!overlay)uiCostRoute(id);
-  if(!overlay){for(const s of['setup','game','waqf','results','onl','login','signup','gcomplete','home','match','welcome','profile','chat','friends','addfr','tiers','shop','lboard','awardsScr'])$('#'+s).classList.add('hidden')}
+  if(!overlay){for(const s of['setup','game','waqf','results','onl','login','signup','gcomplete','home','match','welcome','profile','chat','friends','addfr','tiers','shop','lboard'])$('#'+s).classList.add('hidden')}
   else{$('#waqf').classList.add('hidden');$('#results').classList.add('hidden')}
   $('#'+id).classList.remove('hidden');
   if(!overlay&&typeof uiCommunityRoute==='function')uiCommunityRoute(id);
@@ -1825,7 +1833,7 @@ function renderSeatCard(el,opts){
   const {turn,holderBadgeHtml,avaHtml,nameHtml,handCount,pts,pct,pileTopCard,pileBadgeHtml,onAvaClick}=opts; // NEW CODE — أضفنا onAvaClick اختياري. FIX — أضفنا pct (نسبة التعبئة نحو هدف النقاط، ٠ لو ما فيه هدف)
   el.classList.toggle('turnGlow',turn);
   el.innerHTML=`
-    ${turn?'<div class="bubble">دوره</div>':''}${holderBadgeHtml||''}
+    ${turn?'<div class="bubble">دوره</div>':''}
     <div class="avaWrap"><div class="oppHandFan">${oppHandFanHTML(handCount)}</div><div class="ava"${onAvaClick?' style="cursor:pointer"':''}>${avaHtml}</div><div class="handCountBadge">${handCount}</div>${opts.autoControlled?'<span class="uiAutoBadge">تحكم تلقائي</span>':''}</div>
     <div class="nm">${nameHtml}</div>
     <div class="inf"><span class="pts" aria-label="${pts} نقطة${opts.teamScore?' للفريق':''}"><i class="ptsFill" style="width:${pct||0}%"></i><b>${pts} <small>${opts.teamScore?'للفريق':'نقطة'}</small></b></span></div>
@@ -1990,6 +1998,7 @@ function renderScatterField(container,fieldArr,opts){
   fieldArr.forEach((f,i)=>{
     const el=existing.get(String(f.id))||cardEl(f,'sm');
     const p=layout[i],match=!!(sel&&(sel.rank===f.rank||sel.rank===JOKER)&&myTurn);
+    uiTableRestingAngles(container).set(String(f.id),p.r);
     const x=p.x,y=p.y-(match?p.lift:0);
     el.style.width=p.w+'px';el.style.height=p.h+'px';
     el.style.position='absolute';el.style.left='50%';el.style.top='50%';
@@ -2022,8 +2031,8 @@ function renderScatterField(container,fieldArr,opts){
       (layer||container).appendChild(ghost);
       uiCardMotion(ghost,[
         {transform:`translate(-50%,-50%) translate(${info.x}px,${info.y}px) rotate(${info.r}deg)`,opacity:1},
-        {transform:`translate(-50%,-50%) translate(${(i%4)*2}px,${-18+(i%4)*2}px) rotate(${(i%3)-1}deg) scale(1.04)`,opacity:1,offset:.38},
-        {transform:`translate(-50%,-50%) translate(${d.x}px,${d.y}px) rotate(0deg) scale(.45)`,opacity:0}
+        {transform:`translate(-50%,-50%) translate(${(i%4)*2}px,${-18+(i%4)*2}px) rotate(${info.r}deg) scale(1.04)`,opacity:1,offset:.38},
+        {transform:`translate(-50%,-50%) translate(${d.x}px,${d.y}px) rotate(${info.r}deg) scale(.45)`,opacity:0}
       ],{duration:480,delay:Math.min(i*14,84),easing:'cubic-bezier(.35,0,.5,1)',fill:'both'},true);
     });
   }
@@ -2034,7 +2043,7 @@ function renderScatterField(container,fieldArr,opts){
 const STACK_DIR_UNIT={0:{x:0,y:1},1:{x:1,y:0},2:{x:0,y:-1},3:{x:-1,y:0}};
 const STACK_ENTER_DIST=42; // مسافة انطلاق الورقة من جهة صاحبها قبل ما تصل مركز الكومة
 
-/** v361: a card keeps its own seat axis and repeatable, varied landing pose.
+/** V416 TABLE 2: each card retains its own resting angle throughout the auction.
  * Only the next two real table cards contribute a small retained contact shift.
  * Rebuilding the same auction reconstructs the same overlap without stored offsets.
  */
@@ -2051,7 +2060,7 @@ function uiBidCardPose(card,index,direction={x:0,y:1},cards=[],directionForCard=
   const side=Math.abs(dx)>Math.abs(dy),sign=(side?dx:dy)<0?-1:1;
   const tilt=(hash&1?-1:1)*(5+(hash>>>4)%10);
   const pose=side?{x:sign*3+(hash>>>9)%3-1,y:(hash>>>12)%7-3,angle:(sign<0?90:-90)+tilt}
-    :{x:(hash>>>9)%9-4,y:sign*20+(hash>>>12)%7-3,angle:tilt};
+    :{x:(hash>>>9)%9-4,y:sign*20+(hash>>>12)%7-3,angle:(sign<0?180:0)+tilt};
   for(let step=1;step<=2;step++){
     const next=cards[n+step];if(!next)break;
     const h=uiBidPoseHash(next,n+step),weight=step===1?1:.45;
@@ -2060,10 +2069,30 @@ function uiBidCardPose(card,index,direction={x:0,y:1},cards=[],directionForCard=
     const push=1.5+(h>>>5)%5*.12,cross=((h>>>11)%5-2)*.15;
     pose.x+=(-ax/length*push-ay/length*cross)*weight;
     pose.y+=(-ay/length*push+ax/length*cross)*weight;
-    pose.angle+=(h&1?-1:1)*(1.1+(h>>>16)%5*.09)*weight;
   }
   return pose;
 }
+
+// Resting angles are presentation state, scoped to a match rather than its current holder.
+const uiRestingAngles={online:{identity:null,angles:new Map()},local:{identity:null,angles:new Map()}};
+function uiTableRestingAngles(container){
+  const online=container.id==='oField'||container.id==='oWaqfStack';
+  const state=uiRestingAngles[online?'online':'local'];
+  const identity=online?ONL.room+'|'+ONL.you+'|'+(ONL.sessionMatch||''):G;
+  if(state.identity!==identity){state.identity=identity;state.angles.clear();}
+  return state.angles;
+}
+function uiBidRestingPose(container,card,index,direction,cards,directionForCard){
+  const pose=uiBidCardPose(card,index,direction,cards,directionForCard),angles=uiTableRestingAngles(container),id=String(card.id);
+  if(!angles.has(id)){
+    // A cold online snapshot identifies captured field faces before the initial played card.
+    const view=container.id==='oWaqfStack'?(window.MajabeedFinale?.presentation()?.view||ONL.view):null;
+    const grabs=view?.waqf?.grabs,fromField=Number.isInteger(grabs)&&grabs>=0&&index<cards.length-1-grabs;
+    angles.set(id,fromField?0:pose.angle);
+  }
+  pose.angle=angles.get(id);return pose;
+}
+
 function renderBidStack(container,cards,opts){
   const {prevIds,dirForCard,size={w:54,h:77}}=opts;
   const shown=cards.slice(-8),metrics=uiPileMetrics(cards.length),start=cards.length-shown.length;
@@ -2075,7 +2104,7 @@ function renderBidStack(container,cards,opts){
   container.style.setProperty('--ui-bid-stack-y','0px');
   container.style.setProperty('--ui-bid-stack-depth','0px');
   shown.forEach((c,i)=>{
-    const ax=dirForCard(c)||{x:0,y:1},el=cardEl(c,'sm'),pose=uiBidCardPose(c,start+i,ax,cards,dirForCard),dx=pose.x,dy=pose.y;
+    const ax=dirForCard(c)||{x:0,y:1},el=cardEl(c,'sm'),pose=uiBidRestingPose(container,c,start+i,ax,cards,dirForCard),dx=pose.x,dy=pose.y;
     el.style.width=size.w+'px';el.style.height=size.h+'px';
     el.style.position='absolute';el.style.zIndex=i+1;
     el.style.transformOrigin='center center';el.style.left='50%';el.style.top='50%';
@@ -2083,7 +2112,7 @@ function renderBidStack(container,cards,opts){
     el.style.transform=finalT;el.style.transition='none';
     if(!window.UICardFlow&&!prevIds.has(c.id)){
       uiCardMotion(el,[
-        {transform:`translate(-50%,-50%) translate(${dx+ax.x*STACK_ENTER_DIST}px,${dy+ax.y*STACK_ENTER_DIST}px) rotate(${pose.angle-ax.x*7+ax.y*3}deg) scale(1.06)`,opacity:1},
+        {transform:`translate(-50%,-50%) translate(${dx+ax.x*STACK_ENTER_DIST}px,${dy+ax.y*STACK_ENTER_DIST}px) rotate(${pose.angle}deg) scale(1.06)`,opacity:1},
         {transform:finalT,opacity:1}
       ],{duration:300,easing:'cubic-bezier(.22,.7,.26,1)'});
     }
@@ -2310,6 +2339,7 @@ $('#meWaqfBtn').onclick=()=>{if(!$('#meWaqfBtn').disabled)humanBid()};
 $('#boardBtn').onclick=()=>{const b=$('#board');b.classList.toggle('hidden');renderBoard()};
 $('#rankCard').onclick=()=>{SFX.tick();openRanksModal()};
 $('#ranksClose').onclick=closeRanksModal;
+$('#ranksModal').addEventListener('keydown',ranksModalKeydown);
 let HELP_KIND='bug';
 $('#hHelp').onclick=()=>{ $('#helpText').value=''; $('#helpModal').classList.remove('hidden'); };
 $('#helpClose').onclick=()=>$('#helpModal').classList.add('hidden');
@@ -2528,8 +2558,8 @@ function uiHomeWalletRender(){
   const status=document.getElementById('hWalletPending'),button=document.getElementById('hGoldBtn');if(!status||!button)return;
   const pending=uiHomeWalletHasPending();status.hidden=!pending;
   if(pending){
-    status.textContent=UI_HOME_WALLET.inflight?'جارٍ تأكيد الرصيد…':UI_HOME_WALLET.items.every(x=>x.attempt>=4)?'تأكيد الرصيد معلّق · تحديث':'الرصيد قيد التحقق · تحديث';
-    button.setAttribute('aria-label','الرصيد قيد التحقق بعد المباراة؛ اضغط لتحديثه');
+    status.textContent=UI_HOME_WALLET.inflight?'جارٍ التحقق من تسوية سابقة…':UI_HOME_WALLET.items.every(x=>x.attempt>=4)?'تسوية سابقة معلّقة · إعادة المحاولة':'تسوية سابقة قيد التحقق · تحديث';
+    button.setAttribute('aria-label','رصيد الذهب؛ توجد تسوية مباراة سابقة قيد التحقق، اضغط لتحديث الرصيد وإعادة المحاولة');
   }else button.removeAttribute('aria-label');
 }
 function uiHomeWalletTrackLeave(){
@@ -2573,7 +2603,7 @@ async function uiHomeWalletRequest(item){
   let timer,abort;
   try{
     const operation=(async()=>{
-      const idToken=await user.getIdToken();
+      const idToken=await uiBoundedIdToken(user);
       if(!current()||controller.signal.aborted)return null;
       const response=await fetch('https://'+GAME_SRV+(item.kind==='friendly'?'/friendly-wallet-sync':'/competitive-wallet-sync'),{method:'POST',headers:{'content-type':'application/json'},signal:controller.signal,body:JSON.stringify({idToken,room:item.room,playerId:item.playerId,matchId:item.matchId,leave:true,...(item.kind==='friendly'?{friendlyParticipationId:item.participationId}:{})})});
       const data=await response.json();if(!response.ok)throw Error('wallet follow-up failed');return data;
@@ -2620,6 +2650,9 @@ function uiWalletSyncPlan(){
 }
 function oSessionCurrent(generation,room){return ONL.active&&ONL.generation===generation&&ONL.room===room;}
 function oDisconnectTransport(){
+  window.MajabeedFriendlyVoice?.disconnect('majabeed');
+  uiOnlineEntryClear();
+  document.getElementById('uiOnlineFeePending')?.remove();
   uiStopVoices();uiFinishSpectatorJoin('',{cancel:false});
   ONL.stateReady=false;ONL._returnPollStarting=false;clearInterval(ONL.connectionTimer);ONL.connectionTimer=null;
   ONL.generation++;ONL.pollGen++;
@@ -2645,12 +2678,21 @@ function oSend(obj){
 // ينتظر أولاً استقرار حالة المصادقة الفعلية (لا يكتفي بلقطة FB.user اللحظية — راجع FB.authReadyPromise) بمهلة
 // قصوى 4 ثوانٍ كي ما نعلّق الاتصال للأبد لو تعطّل مستمع المصادقة لأي سبب، ثم يحاول جلب التوكن مع محاولة ثانية
 // بإجبار التحديث إن فشلت الأولى (شبكة الجوال تتعثر لحظيًا أحيانًا) بدل الاستسلام الصامت بـidToken:null.
+async function uiBoundedIdToken(user,force=false,timeoutMs=6000){
+  let timer;
+  try{
+    const token=await Promise.race([Promise.resolve().then(()=>user.getIdToken(force)),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('auth-timeout')),timeoutMs);})]);
+    if(FB.user!==user||!token)throw Error('auth-changed');
+    return token;
+  }finally{clearTimeout(timer);}
+}
 async function withIdToken(payload){
   await Promise.race([FB.authReadyPromise,new Promise(r=>setTimeout(r,4000))]);
   let idToken=null;
-  if(FB.ready&&FB.user){
-    try{ idToken=await FB.user.getIdToken(); }
-    catch(e){ try{ idToken=await FB.user.getIdToken(true); }catch(e2){} }
+  const user=FB.user;
+  if(user){
+    try{ idToken=await uiBoundedIdToken(user,false,4000); }
+    catch(e){ if(FB.user===user)try{ idToken=await uiBoundedIdToken(user,true,4000); }catch(e2){} }
   }
   return Object.assign({},payload,{idToken});
 }
@@ -2760,27 +2802,68 @@ window.addEventListener('storage',event=>{if(event.key==='wb-lastAdRewardTime')r
 // إن كانت الواجهة على نفس نطاق الـWorker (نادر) نكتشفه؛ وإلا نتصل بالعنوان المطلق.
 function onSrvHost(){ return location.host===GAME_SRV; }
 function oBase(){ return (onSrvHost()?location.pathname.replace(/\/+$/,''):'https://'+GAME_SRV)+'/ws/'+ONL.room; }
-async function oMatchHeaders(){return /^(lg-|cm-)/.test(ONL.room||'')&&FB.user?{authorization:'Bearer '+await FB.user.getIdToken()}:{};}
+function oWatchQuery(){return ONL.spectateOnly&&ONL.room?.startsWith('cm-')?'&spectate=1':'';}
+async function oMatchHeaders(){return /^(lg-|cm-)/.test(ONL.room||'')&&FB.user?{authorization:'Bearer '+await uiBoundedIdToken(FB.user)}:{};}
+async function uiOnlineJSON(url,options={}){
+  const controller=new AbortController();let timer;
+  try{return await Promise.race([(async()=>{const response=await fetch(url,{...options,signal:controller.signal});if(!response.ok)throw Error('table-http-'+response.status);return response.json();})(),new Promise((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(Error('table-timeout'));},12000);})]);}
+  finally{clearTimeout(timer);}
+}
+function uiOnlineEntryClear(){
+  clearTimeout(ONL.entryTimer);clearTimeout(ONL.entryFallbackTimer);ONL.entryTimer=null;ONL.entryFallbackTimer=null;
+  document.getElementById('uiOnlineEntryError')?.remove();
+}
+function uiRenderOnlineFeePending(){
+  let card=document.getElementById('uiOnlineFeePending');
+  if(!ONL.active||!ONL.paymentPending){card?.remove();return;}
+  if(!card){
+    card=document.createElement('section');card.id='uiOnlineFeePending';card.setAttribute('role','status');card.setAttribute('aria-live','polite');
+    card.style.cssText='position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);max-width:calc(100% - 32px);width:320px;z-index:60;background:#123a2df5;border:1px solid #d8bf7b;border-radius:18px;padding:16px;text-align:center;direction:rtl;color:#f8edcf;box-sizing:border-box;box-shadow:0 8px 24px #0004';
+    card.innerHTML='<p style="margin:0 0 12px;line-height:1.7">جارٍ تأكيد رسوم الدخول… لا تبدأ مهلة اللعب حتى اكتمال التأكيد.</p><button type="button" class="btn sm">إعادة التحقق</button>';
+    card.querySelector('button').onclick=uiRequestWalletSync;document.getElementById('onl').appendChild(card);
+  }
+  $('#oThrow').disabled=true;
+}
+function uiOnlineEntryFailed(message){
+  if(!ONL.active||ONL.stateReady||ONL.status!==null)return false;
+  oDisconnectTransport();
+  const generation=ONL.generation,room=ONL.room;
+  ONL._loaderHiddenOnce=true;$('#pageLoader').classList.add('hidden');$('#onlWait').classList.add('hidden');
+  const panel=document.createElement('div');panel.id='uiOnlineEntryError';panel.setAttribute('role','alert');
+  panel.style.cssText='position:absolute;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:24px;background:#102e25;direction:rtl';
+  panel.innerHTML='<section style="width:min(100%,360px);text-align:center;color:#f8edcf"><h2>تعذّر الدخول للطاولة</h2><p style="line-height:1.8"></p><div style="display:flex;gap:12px;justify-content:center"><button type="button" class="btn primary" data-entry-retry>إعادة المحاولة</button><button type="button" class="btn" data-entry-back>الرئيسية</button></div></section>';
+  panel.querySelector('p').textContent=message||'لم يصل تأكيد من الطاولة. تحقق من الاتصال ثم حاول مجددًا.';
+  panel.querySelector('[data-entry-retry]').onclick=()=>{if(!oSessionCurrent(generation,room))return;ONL.transport='ws';ONL.wsFails=0;ONL._loaderHiddenOnce=false;$('#pageLoaderTxt').textContent='جاري الدخول للطاولة...';$('#pageLoader').classList.remove('hidden');$('#pageLoader').style.opacity='1';uiOnlineEntryBegin(generation,room);oConnect();};
+  panel.querySelector('[data-entry-back]').onclick=()=>{if(oSessionCurrent(generation,room))leaveOnline();};
+  document.getElementById('onl').appendChild(panel);return true;
+}
+function uiOnlineEntryBegin(generation,room){
+  uiOnlineEntryClear();
+  ONL.entryFallbackTimer=setTimeout(()=>{if(oSessionCurrent(generation,room)&&!ONL.stateReady&&ONL.status===null&&ONL.transport==='ws')switchToPoll().catch(()=>{if(oSessionCurrent(generation,room))uiOnlineEntryFailed();});},7000);
+  ONL.entryTimer=setTimeout(()=>{if(oSessionCurrent(generation,room)&&!ONL.stateReady&&ONL.status===null)uiOnlineEntryFailed();},18000);
+}
 async function oPost(obj){
-  const generation=ONL.generation,room=ONL.room,url=oBase()+'?send=1&pid='+encodeURIComponent(ONL.pid)+(ONL.room?.startsWith('f6-')?'&tableProtocol=385':'');
+  const generation=ONL.generation,room=ONL.room,url=oBase()+'?send=1&pid='+encodeURIComponent(ONL.pid)+(ONL.room?.startsWith('f6-')?'&tableProtocol=385':'')+oWatchQuery();
+  const uid=FB.user?.uid,current=()=>oSessionCurrent(generation,room)&&FB.user?.uid===uid;
   try{
     if(obj.type==='sessionReturn'||obj.type==='sessionAway')obj=await withIdToken(obj);
-    const headers=await oMatchHeaders();if(!oSessionCurrent(generation,room))return;
+    const headers=await oMatchHeaders();if(!current())return;
     if(obj.type==='join'&&!obj.spectate&&ONL.friendlyJoinIntent)ONL.friendlyJoinIntent.sent=true;
-    const r=await fetch(url,{method:'POST',headers,body:JSON.stringify(obj)});
-    const d=await r.json();if(!oSessionCurrent(generation,room))return;
+    const d=await uiOnlineJSON(url,{method:'POST',headers,body:JSON.stringify(obj)});if(!current())return;
     if(d?.type&&d.type!=='error'){if(d.type==='state')oHandle(d);else uiConnectionMessage(d);}
     if(d&&d.type==='error'){
+      if(obj.type==='join'&&uiOnlineEntryFailed(d.error))return;
       if(uiSpectatorJoinPending()){uiFinishSpectatorJoin(d.error);return;}
       if(obj.type==='sessionReturn')window.UISessionReturn?.disconnected('majabeed');
       if(obj.type==='start')uiSessionStartFailed();
       if(ONL.lastSent==='settle'||ONL.lastSent==='timeout'){ONL.lastSent=null;return}
       oToast(d.error);
     }
-  }catch(e){if(oSessionCurrent(generation,room)&&obj.type==='join'&&uiSpectatorJoinPending())uiFinishSpectatorJoin('تعذّر تأكيد المقعد؛ يمكنك متابعة المشاهدة والمحاولة مجددًا');if(oSessionCurrent(generation,room)&&obj.type==='sessionReturn')window.UISessionReturn?.disconnected('majabeed');if(oSessionCurrent(generation,room)&&obj.type==='start'){uiSessionStartFailed();oToast('تعذّر تأكيد البدء؛ تحقق من الاتصال');}}
+  }catch(e){if(current()&&obj.type==='join'&&uiSpectatorJoinPending())uiFinishSpectatorJoin('تعذّر تأكيد المقعد؛ يمكنك متابعة المشاهدة والمحاولة مجددًا');if(current()&&obj.type==='sessionReturn')window.UISessionReturn?.disconnected('majabeed');if(current()&&obj.type==='start'){uiSessionStartFailed();oToast('تعذّر تأكيد البدء؛ تحقق من الاتصال');}}
 }
 async function oPollLoop(){
   const my=++ONL.pollGen,generation=ONL.generation,room=ONL.room;
+  const uid=FB.user?.uid,current=()=>oSessionCurrent(generation,room)&&FB.user?.uid===uid;
   // FIX — استطلاع بلا إمساك: كل طلب يُرَدّ عليه فوراً (nowait=1) والإيقاع صار عندنا هنا — 2.5ث والتبويب
   // ظاهر، 15ث وهو مخفي (أقل من مهلة الحضور 20ث بهامش)، و250مل أثناء تدفق تحديثات متتابعة (سلاسة داخل
   // اللعب)، مع استطلاع فوري لحظة رجوع التبويب للواجهة — يقص "مدة بقاء الكائن نشطاً" المحاسَبة جذرياً.
@@ -2791,15 +2874,14 @@ async function oPollLoop(){
     let gotMsg=false; // FIX
     try{
       const headers=await oMatchHeaders();
-      if(!oSessionCurrent(generation,room)||ONL.transport!=='poll'||ONL.pollGen!==my)break;
-      const r=await fetch(oBase()+'?poll=1&nowait=1&since='+ONL.pollSeq+'&pid='+encodeURIComponent(ONL.pid)+(ONL.room?.startsWith('f6-')?'&tableProtocol=385':''),{headers}); // FIX — أضفنا nowait=1
-      const d=await r.json();
-      if(!oSessionCurrent(generation,room)||ONL.transport!=='poll'||ONL.pollGen!==my)break;
+      if(!current()||ONL.transport!=='poll'||ONL.pollGen!==my)break;
+      const d=await uiOnlineJSON(oBase()+'?poll=1&nowait=1&since='+ONL.pollSeq+'&pid='+encodeURIComponent(ONL.pid)+(ONL.room?.startsWith('f6-')?'&tableProtocol=385':'')+oWatchQuery(),{headers}); // FIX — أضفنا nowait=1
+      if(!current()||ONL.transport!=='poll'||ONL.pollGen!==my)break;
       $('#connDot').classList.remove('off');
       if(typeof d.seq==='number')ONL.pollSeq=d.seq;
       if(d.msg){oHandle(d.msg);gotMsg=true;} // FIX
     }catch(e){
-      if(!oSessionCurrent(generation,room)||ONL.pollGen!==my)break;
+      if(!current()||ONL.pollGen!==my)break;
       $('#connDot').classList.add('off');
     }
     if(!(ONL.active&&ONL.transport==='poll'&&ONL.pollGen===my))break; // FIX
@@ -2811,12 +2893,14 @@ async function oPollLoop(){
 async function switchToPoll(){
   if(!ONL.active||ONL.transport==='poll')return;
   const generation=ONL.generation,room=ONL.room;
+  const uid=FB.user?.uid,current=()=>oSessionCurrent(generation,room)&&FB.user?.uid===uid;
   ONL.transport='poll';
   if(ONL.ws){ONL.ws.onopen=null;ONL.ws.onmessage=null;ONL.ws.onclose=null;try{ONL.ws.close();}catch(_){}ONL.ws=null;}
-  const join=await withIdToken({type:'join',features:{sessionReturn:1,connectionQuality:1},sessionToken:ONL.sessionToken,sessionResume:window.UISessionReturn?.resumeFields('majabeed',ONL.sessionToken,ONL.sessionMatch),tableProtocol:ONL.room?.startsWith('f6-')?385:undefined,playerId:ONL.pid,name:(($('#lobbyName')&&$('#lobbyName').value)||$('#nameIn').value||localStorage.getItem('wb-name')||'').trim(),avatar:myAvatar(),tier:ONL.pendingTier||undefined,mode:ONL.pendingTier?(ONL.pendingMode||'solo'):undefined,spectate:ONL.spectateOnly||undefined,friendlyEconomyVersion:ONL.friendlyEconomyVersion||undefined,friendlyParticipationId:ONL.friendlyParticipationId||undefined});
-  if(!oSessionCurrent(generation,room)||ONL.transport!=='poll')return;
+  const join=await withIdToken({type:'join',rankedProtocol:1,features:{sessionReturn:1,connectionQuality:1},sessionToken:ONL.sessionToken,sessionResume:window.UISessionReturn?.resumeFields('majabeed',ONL.sessionToken,ONL.sessionMatch),tableProtocol:ONL.room?.startsWith('f6-')?385:undefined,playerId:ONL.pid,name:(($('#lobbyName')&&$('#lobbyName').value)||$('#nameIn').value||localStorage.getItem('wb-name')||'').trim(),avatar:myAvatar(),tier:ONL.pendingTier||undefined,mode:ONL.pendingTier?(ONL.pendingMode||'solo'):undefined,spectate:ONL.spectateOnly||undefined,friendlyEconomyVersion:ONL.friendlyEconomyVersion||undefined,friendlyParticipationId:ONL.friendlyParticipationId||undefined});
+  if(!current()||ONL.transport!=='poll')return;
+  if(FB.user&&!join.idToken){uiOnlineEntryFailed('تعذّر تأكيد تسجيل الدخول. تحقق من الاتصال ثم أعد المحاولة.');return;}
   await oPost(join);
-  if(!oSessionCurrent(generation,room)||ONL.transport!=='poll')return;
+  if(!current()||ONL.transport!=='poll')return;
   while(ONL.queue.length)oPost(ONL.queue.shift());
   oPollLoop();
 }
@@ -2832,7 +2916,7 @@ function enterOnline({restore=false,createSix=false}={}){
   let room=params.get('room');const existingRoom=!!room;if(!existingRoom){ONL.friendlyEconomyVersion=null;ONL.friendlyJoinIntent=null;}
   if(!room){room=(createSix?'f6-':'')+Math.random().toString(36).slice(2,8);params.set('room',room);
     history.replaceState(null,'',location.pathname+'?'+params.toString());}
-  if(room.startsWith('cm-')&&ONL.assignmentPid?.room!==room){params.delete('room');params.delete('spectate');history.replaceState(null,'',location.pathname+(params.size?'?'+params.toString():''));goHome();if(typeof uiCupOpen==='function')uiCupOpen();return false;}
+  if(room.startsWith('cm-')&&params.get('spectate')!=='1'&&ONL.assignmentPid?.room!==room){params.delete('room');params.delete('spectate');history.replaceState(null,'',location.pathname+(params.size?'?'+params.toString():''));goHome();if(typeof uiCupOpen==='function')uiCupOpen();return false;}
   if(ONL.active&&ONL.room===room&&ONL.spectateOnly===(params.get('spectate')==='1')){show('onl');return true;}
   if(ONL.active&&ONL.room!==room&&!['over','closed'].includes(ONL.status)){
     const activeParams=new URLSearchParams();activeParams.set('room',ONL.room);
@@ -2858,7 +2942,7 @@ function enterOnline({restore=false,createSix=false}={}){
   let pid=localStorage.getItem('wb-player-id')||sessionStorage.getItem('wb-player-id');
   if(!pid){pid='p-'+Math.random().toString(36).slice(2,10);}
   localStorage.setItem('wb-player-id',pid);
-  ONL.pid=ONL.assignmentPid?.room===room?ONL.assignmentPid.pid:room.startsWith('lg-')&&FB.user?'lp-'+FB.user.uid:pid;
+  ONL.pid=ONL.spectateOnly&&room.startsWith('cm-')?'cv-'+crypto.randomUUID():ONL.assignmentPid?.room===room?ONL.assignmentPid.pid:room.startsWith('lg-')&&FB.user?'lp-'+FB.user.uid:pid;
   // FIX — كان هنا $('#inviteLink').value=location.href؛ العنصر أُزيل من اللوبي (رابط غير محتاج)، فحذفنا هذا السطر معه
   // اسم اللاعب: من الإعداد أو المحفوظ سابقاً
   const savedNm=($('#nameIn').value||'').trim()||localStorage.getItem('wb-name')||'';
@@ -2866,13 +2950,11 @@ function enterOnline({restore=false,createSix=false}={}){
   ONL._loaderHiddenOnce=false; // NEW CODE — نصفّرها لكل محاولة دخول جديدة (تُخفى مرة وحدة فقط عند أول حالة حقيقية بـoHandle)
   $('#pageLoaderTxt').textContent='جاري الدخول للطاولة...'; // NEW CODE
   $('#pageLoader').classList.remove('hidden'); $('#pageLoader').style.opacity='1'; // NEW CODE
-  setTimeout(()=>{ // NEW CODE — شبكة أمان: لو تعثّر الاتصال كليًا (شبكة سيئة/خادم لا يرد)، ما نحبس المستخدم بشاشة تحميل للأبد — بعد ١٠ ثواني نكشف الشاشة تحتها (فيها مؤشراتها الخاصة لحالة الانقطاع أصلاً)
-    if(oSessionCurrent(generation,room)&&!ONL._loaderHiddenOnce){ ONL._loaderHiddenOnce=true; const pl=$('#pageLoader'); if(pl){ pl.style.opacity='0'; setTimeout(()=>pl.classList.add('hidden'),260); } } // NEW CODE
-  },10000); // NEW CODE
+  uiOnlineEntryBegin(generation,room);
   show('onl');
   uiLobbySetTab('seats');$('#onlWait').classList.add('uiLobbyCompact');
   applyEquippedTheme();
-  $('#onlWait').classList.remove('hidden');
+  $('#onlWait').classList.add('hidden'); // A lobby is shown only after an authoritative state arrives.
   $('#oWaqf').classList.add('hidden');$('#oOver').classList.add('hidden');
   oConnect();
   if(ONL.iv)clearInterval(ONL.iv);
@@ -2946,6 +3028,7 @@ function uiOnlineLeaveMessage(){
   return {type:'leave',...(ONL.competitiveMatchId?{competitiveMatchId:ONL.competitiveMatchId}:{}),...(matchId?{friendlyMatchId:matchId,friendlyParticipationId:participationId}:{})};
 }
 function leaveOnline(){
+window.MajabeedFriendlyVoice?.disconnect('majabeed');
   window.UISessionReturn?.reset('majabeed');
   uiRememberRoom(ONL.room,'dismissed');
   uiFriendlyEntryCancel();
@@ -3011,7 +3094,9 @@ function uiConnectionPaint(){if(!ONL.active)return;window.UIConnectionQuality?.p
 function uiConnectionStart(){clearInterval(ONL.connectionTimer);const generation=ONL.generation,ws=ONL.ws;const ping=()=>{if(oSessionCurrent(generation,ONL.room)&&ONL.ws===ws&&ws?.readyState===1&&!document.hidden)ws.send(JSON.stringify({type:'connectionPing'}));};ping();ONL.connectionTimer=setInterval(ping,25000);}
 
 let UI_SESSION_RETURN_HOME=false;
-function uiSessionBackground(){
+function uiSessionBackground(source){
+if(window.MajabeedFriendlyVoice?.deferLifecycle(source))return;
+window.MajabeedFriendlyVoice?.suspend();
   uiSessionReturnConfigure();if(window.UISessionReturn?.background('majabeed'))return;
   // Native ads may hide the app before admission. There is no seat to detach then.
   if(!ONL.active&&!MATCH.on)return;
@@ -3036,13 +3121,16 @@ function uiSessionForeground(){
   UI_SESSION_RETURN_HOME=false;
   if(FB.user)goHome();else show('welcome');
 }
-document.addEventListener('visibilitychange',()=>document.hidden?uiSessionBackground():uiSessionForeground());
-document.addEventListener('pause',uiSessionBackground);
+document.addEventListener('visibilitychange',()=>document.hidden?uiSessionBackground('hidden'):uiSessionForeground());
+document.addEventListener('pause',()=>uiSessionBackground('pause'));
 document.addEventListener('resume',uiSessionForeground);
-window.addEventListener('pagehide',uiSessionBackground);
+window.addEventListener('pagehide',()=>uiSessionBackground('pagehide'));
 window.addEventListener('pageshow',uiSessionForeground);
+window.addEventListener('mj-voice-background',event=>{const c=event.detail;if(c?.game==='majabeed'&&c.roomId===ONL.room&&c.accountId===FB.user?.uid)uiSessionBackground('native-background');});
 function oHandle(msg){
   if(msg.type!=='state'){uiConnectionMessage(msg);return;}
+  if(ONL.status===null&&['lobby','waiting'].includes(msg.status)&&(!Array.isArray(msg.seats)||!msg.seats.length)){uiOnlineEntryFailed('هذه الطاولة لم تعد متاحة. ارجع إلى الجلسات واختر طاولة أخرى.');return;}
+  uiOnlineEntryClear();
   window.MajabeedFinale?.receive(msg);
   const firstConnection=!ONL.stateReady;ONL.stateReady=true;if(firstConnection&&ONL.transport==='ws')uiConnectionStart();
   ONL.sessionMatch=msg.sessionMatch||ONL.sessionMatch;ONL.connections=msg.connections||ONL.connections||{};
@@ -3050,8 +3138,8 @@ function oHandle(msg){
   if(msg.type==='state'){let note=document.getElementById('cupTableNotice');if(!note){note=document.createElement('div');note.id='cupTableNotice';document.getElementById('onl').appendChild(note);}note.textContent=msg.tournament?.paused?'مقعد شاغر · ننتظر دخول البديل':'';note.classList.toggle('hidden',!msg.tournament?.paused);}
   if(!ONL._loaderHiddenOnce){ // NEW CODE — أول حالة حقيقية توصل من السيرفر (عبر WebSocket أو الاستطلاع البديل، الدالة مشتركة بينهما) — الاتصال اكتمل فعليًا الآن
     ONL._loaderHiddenOnce=true; // NEW CODE
-    const pl=$('#pageLoader'); // NEW CODE
-    if(pl){ pl.style.opacity='0'; setTimeout(()=>pl.classList.add('hidden'),260); } // NEW CODE — نفس مدة التلاشي (٢٦٠مل) المستخدمة أصلاً بـshowPageLoader لثبات بصري
+    const pl=$('#pageLoader'),generation=ONL.generation,room=ONL.room;
+    if(pl){pl.style.opacity='0';setTimeout(()=>{if(oSessionCurrent(generation,room)&&ONL.stateReady)pl.classList.add('hidden');},260);}
   } // NEW CODE
   ONL.cup=msg.cup||null;ONL.league=msg.league||null;ONL.reward=msg.reward||null;ONL.paymentPending=msg.paymentPending===true;ONL.wallet=msg.wallet||null;ONL.competitiveMatchId=typeof msg.competitiveMatchId==='string'?msg.competitiveMatchId:null;
   uiFriendlyStateContext(msg);
@@ -3075,15 +3163,11 @@ function oHandle(msg){
   }
   uiSessionHandleReceipt(msg);
   uiSessionReturnConfigure();if(window.UISessionReturn?.handle('majabeed',msg)===true)return;
-  renderOnl();window.UIConnectionQuality?.paintMajabeed(ONL.view,ONL.you,ONL.connections,msg.now||msg.view?.now);
+  renderOnl();window.MajabeedFriendlyVoice?.syncMajabeed(ONL);window.UIConnectionQuality?.paintMajabeed(ONL.view,ONL.you,ONL.connections,msg.now||msg.view?.now);
   if(typeof uiCupState==='function')uiCupState(msg);
   if(MATCH.on)renderMatch(); // QUICK-MATCH — تحديث البحث عند وصول حالة فعلية، بلا interval
   uiWalletSyncPlan();
-  if(ONL.paymentPending){
-    const hint=$('#oHint');hint.textContent='جارٍ تأكيد رسوم الدخول… لا تبدأ مهلة اللعب حتى اكتمال التأكيد.';
-    const retry=document.createElement('button');retry.type='button';retry.className='btn sm';retry.textContent='إعادة التحقق';retry.onclick=uiRequestWalletSync;hint.appendChild(retry);
-    $('#oThrow').disabled=true;
-  }
+  uiRenderOnlineFeePending();
 }
 function oConnect(){
   if(!ONL.active||document.hidden&&window.UISessionReturn?.blocked('majabeed'))return;
@@ -3095,15 +3179,16 @@ function oConnect(){
   ws.onopen=async()=>{
     if(!current())return;
     $('#connDot').classList.remove('off');ONL.wsFails=0;
-    const joinMsg=await withIdToken({type:'join',features:{sessionReturn:1,connectionQuality:1},sessionToken:ONL.sessionToken,sessionResume:window.UISessionReturn?.resumeFields('majabeed',ONL.sessionToken,ONL.sessionMatch),tableProtocol:ONL.room?.startsWith('f6-')?385:undefined,playerId:ONL.pid,name:(($('#lobbyName')&&$('#lobbyName').value)||$('#nameIn').value||localStorage.getItem('wb-name')||'').trim(),avatar:myAvatar(),tier:ONL.pendingTier||undefined,mode:ONL.pendingTier?(ONL.pendingMode||'solo'):undefined,spectate:ONL.spectateOnly||undefined,friendlyEconomyVersion:ONL.friendlyEconomyVersion||undefined,friendlyParticipationId:ONL.friendlyParticipationId||undefined});
+    const joinMsg=await withIdToken({type:'join',rankedProtocol:1,features:{sessionReturn:1,connectionQuality:1},sessionToken:ONL.sessionToken,sessionResume:window.UISessionReturn?.resumeFields('majabeed',ONL.sessionToken,ONL.sessionMatch),tableProtocol:ONL.room?.startsWith('f6-')?385:undefined,playerId:ONL.pid,name:(($('#lobbyName')&&$('#lobbyName').value)||$('#nameIn').value||localStorage.getItem('wb-name')||'').trim(),avatar:myAvatar(),tier:ONL.pendingTier||undefined,mode:ONL.pendingTier?(ONL.pendingMode||'solo'):undefined,spectate:ONL.spectateOnly||undefined,friendlyEconomyVersion:ONL.friendlyEconomyVersion||undefined,friendlyParticipationId:ONL.friendlyParticipationId||undefined});
     if(!current()||ws.readyState!==1)return;
+    if(FB.user&&!joinMsg.idToken){uiOnlineEntryFailed('تعذّر تأكيد تسجيل الدخول. تحقق من الاتصال ثم أعد المحاولة.');return;}
     ws.send(JSON.stringify(joinMsg));if(!joinMsg.spectate&&ONL.friendlyJoinIntent)ONL.friendlyJoinIntent.sent=true;
     while(ONL.queue.length&&current())ws.send(JSON.stringify(ONL.queue.shift()));
   };
   ws.onclose=()=>{
     if(!current())return;
     uiFinishSpectatorJoin('انقطع الاتصال؛ نعيد المشاهدة ويمكنك المحاولة مجددًا',{cancel:false});
-    ONL.stateReady=false;clearInterval(ONL.connectionTimer);window.UISessionReturn?.disconnected('majabeed');if(ONL.you){ONL.connections={...ONL.connections,[ONL.you]:{quality:'offline',updatedAt:Date.now()+(ONL.offset||0)}};uiConnectionPaint();}uiSessionStartFailed();$('#connDot').classList.add('off');ONL.wsFails++;
+    ONL.stateReady=false;clearInterval(ONL.connectionTimer);window.UISessionReturn?.disconnected('majabeed');window.MajabeedFriendlyVoice?.disconnect('majabeed');if(ONL.you){ONL.connections={...ONL.connections,[ONL.you]:{quality:'offline',updatedAt:Date.now()+(ONL.offset||0)}};uiConnectionPaint();}uiSessionStartFailed();$('#connDot').classList.add('off');ONL.wsFails++;
     if(ONL.wsFails>=2&&ONL.status===null){switchToPoll();return;}
     $('#oHint').innerHTML=ONL.status?'انقطع الاتصال — إعادة المحاولة...':'';
     clearTimeout(ONL.reconnectTimer);
@@ -3114,6 +3199,7 @@ function oConnect(){
     let msg;try{msg=JSON.parse(e.data);}catch(_){return;}
     if(uiConnectionMessage(msg))return;
     if(msg.type==='error'){
+      if(uiOnlineEntryFailed(msg.error))return;
       if(uiSpectatorJoinPending()){uiFinishSpectatorJoin(msg.error);return;}
       window.UISessionReturn?.disconnected('majabeed');uiSessionStartFailed();
       if(ONL.lastSent==='settle'||ONL.lastSent==='timeout'){ONL.lastSent=null;return;}
@@ -3304,7 +3390,6 @@ function oToastFromLog(log){ // NEW CODE — إشعار مرئي بالأعلى 
 function oSfxFromLog(log){
   if(!log||log===ONL.lastLog)return;ONL.lastLog=log;
   oToastFromLog(log); // NEW CODE — إشعار مرئي بارز لأحداث الدخول/المغادرة تحديداً (باقي الأحداث لها أصلاً تأثيراتها الخاصة أسفل)
-  if(log.includes('بالجوكر'))playVoice('joker');
   if(log.includes('استقرّت')||log.includes('الأكلة عند'))return; // الاستقرار له مساره الموثوق (lastSettle.seq) — لا نكرر الصوت هنا
   if(log.startsWith('أكلة')){GameSoundManager.playActionSound(); const m=log.match(/(\d+)\s*نقطة/); if(m)showEatFx('#oField',parseInt(m[1],10));} // NEW CODE — الأكل العادي من الميدان: صوت الحركة المتبادل، فوري
   else if(log.includes('«وقّف!»'))GameSoundManager.playActionSound(); // NEW CODE — المزايدة: فورية (نظام الصوت الجديد)
@@ -3476,7 +3561,7 @@ function attachHandCardDrag(el,c,isMyTurnNow,opts){
 }
 function renderOnl(){
   window.MajabeedSessionTheme?.syncMajabeed(ONL);
-  window.MajabeedSessionChat?.syncMajabeed(ONL);
+  window.MajabeedSessionChat?.syncMajabeed(ONL);window.MajabeedFriendlyVoice?.syncMajabeed(ONL);
   window.MajabeedSessionTheme?.applyMajabeed(ONL);
   window.MajabeedSix?.syncMode();
   if(window.MajabeedSix?.active())return renderOnlSix();
@@ -3491,7 +3576,7 @@ function renderOnl(){
   let v=finale?.view||ONL.view; if(!v)return;
   // NEW CODE — إغلاق تلقائي للمحادثة عند دخول مرحلة وقّف تحديداً (كشف انتقال حالة، نفس نمط ONL._lastSettleSeq
   // بالأسفل): الكروت المضيئة (.waqfPlayable) تتعارض z-index مع صندوق المحادثة المفتوح لو تُرك مفتوحاً
-  if(v.phase==='waqf'&&ONL._lastPhase!=='waqf')closeChatPanels();
+  // Keep an open composer in place when another player starts a bid.
   ONL._lastPhase=v.phase;
   // FIX — المحادثة (حرة + اختصارات معاً، بنفس الصندوق الآن) تظهر فقط بالجلسات الودية، تُخفى كلياً بالمنافسات الرسمية
   // FIX — المحادثة (حرة + اختصارات معاً، بنفس الصندوق الآن) تظهر فقط لمن هو مقعود فعلياً بجلسة ودية — المتفرج
@@ -3801,6 +3886,7 @@ function renderOnl(){
 // v351 — local presentation only: no game-state fields, storage or network requests.
 function uiLobbySetTab(tab){
   const selected=tab==='settings'?'settings':'seats';
+  $('#onlWait').dataset.lobbyTab=selected;
   document.querySelectorAll('#uiLobbyTabs [data-lobby-tab]').forEach(button=>{
     const on=button.dataset.lobbyTab===selected;
     button.setAttribute('aria-selected',String(on));button.tabIndex=on?0:-1;
@@ -3921,7 +4007,7 @@ window.addEventListener('pagehide',()=>uiSessionClearDebit());
 
 function renderLobby(){
   window.MajabeedSessionTheme?.syncMajabeed(ONL);
-  window.MajabeedSessionChat?.syncMajabeed(ONL);
+  window.MajabeedSessionChat?.syncMajabeed(ONL);window.MajabeedFriendlyVoice?.syncMajabeed(ONL);
   $('#onlWait').classList.remove('hidden');
   $('#oOver').classList.add('hidden');$('#oWaqf').classList.add('hidden');
   const wait=$('#onlWait');wait.classList.toggle('uiLobbyCompact',!ONL.cup);
@@ -4016,7 +4102,7 @@ $('#lobbyName').addEventListener('input',()=>{
     if(!nm)return;
     localStorage.setItem('wb-name',nm);
     try{fbSaveProfile()}catch(e){} // FIX — تغيير الاسم من اللوبي كان يوصل السيرفر (الطاولة) بس ما يوصل السحابة، فيرجع القديم بعد إعادة الدخول
-    oSend({type:'join',features:{sessionReturn:1,connectionQuality:1},sessionToken:ONL.sessionToken,sessionResume:window.UISessionReturn?.resumeFields('majabeed',ONL.sessionToken,ONL.sessionMatch),tableProtocol:ONL.room?.startsWith('f6-')?385:undefined,playerId:ONL.pid,name:nm,avatar:myAvatar(),friendlyEconomyVersion:ONL.friendlyEconomyVersion||undefined,friendlyParticipationId:ONL.friendlyParticipationId||undefined});
+    oSend({type:'join',rankedProtocol:1,features:{sessionReturn:1,connectionQuality:1},sessionToken:ONL.sessionToken,sessionResume:window.UISessionReturn?.resumeFields('majabeed',ONL.sessionToken,ONL.sessionMatch),tableProtocol:ONL.room?.startsWith('f6-')?385:undefined,playerId:ONL.pid,name:nm,avatar:myAvatar(),friendlyEconomyVersion:ONL.friendlyEconomyVersion||undefined,friendlyParticipationId:ONL.friendlyParticipationId||undefined});
   },450);
 });
 function renderOver(){
@@ -4095,6 +4181,7 @@ function renderOver(){
   if(uiResultNeedsRead())pullServerStats(0); // v330: a new confirmed receipt needs one fresh balance read.
   uiResultFeeLine(UI_RESULT.online);
   uiFinishOnlineResultContent(UI_RESULT.online.ranksReady);
+  if(ONL.cup?.rankedProtocol===1)window.MajabeedCup?.renderResult();
 }
 // NEW CODE — يرسل طلب صداقة فعلي (لا مجرد توست وهمي) عبر آلية WBMsg.sendFriendReq الموجودة أصلاً، بعد حلّ
 // uid الحقيقي للاعب من ONL.view.uids (السيرفر يصدّرها الآن للمقاعد الموثّقة فقط — راجع _stateFor)
@@ -4207,7 +4294,7 @@ $('#oExit').onclick=()=>{
   const isSeated=ONL.view&&ONL.view.me===ONL.you&&ONL.view.seats.includes(ONL.you);
   if(ONL.status==='playing'&&isSeated)showQuitConfirm(); else leaveOnline();
 };
-$('#oMenu').onclick=()=>{const majabeedCup=!!ONL.cup,dailyCup=!!ONL.tournament;leaveOnline();if(majabeedCup&&typeof uiCupOpen==='function')uiCupOpen();else if(dailyCup&&typeof cupOpen==='function')cupOpen();};
+$('#oMenu').onclick=()=>{const watching=ONL.spectateOnly||ONL.view?.viewerStatus==='spectator',rankedMode=window.MajabeedRanked?.returnMode(),majabeedCup=!!ONL.cup&&!watching,dailyCup=!!ONL.tournament;leaveOnline();if(rankedMode)window.MajabeedRanked.open(rankedMode);else if(majabeedCup&&typeof uiCupOpen==='function')uiCupOpen();else if(dailyCup&&typeof cupOpen==='function')cupOpen();};
 // FIX — معالج زر الإعادة حُذف مع الزر
 // FIX — كان هنا معالج $('#copyBtn').onclick؛ الزر والعنصر أُزيلا من اللوبي معاً (رابط النسخ غير محتاج)
 $('#oSnd').onclick=()=>{muted=!muted;uiSoundButtons();if(!muted){ac();SFX.tick()}};
@@ -4219,15 +4306,15 @@ $('#oSnd').onclick=()=>{muted=!muted;uiSoundButtons();if(!muted){ac();SFX.tick()
 // طاولات: تغيّر تدرّج خلفية الطاولة. ظهر الورق: يغيّر تدرّج ظهر البطاقة.
 const BGV='?v64'; // FIX — استبدلت صورة ثيم المجلس الشعبي بالصورة المتّفق عليها فعلياً (كانت الموقعة تعرض صورة أقدم من قبل هذا الاتفاق) // FIX — كسر كاش صورة المجلس الشعبي: أُعيدت بدقتها الأصلية بلا تكبير مصطنع (كان يسبب بكسلة/تنعيماً) // FIX — صورة المجلس الشعبي الجديدة (بالنوافذ الظاهرة) // كسر كاش الصور — حدّثه مع كل تغيير لملفات bg
 const SHOP_THEMES=[
-  {id:'theme-emerald',name:'ديوانية الرفاق',price:2000,bg:'ui-art/rooms-v362/diwaniya-room.webp',preview:'ui-art/rooms-v362/diwaniya-room.webp',table:'ui-art/rooms-v362/diwaniya-table.webp'},
+  {id:'theme-emerald',name:'ديوانية الرفاق',price:600,bg:'ui-art/rooms-v362/diwaniya-room.webp',preview:'ui-art/rooms-v362/diwaniya-room.webp',table:'ui-art/rooms-v362/diwaniya-table.webp'},
   {id:'theme-midnight',name:'قهوة الأولين',price:0,bg:'ui-art/rooms-v362/cafe-room.webp',preview:'ui-art/rooms-v362/cafe-room.webp',table:'ui-art/rooms-v362/cafe-table.webp'},
-  {id:'theme-royal',name:'كشتة البر',price:2000,bg:'ui-art/rooms-v362/camp-room.webp',preview:'ui-art/rooms-v362/camp-room.webp',table:'ui-art/rooms-v362/camp-table.webp'},
-  {id:'theme-popular', name:'بيت الشعر', icon:'🏺', price:2000, grad:'radial-gradient(130% 90% at 50% 30%, #6e3a20 0%, #3a2012 85%)', bg:'ui-art/rooms-v362/sadu-room.webp', preview:'ui-art/rooms-v362/sadu-room.webp', table:'ui-art/rooms-v362/sadu-table.webp'},
+  {id:'theme-royal',name:'كشتة البر',price:600,bg:'ui-art/rooms-v362/camp-room.webp',preview:'ui-art/rooms-v362/camp-room.webp',table:'ui-art/rooms-v362/camp-table.webp'},
+  {id:'theme-popular', name:'بيت الشعر', icon:'🏺', price:600, grad:'radial-gradient(130% 90% at 50% 30%, #6e3a20 0%, #3a2012 85%)', bg:'ui-art/rooms-v362/sadu-room.webp', preview:'ui-art/rooms-v362/sadu-room.webp', table:'ui-art/rooms-v362/sadu-table.webp'},
   {id:'theme-persian',name:'السجّاد الفارسي', icon:'🪆', price:0, grad:'radial-gradient(130% 90% at 50% 30%, #6b2a22 0%, #2a1010 85%)', bg:'bg/majlis-persian.jpg'+BGV, preview:'bg/majlis-persian-preview.jpg'+BGV, table:'ui-art/rooms-v362/cafe-table.webp'},
-  {"id":"theme-hijaz","name":"حارة الحجاز","price":2000,"bg":"ui-art/rooms-v409/hijaz-scene.webp","preview":"ui-art/rooms-v409/hijaz-scene.webp","surface":"scene"},
-  {"id":"theme-flight","name":"رحلة السحاب","price":2000,"bg":"ui-art/rooms-v409/flight-scene.webp","preview":"ui-art/rooms-v409/flight-scene.webp","surface":"scene"},
-  {"id":"theme-oasis","name":"ظل النخيل","price":2000,"bg":"ui-art/rooms-v409/oasis-scene.webp","preview":"ui-art/rooms-v409/oasis-scene.webp","surface":"scene"},
-  {"id":"theme-najd","name":"مجلس نجد","price":2000,"bg":"ui-art/rooms-v409/najd-scene.webp","preview":"ui-art/rooms-v409/najd-scene.webp","surface":"scene"},
+  {"id":"theme-hijaz","name":"حارة الحجاز","price":600,"bg":"ui-art/rooms-v409/hijaz-scene.webp","preview":"ui-art/rooms-v409/hijaz-scene.webp","surface":"scene"},
+  {"id":"theme-flight","name":"رحلة السحاب","price":600,"bg":"ui-art/rooms-v409/flight-scene.webp","preview":"ui-art/rooms-v409/flight-scene.webp","surface":"scene"},
+  {"id":"theme-oasis","name":"ظل النخيل","price":600,"bg":"ui-art/rooms-v409/oasis-scene.webp","preview":"ui-art/rooms-v409/oasis-scene.webp","surface":"scene"},
+  {"id":"theme-najd","name":"مجلس نجد","price":600,"bg":"ui-art/rooms-v409/najd-scene.webp","preview":"ui-art/rooms-v409/najd-scene.webp","surface":"scene"},
 ];
 // NEW CODE — حُذفت مصفوفة SHOP_BACKS بالكامل (كانت هنا) — قسم "ظهر الورق" أُلغي نهائياً من المتجر
 // حُذفت مصفوفة SHOP_EFFECTS (كانت هنا) — نظام تأثيرات الإشعارات أُلغي بالكامل
@@ -4508,39 +4595,6 @@ async function openBoard(period){
   // FIX — show('lboard') صارت بأول الدالة (فتح فوري) — لا حاجة لتكرارها هنا
 }
 
-/* ================= الأوسمة ================= */
-const AWARDS=[
-  {id:'first-game', name:'أول جولة',    icon:'🎬', desc:'العب أول جولة',           need:1,  stat:'games'},
-  {id:'ten-games',  name:'مثابر',        icon:'🔟', desc:'العب ١٠ جولات',          need:10, stat:'games'},
-  {id:'first-win',  name:'أول فوز',      icon:'🏅', desc:'افز بجولة',              need:1,  stat:'wins'},
-  {id:'ten-wins',   name:'بطل',          icon:'🏆', desc:'افز بـ١٠ جولات',         need:10, stat:'wins'},
-  {id:'big-score',  name:'ضربة معلم',    icon:'💯', desc:'سجّل ١٠٠ نقطة بجولة',     need:100,stat:'best'},
-  {id:'rich',       name:'ثري المجلس',   icon:'💰', desc:'اجمع ٥٠٠٠ ذهب',          need:5000,stat:'gold'},
-  {id:'level-10',   name:'محترف صاعد',   icon:'⭐', desc:'وصل لرتبة صاعد',        need:2000, stat:'rank'}, // NEW CODE — كانت مرتبطة بالمستوى (level)، صارت بنقاط الرتبة (٢٠٠٠ = رتبة "صاعد")
-  {id:'level-25',   name:'نخبة',         icon:'💎', desc:'وصل لرتبة نخبوي',       need:7000, stat:'rank'}, // NEW CODE — كانت مرتبطة بالمستوى (level)، صارت بنقاط الرتبة (٧٠٠٠ = رتبة "نخبوي")
-];
-function openAwards(){
-  const unlocked=AWARDS.filter(a=>ST.n(a.stat)>=a.need).length;
-  $('#awardsProg').textContent=`أكملت ${toH(unlocked)} من أصل ${toH(AWARDS.length)} إنجازًا`;
-  $('#awardsBar').style.width=Math.round(unlocked/AWARDS.length*100)+'%';
-  const grid=$('#awardsGrid');grid.innerHTML='';
-  for(const a of AWARDS){
-    const val=ST.n(a.stat), done=val>=a.need, pct=Math.min(100,Math.round(val/a.need*100));
-    const card=document.createElement('div');
-    card.style.cssText='position:relative;background:#fff;border-radius:20px;padding:16px 14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.15)'+(done?'':';opacity:.8');
-    card.innerHTML=`
-      ${done?'':'<span style="position:absolute;top:10px;left:10px;font-size:13px">🔒</span>'}
-      <div style="width:58px;height:58px;margin:0 auto;border-radius:999px;background:${done?'linear-gradient(#e2925c,#d67f48)':'#e8ddca'};display:flex;align-items:center;justify-content:center;font-size:29px;filter:${done?'none':'grayscale(.6)'}">${done?a.icon:'🔒'}</div>
-      <div style="font-size:14px;font-weight:800;margin-top:9px;color:${done?'#201e1d':'#8b857c'}">${a.name}</div>
-      <div style="font-size:11px;font-weight:700;color:#a89880;margin-top:3px;line-height:1.5">${a.desc}</div>
-      ${done?'':`<div style="margin-top:9px;height:6px;border-radius:999px;background:#f0e3cc;overflow:hidden"><span style="display:block;width:${pct}%;height:100%;border-radius:999px;background:#c9b48a"></span></div><div style="font-size:10.5px;font-weight:800;color:#b39a78;margin-top:4px">${toH(Math.min(val,a.need))} / ${toH(a.need)}</div>`}`;
-    grid.appendChild(card);
-  }
-  show('awardsScr'); mountNav('awardsScr','awards');
-}
-
-
-
 /* ================= شريط التنقّل الموحّد ================= */
 // v364 — navigation lives in ui-navigation.js; destinations retain their existing data flows.
 
@@ -4557,7 +4611,7 @@ function refreshHome(){
   try{$('#hDailyBadge').classList.toggle('hidden',!(checkDaily().due||_adReadyH));}catch(e){}
   refreshInboxBadge(); // NEW CODE
   refreshRankCard();
-  if(!uiHomeWalletHasPending()&&FB.user&&Date.now()-(UI_COST.statsAt||0)>30000){UI_COST.statsAt=Date.now();pullServerStats(0);} // Result confirmation retains its independent reads/retries.
+  if(FB.user&&Date.now()-(UI_COST.statsAt||0)>30000){UI_COST.statsAt=Date.now();pullServerStats(0);} // Result confirmation retains its independent reads/retries.
 }
 // NEW CODE ================= صندوق الوارد =================
 // يبدأ فارغاً فعليًا لكل لاعب. الرسائل الحقيقية تصل عبر syncSystemMessages (تقرأ من Firestore، تكتبها لوحة
@@ -4679,7 +4733,8 @@ let _pullingStats=false,_statsQueued=false;
 // تعيد المحاولة داخلياً حتى تكتشف تغيّراً فعلياً أو تنفد محاولاتها — أي مستدعٍ (شاشة النتيجة أو الرئيسية)
 // يستفيد من هذي الموثوقية تلقائياً بلا أي تنسيق يدوي من جهته
 async function pullServerStats(retriesLeft){
-  if(uiHomeWalletHasPending()){uiHomeWalletResume();return;}
+  // A pending departure must not block a fresh balance read; only its own ACK clears it.
+  if(uiHomeWalletHasPending())uiHomeWalletResume();
   if(retriesLeft===undefined)retriesLeft=3; // FIX — محاولة فورية + ٣ إعادات (تقريباً ١+٢+٤=٧ث تغطية إجمالية)
   if(_pullingStats){_statsQueued=true;return;} _pullingStats=true;
   const readStartedAt=Date.now(),statsUid=FB.user?.uid,walletRevision=uiWalletForAccount(statsUid),resultRead=typeof uiResultReadToken==='function'?uiResultReadToken():null;
@@ -4721,7 +4776,7 @@ function refreshRankCard(){
   const idx=PLAYER_RANKS.findIndex(x=>x===rankFor(pts));
   const cur=PLAYER_RANKS[idx], next=PLAYER_RANKS[idx+1];
   // Keep rank identity; use readable accents on the dark home surface.
-  const accents=['#c4cec6','#b7ce8b','#91c4f3','#efb080','#f2a09a','#d2adeb','#acbed8','#f6d884'];
+  const accents=['#c4cec6','#b7ce8b','#91c4f3','#efb080','#f2a09a','#d2adeb','#acbed8','#f6d884','#a8e4cb','#edc28d'];
   for(const el of [card,$('#hProfBtn')]){
     el.style.setProperty('--home-rank',cur.color);
     el.style.setProperty('--home-rank-light',accents[idx]);
@@ -4749,31 +4804,37 @@ function refreshRankCard(){
   }
 }
 function renderRanksList(){
-  const pts=ST.n('rank');
-  const cur=rankFor(pts);
-  const curIdx=PLAYER_RANKS.indexOf(cur);
-  $('#ranksList').innerHTML=PLAYER_RANKS.map((r,i)=>{
-    const on=r===cur;
-    let sub;
-    if(i<curIdx) sub='تجاوزتها ✓';
-    else if(on) sub='أنت هنا الآن';
-    else sub=`باقي ${toH(r.min-pts)} نقطة للوصول`;
-    return `<div style="position:relative;height:78px;border-radius:16px;overflow:hidden;flex:none;background:url('${r.banner}') center/cover;box-shadow:${on?'0 0 0 2.5px '+r.color:'0 0 0 1px rgba(255,255,255,.08)'}">
-      <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 38%,rgba(0,0,0,.32) 62%,rgba(0,0,0,.15) 100%)"></div>
-      <div style="position:absolute;top:0;bottom:0;right:76px;left:34%;text-align:right;display:flex;flex-direction:column;justify-content:center;overflow:hidden">
-        <span style="font-size:15px;font-weight:800;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7);white-space:nowrap">${r.name}</span>
-        <span style="font-size:11px;font-weight:700;color:#e8e4da;text-shadow:0 1px 4px rgba(0,0,0,.7);margin-top:2px;white-space:nowrap">${sub}</span>
-      </div>
-    </div>`;
+  const pts=Math.max(0,Math.trunc(ST.n('rank')||0)),cur=rankFor(pts),idx=PLAYER_RANKS.indexOf(cur),next=PLAYER_RANKS[idx+1];
+  const number=n=>Math.max(0,Math.trunc(n)).toLocaleString('en-US');
+  const pct=next?Math.max(0,Math.min(100,Math.round((pts-cur.min)/(next.min-cur.min)*100))):100;
+  $('#ranksModal').style.setProperty('--pl-accent',cur.color);
+  const hero=`<section class="plSummary" aria-label="رتبتك الحالية"><div class="plSummaryTop"><img src="ui-art/rank-${idx}.svg" width="78" height="78" alt=""><div><span class="plEyebrow">رتبتك الحالية</span><h3>${cur.name}</h3><p><bdi>${number(pts)}</bdi> نقطة تصنيف</p></div></div><div class="plProgressLabel"><span>${next?'الرتبة التالية · '+next.name:'وصلت إلى قمة الرتب'}</span><strong>${next?'<bdi>'+number(next.min-pts)+'</bdi> نقطة متبقية':'شيخ المجابيد'}</strong></div><div class="plTrack" role="progressbar" aria-label="التقدم في الرتبة" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><span style="width:${pct}%"></span></div></section>`;
+  const rows=PLAYER_RANKS.map((r,i)=>{
+    const current=i===idx,after=PLAYER_RANKS[i+1],state=current?'رتبتك الحالية':i<idx?'اجتزتها':'باقي '+number(r.min-pts)+' نقطة';
+    const range=number(r.min)+(after?' – '+number(after.min-1):' فأكثر');
+    return `<li class="plRankRow ${current?'is-current':i<idx?'is-reached':'is-future'}" data-rank="${i}" style="--pl-rank:${r.color}"${current?' aria-current="step"':''}><div class="plRankTop"><img src="ui-art/rank-${i}.svg" width="58" height="58" alt="" loading="lazy"><div class="plRankIdentity"><h3>${r.name}</h3><p><bdi>${range}</bdi> نقطة</p></div><span class="plPosition" aria-label="الرتبة ${i+1}"><bdi>${i+1}</bdi></span></div><div class="plRankStatus">${current?'<span aria-hidden="true">●</span> ':i<idx?'<span aria-hidden="true">✓</span> ':''}${state}</div><div class="plEconomy"><div><span>الدخول</span><strong><bdi>${number(r.fee)}</bdi><small>ذهب</small></strong></div><div><span>صافي الفوز</span><strong><bdi>+${number(r.win-r.fee)}</bdi><small>ذهب</small></strong></div><div><span>نقاط المباراة</span><strong class="plDeltas"><bdi>+${r.rankWin}</bdi><span aria-hidden="true">/</span><bdi>−${r.rankLoss}</bdi></strong></div></div></li>`;
   }).join('');
+  $('#ranksList').innerHTML=hero+'<div class="plJourneyTitle"><h3>رحلة الرتب</h3><span>'+PLAYER_RANKS.length+' رتب</span></div><ol class="plRanks">'+rows+'</ol><p class="plFootnote">صافي الفوز هو مكسب الذهب بعد طرح رسوم الدخول. نقاط المباراة للفوز / الخسارة في لعب التصنيف؛ كأس مجابيد له مكافآت مراحله الخاصة.</p>';
 }
 function openRanksModal(){
-  renderRanksList();
-  const cur=rankFor(ST.n('rank'));
-  $('#ranksModal').style.background=`radial-gradient(130% 70% at 50% 15%,${cur.color}55 0%,transparent 60%),radial-gradient(130% 90% at 50% 22%,#2f5138 0%,#16281c 85%)`;
-  $('#ranksModal').classList.remove('hidden');
+  const modal=$('#ranksModal');
+  if(modal.classList.contains('hidden'))openRanksModal.returnFocus=document.activeElement;
+  renderRanksList();modal.classList.remove('hidden');$('#ranksList').scrollTop=0;$('#ranksClose').focus({preventScroll:true});
 }
-function closeRanksModal(){ $('#ranksModal').classList.add('hidden'); }
+function closeRanksModal(){
+  $('#ranksModal').classList.add('hidden');
+  const previous=openRanksModal.returnFocus;openRanksModal.returnFocus=null;
+  if(previous?.isConnected)previous.focus?.({preventScroll:true});
+}
+function ranksModalKeydown(event){
+  if($('#ranksModal').classList.contains('hidden'))return;
+  if(event.key==='Escape'){event.preventDefault();event.stopPropagation();closeRanksModal();return;}
+  if(event.key==='Tab'){
+    const first=$('#ranksClose'),last=$('#ranksList'),active=document.activeElement;
+    if(event.shiftKey&&active===first){event.preventDefault();last.focus({preventScroll:true});}
+    else if(!event.shiftKey&&active===last){event.preventDefault();first.focus({preventScroll:true});}
+  }
+}
 
 /* ================= المكافأة اليومية المتصاعدة ================= */
 // اليوم 1..7 = 100..700 عملة، ثم تعود للبداية. تُمنح مرة كل يوم تقويمي.
@@ -4782,15 +4843,17 @@ const DAILY_REWARDS=[100,200,300,400,500,600,700];
 /* ================= نظام المستويات التنافسي ================= */
 // كل مستوى: حد أدنى من النقاط + اسم + لون مميّز (يُطبَّق كخلفية شارة صغيرة جنب كل لاعب)
 const PLAYER_RANKS=[
-  {min:0,     name:'جديد',   color:'#8b857c', banner:'ui-art/rank-banner-0.svg'},
-  {min:1000,  name:'مبتدئ',  color:'#7a8a5e', banner:'ui-art/rank-banner-1.svg'},
-  {min:2000,  name:'صاعد',   color:'#4a90d9', banner:'ui-art/rank-banner-2.svg'},
-  {min:3000,  name:'متقدم',  color:'#d67f48', banner:'ui-art/rank-banner-3.svg'},
-  {min:4000,  name:'أسطوري', color:'#c0392b', banner:'ui-art/rank-banner-4.svg'},
-  {min:6000,  name:'فنان',   color:'#8e44ad', banner:'ui-art/rank-banner-5.svg'},
-  {min:7000,  name:'نخبوي',  color:'#2c3e50', banner:'ui-art/rank-banner-6.svg'},
-  {min:10000, name:'نابغة',  color:'#f6c14d', textColor:'#8a5a10', banner:'ui-art/rank-banner-7.svg'},
-];
+  {min:0,     name:'جديد',   color:'#8b857c', banner:'ui-art/rank-banner-0.svg', fee:200, win:300},
+  {min:1000,  name:'مبتدئ',  color:'#7a8a5e', banner:'ui-art/rank-banner-1.svg', fee:200, win:300},
+  {min:2000,  name:'صاعد',   color:'#4a90d9', banner:'ui-art/rank-banner-2.svg', fee:300, win:500},
+  {min:3000,  name:'متقدم',  color:'#d67f48', banner:'ui-art/rank-banner-3.svg', fee:400, win:700},
+  {min:4000,  name:'أسطوري', color:'#c0392b', banner:'ui-art/rank-banner-4.svg', fee:400, win:700},
+  {min:6000,  name:'فنان',   color:'#8e44ad', banner:'ui-art/rank-banner-5.svg', fee:500, win:900},
+  {min:7000,  name:'نخبوي',  color:'#2c3e50', banner:'ui-art/rank-banner-6.svg', fee:500, win:900},
+  {min:10000, name:'نابغة',  color:'#f6c14d', textColor:'#8a5a10', banner:'ui-art/rank-banner-7.svg', fee:1000, win:1500},
+  {min:15000, name:'سيد اللعبة', color:'#39896d', textColor:'#24664f', banner:'ui-art/rank-banner-8.svg', fee:1100, win:1650},
+  {min:20000, name:'شيخ المجابيد', color:'#b57a3e', textColor:'#80501f', banner:'ui-art/rank-banner-9.svg', fee:1210, win:1815},
+].map((rank,index)=>({...rank,rankWin:Math.round(50*1.1**index),rankLoss:Math.round(30*1.1**index)}));
 function rankFor(pts){
   pts=pts||0;
   let r=PLAYER_RANKS[0];
@@ -5011,7 +5074,7 @@ function showDailyReward(){
   return true;
 }
 
-function goHome(){ clearInterval(LB_COUNTDOWN_TIMER); refreshHome(); show('home'); mountNav('home','home'); try{inbListen()}catch(e){} try{updateDmBadge()}catch(e){} }
+function goHome(){ window.MajabeedFriendlyVoice?.disconnect(); clearInterval(LB_COUNTDOWN_TIMER); refreshHome(); show('home'); mountNav('home','home'); try{inbListen()}catch(e){} try{updateDmBadge()}catch(e){} }
 function toast2(t){ try{toast(t)}catch(e){alert(t)} }
 $('#hRules').onclick=()=>{SFX.tick();$('#rules').classList.remove('hidden')};
 $('#rulesX').onclick=$('#rulesOk').onclick=()=>$('#rules').classList.add('hidden');
@@ -5020,7 +5083,6 @@ $('#tiersBack').onclick=()=>goHome();
 $('#shopBack').onclick=()=>goHome();
 $('#lboardBack').onclick=()=>goHome();
 document.querySelectorAll('.lbTab').forEach(b=>b.onclick=()=>openBoard(b.dataset.lbp)); // v378 — تبديل تبويبي الأسبوعي والشهري
-$('#awardsBack').onclick=()=>goHome();
 // تبويبات المتجر
 // ربط نقر .shopTab محذوف — شريط التبويبات نفسه اتحذف من الـHTML
 $('#hGroup').onclick=()=>{ // FIX — تحقق الذهب قبل الدخول للوبي أصلاً (كان يدخل بحرّية ويُرفض لاحقاً لحظة الضغط على "ابدأ" فقط)
@@ -6165,37 +6227,15 @@ function openProfile(){
   }else{
     $('#pfHistory').style.display='none';
   }
-  // NEW CODE — حُذفت حلقة "الأوسمة المكتسبة" القديمة بالكامل (كانت هنا) — الحاوية نفسها اتحذفت من الـHTML،
-  // استبدلناها بقسم الإنجازات (renderAchievements أسفل)
-  renderAchievements(); // NEW CODE
+  renderAchievements();
   show('profile');
 }
-// NEW CODE — يعرض إنجازات اللاعب: "عضو مؤسس" (تجميلي، مرتبط بموعد نهائي فقط، صفر حاجة سيرفر) + آخر إنجاز
-// صدارة أسبوعي محقَّق فعليًا (يكتبه السيرفر أسبوعياً بـdistributeWeeklyPrizes، نقرأه هنا عبر pullServerStats)
-function renderAchievements(player){ // NEW CODE — أضفنا معامل player اختياري: لو مُرِّر نعرض إنجازاته هو، وإلا إنجازاتي أنا (localStorage) كالسابق
-  const list=$('#pfAchievementsList'); if(!list)return;
-  const items=[];
-  const FOUNDING_CUTOFF=new Date('2026-10-05T00:00:00Z').getTime(); // شهرين تقريبًا من تاريخ إطلاق الميزة
-  if(Date.now()<FOUNDING_CUTOFF){ // عضو مؤسس: بادج عام لأي لاعب (أنا أو غيري) طالما داخل نافذة الإطلاق
-    items.push({name:'عضو مؤسس',desc:'انضم هذا العضو مع بداية اللعبة',date:null,icon:'🏛️'});
-  }
-  const boardAch=player?(player.achievement||null):localStorage.getItem('wb-achievement'); // NEW CODE
-  const rawDate=player?(player.achievementDate||0):parseInt(localStorage.getItem('wb-achievementDate')||'0',10); // NEW CODE
-  // FIX — تحقق دفاعي فعلي من صلاحية التاريخ قبل اعتماده: أي شذوذ بالقيمة (نص رقمي بدل رقم مثلاً) كان يُنتج
-  // "Invalid Date" ظاهرة للمستخدم حرفياً بدل حذفها بصمت — الآن نتحقق فعلياً عبر Number.isFinite بعد تحويل
-  // صريح، ونتعامل مع أي قيمة غير صالحة كأن لا تاريخ أصلاً (نفس سلوك غياب التاريخ الطبيعي تماماً)
-  const boardDateNum=Number(rawDate); // FIX
-  const boardDate=Number.isFinite(boardDateNum)&&boardDateNum>0?boardDateNum:0; // FIX
-  if(boardAch){ items.push({name:boardAch,desc:'إنجاز أسبوعي بلوحة الصدارة',date:boardDate||null,icon:'🏆'}); }
-  if(!items.length){ list.innerHTML='<div style="text-align:center;padding:16px;color:var(--mut);font-size:12.5px">لا توجد إنجازات بعد</div>'; return; }
-  list.innerHTML=items.map(a=>`
-    <div style="display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:8px">
-      <span style="font-size:22px;flex:none">${a.icon}</span>
-      <div style="flex:1;min-width:0">
-        <b style="display:block;font-family:var(--fh);font-weight:400;font-size:14px;color:var(--ink)">${esc(a.name)}</b>
-        <span style="font-size:11px;color:var(--mut);font-weight:700">${esc(a.desc)}${a.date?' • '+new Date(a.date).toLocaleDateString('ar-SA'):''}</span>
-      </div>
-    </div>`).join('');
+// Championship records are read from the server-backed trophy gallery.
+function renderAchievements(player){
+  if(window.MajabeedTrophies)return window.MajabeedTrophies.render(player);
+  const list=$('#pfAchievementsList');if(!list)return;
+  list.classList.add('ptGallery');list.hidden=false;
+  list.innerHTML='<div class="ptState ptError" role="status"><strong>تعذّر تحميل البطولات الآن</strong><p>أعد فتح التطبيق لتحميل سجل البطولات.</p></div>';
 }
 $('#pfBack').onclick=()=>{ viewedProfile=null; const target=document.getElementById(uiProfileReturn); if(target&&uiProfileReturn!=='profile')show(uiProfileReturn);else goHome(); };
 $('#pfEdit').onclick=()=>{
@@ -6411,7 +6451,7 @@ async function uiRequestSpectatorSeat(approval){
   const current=()=>ONL.spectatorJoin===pending&&uiSpectatorJoinPending();
   pending.timer=setTimeout(()=>{if(current())uiFinishSpectatorJoin('لم يتأكد المقعد بعد؛ يمكنك متابعة المشاهدة والمحاولة مجددًا');},20000);
   try{
-    const payload=await withIdToken({type:'join',features:{sessionReturn:1,connectionQuality:1},sessionToken:ONL.sessionToken,tableProtocol:ONL.room?.startsWith('f6-')?385:undefined,playerId:ONL.pid,name:(($('#lobbyName')&&$('#lobbyName').value)||$('#nameIn').value||localStorage.getItem('wb-name')||'').trim(),avatar:myAvatar(),spectate:false,friendlyEconomyVersion:approval.version||undefined,friendlyParticipationId:approval.participationId||undefined});
+    const payload=await withIdToken({type:'join',rankedProtocol:1,features:{sessionReturn:1,connectionQuality:1},sessionToken:ONL.sessionToken,tableProtocol:ONL.room?.startsWith('f6-')?385:undefined,playerId:ONL.pid,name:(($('#lobbyName')&&$('#lobbyName').value)||$('#nameIn').value||localStorage.getItem('wb-name')||'').trim(),avatar:myAvatar(),spectate:false,friendlyEconomyVersion:approval.version||undefined,friendlyParticipationId:approval.participationId||undefined});
     if(!current())return false;
     if(!uiSpectatorCanJoin()){uiFinishSpectatorJoin('المقعد غير متاح الآن؛ يمكنك متابعة المشاهدة والمحاولة عند توفره');return false;}
     if(!payload.idToken||ONL.transport!=='poll'&&ONL.ws?.readyState!==1){uiFinishSpectatorJoin('تعذّر تأكيد المقعد؛ يمكنك متابعة المشاهدة والمحاولة مجددًا');return false;}
@@ -7161,7 +7201,7 @@ document.querySelectorAll('.afTab').forEach(t=>t.onclick=()=>{
 $('#hProfBtn').onclick=()=>openProfile();
 // NEW CODE — حذفنا $('#hChat').onclick — الزر نفسه اتحذف من الترويسة العلوية، الدردشة صارت بالشريط السفلي فقط
 $('#hDaily').onclick=()=>{SFX.tick();showRewardChoice()};
-$('#hGoldBtn').onclick=()=>{SFX.tick();if(uiHomeWalletHasPending()){uiHomeWalletResume(true);return;}openShop('gold')};
+$('#hGoldBtn').onclick=()=>{SFX.tick();if(uiHomeWalletHasPending()){uiHomeWalletResume(true);pullServerStats(0);return;}openShop('gold')};
 if(!SHOW_GOLD_PURCHASES){ const plus=document.querySelector('#hGoldBtn b'); if(plus)plus.style.display='none'; } // NEW CODE — يخفي إشارة "+" (تلمّح لعملية شراء) طالما المتجر مقفل — لا يترك زراً يبدو تفاعلياً بلا وظيفة
 $('#setupBack').onclick=()=>goHome();
 
@@ -7287,6 +7327,7 @@ async function bootTo(){
   }).catch(e=>{ _redirectChecked=true; if(GLOGIN&&!(FB.auth&&FB.auth.currentUser))showGloginPrompt(); try{toast2(authErr(e))}catch(x){} }); // FIX
   // راقب حالة الدخول: لا رئيسية إلا بحساب مسجّل (لا ضيف)
   FB.auth.onAuthStateChanged(async(user)=>{
+    window.MajabeedTrophies?.accountChanged(user?.uid||null);
     if(FB.user?.uid!==user?.uid){uiStopVoices();uiFinishSpectatorJoin('',{cancel:false});}
     window.VipClient?.reset();
     FB._resolveAuthReady(user||null); // أول ردّ فعلي من Firebase عن حالة الدخول — أي كود منتظر يتحرر الآن بغضّ النظر عن afterAuth أدناه
@@ -7315,7 +7356,8 @@ async function bootTo(){
   // مسار مستقل عن withIdToken (ذاك يخدم رسائل جديدة تُنشأ الآن؛ هذا يدفع تحديثاً لاتصال قائم أصلاً)
   FB.auth.onIdTokenChanged(async(user)=>{
     if(!user||!ONL.active)return;
-    try{ oSend({type:'auth',idToken:await user.getIdToken()}); }catch(e){}
+    const generation=ONL.generation,room=ONL.room;
+    try{const idToken=await uiBoundedIdToken(user);if(oSessionCurrent(generation,room)&&FB.user===user)oSend({type:'auth',rankedProtocol:1,idToken,spectate:ONL.spectateOnly||undefined});}catch(e){}
   });
 }
 if(document.readyState==='complete')bootTo();

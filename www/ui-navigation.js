@@ -11,7 +11,7 @@ const UI_NAV_ICONS={
  shop:'<path d="M3 9 5 3h14l2 6M4 10v11h16V10M9 21v-7h6v7"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/>',
  sessions:'<rect x="3" y="6" width="18" height="12" rx="4"/><path d="M8 3v3m8-3v3M8 18v3m8-3v3M3 12H1m22 0h-2"/>',
  inbox:'<path d="M3 5h18v15H3zM3 7l9 6 9-6"/>',
- awards:'<path d="m8 3 4 6 4-6M5 3h14M9 17l-1 5 4-2 4 2-1-5"/><circle cx="12" cy="13" r="5"/>',
+ championships:'<path d="M7 3h10v5a5 5 0 0 1-10 0V3ZM7 5H3v2a5 5 0 0 0 5 5m9-7h4v2a5 5 0 0 1-5 5M12 13v6m-4 2h8"/>',
  rules:'<path d="M12 5c-3-2-6-2-9-1v16c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1ZM12 5v16"/>',
  help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 .5c0 2-2.5 2-2.5 4M12 17h.01"/>',
  close:'<path d="m6 6 12 12M6 18 18 6"/>'
@@ -31,10 +31,16 @@ function uiNavActions(){return [
  ...(SHOW_STORE?[{k:'shop',label:'المتجر',go:()=>openShop()}]:[]),
  {k:'sessions',label:'الجلسات النشطة',go:()=>document.getElementById('hSessions')?.click(),modal:'sessionsModal'},
  {k:'inbox',label:'صندوق الوارد',go:()=>document.getElementById('hInbox')?.click(),modal:'inboxModal'},
- {k:'awards',label:'الإنجازات',go:()=>openAwards()},
+ ...(window.MajabeedBaloot?.state.selected!=='baloot'?[{k:'championships',label:'البطولات',go:()=>uiOpenChampionships()}]:[]),
  {k:'rules',label:'تعليمات اللعب',go:()=>document.getElementById('hRules')?.click(),modal:'rules'},
  {k:'help',label:'المساعدة',go:()=>document.getElementById('hHelp')?.click(),modal:'helpModal'}
 ];}
+function uiOpenChampionships(){
+ if(window.MajabeedBaloot?.state.selected==='baloot')return;
+ // Opening own profile clears a previously viewed player and starts the bound read.
+ openProfile();
+ uiProfileSelect('achievements',true);
+}
 function navHTML(active){
  const selected=uiNavActive(active);
  return '<div class="navBar" role="navigation" aria-label="القائمة الرئيسية">'+NAV_ITEMS.map(it=>
@@ -124,9 +130,9 @@ function uiNavRoute(id,overlay=false){
  if(overlay)return;
  UI_NAV.screen=id;
  window.MajabeedCup?.homeChanged(id);
- if(['profile','awardsScr','shop','lboard'].includes(id))mountNav(id,{profile:'profile',awardsScr:'awards',shop:'shop',lboard:'board'}[id]);
+ if(['profile','shop','lboard'].includes(id))mountNav(id,{profile:'profile',shop:'shop',lboard:'board'}[id]);
  const screen=document.getElementById(id);
- if(window.MajabeedBaloot?.state.selected!=='baloot'&&['home','chat','friends','profile','shop','lboard','awardsScr'].includes(id)&&screen?.animate&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+ if(window.MajabeedBaloot?.state.selected!=='baloot'&&['home','chat','friends','profile','shop','lboard'].includes(id)&&screen?.animate&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   // Paint transition only: dispatch/navigation never waits for this animation.
   UI_NAV.animation=screen.animate([{opacity:.88},{opacity:1}],{duration:150,easing:'ease-out'});
  }

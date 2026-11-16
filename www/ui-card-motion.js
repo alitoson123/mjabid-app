@@ -111,11 +111,11 @@ window.UICardFlow=(()=>{
     const pose=(a,b,t,raised)=>{
       const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy),scale=(b.w||54)/54;
       const dir=options.throwDir;
-      const turn=options.spin?0:dir?(dir.x?-dir.x*18:dir.y<0?-32:8):
+      const turn=options.keepAngle||options.spin?0:dir?(dir.x?-dir.x*18:dir.y<0?-32:8):
         (Math.abs(dx)>1?Math.sign(dx):Math.sign(dy)||1)*Math.min(7,d*.055);
       const lift=raised?Math.min(8*scale,d*.04):0;
       return {x:a.x+dx*t,y:a.y+dy*t-lift,w:(a.w+(b.w-a.w)*t)*(raised?1.025:1),
-        h:(a.h+(b.h-a.h)*t)*(raised?1.025:1),angle:a.angle+(b.angle-a.angle)*t+(raised?turn:turn*.12)};
+        h:(a.h+(b.h-a.h)*t)*(raised?1.025:1),angle:options.keepAngle?a.angle:a.angle+(b.angle-a.angle)*t+(raised?turn:turn*.12)};
     };
     const frame=(p,offset,opacity=1)=>({transform:transform(p,w,h),opacity,offset});
     if(options.via){
@@ -145,7 +145,7 @@ window.UICardFlow=(()=>{
   }
   // V388: a small contact tilt and light pulse on played cards in every mode; final pose is unchanged.
   function focusFrames(from,to,w,h){
-    const touch={...to,w:to.w*1.025,h:to.h*1.025,angle:to.angle+1.1};
+    const touch={...to,w:to.w*1.025,h:to.h*1.025,angle:to.angle};
     return [{transform:transform(from,w,h),opacity:1,filter:'brightness(1)',offset:0},
       {transform:transform(touch,w,h),opacity:1,filter:'brightness(1.08)',offset:.32},
       {transform:transform(to,w,h),opacity:1,filter:'brightness(1)',offset:1}];
@@ -272,7 +272,9 @@ window.UICardFlow=(()=>{
   function bidOrigin(from,to){return from||to;}
   function bidLanding(c,cards,geo){
     const center=geo.center;if(!center)return null;
-    const pose=typeof uiBidCardPose==='function'?uiBidCardPose(c,Math.max(0,cards.findIndex(x=>key(x)===key(c))),geo.directions?.get(c.by),cards,x=>geo.directions?.get(x.by)):{x:0,y:0,angle:0};
+    const direction=geo.directions?.get(c.by);
+    const pose=typeof uiBidCardPose==='function'?uiBidCardPose(c,Math.max(0,cards.findIndex(x=>key(x)===key(c))),direction,cards,x=>geo.directions?.get(x.by)):{x:0,y:0,angle:0};
+    pose.angle=geo.stack.get(key(c))?.angle??geo.field.get(key(c))?.angle??pose.angle;
     const sample=[...geo.stack.values()].at(-1),scale=(sample?.w||54)/54;
     return {x:center.x+pose.x*scale,y:center.y+pose.y*scale,w:54*scale,h:77*scale,angle:pose.angle};
   }
@@ -378,7 +380,7 @@ window.UICardFlow=(()=>{
         fly(ctx,c,start,to,{kind:last?(isBid?'bid':'play'):'capture',pid,area:'stack',target:target?.el,delay:last?0:Math.min(order*20,80),order:++order,merge:!now.stack.has(key(c)),land:last&&now.stack.has(key(c)),landingDirection:start&&to?impactVector(start,to):null,throwDir:last?now.directions.get(pid):null,
           ...(contactPaint?{paintOrder:contactPaint-unique.size+order}:{}),
           ...(receiver?{holdFor:key(played),holdUntil:contactUntil,receiverTo:target,paintOrder:contactPaint-receivers.length+receivers.indexOf(c)}:{}),
-          ...(last?{duration:480,spin:true,focus:true,paintOrder:contactPaint}:{})});
+          ...(last?{duration:480,spin:true,focus:true,paintOrder:contactPaint}:{keepAngle:true})});
       }
       ctx.capture=null;
     }

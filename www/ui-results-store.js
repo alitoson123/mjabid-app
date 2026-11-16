@@ -248,7 +248,7 @@ function uiRenderThemePreview(){
   const note=document.getElementById('uiShopSceneNote');note.dataset.themeRemaining=theme.id;note.textContent=uiThemeAccessText(theme.id);
   const button=document.getElementById('uiShopActivate');
   button.disabled=active||UI_SHOP.busy;
-  button.textContent=UI_SHOP.busy?'جارٍ التحقق…':active?'مُفعّلة ✓':access.active?'استخدم الخلفية':'استئجار وتفعيل · 2000 كوينز / 7 أيام';
+  button.textContent=UI_SHOP.busy?'جارٍ التحقق…':active?'مُفعّلة ✓':access.active?'استخدم الخلفية':'استئجار وتفعيل · 600 ذهب / 7 أيام';
   button.onclick=()=>uiActivateTheme(theme.id);
 }
 function uiRenderShop(){

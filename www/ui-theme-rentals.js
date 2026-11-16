@@ -52,7 +52,7 @@ function uiThemeAccessText(id){
   if(a.source==='free')return id===UI_FREE_THEME?'مجانية للجميع · الخلفية الأساسية':'مجانية للجميع';
   if(a.permanent)return 'ملكية سابقة محفوظة · دائمة';
   if(a.active)return (a.source==='legacy-gift'?'هدية انتقالية · ':'متبقٍ · ')+uiThemeRemaining(a.expiresAt);
-  return (a.expiresAt?'انتهت المدة · ':'')+'2000 كوينز · 7 أيام';
+  return (a.expiresAt?'انتهت المدة · ':'')+'600 ذهب · 7 أيام';
 }
 function uiThemeResolve(){
   uiThemeMigrateDefault();
@@ -108,11 +108,17 @@ function uiThemeRequestId(uid,id){
 async function uiThemeRent(id){
   const r=UI_THEME_RENTALS,user=FB.user;if(!user)throw Error('سجّل دخولك لاستئجار الخلفية');
   uiThemeSetAccount(user.uid);
+  if(r.renting)throw Error('جارٍ تأكيد الطلب');
+  const fresh=await uiThemeSync(true);
+  if(FB.user?.uid!==user.uid||r.uid!==user.uid)throw Error('تغير الحساب؛ أعد المحاولة');
+  // Older servers still quote 2000. Never send a purchase for more than the displayed 600.
+  if(!fresh||!r.verified||r.data?.price!==600)throw Error('سعر الخلفيات الجديد لم يتوفر بعد؛ أعد المحاولة لاحقًا');
+  if(r.renting)throw Error('جارٍ تأكيد الطلب');
   r.revision++;r.renting=true;
   const uid=user.uid,generation=r.generation;
   try{
     const requestId=uiThemeRequestId(uid,id);
-    const data=await uiThemeRequest({action:'rent',themeId:id,requestId});
+    const data=await uiThemeRequest({action:'rent',themeId:id,requestId,maxPrice:600});
     if(!uiThemeAccept(data,uid,generation))return false;
     uiThemeWrite('wb-theme-request-v363:'+uid+':'+id,null);
     if(Number.isFinite(data.gold))ST.set('gold',data.gold);

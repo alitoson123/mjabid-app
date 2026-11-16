@@ -14,6 +14,7 @@
  const n=value=>String(Math.max(0,Math.trunc(Number(value)||0))), delta=value=>(Number(value)>0?'+':Number(value)<0?'−':'')+n(Math.abs(Number(value)||0));
  const user=()=>typeof FB!=='undefined'?FB.user:null;
  const online=()=>typeof ONL!=='undefined'?ONL:null;
+ const watching=()=>!!online()?.spectateOnly||online()?.view?.viewerStatus==='spectator';
  const currentGame=()=>window.MajabeedBaloot?.state?.selected||$('frame')?.dataset.majabeedGame||'majabeed';
  const trophy='<svg viewBox="0 0 96 106" fill="none" aria-hidden="true"><path d="M24 15H10v13c0 17 12 27 26 27M72 15h14v13c0 17-12 27-26 27" stroke="#d5b466" stroke-width="6"/><path d="M25 9h46v29c0 17-9 26-23 26S25 55 25 38V9Z" fill="#f0d18c" stroke="#fff1c9" stroke-width="2"/><path d="M48 64v21M34 90h28M28 98h40" stroke="#d5b466" stroke-width="8" stroke-linecap="round"/><path d="m48 22 4 9 10 1-8 7 2 10-8-5-8 5 2-10-8-7 10-1 4-9Z" fill="#275843"/><path d="M32 14v23c0 9 3 15 7 18" stroke="#fff7db" stroke-width="3" stroke-linecap="round" opacity=".7"/></svg>';
  const hearts=(lost,total)=>'<span class="mcHearts" aria-label="'+n(Math.max(0,total-lost))+' فرص متبقية">'+Array.from({length:total},(_,i)=>'<span class="'+(i<lost?'spent':'')+'" aria-hidden="true">♥</span>').join('')+'</span>';
@@ -22,7 +23,7 @@
  function resetIdentity(uid=user()?.uid||null){
   if(C.uid===uid&&H.uid===uid)return;
   C.controller?.abort();clearTimeout(C.timer);clearTimeout(C.resultTimer);clearTimeout(C.entryTimer);clearTimeout(C.navigation?.timer);C.seq++;
-  C.open=false;$('majabeedCup')?.setAttribute('hidden','');lockPage(false);
+  C.open=false;C.continuationNotice=null;$('majabeedCup')?.setAttribute('hidden','');lockPage(false);
   Object.assign(C,{uid,data:null,leaders:null,confirm:false,requestId:null,autoEnter:false,error:'',busy:false,loading:false,entering:false,navigation:null,entryIntent:null,entryPending:false,resultMatch:null,resultData:null,resultSeen:null});
   H.controller?.abort();clearTimeout(H.timer);H.seq++;
   Object.assign(H,{uid,data:null,at:0,offset:0,controller:null,inflight:null,timer:0,error:false});
@@ -44,7 +45,7 @@
   const p=d.progress||{},total=Math.max(1,Math.min(9,Number(d.rules?.lossesPerStage)||3)),lost=Math.max(0,Math.min(total,Number(p.losses)||0));
   const active=p.status==='active',ended=p.status==='lost',won=p.status==='won',remaining=ended?0:active?total-lost:total;
   const ratio=(a,b)=>'<bdi dir="ltr">'+n(a)+' / '+n(b)+'</bdi>';
-  const status=active?'المرحلة '+n((Number(p.stage)||0)+1)+' · المتبقي '+ratio(remaining,total)+' فرص':ended?'انتهت المحاولة · ابدأ من المرحلة 1':won?'بطل الكأس · ابدأ محاولة جديدة':'محاولة جديدة · '+n(total)+' فرص لكل مرحلة';
+  const status=active?'المرحلة '+n((Number(p.stage)||0)+1)+' · المتبقي '+ratio(remaining,total)+' فرص':ended?'انتهت المحاولة · ابدأ من المرحلة 1':won?'بطل الكأس · ابدأ محاولة جديدة':'محاولة جديدة · '+n(total)+' فرص للمحاولة';
   const free=d.entry?.freeAvailable===true,dayCurrent=d.entry?.day===homeDay();
   const entry=!dayCurrent?'جارٍ تحديث المشاركة اليومية…':active?'المتابعة مجانية · مشاركة اليوم '+ratio(free?1:0,1):free?'مشاركة اليوم المجانية '+ratio(1,1):'مشاركة اليوم '+ratio(0,1)+' · الدخول '+n(d.entry?.price)+' ذهب';
   // These two lines contain only fixed copy and normalized numeric values.
@@ -80,6 +81,7 @@
  }
  async function api(path,body,signal){
   const account=user();if(!account)throw Error('سجّل الدخول للمشاركة في كأس مجابيد');
+  if(!body&&window.MajabeedRanked?.open&&/^\/cup\/state(?:\?|$)/.test(path)&&!/[?&]fresh=/.test(path))path+=(path.includes('?')?'&':'?')+'fresh=1';
   const controller=new AbortController();let rejectAbort;
   const interrupted=new Promise((_,reject)=>{rejectAbort=reject;}),abort=()=>{controller.abort();rejectAbort(Object.assign(Error('cup request interrupted'),{name:'AbortError'}));};
   signal?.addEventListener('abort',abort,{once:true});const timeout=setTimeout(abort,12000);
@@ -100,13 +102,26 @@
   if(messages[error?.code])return messages[error.code];
   return error?.name==='AbortError'?'لم يصل تأكيد الخادم. اضغط تحديث للتحقق؛ لن نبدأ طلبًا جديدًا تلقائيًا.':'تعذّر تأكيد العملية. اضغط تحديث للتحقق من حالتها.';
  }
- function accept(data){
+ function accept(data,resolved=false){
   if(!data||!data.rules||!data.entry)return false;
   C.data=data;C.offset=(Number(data.serverNow)||Date.now())-Date.now();
   acceptHome(data);
   if(data.search?.requestId)C.requestId=data.search.requestId;
   if(!data.search&&!data.assignment&&!C.busy)C.requestId=null;
+  const notice=data.noticeCode==='CUP_CONTINUATION_ENDED'?JSON.stringify([data.profile?.uid,data.progress?.attemptId,data.progress?.status,data.lastResult?.match]):null;
+  if(!notice)C.continuationNotice=null;
+  else if(C.continuationNotice!==notice){C.continuationNotice=notice;
+   if(!resolved&&C.open&&window.MajabeedRanked?.open&&data.profile?.uid===user()?.uid){hide();window.MajabeedRanked.open('cup',{legacyResolved:data});return true;}
+  }
+  if(C.open&&handoffFresh(data))return true;
   render();renderResult();return true;
+ }
+ // The old controller may finish owned work, but never start another legacy attempt
+ // when the modern client is present. No progress, price or reward is rewritten.
+ function handoffFresh(data=C.data){
+  const p=data?.progress,modern=p?.status==='active'&&p.rulesVersion===2;
+  if(!window.MajabeedRanked?.open||data?.profile?.uid!==user()?.uid||data?.search||data?.assignment||!modern&&!['idle','won','lost'].includes(p?.status))return false;
+  hide();window.MajabeedRanked.open('cup',{legacyResolved:data});return true;
  }
  function schedule(){
   clearTimeout(C.timer);if(!C.open||document.hidden||C.busy||C.entering||C.error)return;
@@ -131,7 +146,8 @@
  function mount(){
   if($('majabeedCup'))return;
   const el=document.createElement('section');el.id='majabeedCup';el.hidden=true;el.dir='rtl';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-labelledby','mcTitle');
-  el.innerHTML='<div class="mcShell"><header class="mcHeader"><button type="button" data-mc="close" aria-label="إغلاق كأس مجابيد">×</button><div><small>مجابيد · طريق الأبطال</small><h1 id="mcTitle">كأس مجابيد</h1></div><span class="mcHeaderSpace" aria-hidden="true"></span></header><nav class="mcTabs" aria-label="أقسام الكأس"><button type="button" data-mc="journey">رحلتي</button><button type="button" data-mc="leaders">أبطال مجابيد</button><button type="button" data-mc="rules">التعليمات</button></nav><div class="mcScroll"><div id="mcMessage" role="status" aria-live="polite"></div><div id="mcBody"></div></div><footer id="mcFooter"></footer></div>';
+  const modern=typeof window.MajabeedRanked?.legacyPresentation==='function';el.classList.toggle('mcModern',modern);
+  el.innerHTML=modern?'<article class="mcShell mj-app mj-cup"><header class="mj-header"><button type="button" class="mj-back" data-mc="close" aria-label="العودة">‹</button><div class="mj-brand"><span class="mj-brand-mark" aria-hidden="true">♠</span><div><strong id="mcTitle">مجابيد</strong><small>كأس مجابيد</small></div></div><span class="mj-wallet"><span aria-hidden="true">◈</span><bdi id="mcGold"></bdi><small>ذهب</small></span></header><div class="mcScroll"><div id="mcMessage" class="mj-message" role="status" aria-live="polite"></div><div id="mcBody"></div><footer id="mcFooter"></footer></div></article>':'<div class="mcShell"><header class="mcHeader"><button type="button" data-mc="close" aria-label="إغلاق كأس مجابيد">×</button><div><small>مجابيد · طريق الأبطال</small><h1 id="mcTitle">كأس مجابيد</h1></div><span class="mcHeaderSpace" aria-hidden="true"></span></header><nav class="mcTabs" aria-label="أقسام الكأس"><button type="button" data-mc="journey">رحلتي</button><button type="button" data-mc="leaders">أبطال مجابيد</button><button type="button" data-mc="rules">التعليمات</button></nav><div class="mcScroll"><div id="mcMessage" role="status" aria-live="polite"></div><div id="mcBody"></div></div><footer id="mcFooter"></footer></div>';
   el.addEventListener('click',event=>{const button=event.target.closest('[data-mc]');if(button&&!button.disabled)action(button.dataset.mc);});
   el.addEventListener('error',event=>{if(event.target.tagName==='IMG')event.target.remove();},true);
   el.addEventListener('keydown',event=>{
@@ -178,31 +194,43 @@
   el.querySelectorAll('.mcTabs button').forEach(b=>{b.classList.toggle('selected',b.dataset.mc===C.tab);b.setAttribute('aria-pressed',String(b.dataset.mc===C.tab));b.disabled=C.busy||C.entering;});
   const message=$('mcMessage');message.textContent=C.error||(C.entering?'جارٍ الاتصال بطاولة الكأس…':C.busy?'جارٍ تأكيد العملية…':C.loading?'جارٍ تحديث '+(C.tab==='leaders'?'أبطال مجابيد':'الكأس')+'…':C.data?.notice||'');message.hidden=!message.textContent;
   el.dataset.message=String(!!message.textContent);el.dataset.loading=String(C.loading||C.busy||C.entering);
-  const body=$('mcBody'),markup=C.data?(C.tab==='leaders'?leadersView():C.tab==='rules'?rulesView():journey()):'<div class="mcEmpty"><div class="mcTrophy">'+trophy+'</div><h2>بطولتك القادمة تبدأ هنا</h2><p>'+(C.error?'لم نتمكن من تأكيد الحالة. يمكنك إعادة المحاولة أو إغلاق الكأس.':'نُحمّل تقدمك والمشاركة المتاحة من الخادم.')+'</p></div>';
+  const presentation=window.MajabeedRanked?.legacyPresentation?.({data:C.data,busy:C.busy,loading:C.loading,entering:C.entering,confirm:C.confirm,requestId:C.requestId,error:C.error,tab:C.tab});
+  if($('mcGold'))$('mcGold').textContent=C.data?n(C.data.profile?.gold):'—';
+  const body=$('mcBody'),markup=presentation?.body??(C.data?(C.tab==='leaders'?leadersView():C.tab==='rules'?rulesView():journey()):'<div class="mcEmpty"><div class="mcTrophy">'+trophy+'</div><h2>بطولتك القادمة تبدأ هنا</h2><p>'+(C.error?'لم نتمكن من تأكيد الحالة. يمكنك إعادة المحاولة أو إغلاق الكأس.':'نُحمّل تقدمك والمشاركة المتاحة من الخادم.')+'</p></div>');
   if(body._markup!==markup){body.innerHTML=markup;body._markup=markup;}
-  const foot=$('mcFooter'),fm=footer();if(foot._markup!==fm){foot.innerHTML=fm;foot._markup=fm;}
+  const foot=$('mcFooter'),fm=presentation?.footer??footer();if(foot._markup!==fm){foot.innerHTML=fm;foot._markup=fm;}
   window.MajabeedAdIndicators?.refresh();
  }
  async function join(){
   if(C.busy||C.loading||!C.open||C.tab!=='journey'||!C.data||C.data.assignment||C.data.search||window.MajabeedEntryGate?.busy)return false;
+  if(handoffFresh())return false;
   if(C.requestId){await refresh();return false;} // Resolve an uncertain earlier admission before requesting another.
   if(online()?.active&&!['over','closed'].includes(online().status)){C.error='أنت في طاولة أخرى. اخرج منها قبل بدء البحث عن الكأس.';render();return;}
   const uid=user()?.uid;if(!uid)return;
-  const maxEntryPrice=Number(C.data.entry.price)||0;
+  const maxEntryPrice=Number(C.data.entry.price)||0,continuationOnly=!!window.MajabeedRanked?.open,expectedAttemptId=C.data.progress?.attemptId;
   const intent={};C.entryIntent=intent;C.entryPending=true;C.busy=true;C.error='';C.autoEnter=false;C.confirm=false;render();
   clearTimeout(C.entryTimer);C.entryTimer=setTimeout(()=>{if(C.entryIntent===intent){C.entryIntent=null;C.entryPending=false;C.busy=false;C.autoEnter=false;C.error='لم يكتمل تأكيد الدخول. أعد المحاولة للتحقق من المشاركة.';render();}},90000);
   const current=()=>C.entryIntent===intent&&C.open&&C.tab==='journey'&&C.uid===uid&&user()?.uid===uid&&currentGame()==='majabeed'&&!C.data?.search&&!C.data?.assignment&&!(online()?.active&&!['over','closed'].includes(online().status));
   const admit=async()=>{
    if(!current()||document.hidden)return false;
+   if(handoffFresh())return false;
    // A request ID and server reservation exist only after the shared ad gate admits entry.
    C.entryPending=false;C.autoEnter=true;C.requestId=C.requestId||('mc-'+crypto.randomUUID());const requestId=C.requestId;
-   const d=await api('/cup/join',{requestId,maxEntryPrice});if(C.entryIntent!==intent||!C.open||uid!==user()?.uid)return false;
+   const d=await api('/cup/join',{requestId,maxEntryPrice,...(continuationOnly?{continuationOnly:true,expectedAttemptId}:{})});if(C.entryIntent!==intent||!C.open||uid!==user()?.uid)return false;
    accept(d.state||d);return true;
   };
   try{
    if(!window.MajabeedEntryGate?.run)throw Error('جارٍ تجهيز الدخول؛ حاول مرة أخرى.');
    return await window.MajabeedEntryGate.run(admit,{isCurrent:current,beforeStore:()=>{if(C.entryIntent===intent)hide();}});
-  }catch(e){if(C.entryIntent===intent&&uid===user()?.uid){C.error=explain(e);C.autoEnter=false;}return false;}
+  }catch(e){if(C.entryIntent===intent&&uid===user()?.uid){
+   if(e.code==='CUP_CONTINUATION_ENDED'&&window.MajabeedRanked?.open){
+    try{const fresh=await api('/cup/state');if(C.entryIntent!==intent||!C.open||uid!==user()?.uid)return false;
+     if(fresh.profile?.uid!==uid||!fresh.rules||!fresh.entry)throw Error('invalid cup continuation state');
+     C.requestId=null;acceptHome(fresh);hide();window.MajabeedRanked.open('cup',{legacyResolved:fresh});
+    }catch(error){if(C.entryIntent===intent&&uid===user()?.uid)C.error=explain(error);}return false;
+   }
+   if(e.code==='NEW_CUP_ACTIVE'&&window.MajabeedRanked?.open){hide();window.MajabeedRanked.open('cup');return false;}C.error=explain(e);C.autoEnter=false;
+  }return false;}
   finally{if(C.entryIntent===intent&&uid===user()?.uid){clearTimeout(C.entryTimer);C.entryIntent=null;C.entryPending=false;C.busy=false;render();if(C.open)await refresh(!!C.error);}}
  }
  async function cancel(){
@@ -222,26 +250,39 @@
    on.pendingTier=null;on.pendingMode='team';on.assignmentPid={room:assignment.room,pid:assignment.playerId};
    const url=new URL(location.href);url.searchParams.set('room',assignment.room);url.searchParams.delete('spectate');url.searchParams.delete('league');history.replaceState(null,'',url.pathname+url.search+url.hash);
    if(enterOnline()===false)throw Error('cup connection rejected');
-   if(C.navigation===navigation&&on.active&&on.room===assignment.room&&on.cup?.room===assignment.room&&['lobby','waiting','playing','over'].includes(on.status))hide();
+   if(C.navigation===navigation&&on.active&&on.room===assignment.room&&on.cup?.room===assignment.room&&['lobby','waiting','playing','over'].includes(on.status))navigationReady(on.status);
   }catch(_){if(C.navigation===navigation){clearTimeout(navigation.timer);C.navigation=null;C.entering=false;C.error='تعذّر فتح طاولة الكأس. تحقّق من الحالة وأعد المحاولة.';render();}}
+ }
+ function navigationReady(status){
+  if(window.MajabeedRanked?.open&&!watching()&&['lobby','waiting'].includes(status)){
+   clearTimeout(C.navigation?.timer);if(C.navigation)C.navigation.timer=null;C.entering=false;render();return;
+  }
+  hide();
  }
  function hide(){C.view++;C.entryIntent=null;C.entryPending=false;C.busy=false;C.loading=false;C.entering=false;clearTimeout(C.entryTimer);clearTimeout(C.navigation?.timer);C.navigation=null;C.open=false;C.autoEnter=false;C.confirm=false;C.seq++;C.controller?.abort();C.controller=null;clearTimeout(C.timer);$('majabeedCup')?.setAttribute('hidden','');lockPage(false);C.focus?.focus?.({preventScroll:true});refreshHomeState();}
  async function action(name){
   resetIdentity();if(name==='close'){if(C.busy||C.entering){hide();return;}const view=C.view;if(C.data?.search||C.requestId&&!C.data?.assignment)await cancel();if(view===C.view)hide();return;}
   if(C.busy||C.entering)return;
+  if(name==='leaders'&&window.MajabeedRanked?.openChampions){hide();window.MajabeedRanked.openChampions(open);return;}
   if(name==='refresh'){await refresh();return;}
   if(['journey','leaders','rules'].includes(name)){if(C.tab!==name){C.controller?.abort();C.seq++;C.loading=false;}C.tab=name;C.confirm=false;render();if(!C.data||name==='leaders'&&(!C.leaders||Date.now()-(C.leadersAt||0)>60000))await refresh();else schedule();return;}
   if(name==='back'){C.confirm=false;render();return;}
   if(name==='resume'){enter(C.data?.assignment);return;}
   if(name==='cancel'){await cancel();return;}
-  if(name==='start'){if(C.busy||C.loading)return;if(C.requestId){await refresh();return;}if(Number(C.data?.entry?.price)>0){C.confirm=true;render();return;}await join();return;}
+  if(name==='start'){if(C.busy||C.loading)return;if(handoffFresh())return;if(C.requestId){await refresh();return;}if(Number(C.data?.entry?.price)>0){C.confirm=true;render();return;}await join();return;}
   if(name==='join')await join();
  }
  function open(){
+  if(window.MajabeedRanked?.open){if(C.open||C.entryPending)hide();return window.MajabeedRanked.open('cup');}
+  return openLegacy();
+ }
+ function openLegacy(snapshot){
   if(C.entryPending)return;
   if(currentGame()==='baloot')return;
   if(!user()){if(typeof toast2==='function')toast2('سجّل الدخول للمشاركة في كأس مجابيد');return;}
-  resetIdentity();H.controller?.abort();H.seq++;H.controller=null;H.inflight=null;clearTimeout(H.timer);C.view++;C.focus=document.activeElement;C.open=true;C.tab='journey';C.confirm=false;C.autoEnter=false;mount();lockPage(true);render();$('majabeedCup').querySelector('[data-mc="close"]').focus({preventScroll:true});refresh();
+  resetIdentity();H.controller?.abort();H.seq++;H.controller=null;H.inflight=null;clearTimeout(H.timer);C.view++;C.focus=document.activeElement;C.open=true;C.tab='journey';C.confirm=false;C.autoEnter=false;mount();lockPage(true);
+  if(snapshot?.profile?.uid===user()?.uid)accept(snapshot,true);if(!C.open)return;
+  render();$('majabeedCup').querySelector('[data-mc="close"]').focus({preventScroll:true});refresh();
  }
  function lobby(state){
   const wait=$('onlWait');if(!wait)return;wait.dataset.majabeedCup='true';
@@ -253,6 +294,7 @@
   const players=$('lobbyPlayers');if(players){const markup=(state.seats||[]).map(id=>{const bot=state.lobby?.bots?.includes?.(id)||/^bot[-_]/.test(id);return '<div class="mcLobbyPlayer"><span>'+esc(nameAt(id))+'</span>'+(state.cup?.test&&bot?'<small>بوت · اختبار</small>':'')+'</div>';}).join('');if(players._cupMarkup!==markup){players.innerHTML=markup;players._cupMarkup=markup;}}
  }
  function renderResult(){
+  if(online()?.cup?.rankedProtocol===1||watching())return;
   const on=online(),host=$('mcResult');if(!on?.cup||on.status!=='over'||!host)return;
   const d=C.resultData||C.data,result=d?.lastResult,confirmed=result&&result.match===on.cup.match;
   if(!confirmed){host.innerHTML='<p>جارٍ تأكيد نتيجة الكأس…</p><button type="button" class="mcSecondary" data-cup-retry>تحديث النتيجة</button>';host.querySelector('button').onclick=()=>fetchResult(on.cup.match,on.cup.test);return;}
@@ -261,6 +303,7 @@
   if(C.resultSeen!==result.match){C.resultSeen=result.match;if(!on.cup.test&&typeof pullServerStats==='function')pullServerStats(0);}
  }
  function showResult(){
+  if(online()?.cup?.rankedProtocol===1||watching())return;
   const on=online();if(!on?.cup||on.status!=='over'||window.MajabeedFinale?.presentation())return;
   const card=document.querySelector('#oOver #resCard')||$('oOver');if(!card)return;
   if(!$('mcResult')){const el=document.createElement('section');el.id='mcResult';el.className='mcResult';const menu=$('oMenu');card.insertBefore(el,menu?.parentElement?.parentElement===card?menu.parentElement:null);}
@@ -269,16 +312,19 @@
   renderResult();
  }
  async function fetchResult(match,test){
+  if(online()?.cup?.rankedProtocol===1||watching())return;
   if(document.hidden||online()?.cup?.match!==match||online()?.status!=='over'||C.resultFetching===match)return;const uid=user()?.uid;if(!uid)return;C.resultFetching=match;
-  try{const d=await api('/cup/state'+(test?'?test=1':''));if(uid!==user()?.uid||online()?.cup?.match!==match||online()?.status!=='over')return;C.resultData=d;acceptHome(d,test);renderResult();if(d.lastResult?.match!==match){clearTimeout(C.resultTimer);C.resultTimer=setTimeout(()=>fetchResult(match,test),6000);}}
-  catch(_){if(online()?.cup?.match===match){const e=$('mcResult');if(e){e.innerHTML='<p>النتيجة لم تتأكد بعد. يمكنك العودة للكأس والتحقق دون احتساب مكافأة مؤقتة.</p><button type="button" class="mcSecondary">تحديث النتيجة</button>';e.querySelector('button').onclick=()=>fetchResult(match,test);}}}
+  try{const d=await api('/cup/state'+(test?'?test=1':''));if(watching()||uid!==user()?.uid||online()?.cup?.match!==match||online()?.status!=='over')return;C.resultData=d;acceptHome(d,test);renderResult();if(d.lastResult?.match!==match){clearTimeout(C.resultTimer);C.resultTimer=setTimeout(()=>fetchResult(match,test),6000);}}
+  catch(_){if(!watching()&&online()?.cup?.match===match){const e=$('mcResult');if(e){e.innerHTML='<p>النتيجة لم تتأكد بعد. يمكنك العودة للكأس والتحقق دون احتساب مكافأة مؤقتة.</p><button type="button" class="mcSecondary">تحديث النتيجة</button>';e.querySelector('button').onclick=()=>fetchResult(match,test);}}}
   finally{if(C.resultFetching===match)C.resultFetching=null;}
  }
  function state(msg){
+  if(msg.cup?.rankedProtocol===1)return;
   resetIdentity();
   const on=online(),root=$('onl');if(root)root.dataset.majabeedCup=msg.cup?'true':'false';
-  if(C.navigation&&C.navigation.uid===user()?.uid&&msg.cup?.room===C.navigation.room&&on?.room===C.navigation.room&&['lobby','waiting','playing','over'].includes(msg.status))hide();
+  if(C.navigation&&C.navigation.uid===user()?.uid&&msg.cup?.room===C.navigation.room&&on?.room===C.navigation.room&&['lobby','waiting','playing','over'].includes(msg.status))navigationReady(msg.status);
   if(!msg.cup){$('mcResult')?.remove();$('onlWait')?.removeAttribute('data-majabeed-cup');if(C.resultMatch&&$('oMenu'))$('oMenu').textContent='العودة للرئيسية';C.resultMatch=null;clearTimeout(C.resultTimer);return;}
+  if(watching()||msg.view?.viewerStatus==='spectator'){clearTimeout(C.resultTimer);$('mcResult')?.remove();if(msg.status==='closed'&&on?.active)leaveOnline();return;}
   if(msg.status==='closed'){C.autoEnter=false;if(on?.active)leaveOnline();open();return;}
   if($('uiOnlineTitle'))$('uiOnlineTitle').textContent='كأس مجابيد'+(msg.cup.test?' · تجربة':'');
   if($('uiOnlineMode'))$('uiOnlineMode').textContent=msg.status==='playing'&&on?.view?uiMatchLabels(on.view).detail:'10 بواصر · 9 جواكر · جماعي 2 × 2';
@@ -290,12 +336,14 @@
   }
  }
  async function profile(uid){
+  $('mcProfileTitles')?.remove();
+  if(window.MajabeedTrophies)return;
   const anchor=$('pfRankProgress');if(!anchor||!uid||currentGame()==='baloot')return;$('mcProfileTitles')?.remove();
   const box=document.createElement('div');box.id='mcProfileTitles';box.className='mcProfileTitles';box.dataset.uid=uid;anchor.after(box);
   try{const d=await api('/cup/profile?uid='+encodeURIComponent(uid));if($('mcProfileTitles')!==box||box.dataset.uid!==uid)return;const titles=Number(d.profile?.titles)||0;box.textContent=titles?'🏆 '+n(titles)+' بطولة مجابيد':'';box.hidden=!titles;}catch(_){box.remove();}
  }
  window.uiCupOpen=open;window.uiCupState=state;window.uiCupLobby=lobby;window.uiCupProfile=profile;
- window.MajabeedCup={open,close:()=>action('close'),refresh,renderResult:showResult,homeChanged,refreshHome:refreshHomeState,accountChanged:uid=>resetIdentity(uid||null)};
+ window.MajabeedCup={open,openLegacy,close:()=>action('close'),refresh,renderResult:showResult,homeChanged,refreshHome:refreshHomeState,accountChanged:uid=>resetIdentity(uid||null)};
  if($('hTournament'))$('hTournament').onclick=open;
  document.addEventListener('visibilitychange',()=>{if(document.hidden){C.autoEnter=false;C.controller?.abort();C.seq++;C.loading=false;clearTimeout(C.timer);clearTimeout(C.resultTimer);H.controller?.abort();H.seq++;H.controller=null;H.inflight=null;clearTimeout(H.timer);}else if(C.open)refresh();else if(online()?.cup&&online()?.status==='over')fetchResult(online().cup.match,!!online().cup.test);else refreshHomeState();});
  window.addEventListener('pagehide',()=>{C.autoEnter=false;clearTimeout(C.timer);clearTimeout(C.resultTimer);clearTimeout(H.timer);H.controller?.abort();});

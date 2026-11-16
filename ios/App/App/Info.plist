@@ -169,5 +169,7 @@
 	</array>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>تُستخدم المعرفات الخاصة بجهازك لتقديم إعلانات مخصصة لك وتحسين تجربة اللعب.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>نستخدم الميكروفون عند تشغيله للتحدث مع لاعبي جلستك الودية. يمكنك اللعب والاستماع دون تشغيله.</string>
 </dict>
 </plist>

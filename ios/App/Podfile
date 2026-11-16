@@ -17,6 +17,7 @@ def capacitor_pods
 end
 
 target 'App' do
+  pod 'AgoraAudio_iOS', '4.7.0'
   capacitor_pods
   # Add your Pods here
   pod 'GoogleUserMessagingPlatform', '< 3.0.0'

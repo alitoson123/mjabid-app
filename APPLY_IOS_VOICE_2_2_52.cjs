@@ -2,9 +2,10 @@
 'use strict';
 // Local native patch only. No npm, CocoaPods, Xcode, network, signing or credential access.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
-const VERSION='2.2.49',BUNDLE_ID='com.mjabid.play';
+const VERSION='2.2.52',BUNDLE_ID='com.mjabid.play';
 const FILES={pod:'ios/App/Podfile',plist:'ios/App/App/Info.plist',story:'ios/App/App/Base.lproj/Main.storyboard',project:'ios/App/App.xcodeproj/project.pbxproj'};
-const PAYLOAD_HASHES={'FriendlyVoicePlugin.swift':'fa9183bdfc5f143a04d42e9129fd8ae5153bee1baf709d85f1d48ea2b2750573','FriendlyVoiceViewController.swift':'3ff28f0df0ee7f0a98c81016a63613f2cccac6ee96cae62517c72b29169432ff'};
+const PAYLOAD_HASHES={'FriendlyVoicePlugin.swift':'fa9183bdfc5f143a04d42e9129fd8ae5153bee1baf709d85f1d48ea2b2750573','FriendlyVoiceViewController.swift':'8597ce9ae37bf2b35648c017283c3b5625146403a556add4779ff097d60e9df9','ScreenAwakePlugin.swift':'0d1426687461b4674715dc4220ddfbf858029fd06fb3af6fda25926801a4f0ce'};
+const PRE_AWAKE_CONTROLLER_HASH='3ff28f0df0ee7f0a98c81016a63613f2cccac6ee96cae62517c72b29169432ff';
 const MIC='نستخدم الميكروفون عند تشغيله للتحدث مع لاعبي جلستك الودية. يمكنك اللعب والاستماع دون تشغيله.';
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 function need(ok,message){if(!ok)throw Error(message);}
@@ -43,11 +44,11 @@ function patchProject(text,requestedBuild){
  for(const config of configurations){need(value(config,'isa')==='XCBuildConfiguration','Invalid App configuration.');const s=get(config,'buildSettings');
   need(value(s,'PRODUCT_BUNDLE_IDENTIFIER')===BUNDLE_ID,'This patch is only for com.mjabid.play.');need(value(s,'INFOPLIST_FILE')==='App/Info.plist','Custom Info.plist location needs manual review.');
   need(!get(s,'PRODUCT_MODULE_NAME')||value(s,'PRODUCT_MODULE_NAME')==='App','Custom Swift module needs manual review.');
-  const ver=value(s,'MARKETING_VERSION'),build=value(s,'CURRENT_PROJECT_VERSION');need(/^2\.2\.(?:3[3-9]|4[0-9])$/.test(ver||''),'Native version must be 2.2.33 through 2.2.49.');
+  const ver=value(s,'MARKETING_VERSION'),build=value(s,'CURRENT_PROJECT_VERSION');need(/^2\.2\.(?:3[3-9]|4[0-9]|5[0-2])$/.test(ver||''),'Native version must be 2.2.33 through 2.2.52.');
   need(/^[1-9][0-9]*$/.test(build||'')&&Number.isSafeInteger(Number(build)),'App build number must be a positive integer.');versions.push(ver);builds.push(Number(build));
  }
  need(new Set(versions).size===1&&new Set(builds).size===1,'App configurations have inconsistent versions or builds.');
- const upgrading=versions[0]!==VERSION,minBuild=Math.max(44,builds[0]+(upgrading?1:0)),build=requestedBuild===undefined?minBuild:requestedBuild;
+ const upgrading=versions[0]!==VERSION,minBuild=Math.max(47,builds[0]+(upgrading?1:0)),build=requestedBuild===undefined?minBuild:requestedBuild;
  need(Number.isSafeInteger(build)&&build>=minBuild,'Build must be at least '+minBuild+'; existing builds cannot be lowered or reused for a version upgrade.');
  for(const config of configurations){const s=get(config,'buildSettings');for(const [key,newValue]of [['CURRENT_PROJECT_VERSION',String(build)],['MARKETING_VERSION',VERSION]]){const n=get(s,key);if(n.value!==newValue)changes.push({start:n.start,end:n.end,text:newValue});}}
  const sourceIds=array(get(target,'buildPhases')).filter(id=>value(get(objects,id),'isa')==='PBXSourcesBuildPhase'),source=get(objects,one(sourceIds,'App Sources phase'));
@@ -56,17 +57,22 @@ function patchProject(text,requestedBuild){
  const children=array(get(group,'children')),sources=array(get(source,'files'));
  const [delegateId]=one(ofType('PBXFileReference').filter(([,o])=>value(o,'path')==='AppDelegate.swift'),'AppDelegate reference');
  need(children.includes(delegateId),'AppDelegate is outside the App group.');need(ofType('PBXBuildFile').some(([id,o])=>value(o,'fileRef')===delegateId&&sources.includes(id)),'AppDelegate is absent from App Sources.');
- const definitions=[['FriendlyVoicePlugin.swift','A90000000000000000000001','A90000000000000000000002'],['FriendlyVoiceViewController.swift','A90000000000000000000003','A90000000000000000000004']];
- const named=ofType('PBXFileReference').filter(([,o])=>definitions.some(([name])=>value(o,'path')===name));let installed=false;
- if(named.length){need(named.length===2,'Partial native voice file references.');for(const [name]of definitions){const [refId,ref]=one(named.filter(([,o])=>value(o,'path')===name),name);need(value(ref,'lastKnownFileType')==='sourcecode.swift'&&value(ref,'sourceTree')==='<group>','Unexpected voice file reference.');need(children.filter(id=>id===refId).length===1,'Voice file is not exactly once in App group.');const [buildId]=one(ofType('PBXBuildFile').filter(([,o])=>value(o,'fileRef')===refId),'voice compile reference');need(sources.filter(id=>id===buildId).length===1,'Voice file is not exactly once in App Sources.');}installed=true;}
- else{
-  for(const [,bid,rid]of definitions)need(!objects.entries.has(bid)&&!objects.entries.has(rid),'Voice object ID collision.');need(!text.includes('FriendlyVoice'),'Partial or unknown voice project entries.');const nl=newline(text);
+ const definitions=[];
+ function integrationInstalled(expected,label,marker){
+  const named=ofType('PBXFileReference').filter(([,o])=>expected.some(([name])=>value(o,'path')===name));
+  if(named.length){need(named.length===expected.length,'Partial native '+label+' file references.');for(const [name]of expected){const [refId,ref]=one(named.filter(([,o])=>value(o,'path')===name),name);need(value(ref,'lastKnownFileType')==='sourcecode.swift'&&value(ref,'sourceTree')==='<group>','Unexpected '+label+' file reference.');need(children.filter(id=>id===refId).length===1,label+' file is not exactly once in App group.');const [buildId]=one(ofType('PBXBuildFile').filter(([,o])=>value(o,'fileRef')===refId),label+' compile reference');need(sources.filter(id=>id===buildId).length===1,label+' file is not exactly once in App Sources.');}return true;}
+  for(const [,bid,rid]of expected)need(!objects.entries.has(bid)&&!objects.entries.has(rid),label+' object ID collision.');need(!text.includes(marker),'Partial or unknown '+label+' project entries.');definitions.push(...expected);return false;
+ }
+ const voiceInstalled=integrationInstalled([['FriendlyVoicePlugin.swift','A90000000000000000000001','A90000000000000000000002'],['FriendlyVoiceViewController.swift','A90000000000000000000003','A90000000000000000000004']],'voice','FriendlyVoice');
+ const awakeInstalled=integrationInstalled([['ScreenAwakePlugin.swift','A91000000000000000000001','A91000000000000000000002']],'screen awake','ScreenAwake');
+ need(!awakeInstalled||voiceInstalled,'Partial screen-awake integration without the voice bridge.');
+ if(definitions.length){const nl=newline(text);
   for(const [section,lines]of [['PBXBuildFile',definitions.map(([n,b,r])=>'\t\t'+b+' /* '+n+' in Sources */ = {isa = PBXBuildFile; fileRef = '+r+' /* '+n+' */; };')],['PBXFileReference',definitions.map(([n,,r])=>'\t\t'+r+' /* '+n+' */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = '+n+'; sourceTree = "<group>"; };')]]){
    const marker='/* End '+section+' section */',start=text.indexOf(marker);need(start>=0&&start===text.lastIndexOf(marker),'Missing or repeated '+section+' section.');changes.push({start,end:start,text:lines.join(nl)+nl});
   }
   for(const [list,lines]of [[get(group,'children'),definitions.map(([n,,r])=>'\t\t\t\t'+r+' /* '+n+' */,')],[get(source,'files'),definitions.map(([n,b])=>'\t\t\t\t'+b+' /* '+n+' in Sources */,')]]){const close=list.end-1,start=text.lastIndexOf('\n',close)+1;need(/^\s*$/.test(text.slice(start,close)),'Unsupported App list layout.');changes.push({start,end:start,text:lines.join(nl)+nl});}
  }
- const next=edits(text,changes);parsePbx(next);return {text:next,installed,build,oldVersion:versions[0],oldBuild:builds[0]};
+ const next=edits(text,changes);parsePbx(next);return {text:next,voiceInstalled,awakeInstalled,build,oldVersion:versions[0],oldBuild:builds[0]};
 }
 
 // XML reader used only to locate direct plist keys and the initial storyboard controller.
@@ -110,9 +116,10 @@ function safePath(root,relative,allowMissing=false){
 }
 function verifyWeb(target){
  const checks=[],read=relative=>{const bytes=fs.readFileSync(safePath(target,relative));checks.push({root:target,relative,digest:hash(bytes)});return bytes.toString('utf8');};
- const core=read('www/game-core.js'),versions=[...core.matchAll(/\bconst\s+APP_VERSION\s*=\s*(['"])([^'"]+)\1\s*;/g)];need(versions.length===1&&versions[0][2]===VERSION,'Merge the 2.2.49 www update before applying the native patch.');
+ const core=read('www/game-core.js'),versions=[...core.matchAll(/\bconst\s+APP_VERSION\s*=\s*(['"])([^'"]+)\1\s*;/g)];need(versions.length===1&&versions[0][2]===VERSION,'Merge the 2.2.52 www update before applying the native patch.');
  const index=read('www/index.html'),scripts=[...index.matchAll(/<script\b[^>]*\bsrc\s*=\s*(['"])([^'"]+)\1[^>]*>/gi)].map(m=>m[2].replace(/^\.\//,'').split('?')[0]);
  need(scripts.includes('ui-friendly-voice-config.js')&&scripts.includes('ui-friendly-voice.js')&&scripts.indexOf('ui-friendly-voice-config.js')<scripts.indexOf('ui-friendly-voice.js'),'The merged web page is missing the voice scripts or their load order.');
+ need(scripts.includes('ui-screen-awake.js'),'The merged web page is missing the screen-awake script.');read('www/ui-screen-awake.js');
  const manifestRoots=[...new Set([path.resolve(__dirname),target])].filter(root=>fs.existsSync(path.join(root,'UPDATE_MANIFEST.json')));let seen;
  for(const root of manifestRoots){const bytes=fs.readFileSync(safePath(root,'UPDATE_MANIFEST.json')),manifest=JSON.parse(bytes.toString('utf8').replace(/^\uFEFF/,''));checks.push({root,relative:'UPDATE_MANIFEST.json',digest:hash(bytes)});
   need(manifest.fromVersion==='2.2.33'&&manifest.toVersion===VERSION,'Unexpected web update manifest version.');const hashes=manifest.targetWebHashes;need(hashes&&typeof hashes==='object'&&!Array.isArray(hashes),'Missing targetWebHashes.');const names=Object.keys(hashes);need(names.length>=2&&names.length<=10000&&Object.hasOwn(hashes,'game-core.js')&&Object.hasOwn(hashes,'index.html'),'Incomplete or oversized web manifest.');
@@ -126,18 +133,21 @@ function planInstall({targetDir=process.cwd(),payloadDir=path.join(__dirname,'io
  const checks=verifyWeb(target);checks.push({root:target,relative:'capacitor.config.json',digest:hash(config)});
  const entries=Object.fromEntries(Object.entries(FILES).map(([name,relative])=>{const file=safePath(target,relative),before=fs.readFileSync(file);need(!before.includes(0),'Native file is not UTF-8 text: '+relative);return [name,{relative,file,before,mode:fs.statSync(file).mode&0o777}];}));
  const p=patchProject(entries.project.before.toString('utf8'),build),pod=patchPodfile(entries.pod.before.toString('utf8')),story=patchStoryboard(entries.story.before.toString('utf8')),plist=patchPlist(entries.plist.before.toString('utf8'));
- need(p.installed===pod.installed&&p.installed===story.installed,'Partial voice integration detected. Restore a complete native backup or review the partial edits first.');
+ need(p.voiceInstalled===pod.installed&&p.voiceInstalled===story.installed,'Partial voice integration detected. Restore a complete native backup or review the partial edits first.');
  for(const [key,text]of Object.entries({project:p.text,pod:pod.text,story:story.text,plist}))entries[key].after=Buffer.from(text);
  for(const [name,digest]of Object.entries(PAYLOAD_HASHES)){const payloadRoot=fs.realpathSync(path.resolve(payloadDir)),bytes=fs.readFileSync(safePath(payloadRoot,name));need(hash(bytes)===digest,'Voice payload changed or is incomplete: '+name);checks.push({root:payloadRoot,relative:name,digest});const relative='ios/App/App/'+name,file=safePath(target,relative,true),exists=fs.existsSync(file),before=exists?fs.readFileSync(file):null;
-  need(exists===p.installed,'Partial native Swift installation: '+name);if(exists)need(hash(before)===digest,'Unrecognized existing voice source; do not overwrite it: '+name);entries[name]={relative,file,before,after:bytes,mode:exists?fs.statSync(file).mode&0o777:0o644};
+  const installed=name==='ScreenAwakePlugin.swift'?p.awakeInstalled:p.voiceInstalled;
+  need(exists===installed,'Partial native Swift installation: '+name);
+  if(exists){const expected=name==='FriendlyVoiceViewController.swift'&&!p.awakeInstalled?PRE_AWAKE_CONTROLLER_HASH:digest;need(hash(before)===expected,'Unrecognized or partially installed native source; do not overwrite it: '+name);}
+  entries[name]={relative,file,before,after:bytes,mode:exists?fs.statSync(file).mode&0o777:0o644};
  }
  const files=Object.values(entries),changed=files.filter(e=>!e.before||!e.before.equals(e.after));for(const e of changed){fs.accessSync(path.dirname(e.file),fs.constants.W_OK);if(e.before)fs.accessSync(e.file,fs.constants.R_OK|fs.constants.W_OK);}
- return {target,files,changed,checks,build:p.build,oldBuild:p.oldBuild,oldVersion:p.oldVersion,version:VERSION};
+ return {target,files,changed,checks,build:p.build,oldBuild:p.oldBuild,oldVersion:p.oldVersion,version:VERSION,voiceInstalled:p.voiceInstalled,awakeInstalled:p.awakeInstalled};
 }
 function unchanged(plan){for(const e of plan.files){safePath(plan.target,e.relative,!e.before);need(e.before?fs.existsSync(e.file)&&fs.readFileSync(e.file).equals(e.before):!fs.existsSync(e.file),'Native files changed after preflight. Stop and run the check again.');}for(const e of plan.checks)need(hash(fs.readFileSync(safePath(e.root,e.relative)))===e.digest,'Web update, configuration or payload changed after preflight.');}
 function applyInstall(options={}){
- const plan=planInstall(options);if(options.check||plan.changed.length===0)return {version:VERSION,build:plan.build,changed:plan.changed.map(e=>e.relative),check:!!options.check,alreadyInstalled:plan.changed.length===0,backup:null};
- const lock=path.join(plan.target,'.majabeed-ios-voice-install.lock');need(!fs.existsSync(lock),'An earlier native installation is incomplete or running. Inspect its lock and backup before continuing.');
+ const plan=planInstall(options),lock=path.join(plan.target,'.majabeed-ios-voice-install.lock');need(!fs.existsSync(lock),'An earlier native installation is incomplete or running. Inspect its lock and backup before continuing.');
+ if(options.check||plan.changed.length===0)return {version:VERSION,build:plan.build,changed:plan.changed.map(e=>e.relative),check:!!options.check,alreadyInstalled:plan.changed.length===0,backup:null};
  const lockFd=fs.openSync(lock,'wx',0o600);let backup,committed=[],temps=[],keepLock=false;
  try{
   fs.writeFileSync(lockFd,'Majabeed '+VERSION+' native installation\n');fs.closeSync(lockFd);unchanged(plan);
@@ -156,6 +166,6 @@ function applyInstall(options={}){
   throw Error('Installation stopped; original native files were preserved/restored. '+error.message+(backup?' Backup: '+backup:''));
  }finally{for(const temp of temps)if(fs.existsSync(temp))fs.unlinkSync(temp);if(!keepLock&&fs.existsSync(lock))fs.unlinkSync(lock);}
 }
-function parseArgs(args){let targetDir,build,check=false;for(let i=0;i<args.length;i++){if(args[i]==='--check'){need(!check,'Repeated --check.');check=true;}else if(args[i]==='--build'){need(build===undefined&&/^[1-9][0-9]*$/.test(args[i+1]||''),'Use --build followed by an integer.');build=Number(args[++i]);need(Number.isSafeInteger(build)&&build>=44,'Build must be 44 or higher.');}else{need(!args[i].startsWith('--')&&targetDir===undefined,'Usage: node APPLY_IOS_VOICE_2_2_49.cjs [project-root] [--build NUMBER] [--check]');targetDir=args[i];}}return {targetDir,build,check};}
+function parseArgs(args){let targetDir,build,check=false;for(let i=0;i<args.length;i++){if(args[i]==='--check'){need(!check,'Repeated --check.');check=true;}else if(args[i]==='--build'){need(build===undefined&&/^[1-9][0-9]*$/.test(args[i+1]||''),'Use --build followed by an integer.');build=Number(args[++i]);need(Number.isSafeInteger(build)&&build>=47,'Build must be 47 or higher.');}else{need(!args[i].startsWith('--')&&targetDir===undefined,'Usage: node APPLY_IOS_VOICE_2_2_52.cjs [project-root] [--build NUMBER] [--check]');targetDir=args[i];}}return {targetDir,build,check};}
 module.exports={VERSION,FILES,PAYLOAD_HASHES,parsePbx,planInstall,applyInstall,parseArgs};
-if(require.main===module){try{const result=applyInstall(parseArgs(process.argv.slice(2)));console.log(JSON.stringify(result,null,2));console.log(result.check?'Native preflight passed. No files changed.':result.alreadyInstalled?'Native voice integration is already installed. No files changed.':'Native patch complete. Signing, Firebase, entitlements and custom settings were preserved. Run the normal CocoaPods/Xcode steps on the Mac.');}catch(error){console.error('IOS_VOICE_PATCH_STOPPED: '+error.message);process.exitCode=1;}}
+if(require.main===module){try{const result=applyInstall(parseArgs(process.argv.slice(2)));console.log(JSON.stringify(result,null,2));console.log(result.check?'Native preflight passed. No files changed.':result.alreadyInstalled?'Native voice and screen-awake integration is already installed. No files changed.':'Native patch complete. Signing, Firebase, entitlements and custom settings were preserved. Run the normal CocoaPods/Xcode steps on the Mac.');}catch(error){console.error('IOS_VOICE_PATCH_STOPPED: '+error.message);process.exitCode=1;}}

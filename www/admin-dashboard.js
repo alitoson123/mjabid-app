@@ -34,7 +34,8 @@
     state.controllers.forEach(c=>c.abort());state.controllers.clear();state.uid=uid;state.generation++;
     state.metrics=null;state.metricsAt=0;state.metricsJob=null;state.reportRun++;state.reportBusy=false;state.reportCursor=null;state.reports=[];state.roomsRun++;
     state.bulkCancel=true;state.bulk=false;closePlayer(true);
-    for(const id of ['adSakkaToday','adSakkaCurrent','adSakkaPlaying','adSakkaSearching','adSakkaRooms','statTotal','statActive','statBanned','adCompetitive','adCompleted','adSearching','adRoomsPlaying','adObservedToday','adObservedWeek','adReturning','adGrowthDelta'])text(id,'—');
+    for(const id of ['adPlusActive','adCupToday','adCupTotal','adSakkaMatchesToday','adSakkaMatchesTotal','adSakkaToday','adSakkaCurrent','adSakkaPlaying','adSakkaSearching','adSakkaRooms','statTotal','statActive','statBanned','adCompetitive','adCompleted','adSearching','adRoomsPlaying','adObservedToday','adObservedWeek','adReturning','adGrowthDelta'])text(id,'—');
+    for(const id of ['adPlusNote','adCupNote','adSakkaMatchesNote'])text(id,'');
     for(const id of ['adMatchesChart','adGrowthChart','reportsList','roomsList','visitsCards','visitsList']){const node=el(id);if(node)node.replaceChildren();}
     for(const id of ['adBulkBox','adReportsMore'])if(el(id))el(id).hidden=true;
     for(const id of ['adMetricsRefresh','adReportsRefresh','adReportsMore','adRoomsRefresh','adCloseAll','adPlayerClose','adPlayerReload'])if(el(id))el(id).disabled=false;
@@ -61,6 +62,16 @@
     text('statActive',count(live?.activePlayers,true));text('adCompetitive',count(live?.competitivePlayers,true));text('adSearching',count(live?.searchingPlayers,true));text('adRoomsPlaying',count(live?.roomsPlaying,true));
     text('adCompleted',count(matches?.today?.completed));
     text('adCompletedNote',matches?.today?.partialDay?'من بدء التتبع اليوم · توقيت السعودية':'من 00:00 بتوقيت السعودية');
+    const membership=data.memberships;
+    const membershipKnown=membership?.activePlus!=null&&membership.completeCoverage===true;
+    text('adPlusActive',membership?count(membershipKnown?membership.activePlus:membership.activeGold,!membershipKnown):'—');
+    text('adPlusNote',membership?(membershipKnown?'إجمالي الاشتراكات السارية. ':'حد أدنى من اشتراكات الذهب المرصودة؛ الإجمالي الكامل غير متاح. ')+(membership.definition||'ينتهي احتساب الاشتراك عند انتهاء صلاحيته.'):'إحصاء الاشتراكات غير متاح حاليًا.');
+    for(const [key,todayId,totalId,noteId]of [['cup','adCupToday','adCupTotal','adCupNote'],['sakka','adSakkaMatchesToday','adSakkaMatchesTotal','adSakkaMatchesNote']]){
+      const metric=data.matchTypes?.[key],started=metric?.trackingStartedAt;
+      text(todayId,number(started?metric.today:null));text(totalId,number(started?metric.total:null));
+      text(noteId,!metric?'إحصاءات المباريات غير متاحة حاليًا.':!started?'لم تُسجّل مباراة بعد بدء هذا الرصد. البيانات القديمة غير مكتملة.':
+        'بدأ الرصد في '+date(started)+'. '+(metric.earliestEndedAt&&metric.earliestEndedAt<started?'تشمل البيانات نتائج محفوظة أقدم تم التحقق منها. ':'')+'الإجمالي يخص النتائج المرصودة؛ لا يمثل كامل التاريخ.'+(metric.definition?' '+metric.definition:''));
+    }
     text('adLiveCoverage',live?'حد أدنى للرصد · فُحصت '+number(live.sampledRooms)+' طاولة و'+number(live.sampledPlayers)+' سجلًا حديثًا. '+(live.failedRooms?'تعذر التحقق من '+number(live.failedRooms)+' طاولة. ':'')+'لا يشمل من يوجد في الرئيسية فقط.':'مؤشرات الاتصال غير متاحة حاليًا؛ لم تُستبدل بأرقام تقديرية.');
     el('adMatchesChart').innerHTML=matches?chart(matches.days,'completed','مباريات مكتملة'):empty('تعذّر تحميل سجل المباريات.');
     el('adGrowthChart').innerHTML=growth?chart(growth.days,'unique','حسابات مرصودة'):empty('تعذّر تحميل رصد الزيارات.');
@@ -153,7 +164,7 @@
   function searchUnlinkedReport(){
     const name=state.unlinkedReportName,search=el('searchBox'),tab=document.querySelector('#tabs [data-tab="players"]');
     if(!name||state.player||el('adPlayerDialog').hidden||!search||!tab||!current(state.uid,state.generation))return;
-    closePlayer(false);search.value=name;tab.click();
+    closePlayer(false);search.value=name;search.dataset.lookupMode='name';tab.click();
     const hint=el('adManualLookupHint');if(hint){hint.textContent='بحث يدوي عن الاسم المحفوظ «'+name+'». قد تظهر حسابات متشابهة؛ طابق معرّف الحساب بمصدر موثوق قبل أي إجراء. لم يُحدَّد أو يُربط أي حساب تلقائيًا.';hint.hidden=false;}
     search.focus();
   }

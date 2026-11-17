@@ -1,44 +1,85 @@
 {
   "fromVersion": "2.2.33",
-  "toVersion": "2.2.49",
-  "localIosBuild": 44,
-  "scope": "Changed iOS web/test files, two native Swift additions and a targeted installer",
+  "toVersion": "2.2.52",
+  "localIosBuild": 47,
+  "alsoVerifiedUpgradeFrom": [
+    "2.2.49",
+    "2.2.50",
+    "2.2.51"
+  ],
+  "scope": "Changed iOS web/test files, three known unchanged Swift sources and a targeted native installer",
   "baseArchive": "MAJABEED_V414_PLAY_1_IPHONE_FROM_V389.zip",
   "baseArchiveSHA256": "9874af1eb01e49a972674690d1996a54a5efc3a1e533c1fde51955879dcd17bf",
   "baseWebFileCount": 434,
-  "targetWebFileCount": 464,
-  "changedWebFiles": 52,
+  "targetWebFileCount": 472,
+  "changedWebFiles": 63,
   "deletions": [],
   "changes": [
+    {
+      "path": "www/admin-commerce.css",
+      "operation": "add",
+      "beforeSHA256": null,
+      "afterSHA256": "4b132bdae230a1e3bb577a1a35b46297aefcbd3f5400b789f19137acbfb754e6"
+    },
+    {
+      "path": "www/admin-commerce.js",
+      "operation": "add",
+      "beforeSHA256": null,
+      "afterSHA256": "9ecc4c203396eef12219218ab89c7f2bdf29899cee0d56c373609e26ecb7e243"
+    },
+    {
+      "path": "www/admin-dashboard.css",
+      "operation": "add",
+      "beforeSHA256": null,
+      "afterSHA256": "c144ee411ffdd0293539c054a1708084586eaaf81b7da196397165fc9a910baa"
+    },
     {
       "path": "www/admin-dashboard.js",
       "operation": "add",
       "beforeSHA256": null,
-      "afterSHA256": "5043a64a4696283b7e0409e14efc62774812adc0b6138be2767c7069137321e4"
+      "afterSHA256": "56f32e8991137a44a2ec9261584ea5ca5173088610c0684728c81c926d032eaa"
+    },
+    {
+      "path": "www/admin-notices.css",
+      "operation": "add",
+      "beforeSHA256": null,
+      "afterSHA256": "8727416cd80e77a95d6681f998c88c35d8100428b55e889d9e3078b215741c20"
+    },
+    {
+      "path": "www/admin-player-search.js",
+      "operation": "add",
+      "beforeSHA256": null,
+      "afterSHA256": "68beb0fc7ea6f87bae53f2e62cf88c5b382725115c13d4840115cbb44041dd9b"
+    },
+    {
+      "path": "www/admin-weekly-prizes.css",
+      "operation": "add",
+      "beforeSHA256": null,
+      "afterSHA256": "bc96b822de564a46cbd6cf42e21553d343f5505c5c8bd0ae69cc9dd0b23bf17e"
     },
     {
       "path": "www/admin.html",
       "operation": "modify",
       "beforeSHA256": "b67b4ad0add6a495f02bb3b67370b8bf9d84182933b2231eb59a1e8aabb0b983",
-      "afterSHA256": "20cccc592bc4e848020c78e27656a3696c491020f24fb7a5dfd99fafb24fc52d"
+      "afterSHA256": "46cff3f26959de19803a30e5726da42ae523b6c9ab982d11999dad32abcc0e3e"
     },
     {
       "path": "www/game-core.js",
       "operation": "modify",
       "beforeSHA256": "59a080202165646013943179662f7a035b09ce76667ecfba066f6a2e0831b5a8",
-      "afterSHA256": "fe7d717f6ed6f2c7c0a85b3a9f2d653883a2b8085bcfdb6010cd12d9de81a801"
+      "afterSHA256": "c710e99c9974c370b9f6aee88e3fcf9a46f4cd9086944cfbd6d3b19feb2d93c4"
     },
     {
       "path": "www/index.html",
       "operation": "modify",
       "beforeSHA256": "cb2eda26d4852d7e02aec3edd7f3cf8653b82ad0a3c2bb1710c9dfe5590c06d6",
-      "afterSHA256": "9407420b45287cf5b27c228d1c9ecad8ef9ec3523bdbd64b3d75a4e6316072ca"
+      "afterSHA256": "9634fbb93255d16b0a055144f9dbcd37a12dfb3b6916f147c927e6af7beb2c17"
     },
     {
       "path": "www/sw.js",
       "operation": "modify",
       "beforeSHA256": "9c9ce229a3706a4dfa1036d8a036968a11042f957c4b11a7148603f84e07242a",
-      "afterSHA256": "ebf619ed4d0ca75bcd17ab2e066ad091b0704c45796a4367ef074b565627f322"
+      "afterSHA256": "c29bb1c2cc97eac74a8250c5598ff9f76ae8f0f697315756267fb0588b046a9d"
     },
     {
       "path": "www/ui-art/rank-8.svg",
@@ -158,7 +199,7 @@
       "path": "www/ui-baloot.js",
       "operation": "modify",
       "beforeSHA256": "87acc5ab9958f43214845b18708eb477b06b19a17fa405deb807932d40d4d750",
-      "afterSHA256": "6abc7c797cfb30389f1a6e27b722b89d387e9218aff663672b6ae7128b2a3943"
+      "afterSHA256": "ae2e21cf8f1c167f62f2f443afd010b9b46db6875ba02c101ec6a1228b343288"
     },
     {
       "path": "www/ui-card-motion.js",
@@ -173,10 +214,28 @@
       "afterSHA256": "05e5ae3b052ed585df6c84c635d7366fbc9386cef00172c9d66a690744651325"
     },
     {
+      "path": "www/ui-content-filter.js",
+      "operation": "add",
+      "beforeSHA256": null,
+      "afterSHA256": "7ad7c96fe5e29592087d6c77dfbf3dbfb0cb6f4d5a40b4b8b54bc196a5b5e3ab"
+    },
+    {
       "path": "www/ui-cup.js",
       "operation": "modify",
       "beforeSHA256": "26187c08cf302e0ee44bd91f77bb28a1422d22c1aab9feb7e74729e688b1fe38",
       "afterSHA256": "4cdb9cbac7b13271bcbb6b3fb46ee50c56db9773872a77d3932510281969cd44"
+    },
+    {
+      "path": "www/ui-entry-ads-ui.js",
+      "operation": "modify",
+      "beforeSHA256": "58b19c1babc4a669e88d57ea8a17aa27c7238b66888faea694a98aaa184c4e9d",
+      "afterSHA256": "8ea37697f416fd4a7ae269a3840e1d2482db772fdd379771dee28de0c21791c7"
+    },
+    {
+      "path": "www/ui-entry-ads.js",
+      "operation": "modify",
+      "beforeSHA256": "bd58cd528fc31b2f02c86fb158ad9dde63730c30628f0e8b8adea8145c9603c1",
+      "afterSHA256": "951511d614199cdf3a783ba45c93f20e879ba8c0b506274d4aff523ab1e9effa"
     },
     {
       "path": "www/ui-friendly-voice-config.js",
@@ -188,13 +247,13 @@
       "path": "www/ui-friendly-voice.css",
       "operation": "add",
       "beforeSHA256": null,
-      "afterSHA256": "c77297f3a4e1208b8ff63aff2deb488343a59a7f474149963cb42f736ec885e8"
+      "afterSHA256": "227614298d4df5ba89e3a30898aa7e76a30fcd5f7fd083b0baa4031b8e78877c"
     },
     {
       "path": "www/ui-friendly-voice.js",
       "operation": "add",
       "beforeSHA256": null,
-      "afterSHA256": "49e38268c1bbb28f6c6b53e77429ebc6862a4e7d7ae8520337822e20929af0fe"
+      "afterSHA256": "d2f47cef17f62072cda822571c6c0504b28082e47ea7aa04d3723d742fc0db44"
     },
     {
       "path": "www/ui-home-v399.css",
@@ -263,6 +322,18 @@
       "afterSHA256": "1cdd52d6c0c0175ee69987341d6e402a3bcf61b88aac0261a06a00e4d7bf4322"
     },
     {
+      "path": "www/ui-screen-awake.js",
+      "operation": "add",
+      "beforeSHA256": null,
+      "afterSHA256": "17f5df79461b4852f07417d82d63633bec20c7bb0ceaf045cd95d3abacc465da"
+    },
+    {
+      "path": "www/ui-session-ads-v380.js",
+      "operation": "modify",
+      "beforeSHA256": "113326a917090601f7385ece830bf85df19f35472ca90e7f3459611146742413",
+      "afterSHA256": "190e4a25b6e7a97657f4c538ed76350a9ef591f31be99182fa30232c1ae360ab"
+    },
+    {
       "path": "www/ui-session-theme.css",
       "operation": "modify",
       "beforeSHA256": "630300d01c701f536ecad54edd5ae0da6b1fe298819f94214d590c1327a94b29",
@@ -290,7 +361,7 @@
       "path": "www/ui-six-v388.js",
       "operation": "modify",
       "beforeSHA256": "3d96684e38610296b57239799d969caa052ce705f0d9530a59d51f34219c054e",
-      "afterSHA256": "ee2df1791cb9cb15902bfc764cdd204dfd6bf247a65e05aed083d60305591da5"
+      "afterSHA256": "6634c8746a842dd336750a8638fe46e270bd675c29774b1a6e27db38323becb3"
     },
     {
       "path": "www/ui-table-hud-v389.css",
@@ -323,6 +394,18 @@
       "afterSHA256": "e4fe7ea6424811e02ea37ef778164e14438e784df2253cfafb92126d43e4bceb"
     },
     {
+      "path": "tests/admin-commerce-fees.test.cjs",
+      "operation": "add",
+      "beforeSHA256": null,
+      "afterSHA256": "868939e5a39314b3e5b2eb83330bbadbb65f41463ce12b81681d0c827447ad46"
+    },
+    {
+      "path": "tests/admitted-reconnect.test.mjs",
+      "operation": "add",
+      "beforeSHA256": null,
+      "afterSHA256": "b841b3c0d55a0b22c9e7110179c98a77bbb106c70d7a81d586d094cd6acef4a2"
+    },
+    {
       "path": "tests/card-orientation.test.mjs",
       "operation": "add",
       "beforeSHA256": null,
@@ -347,10 +430,22 @@
       "afterSHA256": "25e70f30dbc79de6fcbadb7158a05534fc967b548b8c559dfe6b861f54fba099"
     },
     {
+      "path": "tests/friendly-admission-ui.test.mjs",
+      "operation": "add",
+      "beforeSHA256": null,
+      "afterSHA256": "adc5b1245730755267bde327d01cbc27ae1e415e51e5902a2caa8ce666733e85"
+    },
+    {
       "path": "tests/friendly-voice-admin.test.cjs",
       "operation": "add",
       "beforeSHA256": null,
       "afterSHA256": "d3943b1d815343f2727d7486d451f17e4dbc261439c4e88d32e46abe2ce5c711"
+    },
+    {
+      "path": "tests/friendly-voice-fees.test.cjs",
+      "operation": "add",
+      "beforeSHA256": null,
+      "afterSHA256": "5c5d8c7e658751a5072713bb40105e94fe8d9cfc3358355556d60239de9329c8"
     },
     {
       "path": "tests/friendly-voice-permission-ui.test.cjs",
@@ -362,7 +457,7 @@
       "path": "tests/friendly-voice-runtime.test.cjs",
       "operation": "add",
       "beforeSHA256": null,
-      "afterSHA256": "04043a8f62cc7de42070fae93ab52551e2a694425a68cfb6214073ae9cd0c7c8"
+      "afterSHA256": "b5ebbc7cbcd43536069fda4875e0ac5659a52eb82cfb6298edcb86d653c00ab8"
     },
     {
       "path": "tests/friendly-voice-ui.html",
@@ -399,6 +494,18 @@
       "operation": "add",
       "beforeSHA256": null,
       "afterSHA256": "5cf8ea2477804deeee3cf6f8216d62dce239524e25057cc05d890c9425b656ab"
+    },
+    {
+      "path": "tests/rewarded-ad-safety.test.mjs",
+      "operation": "add",
+      "beforeSHA256": null,
+      "afterSHA256": "81b52872467d96627b75e67e00da2ddc7588d63e7aab2b1d508557a3470c49b7"
+    },
+    {
+      "path": "tests/screen-awake.test.mjs",
+      "operation": "add",
+      "beforeSHA256": null,
+      "afterSHA256": "259408edaa76b17203913dcf818d4193d6d4fcefab848576ef200f8684552503"
     },
     {
       "path": "tests/table-realism.test.mjs",
@@ -850,8 +957,14 @@
     "ui-vip.js": "043855ff51af714bb88d51dcc5fe0d5791c7e85cb0f37b34656b274ff759c2cc"
   },
   "targetWebHashes": {
-    "admin-dashboard.js": "5043a64a4696283b7e0409e14efc62774812adc0b6138be2767c7069137321e4",
-    "admin.html": "20cccc592bc4e848020c78e27656a3696c491020f24fb7a5dfd99fafb24fc52d",
+    "admin-commerce.css": "4b132bdae230a1e3bb577a1a35b46297aefcbd3f5400b789f19137acbfb754e6",
+    "admin-commerce.js": "9ecc4c203396eef12219218ab89c7f2bdf29899cee0d56c373609e26ecb7e243",
+    "admin-dashboard.css": "c144ee411ffdd0293539c054a1708084586eaaf81b7da196397165fc9a910baa",
+    "admin-dashboard.js": "56f32e8991137a44a2ec9261584ea5ca5173088610c0684728c81c926d032eaa",
+    "admin-notices.css": "8727416cd80e77a95d6681f998c88c35d8100428b55e889d9e3078b215741c20",
+    "admin-player-search.js": "68beb0fc7ea6f87bae53f2e62cf88c5b382725115c13d4840115cbb44041dd9b",
+    "admin-weekly-prizes.css": "bc96b822de564a46cbd6cf42e21553d343f5505c5c8bd0ae69cc9dd0b23bf17e",
+    "admin.html": "46cff3f26959de19803a30e5726da42ae523b6c9ab982d11999dad32abcc0e3e",
     "admob-plugin.js": "18d4e70d6b1a9d81895324996cf1adbcb7b8d566d5f946d4c59d44260c6394e9",
     "apple-touch-icon.png": "aac2f7ed78536440777584dfcee3b6053956d58605b833828ad81ba0c4f5d476",
     "avatars.1390/avatar_1.png": "0d39b2abef3f05c6bc538155721e2d5cdf9f17a5e83e2797b7cc7b1a8a93ecdd",
@@ -964,13 +1077,13 @@
     "entry-fonts/lalezar.ttf": "f976dfc4dbfb52eb31d3303229276c8cb278c1aefcaee3d19586343be0c465f2",
     "firebase-auth-plugin.js": "ffac54e2e0e138f269cb4cc4f928a8f94ea42f4c4628f301fd1ce953c7ce57d5",
     "game-core.css": "b46c6199d50fa5348063e3857dda7b572d4b49e4d7e3e3a2905c6e4dddca25f0",
-    "game-core.js": "fe7d717f6ed6f2c7c0a85b3a9f2d653883a2b8085bcfdb6010cd12d9de81a801",
+    "game-core.js": "c710e99c9974c370b9f6aee88e3fcf9a46f4cd9086944cfbd6d3b19feb2d93c4",
     "icon-maskable512.png": "495f9284131fdc9f2ae377ea571a4361b9dc0008f64ed1a6105a19defcbc424b",
     "icon192.png": "49f05f0b710e970784de7f36cbead27ffa190518f01e6a702e6265d2d2a0e386",
     "icon512.png": "ad627bf66dd6541f179bbf380a9b10868108e5b0c329a6cc52ade89af83d63f2",
     "icons/gold-coin.png": "bbc413a51d80b01dc4d6f41ad146aa278004ac4536c40bfbd8a4850da338395c",
     "image-cache.js": "ed91ba46806fd0132b3f7ddbf50ea7b6128015e1e7762d44ffa9445ad2bba09f",
-    "index.html": "9407420b45287cf5b27c228d1c9ecad8ef9ec3523bdbd64b3d75a4e6316072ca",
+    "index.html": "9634fbb93255d16b0a055144f9dbcd37a12dfb3b6916f147c927e6af7beb2c17",
     "manifest.json": "0cea311141a0934f57b76e94ac4909fd5f4626f4a3b3ce2d405d4750fcfeeedf",
     "privacy.html": "f9bace7e5832dd5b6977fdd6d77ebefe869ac4c25042ca222556b8e3ef7229c4",
     "ranks/tier0.jpg": "f3093c4c2d3dd8ad603d776dff19be39a0c7c05257fa63af62443bcc2d3c49d1",
@@ -1144,7 +1257,7 @@
     "sfx/sar3.wav": "ea626762c5d1a80ba894e24192c481f3b517a10c798c0a35faf7353f3b8845c1",
     "sfx/throw.wav": "956c6f92dd2eca091b100382d7883ff612fd7696419117024e6fda7a7633ef55",
     "sfx/waqf-taunt.wav": "aba48407c31053079bd49ebefa29835cc1670e87c977396fc070eb5cbbe3b4b7",
-    "sw.js": "ebf619ed4d0ca75bcd17ab2e066ad091b0704c45796a4367ef074b565627f322",
+    "sw.js": "c29bb1c2cc97eac74a8250c5598ff9f76ae8f0f697315756267fb0588b046a9d",
     "terms.html": "b99394743444fc387052a56468b3a14058b5de8772674c90adc67a91699a07ae",
     "tiers/amateur.jpg": "f3391e14bfe08f2460177b623167f77658a0ed4356b65c280a0e4c7d0346e859",
     "tiers/beginner.jpg": "eabbdedc7481303fb5cfb29918413aa455f17d7ce0202deaded4f7adc44f80d6",
@@ -1240,7 +1353,7 @@
     "ui-baloot-ranks.js": "086b0779bcfba64ac7edb2839c2266fb20d48ffd3ed82a73c8915e7257a2aa42",
     "ui-baloot-sounds.js": "40752c8b8593bd940f9b0a119d669522826ece13ed05eb653e04b223465ac1c4",
     "ui-baloot.css": "1de4190f23509d1b65f61b17eba0cb0f3d6b57f71789a089c83743f1f1ac74ca",
-    "ui-baloot.js": "6abc7c797cfb30389f1a6e27b722b89d387e9218aff663672b6ae7128b2a3943",
+    "ui-baloot.js": "ae2e21cf8f1c167f62f2f443afd010b9b46db6875ba02c101ec6a1228b343288",
     "ui-bid-stack-v355.css": "ef6b4f7816fe90fa1711f6a37178f45edea6d225af05aa718532ec9118a9c714",
     "ui-card-motion.css": "cbc547ab1443e85f64500aaf08939f22d810eee8f976f2869836e2fbafa2ae65",
     "ui-card-motion.js": "5133433e0e20edf78281184658044368bb8c1ab816a91c9dbeac20e2e027eec8",
@@ -1248,14 +1361,15 @@
     "ui-community.js": "05e5ae3b052ed585df6c84c635d7366fbc9386cef00172c9d66a690744651325",
     "ui-connection-quality.css": "de90511a128610f792af0614489d798779aa365a4a39862f400227387e9dd655",
     "ui-connection-quality.js": "c68a4340c74ca40050d9232a8d63ee10257af7aff2b637b7d24a906756273a81",
+    "ui-content-filter.js": "7ad7c96fe5e29592087d6c77dfbf3dbfb0cb6f4d5a40b4b8b54bc196a5b5e3ab",
     "ui-cup.css": "e57a347994d0a158addc15d11e9b82b31e799ccfa11e587e943b50b2c6c744cc",
     "ui-cup.js": "4cdb9cbac7b13271bcbb6b3fb46ee50c56db9773872a77d3932510281969cd44",
     "ui-deck-order-core.js": "cb89c5651a9767d3eb9ac5c4e05a96572bd7a3484aa4716b17ba4a43c303c6b1",
     "ui-deck-order.css": "7b5fca1de5d9cbd83b8b1f4f28cc16099f266ba318fadbba3eff9b71d87471ca",
     "ui-deck-order.js": "b65e2a7560b90e87416ce105525920a7eebdc8a098f822a574ea0a060faa9c94",
-    "ui-entry-ads-ui.js": "58b19c1babc4a669e88d57ea8a17aa27c7238b66888faea694a98aaa184c4e9d",
+    "ui-entry-ads-ui.js": "8ea37697f416fd4a7ae269a3840e1d2482db772fdd379771dee28de0c21791c7",
     "ui-entry-ads.css": "9cface138705635f07bf2309094962ee62b4db06cd507a2abb32e1e007f9b743",
-    "ui-entry-ads.js": "bd58cd528fc31b2f02c86fb158ad9dde63730c30628f0e8b8adea8145c9603c1",
+    "ui-entry-ads.js": "951511d614199cdf3a783ba45c93f20e879ba8c0b506274d4aff523ab1e9effa",
     "ui-entry-v380.css": "8ecfd54cb3d63f5e62666ccdb78b983646e56585cd76b3775c0761d2358339d2",
     "ui-entry-v380.js": "67a38c5fbcee571863127e748a84becae07384a0352522bb29568603723b5758",
     "ui-field-cards-v348.css": "27c6c95fbc38c402379c3e147be7dfc486717e42e436ae500314e4a1d78c48e9",
@@ -1266,8 +1380,8 @@
     "ui-friendly-session.js": "950ea7b0b1ffc9416d6a31f6878a9e01ffd2abe786a9da7a5c22d6d7aa728b0b",
     "ui-friendly-v369.css": "7e0228dd7985e2b815355a26679f1d0c8b241ddbb4a81797e7226908196d537a",
     "ui-friendly-voice-config.js": "650a4124595013dddb99bc2c10d90802d7152f20e2458f23d5210f1f1b6df213",
-    "ui-friendly-voice.css": "c77297f3a4e1208b8ff63aff2deb488343a59a7f474149963cb42f736ec885e8",
-    "ui-friendly-voice.js": "49e38268c1bbb28f6c6b53e77429ebc6862a4e7d7ae8520337822e20929af0fe",
+    "ui-friendly-voice.css": "227614298d4df5ba89e3a30898aa7e76a30fcd5f7fd083b0baa4031b8e78877c",
+    "ui-friendly-voice.js": "d2f47cef17f62072cda822571c6c0504b28082e47ea7aa04d3723d742fc0db44",
     "ui-game-help.css": "baf76bd0c4ad922d96980aee78a66f6ac3998eaa7af0a15f6205419baf7f2967",
     "ui-game-help.js": "7adeb2d10f0649eb29b97d56dac82d24c00c95213b2ec39044c1c25b462d0eb6",
     "ui-home-v399.css": "5d43c631966b1428a6803f4337dba0d6c06ae03d711bd792df675e640818f3ea",
@@ -1291,7 +1405,8 @@
     "ui-real-cards-v357.css": "d8d5efb373b8e4745ffcb37bbad465970600b17739454b765267f3384dae0ffe",
     "ui-render-pipeline.js": "10e0c6241702fc257523d02c343fcf84663d7c49b44520f2158b6625afc17b27",
     "ui-results-store.js": "1cdd52d6c0c0175ee69987341d6e402a3bcf61b88aac0261a06a00e4d7bf4322",
-    "ui-session-ads-v380.js": "113326a917090601f7385ece830bf85df19f35472ca90e7f3459611146742413",
+    "ui-screen-awake.js": "17f5df79461b4852f07417d82d63633bec20c7bb0ceaf045cd95d3abacc465da",
+    "ui-session-ads-v380.js": "190e4a25b6e7a97657f4c538ed76350a9ef591f31be99182fa30232c1ae360ab",
     "ui-session-chat.css": "f6b3f691d274b3c2c59220347f56086e4fc16ed3e6576c084089007ffe640ca5",
     "ui-session-chat.js": "42c831db2691a8920af511bdfe1f0c27a799582efb275d6780e71044101df8ef",
     "ui-session-details.css": "83352edc5ee28b9b92dff9e0109494ce49e06484d0ef98c35bced1538b15420f",
@@ -1303,7 +1418,7 @@
     "ui-sessions-catalog.css": "9e375c32d2e76482e390345941aa6325bf3c14a5db70526fba360e8f1b4ab8ce",
     "ui-sessions-catalog.js": "521b29d990fe397f260599429fffd5e99d64ecb1f4a32b7c156e4d508860b2bd",
     "ui-six-v388.css": "9383bc37e4251d768c3ef3c1dbfcfde028fc641765de6ad999d3209ec4befa18",
-    "ui-six-v388.js": "ee2df1791cb9cb15902bfc764cdd204dfd6bf247a65e05aed083d60305591da5",
+    "ui-six-v388.js": "6634c8746a842dd336750a8638fe46e270bd675c29774b1a6e27db38323becb3",
     "ui-table-cards-v350.css": "2f377f6f887f44f4f2c571197db31c331694b6d13feccca404841e97d1e91735",
     "ui-table-hud-v389.css": "22831f597b06ee340f7b0bdc917d59e3434a75a655ba0980f439642b2c48e736",
     "ui-table-hud-v389.js": "cbbbdcb7f2646dcdd17c9a571fd95dca93475a66936235ab85a5cc47e8f82851",
@@ -1315,12 +1430,70 @@
     "ui-vip.css": "508b3910c6a3b2a13f16d6d93a1d4d1207e7294ada4c19b7f011f8381dbb3e99",
     "ui-vip.js": "043855ff51af714bb88d51dcc5fe0d5791c7e85cb0f37b34656b274ff759c2cc"
   },
+  "targetTestHashes": {
+    "admin-commerce-fees.test.cjs": "868939e5a39314b3e5b2eb83330bbadbb65f41463ce12b81681d0c827447ad46",
+    "admitted-reconnect.test.mjs": "b841b3c0d55a0b22c9e7110179c98a77bbb106c70d7a81d586d094cd6acef4a2",
+    "baloot-seat-response.test.mjs": "649f9eac444520d67f0f068d3b4fef94f635f432d0b0e8b6cdc5eada2a9dccf2",
+    "bidding-audio.test.cjs": "5ceb39697e026ad683f9a4890b0a21dac7f25de83bd9bffb06a00737ff242d1a",
+    "card-orientation.test.mjs": "b0f9d5c9a5e4841f679fcc8aa780b2739c855f059f086dccf5fd49d028abd27b",
+    "catalog-vip-refresh.test.mjs": "0d9951abb3eab2dc2bc5597acd1b67d8ec6051e751c8eed74ad4146f8b509efb",
+    "catalog-voice-status.test.mjs": "218d058d553a9ca0619bfeafb062b02ca6d624e5fb98e9d6ff180f224d8acd0b",
+    "cup-transitions.test.mjs": "07330bf44b530a18a5caafe3b692fbdde3b89393d020157704a1076c4db81fae",
+    "entry-allowance.test.mjs": "30792a08cc3851772d673a65d44f24a9104fa18be783c9ea44794f8a04d3246b",
+    "field-motion.test.mjs": "25e70f30dbc79de6fcbadb7158a05534fc967b548b8c559dfe6b861f54fba099",
+    "fixtures/bundle-policy.json": "23443b912808e78bfd08225bf07d2446987a74c75a9336ee99493eab76582739",
+    "friendly-admission-ui.test.mjs": "adc5b1245730755267bde327d01cbc27ae1e415e51e5902a2caa8ce666733e85",
+    "friendly-voice-admin.test.cjs": "d3943b1d815343f2727d7486d451f17e4dbc261439c4e88d32e46abe2ce5c711",
+    "friendly-voice-fees.test.cjs": "5c5d8c7e658751a5072713bb40105e94fe8d9cfc3358355556d60239de9329c8",
+    "friendly-voice-permission-ui.test.cjs": "666183956472b87908589958c53eb6721359cd293367d9b392455fc8db9bd8f3",
+    "friendly-voice-runtime.test.cjs": "b5ebbc7cbcd43536069fda4875e0ac5659a52eb82cfb6298edcb86d653c00ab8",
+    "friendly-voice-ui.html": "8e9703d5621c2f6e72def657ba128cebfbe5a66a102e7a9a6a5bd71cec1aa2c6",
+    "friendly-voice.test.cjs": "67d35a98b69d5278dd3931e31e6cf0a8f6e1a9b7f1a7233f775400f080361d47",
+    "helpers/audio.cjs": "e5cf2eb2a4663c9c808aa87f3f0949529bdb705bfa2d9383d943a5aab8903404",
+    "helpers/offline.mjs": "e67d1a1c59fcff2caea8329f811aa87afedaf6817485505b7a8794a0974d4930",
+    "helpers/source.mjs": "529254cf14bd37baa26e1127278cae16f9deea23f8088dc1fa7f0285878a2f0c",
+    "online-entry-recovery.test.mjs": "f2d7069b74d8da84b8e56870f3f632eb04e242bf7a60ecdf86c4b02e525259b7",
+    "player-levels.test.mjs": "48b7df2f06a5214a9e36436e7ef7d9408755e3297f1c8310cd962048d3837b90",
+    "profile-trophies.test.mjs": "c59bd29955bbba0318b2a57c117837d09c98cd40cbc90fdecba2597c69f72079",
+    "ranked-ui.test.mjs": "5cf8ea2477804deeee3cf6f8216d62dce239524e25057cc05d890c9425b656ab",
+    "render-pipeline.test.cjs": "fdc213b503fc9d0c4145dce553e7ae6da219199b24522cd5b49447039f361df9",
+    "rewarded-ad-safety.test.mjs": "81b52872467d96627b75e67e00da2ddc7588d63e7aab2b1d508557a3470c49b7",
+    "runtime-bundle.test.mjs": "771814ae3d83fb2fdefc11b6a6b9437824b002bfe588f459aeca3850fbb93bce",
+    "screen-awake.test.mjs": "259408edaa76b17203913dcf818d4193d6d4fcefab848576ef200f8684552503",
+    "session-return.test.mjs": "6deaee15c0ffe4c0e2bff3911882b0490cca4b4fd51649b5110c7b3add341655",
+    "short-audio-spectator.test.mjs": "d84c6b19c96eaba72e2f6a678d8a598b90bef38f83c705182d74865db54965e7",
+    "table-realism.test.mjs": "25ce172931589cc380f44bad9e218cd4379a8dde0c94d91ca8d1da13c2f129b2",
+    "wallet-profile-recovery.test.mjs": "bef54ce2ce45c4263bbb7717337611198e8669dba8c474cda9406be2e1008992"
+  },
+  "targetScriptsHashes": {
+    "test.cjs": "448f204647aa374d49762a9ccb3798daafc81fc2140d5f9f878c342dc778cdee"
+  },
+  "targetRootFileHashes": {
+    "package.json": "735d0955ec050cb5153eb3d8f99377ccd73254c1f9ff0caac7ef704f53625eeb",
+    "package-lock.json": "81cef797da56ad91c2056232a6d82c9a89db9954810df6a3dfd4216ba3b579b4",
+    "capacitor.config.json": "91be9f77776ac03cb22552142e7187b382a3222d4ff38adc1d0547c0a6843a22"
+  },
+  "targetNativeHashes": {
+    "ios/App/App/FriendlyVoicePlugin.swift": "fa9183bdfc5f143a04d42e9129fd8ae5153bee1baf709d85f1d48ea2b2750573",
+    "ios/App/App/FriendlyVoiceViewController.swift": "8597ce9ae37bf2b35648c017283c3b5625146403a556add4779ff097d60e9df9",
+    "ios/App/App/ScreenAwakePlugin.swift": "0d1426687461b4674715dc4220ddfbf858029fd06fb3af6fda25926801a4f0ce",
+    "ios/App/App.xcodeproj/project.pbxproj": "7022266d2eb0445a84ce0d000457f149b3cad7281db801b5b363052caf424dd6",
+    "ios/App/App/Info.plist": "ed0d3f8fa45a3bcd48859950e9a835b9f7f8520a1d8fd03ee48473f470ffa3ab",
+    "ios/App/Podfile": "41852094f24ab0de713411d330676b94030f4350aeaa94c4ba70d7801e191f08",
+    "ios/App/App/Base.lproj/Main.storyboard": "edf6f2342598d2e3da589f363682edce2fc178e1808966438af50a62fad70770"
+  },
   "payloadSHA256": {
-    "www/admin-dashboard.js": "5043a64a4696283b7e0409e14efc62774812adc0b6138be2767c7069137321e4",
-    "www/admin.html": "20cccc592bc4e848020c78e27656a3696c491020f24fb7a5dfd99fafb24fc52d",
-    "www/game-core.js": "fe7d717f6ed6f2c7c0a85b3a9f2d653883a2b8085bcfdb6010cd12d9de81a801",
-    "www/index.html": "9407420b45287cf5b27c228d1c9ecad8ef9ec3523bdbd64b3d75a4e6316072ca",
-    "www/sw.js": "ebf619ed4d0ca75bcd17ab2e066ad091b0704c45796a4367ef074b565627f322",
+    "www/admin-commerce.css": "4b132bdae230a1e3bb577a1a35b46297aefcbd3f5400b789f19137acbfb754e6",
+    "www/admin-commerce.js": "9ecc4c203396eef12219218ab89c7f2bdf29899cee0d56c373609e26ecb7e243",
+    "www/admin-dashboard.css": "c144ee411ffdd0293539c054a1708084586eaaf81b7da196397165fc9a910baa",
+    "www/admin-dashboard.js": "56f32e8991137a44a2ec9261584ea5ca5173088610c0684728c81c926d032eaa",
+    "www/admin-notices.css": "8727416cd80e77a95d6681f998c88c35d8100428b55e889d9e3078b215741c20",
+    "www/admin-player-search.js": "68beb0fc7ea6f87bae53f2e62cf88c5b382725115c13d4840115cbb44041dd9b",
+    "www/admin-weekly-prizes.css": "bc96b822de564a46cbd6cf42e21553d343f5505c5c8bd0ae69cc9dd0b23bf17e",
+    "www/admin.html": "46cff3f26959de19803a30e5726da42ae523b6c9ab982d11999dad32abcc0e3e",
+    "www/game-core.js": "c710e99c9974c370b9f6aee88e3fcf9a46f4cd9086944cfbd6d3b19feb2d93c4",
+    "www/index.html": "9634fbb93255d16b0a055144f9dbcd37a12dfb3b6916f147c927e6af7beb2c17",
+    "www/sw.js": "c29bb1c2cc97eac74a8250c5598ff9f76ae8f0f697315756267fb0588b046a9d",
     "www/ui-art/rank-8.svg": "b68b94d8cfdf5110e76a035da786348c3e9003edca3b1a267f81af00c80d7d31",
     "www/ui-art/rank-9.svg": "9d9497f51193027e7d7abf662212583d01d72c1e2093c9e7bd7ee988b75c0f04",
     "www/ui-art/rank-banner-8.svg": "4e139996b4ac4717b80a197be7b1d0519eb6e20262c6ec8602efb512d34b2ef1",
@@ -1340,13 +1513,16 @@
     "www/ui-art/trophies-v419/weekly-bronze.png": "5931af5e62ee7f88ae368ffc63b81fddd9618ed2cbba821e39c45cd891034f7f",
     "www/ui-art/trophies-v419/weekly-gold.png": "a85591d2455df657db90fb1f21fffec8762d6565fe1b2b27935c2283366d7895",
     "www/ui-art/trophies-v419/weekly-silver.png": "ae434c7b060b3a9a0b30ccfeddcdf65713d6cac8c03a7b20fe185e0f6a28b938",
-    "www/ui-baloot.js": "6abc7c797cfb30389f1a6e27b722b89d387e9218aff663672b6ae7128b2a3943",
+    "www/ui-baloot.js": "ae2e21cf8f1c167f62f2f443afd010b9b46db6875ba02c101ec6a1228b343288",
     "www/ui-card-motion.js": "5133433e0e20edf78281184658044368bb8c1ab816a91c9dbeac20e2e027eec8",
     "www/ui-community.js": "05e5ae3b052ed585df6c84c635d7366fbc9386cef00172c9d66a690744651325",
+    "www/ui-content-filter.js": "7ad7c96fe5e29592087d6c77dfbf3dbfb0cb6f4d5a40b4b8b54bc196a5b5e3ab",
     "www/ui-cup.js": "4cdb9cbac7b13271bcbb6b3fb46ee50c56db9773872a77d3932510281969cd44",
+    "www/ui-entry-ads-ui.js": "8ea37697f416fd4a7ae269a3840e1d2482db772fdd379771dee28de0c21791c7",
+    "www/ui-entry-ads.js": "951511d614199cdf3a783ba45c93f20e879ba8c0b506274d4aff523ab1e9effa",
     "www/ui-friendly-voice-config.js": "650a4124595013dddb99bc2c10d90802d7152f20e2458f23d5210f1f1b6df213",
-    "www/ui-friendly-voice.css": "c77297f3a4e1208b8ff63aff2deb488343a59a7f474149963cb42f736ec885e8",
-    "www/ui-friendly-voice.js": "49e38268c1bbb28f6c6b53e77429ebc6862a4e7d7ae8520337822e20929af0fe",
+    "www/ui-friendly-voice.css": "227614298d4df5ba89e3a30898aa7e76a30fcd5f7fd083b0baa4031b8e78877c",
+    "www/ui-friendly-voice.js": "d2f47cef17f62072cda822571c6c0504b28082e47ea7aa04d3723d742fc0db44",
     "www/ui-home-v399.css": "5d43c631966b1428a6803f4337dba0d6c06ae03d711bd792df675e640818f3ea",
     "www/ui-lobby-chat-v351.css": "bb3211afed43edfc6ece675100b841239cad75b6a09a6ee3f865618379cb1a18",
     "www/ui-navigation.js": "4efd47c490f85b5996b1a1a38eaaba400c38b1bc8918ead215c4356f879965fb",
@@ -1358,35 +1534,62 @@
     "www/ui-ranked.css": "fe5c6c5e818af404d22e63841a4f7cbd4c1be588ae3bc63861fb8a489203aaa6",
     "www/ui-ranked.js": "4dfa5082a146801188f5ab4b7cb3a16be4776f1b2d446c2ee08ad67dbf1467be",
     "www/ui-results-store.js": "1cdd52d6c0c0175ee69987341d6e402a3bcf61b88aac0261a06a00e4d7bf4322",
+    "www/ui-screen-awake.js": "17f5df79461b4852f07417d82d63633bec20c7bb0ceaf045cd95d3abacc465da",
+    "www/ui-session-ads-v380.js": "190e4a25b6e7a97657f4c538ed76350a9ef591f31be99182fa30232c1ae360ab",
     "www/ui-session-theme.css": "db505061f0b508d9a16b4041e76901857dd06b0fd429aaf1da2b4738d03d3265",
     "www/ui-session-theme.js": "e3e329e4423c573f1aed241c840a007387a3b92014c807cdea77647d12cc6dda",
     "www/ui-sessions-catalog.css": "9e375c32d2e76482e390345941aa6325bf3c14a5db70526fba360e8f1b4ab8ce",
     "www/ui-sessions-catalog.js": "521b29d990fe397f260599429fffd5e99d64ecb1f4a32b7c156e4d508860b2bd",
-    "www/ui-six-v388.js": "ee2df1791cb9cb15902bfc764cdd204dfd6bf247a65e05aed083d60305591da5",
+    "www/ui-six-v388.js": "6634c8746a842dd336750a8638fe46e270bd675c29774b1a6e27db38323becb3",
     "www/ui-table-hud-v389.css": "22831f597b06ee340f7b0bdc917d59e3434a75a655ba0980f439642b2c48e736",
     "www/ui-table-hud-v389.js": "cbbbdcb7f2646dcdd17c9a571fd95dca93475a66936235ab85a5cc47e8f82851",
     "www/ui-table-realism.css": "f6d4b14f1842b38933c51b00dc075c2c3706c4fb608f687d557d8c09d779cd1b",
     "www/ui-table-realism.js": "6e9551ed41dc43f9768489d4e44051499fd9654deffa74e156a17d7516f7f1b5",
     "www/ui-theme-rentals.js": "e4fe7ea6424811e02ea37ef778164e14438e784df2253cfafb92126d43e4bceb",
+    "tests/admin-commerce-fees.test.cjs": "868939e5a39314b3e5b2eb83330bbadbb65f41463ce12b81681d0c827447ad46",
+    "tests/admitted-reconnect.test.mjs": "b841b3c0d55a0b22c9e7110179c98a77bbb106c70d7a81d586d094cd6acef4a2",
     "tests/card-orientation.test.mjs": "b0f9d5c9a5e4841f679fcc8aa780b2739c855f059f086dccf5fd49d028abd27b",
     "tests/catalog-voice-status.test.mjs": "218d058d553a9ca0619bfeafb062b02ca6d624e5fb98e9d6ff180f224d8acd0b",
     "tests/cup-transitions.test.mjs": "07330bf44b530a18a5caafe3b692fbdde3b89393d020157704a1076c4db81fae",
     "tests/field-motion.test.mjs": "25e70f30dbc79de6fcbadb7158a05534fc967b548b8c559dfe6b861f54fba099",
+    "tests/friendly-admission-ui.test.mjs": "adc5b1245730755267bde327d01cbc27ae1e415e51e5902a2caa8ce666733e85",
     "tests/friendly-voice-admin.test.cjs": "d3943b1d815343f2727d7486d451f17e4dbc261439c4e88d32e46abe2ce5c711",
+    "tests/friendly-voice-fees.test.cjs": "5c5d8c7e658751a5072713bb40105e94fe8d9cfc3358355556d60239de9329c8",
     "tests/friendly-voice-permission-ui.test.cjs": "666183956472b87908589958c53eb6721359cd293367d9b392455fc8db9bd8f3",
-    "tests/friendly-voice-runtime.test.cjs": "04043a8f62cc7de42070fae93ab52551e2a694425a68cfb6214073ae9cd0c7c8",
+    "tests/friendly-voice-runtime.test.cjs": "b5ebbc7cbcd43536069fda4875e0ac5659a52eb82cfb6298edcb86d653c00ab8",
     "tests/friendly-voice-ui.html": "8e9703d5621c2f6e72def657ba128cebfbe5a66a102e7a9a6a5bd71cec1aa2c6",
     "tests/friendly-voice.test.cjs": "67d35a98b69d5278dd3931e31e6cf0a8f6e1a9b7f1a7233f775400f080361d47",
     "tests/online-entry-recovery.test.mjs": "f2d7069b74d8da84b8e56870f3f632eb04e242bf7a60ecdf86c4b02e525259b7",
     "tests/player-levels.test.mjs": "48b7df2f06a5214a9e36436e7ef7d9408755e3297f1c8310cd962048d3837b90",
     "tests/profile-trophies.test.mjs": "c59bd29955bbba0318b2a57c117837d09c98cd40cbc90fdecba2597c69f72079",
     "tests/ranked-ui.test.mjs": "5cf8ea2477804deeee3cf6f8216d62dce239524e25057cc05d890c9425b656ab",
+    "tests/rewarded-ad-safety.test.mjs": "81b52872467d96627b75e67e00da2ddc7588d63e7aab2b1d508557a3470c49b7",
+    "tests/screen-awake.test.mjs": "259408edaa76b17203913dcf818d4193d6d4fcefab848576ef200f8684552503",
     "tests/table-realism.test.mjs": "25ce172931589cc380f44bad9e218cd4379a8dde0c94d91ca8d1da13c2f129b2",
     "tests/wallet-profile-recovery.test.mjs": "bef54ce2ce45c4263bbb7717337611198e8669dba8c474cda9406be2e1008992",
     "ios-voice-native/FriendlyVoicePlugin.swift": "fa9183bdfc5f143a04d42e9129fd8ae5153bee1baf709d85f1d48ea2b2750573",
-    "ios-voice-native/FriendlyVoiceViewController.swift": "3ff28f0df0ee7f0a98c81016a63613f2cccac6ee96cae62517c72b29169432ff",
-    "APPLY_IOS_VOICE_2_2_49.cjs": "65c208fe321e4d333d5acbb92c8f3f3e0f72465649faf184e889f152722491d5",
-    "INSTALL_AR.txt": "3c95dcf1a06919f0a198fcba096d5c31cd400e63b40bd7f287b21d5a6db00bbb"
+    "ios-voice-native/FriendlyVoiceViewController.swift": "8597ce9ae37bf2b35648c017283c3b5625146403a556add4779ff097d60e9df9",
+    "ios-voice-native/ScreenAwakePlugin.swift": "0d1426687461b4674715dc4220ddfbf858029fd06fb3af6fda25926801a4f0ce",
+    "APPLY_IOS_VOICE_2_2_52.cjs": "4b4370a3a27f6f068b44596db276a8bfc4e5c888bd70716f0c135d8976eeabd7",
+    "INSTALL_AR.txt": "850a45a44af8be4019596f3bb47636289857fdf0cb74410654e0a607d70f80a8"
+  },
+  "nativeInstallerTestsPassed": 39,
+  "clientTestsPassed": 471,
+  "sourceProofSHA256": {
+    "checks/tests.json": "1596bde1fae0e6195a85e2b247901f272f87ab00bab6c9f73e285dda2c70ddf3",
+    "native/native-web-manifest.json": "6fb055467e9f5c331f2937f7df67365a6987ffc364d9c3dc6c7925813fe04187",
+    "../play-session-fixes/screen-awake-native-report.json": "45fdcdf9a13856f61566c7030179cdeb049e73bc9e3b89ec9401a8dc98e863b8",
+    "package-ios-delta.py": "cc925ba3e3543593c4c1a32c76d0c43936dafc4e4b197713d8c979a4f677cb1c",
+    "verify-ios-delta.py": "65cc057a21218a9c4e0d7edbf53930c9c1dcba7cd63c35ec38a706e7460d84b7",
+    "deliver-ios-delta.py": "02b0d619e47736118653e16e20f30bc6c3422f10f2d3be357008c20e91a3225c",
+    "ios-delta-release/INSTALL_AR.txt": "9dca1197d4dce19832fce70532c94a3a8548ea50c4bbaa9cc17b3ce333466943",
+    "ios-delta-tools/release_guard.py": "aba5f6413f4b34512ea2688ac110d90b3a4e2163ebd7619ff319a0d348f28c0c",
+    "ios-delta-tools/test_release_guard.py": "985cc8e491587181ee0305b03bc68960c21e3b7ce1326ea742bf9d263501fc50",
+    "ios-delta-tools/APPLY_IOS_VOICE_2_2_52.cjs": "4b4370a3a27f6f068b44596db276a8bfc4e5c888bd70716f0c135d8976eeabd7",
+    "ios-delta-tools/APPLY_IOS_VOICE_2_2_52.test.cjs": "3e00b94d32eb5f5bd8d2ac7400f97047d30b4d8b43067ff413d81ed260a00dc5",
+    "ios-delta-tools/ios-voice-native/FriendlyVoicePlugin.swift": "fa9183bdfc5f143a04d42e9129fd8ae5153bee1baf709d85f1d48ea2b2750573",
+    "ios-delta-tools/ios-voice-native/FriendlyVoiceViewController.swift": "8597ce9ae37bf2b35648c017283c3b5625146403a556add4779ff097d60e9df9",
+    "ios-delta-tools/ios-voice-native/ScreenAwakePlugin.swift": "0d1426687461b4674715dc4220ddfbf858029fd06fb3af6fda25926801a4f0ce"
   },
   "wholeNativeConfigurationIncluded": false,
   "privateSigningFilesIncluded": false,

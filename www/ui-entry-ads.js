@@ -28,6 +28,7 @@
    async function run(work,{isCurrent=()=>true,beforeStore=()=>{}}={}){
     const uid=user(),current=()=>{try{return user()===uid&&isCurrent()!==false;}catch(_){return false;}};
     if(busy||!uid||typeof work!=='function'||!current())return false;
+     if(root.MajabeedAdSafety?.beforeEntry()===false)return false;
     busy=true;notify();
     try{
      const platform=native();let member=false,known=true;
@@ -40,7 +41,7 @@
       if(!current())return false;
       if(choice==='store'){await beforeStore();await openStore();return false;}
       if(choice!=='watch')return false;
-      let shown=false;try{shown=(await showAd())===true;}catch(_){}
+       let shown=false;try{shown=(await showAd({isCurrent:current}))===true;}catch(_){}
       if(user()!==uid)return false;
       // Failed or cancelled native presentation cannot reserve a seat or start a paid entry.
       if(!shown){if(current())try{onAdUnavailable();}catch(_){}return false;}
@@ -50,9 +51,11 @@
       if(!current())return false;
       await afterAdForeground();
       if(!current())return false;
-      return (await work())!==false&&user()===uid;
+       if(root.MajabeedAdSafety?.beforeEntry()===false)return false;
+       return (await work())!==false&&user()===uid;
      }
-     const accepted=(await work())!==false;
+      if(root.MajabeedAdSafety?.beforeEntry()===false)return false;
+      const accepted=(await work())!==false;
      if(!accepted||user()!==uid)return false;
      // The destination may now be a live game or an open list; do not use its
      // pre-entry guard after acceptance. Rejected work must return false.

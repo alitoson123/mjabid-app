@@ -132,8 +132,10 @@ for(const phase of ['status','join'])test('late '+phase+' response after lobby e
 });
 test('central game transport disconnect cancels voice immediately and invalidates late voice callbacks',async()=>{
  const b=browser({config:enabled}),c=await joinRuntime(b,'majabeed'),s=b.sandbox,noop=()=>{};await c.microphone(true);
- Object.assign(s,{ONL:{generation:1,pollGen:1},clearInterval:noop,uiOnlineEntryClear:noop,uiStopVoices:noop,uiFinishSpectatorJoin:noop,uiWalletSyncStop:noop});
- const src=fs.readFileSync(path.join(__dirname,'../www/game-core.js'),'utf8');vm.runInContext(src.slice(src.indexOf('function oDisconnectTransport(){'),src.indexOf('function oToast(')),s);s.oDisconnectTransport();
+ const recovery=b.root.document.createElement('section');recovery.id='uiOnlineReconnect';b.root.document.body.append(recovery);
+ Object.assign(s,{ONL:{generation:1,pollGen:1,joinTimer:s.setTimeout(noop,15000),reconnectTimer:s.setTimeout(noop,1200),reconnectUntil:40000,reconnectAttempts:2},clearInterval:noop,uiOnlineEntryClear:noop,uiStopVoices:noop,uiFinishSpectatorJoin:noop,uiWalletSyncStop:noop});
+ const src=fs.readFileSync(path.join(__dirname,'../www/game-core.js'),'utf8');vm.runInContext(src.slice(src.indexOf('function oReconnectClear(){'),src.indexOf('function oArmJoinDeadline('))+src.slice(src.indexOf('function oDisconnectTransport(){'),src.indexOf('function oToast(')),s);s.oDisconnectTransport();
+ assert.equal(s.ONL.joinTimer,null);assert.equal(s.ONL.reconnectTimer,null);assert.equal(s.ONL.reconnectUntil,0);assert.equal(b.nodes.has('uiOnlineReconnect'),false);
  assert.equal(c.snapshot().context,null);assert.equal(c.snapshot().microphone,false);assert.ok(b.calls.some(x=>x[0]==='cancel'));await flush();assert.equal(b.shown(),false);
 });
 test('home navigation disconnects voice before the animated navigation callback runs',async()=>{

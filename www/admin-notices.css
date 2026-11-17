@@ -1,0 +1,10 @@
+.anGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.anForm fieldset{border:0;padding:0;margin:0;min-width:0}
+.anForm label{display:block;margin:12px 0 6px;font-size:13px;font-weight:700}
+.anForm input:not([type=checkbox]),.anForm textarea{display:block;width:100%;padding:11px;border:1px solid var(--line);border-radius:11px;font:14px var(--fb);background:#fff;color:var(--ink)}
+.anForm textarea{resize:vertical;min-height:90px}
+.anForm input[type=url]{direction:ltr}
+.anForm button[type=submit]{width:100%;min-height:44px;margin-top:14px;border:0;border-radius:12px;background:#244c37;color:#fff0c9;font:800 14px var(--fb);cursor:pointer}
+.anPreview{padding:18px;margin-top:16px;border:1px solid #d8b873;border-radius:17px;background:linear-gradient(120deg,#244c3b,#102f25);color:#f9eac7}
+.anPreview small{color:#d3bc88;font-size:11px}.anPreview h4{margin:8px 0;font-size:19px;overflow-wrap:anywhere}.anPreview p{font-size:13px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere}.anPreview span{display:inline-block;padding:6px 14px;border-radius:9px;background:#eacb86;color:#183c2b}.anPreview span[hidden]{display:none}
+.anForm p[role=status],#anStatus{font-size:13px;line-height:1.7;overflow-wrap:anywhere}

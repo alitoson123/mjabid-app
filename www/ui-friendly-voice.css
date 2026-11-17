@@ -30,6 +30,15 @@
 #mjVoicePanel .mjVoiceSetting{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px;border:1px solid #c9b77a40;border-radius:14px;background:#e3cf8d09;font-size:13px}
 #mjVoicePanel .mjVoiceSetting b,#mjVoicePanel .mjVoiceSetting small{display:block}
 #mjVoicePanel .mjVoiceSetting small{font-size:10px;margin-top:4px}
+#mjVoicePanel .mjVoiceFee{margin-top:14px;padding:14px;border:1px solid #d2b87b;border-radius:16px;background:linear-gradient(145deg,#2a4837,#163a30)}
+#mjVoicePanel .mjVoiceFee h3{margin:6px 0;color:#ffe5a6;font-size:17px}
+#mjVoicePanel .mjVoiceFeeAmount{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:10px;color:#fff0c7}
+#mjVoicePanel .mjVoiceFeeAmount bdi{font-size:32px;font-weight:900;line-height:1.2}
+#mjVoicePanel .mjVoiceFeeAmount span{font-size:12px}
+#mjVoicePanel .mjVoiceFee p{font-size:12px;line-height:1.85}
+#mjVoicePanel .mjVoiceFee>button{width:100%;margin-top:8px;font-size:13px;min-height:46px;white-space:normal;line-height:1.5}
+#mjVoicePanel .mjVoiceFee [data-voice=fee-confirm]{background:linear-gradient(110deg,#e7d29d,#cdb477);color:#16392d;font-weight:800}
+#mjVoicePanel .mjVoiceFee .mjVoiceFeePending{color:#ffe2ad}
 #mjVoicePanel .mjVoiceMain{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 #mjVoicePanel .mjVoiceMain button{flex:1 1 112px;font-size:12px}
 #mjVoicePanel .mjVoiceMain [data-voice=join]{font-size:14px;background:linear-gradient(110deg,#e7d29d,#cdb477);color:#16392d;font-weight:800}

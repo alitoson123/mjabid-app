@@ -19,18 +19,29 @@
  function validCapability(data){return !!data&&data.ok===true&&data.available===true&&typeof data.enabled==='boolean'&&typeof data.sessionId==='string'&&data.sessionId.length>0&&data.sessionId.length<=128&&typeof data.canManage==='boolean'&&Array.isArray(data.participants)&&data.participants.length<=6;}
  const visible=state=>!!state?.context&&state.available===true&&state.capability===true;
  const unavailableError=e=>[404,410].includes(e?.status)||['VOICE_DISABLED','VOICE_NOT_CONFIGURED','VOICE_NOT_FOUND'].includes(e?.code);
+  function readVoiceFee(value){
+   if(value==null)return null;
+   if(value.version!==1||typeof value.quoteId!=='string'||!value.quoteId||value.quoteId.length>240||!['amount','total'].every(k=>Number.isSafeInteger(value[k])&&value[k]>=0&&value[k]<=100000)||value.amount>value.total||typeof value.paid!=='boolean'||typeof value.canConfirm!=='boolean'||!['ready','pending','paid'].includes(value.status)||value.paid!==(value.status==='paid')||value.paid&&value.amount!==0)return {invalid:true};
+   return {version:1,quoteId:value.quoteId,amount:value.amount,total:value.total,paid:value.paid,status:value.status,canConfirm:value.canConfirm};
+  }
+  const feeError=code=>({VOICE_FEE_CONFIRMATION_REQUIRED:'راجع رسوم المجموعة الصوتية وأكّد التفعيل أولًا.',VOICE_FEE_QUOTE_CHANGED:'تغيّرت رسوم التفعيل؛ راجع السعر الجديد قبل التأكيد.',VOICE_FEE_INSUFFICIENT_GOLD:'رصيدك لا يكفي لتفعيل المجموعة الصوتية. لم تُخصم رسوم جديدة.',VOICE_FEE_PENDING:'جارٍ تأكيد العملية السابقة؛ أعد التحقق قبل المحاولة.'})[code];
  function createController(options){
   const bridge=options.bridge,request=options.request,changed=options.onChange||(()=>{}),clock=options.now||Date.now;
   const later=options.setTimer||setTimeout,cancel=options.clearTimer||clearTimeout,random=options.randomId||uuid;
   let context=null,epoch=0,queue=Promise.resolve(),poll=null,renewal=null,listener=null,destroyed=false,refreshing=false;
   let lease=null,acceptedFor='',micRequest=0,micPending=false,permissionGate=null,subscribed=new Set(),state=initial();
-  function initial(){return {phase:'idle',capability:false,available:false,enabled:false,microphone:false,playback:true,canManage:false,participants:[],speaking:[],error:'',notice:'',accepted:false,pending:false};}
+   function initial(){return {phase:'idle',capability:false,available:false,enabled:false,microphone:false,playback:true,canManage:false,voiceFee:null,participants:[],speaking:[],error:'',notice:'',accepted:false,pending:false};}
   function emit(){try{changed(clone({...state,context:context?{game:context.game,roomId:context.roomId,accountId:context.accountId,playerId:context.playerId}:null}));}catch(_){}}
   function current(n,c){return !destroyed&&n===epoch&&allowed(context)&&key(c)===key(context);}
   function serial(fn){const next=queue.catch(()=>{}).then(fn);queue=next.catch(()=>{});return next;}
   function clearTimers(){cancel(poll);cancel(renewal);poll=renewal=null;}
   function payload(c,l,extra){return {game:c.game,roomId:c.roomId,...(l?{sessionId:l.sessionId,clientId:l.clientId}:{}),...extra};}
-  async function api(path,c,l,extra){return request(path,payload(c,l,extra),c.accountId);}
+  async function api(path,c,l,extra){
+   // An explicit price confirmation must still belong to this room when its
+   // auth token resolves. Remote leave deliberately remains valid after exit.
+   const n=epoch,guard=path==='settings'&&extra?.enabled===true&&extra?.feeConfirmation?()=>current(n,c):undefined;
+   return request(path,payload(c,l,extra),c.accountId,guard);
+  }
   function safeLeaveRemote(c,l){if(c&&l?.sessionId)Promise.resolve(api('leave',c,l)).catch(()=>{});}
   // Only a native permission prompt can defer pause/hidden. Explicit exits and
   // pagehide always stop; native onStop/didEnterBackground forces game cleanup.
@@ -48,7 +59,7 @@
    if(oldLease?.nativeSessionId){
     try{Promise.resolve(bridge.cancel({sessionId:oldLease.nativeSessionId})).catch(()=>bridge.leave({sessionId:oldLease.nativeSessionId})).catch(()=>{});}catch(_){try{Promise.resolve(bridge.leave({sessionId:oldLease.nativeSessionId})).catch(()=>{});}catch(_) {}}
    }
-   state={...initial(),capability:state.capability,available:state.available,enabled:state.enabled,canManage:state.canManage,participants:state.participants,accepted:acceptedFor===context?.accountId,notice:reason};emit();
+    state={...initial(),capability:state.capability,available:state.available,enabled:state.enabled,canManage:state.canManage,voiceFee:state.voiceFee,participants:state.participants,accepted:acceptedFor===context?.accountId,notice:reason};emit();
    // Cancellation can erase the native session before a later background event.
    // Replay any deferred game cleanup now, with its old identity and gate cleared
    // first, so the handler can safely call suspend/disconnect without recursion.
@@ -70,6 +81,7 @@
   }
   function applyStatus(data){
    state.available=data.available===true;state.enabled=data.enabled===true;state.canManage=data.canManage===true;
+    state.voiceFee=context?.game==='majabeed'?readVoiceFee(data.voiceFee):null;
    state.participants=Array.isArray(data.participants)?data.participants.filter(p=>typeof p.playerId==='string').map(p=>({uid:Number.isSafeInteger(p.uid)&&p.uid>0?p.uid:null,playerId:p.playerId,name:String(p.name||'لاعب').slice(0,80),joined:p.joined===true,blocked:p.blocked===true,muted:!!state.participants.find(x=>x.playerId===p.playerId)?.muted})):[];
    if(lease&&['joined','reconnecting'].includes(state.phase)){
     const l=lease,n=epoch,c={...context},wanted=authorizedSpeakers(c);
@@ -173,17 +185,23 @@
    if(muted&&micPending){await stop('توقف الصوت لتطبيق الكتم بأمان أثناء طلب إذن المايك.');return true;}
    try{await serial(()=>syncSubscriptions(l,n,c));if(!current(n,c)||lease!==l)return false;emit();return true;}catch(_){if(current(n,c)&&lease===l)await stop('تعذّر كتم اللاعب؛ أُغلق الصوت لحماية خصوصيتك.');return false;}
   }
-  async function action(type,extra){
+  async function action(type,extra={}){
    if(!allowed(context)||!state.capability||state.pending||!['settings','block','report','kick'].includes(type))return false;
    if(['settings','kick'].includes(type)&&!state.canManage)return false;
    if(type!=='settings'&&!state.participants.some(p=>p.playerId===extra.targetPlayerId&&p.playerId!==context.playerId))return false;
+    const fee=type==='settings'&&extra.enabled===true?state.voiceFee:null,confirm=extra.feeConfirmation;
+    if(fee&&!fee.paid){
+     if(fee.invalid){state.error='تعذّر التحقق من رسوم المجموعة الصوتية؛ أعد التحقق.';emit();return false;}
+     if(!fee.canConfirm){state.error=feeError('VOICE_FEE_PENDING');emit();return false;}
+     if(confirm?.version!==1||confirm.quoteId!==fee.quoteId||confirm.amount!==fee.amount){state.error=feeError('VOICE_FEE_CONFIRMATION_REQUIRED');emit();return false;}
+    }
    const n=epoch,c={...context};state.pending=true;state.error='';emit();
    try{
     const result=await api(type,c,lease,extra);if(!current(n,c))return false;
     if(result.left&&lease){await stop('حُظر اللاعب وغادرت الصوت لمنع التواصل معه.',false);await refresh();return true;}
     state.notice=type==='report'?'تم تسجيل البلاغ.':type==='block'?(extra.blocked?'حُظر صوت هذا اللاعب.':'أُلغي حظر صوت اللاعب.'):type==='kick'&&result.enforced===false?'سُجل المنع؛ تعذّر تأكيد الفصل الفوري، ويجري إيقاف الوصول للصوت.':'تم حفظ إعداد الصوت.';await refresh();return true;
    }
-   catch(e){if(current(n,c)){if(unavailableError(e)){state.capability=false;state.available=false;state.enabled=false;if(lease)await stop();}state.error='تعذّر تنفيذ الطلب؛ حاول مجددًا.';emit();}return false;}
+    catch(e){if(current(n,c)){if(feeError(e?.code)||fee&&!fee.paid)await refresh();if(!current(n,c))return false;if(unavailableError(e)){state.capability=false;state.available=false;state.enabled=false;if(lease)await stop();}state.error=feeError(e?.code)||(fee&&!fee.paid?'تعذّر تأكيد النتيجة؛ أعد التحقق من العملية قبل المحاولة.':'تعذّر تنفيذ الطلب؛ حاول مجددًا.');emit();}return false;}
    finally{if(current(n,c)){state.pending=false;emit();}}
   }
   function nativeEvent(e){
@@ -208,7 +226,7 @@
   return Object.freeze({setContext,refresh,acceptRules,join,leave:()=>stop('غادرت المحادثة الصوتية.'),microphone,playback,mute,action,renew,nativeEvent,destroy,deferLifecycle,resumeLifecycle,snapshot:()=>clone({...state,context}),suspend:()=>stop('توقف الصوت؛ انضم مجددًا عند العودة.')});
  }
 
- root.MajabeedVoiceCore=Object.freeze({createController,allowed,readRuntimeConfig,validCapability,visible});
+  root.MajabeedVoiceCore=Object.freeze({createController,allowed,readRuntimeConfig,validCapability,visible,readVoiceFee});
  if(typeof module==='object'&&module.exports)module.exports=root.MajabeedVoiceCore;
  if(!root.document)return;
  const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -216,7 +234,7 @@
  icons.group='<path d="M4 13v-2a8 8 0 0 1 16 0v2"/><rect x="2.5" y="11" width="4" height="8" rx="2"/><rect x="17.5" y="11" width="4" height="8" rx="2"/><path d="M9 13v4m3-7v10m3-7v4"/>';
  const icon=k=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+icons[k]+'</svg>';
  const reportReasons=Object.freeze({abuse:'إساءة أو ألفاظ غير لائقة',harassment:'مضايقة',hate:'خطاب كراهية',sexual:'محتوى جنسي',threat:'تهديد',spam:'إزعاج أو تكرار',privacy:'كشف معلومات خاصة',other:'مخالفة أخرى'});
- let controller=null,last=null,toolbar=null,panel=null,opened=false,lastFocus=null,bound=false,panelModel='',toolbarModel='',activeEndpoint='',reportDraft=null;
+  let controller=null,last=null,toolbar=null,panel=null,opened=false,lastFocus=null,bound=false,panelModel='',toolbarModel='',activeEndpoint='',reportDraft=null,feeDraft=null;
  const views={majabeed:null,sakka:null};
  const account=()=>typeof FB!=='undefined'?FB.user:null;
  const runtime=()=>readRuntimeConfig(root.MJ_FRIENDLY_VOICE_CONFIG);
@@ -228,14 +246,16 @@
   if(controller&&activeEndpoint!==config.endpoint)resetController();
   if(controller)return controller;
   activeEndpoint=config.endpoint;let created;
-  created=createController({bridge,request:async(action,body,accountId)=>{
+  created=createController({bridge,request:async(action,body,accountId,isCurrent=()=>true)=>{
    if(runtime()?.endpoint!==config.endpoint||!plugin())throw Error('Voice unavailable');
    const user=account();if(!user||user.uid!==accountId)throw Error('Account changed');
-   const token=await user.getIdToken();if(account()?.uid!==accountId)throw Error('Account changed');
-   if(runtime()?.endpoint!==config.endpoint||!plugin())throw Error('Voice unavailable');
-   // No GAME_SRV fallback; credentials are sent only to the explicitly configured origin.
-   const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),10000);
-   try{const result=await fetch(config.endpoint+'/voice/'+action,{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+token},body:JSON.stringify(body),signal:abort.signal,cache:'no-store'});let data;try{data=await result.json();}catch(_){const error=Error(ERROR);error.status=result.status;throw error;}if(!result.ok||data?.ok!==true){const error=Error(ERROR);error.code=data?.code;error.status=result.status;throw error;}return data;}finally{clearTimeout(timeout);}
+   const abort=new AbortController();let timeout;
+   const valid=()=>!abort.signal.aborted&&isCurrent()&&account()?.uid===accountId&&runtime()?.endpoint===config.endpoint&&!!plugin();
+   try{return await Promise.race([new Promise((_,reject)=>{timeout=setTimeout(()=>{abort.abort();reject(Error(ERROR));},10000);}),(async()=>{
+    if(!valid())throw Error('Voice context changed');const token=await user.getIdToken();if(!valid())throw Error('Voice context changed');
+    // No GAME_SRV fallback; credentials are sent only to the explicitly configured origin.
+    const result=await fetch(config.endpoint+'/voice/'+action,{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+token},body:JSON.stringify(body),signal:abort.signal,cache:'no-store'});let data;try{data=await result.json();}catch(_){const error=Error(ERROR);error.status=result.status;throw error;}if(!result.ok||data?.ok!==true){const error=Error(ERROR);error.code=data?.code;error.status=result.status;throw error;}return data;
+   })()]);}finally{clearTimeout(timeout);}
   },onChange:state=>{if(controller===created)paint(state);},onBackground:detail=>root.dispatchEvent(new root.CustomEvent('mj-voice-background',{detail}))});controller=created;
   if(!bound){bound=true;document.addEventListener('visibilitychange',()=>{if(document.hidden){if(!controller?.deferLifecycle('hidden'))controller?.suspend();}else controller?.resumeLifecycle();});document.addEventListener('pause',()=>{if(!controller?.deferLifecycle('pause'))controller?.suspend();});document.addEventListener('resume',()=>controller?.resumeLifecycle());root.addEventListener('pagehide',()=>controller?.suspend());
    // Authentication changes also happen outside the room render lifecycle.
@@ -254,9 +274,25 @@
   c.setContext({game:'sakka',roomId:s?.room,accountId:user?.uid,playerId:seat?.uid,eligible:s?.mode==='friendly'&&s.me>=0&&seat?.uid===user?.uid&&!seat?.bot&&!seat?.vacant,connected:connected===true,returnBlocked:root.UISessionReturn?.blocked('baloot')===true});paint(c.snapshot());
  }
  function button(label,action,svg='',disabled=false,pressed){return '<button type="button" data-voice="'+action+'"'+(disabled?' disabled':'')+(typeof pressed==='boolean'?' aria-pressed="'+pressed+'"':'')+' aria-label="'+E(label)+'">'+(svg?icon(svg):'')+'<span>'+E(label)+'</span></button>';}
- function closePanel(){opened=false;reportDraft=null;panel?.remove();panel=null;panelModel='';lastFocus?.focus?.({preventScroll:true});lastFocus=null;}
+ function closePanel(){opened=false;reportDraft=null;feeDraft=null;panel?.remove();panel=null;panelModel='';lastFocus?.focus?.({preventScroll:true});lastFocus=null;}
  function reportTarget(s,id){return s.participants?.find(p=>p.playerId===id&&p.playerId!==s.context?.playerId);}
  function validReport(s,draft=reportDraft){return !!draft&&draft.contextKey===key(s.context)&&!!reportTarget(s,draft.playerId);}
+  function pricedVoice(s){return s.context?.game==='majabeed'&&!!s.voiceFee;}
+  function captureFee(s){const f=s.voiceFee;feeDraft=pricedVoice(s)&&s.canManage&&!s.enabled&&f&&!f.invalid&&!f.paid?{contextKey:key(s.context),quoteId:f.quoteId,amount:f.amount,total:f.total,submitting:false}:null;}
+  function validFeeDraft(s,draft=feeDraft){const f=s.voiceFee;return !!draft&&pricedVoice(s)&&s.canManage&&!s.enabled&&!f.invalid&&!f.paid&&draft.contextKey===key(s.context)&&draft.quoteId===f.quoteId&&draft.amount===f.amount&&draft.total===f.total;}
+  async function refreshFee(s){await controller.refresh();const next=controller.snapshot();if(opened&&key(next.context)===key(s.context)){captureFee(next);paint(next);}}
+  async function confirmFee(s){
+   const draft=feeDraft;if(!validFeeDraft(s,draft)||draft.submitting||s.pending||!s.voiceFee.canConfirm){paint(s);return;}
+   draft.submitting=true;paint(s);
+   await controller.action('settings',{enabled:true,feeConfirmation:{version:1,quoteId:draft.quoteId,amount:draft.amount}});
+   if(feeDraft===draft){draft.submitting=false;paint(controller.snapshot());}
+  }
+  function feeHTML(s){
+   const f=s.voiceFee;if(!s.canManage||!pricedVoice(s)||f.paid)return '';
+   if(f.invalid)return '<section class="mjVoiceFee"><b>رسوم المجموعة الصوتية</b><p>تعذّر التحقق من السعر. لن يتم التفعيل قبل تأكيد الرسوم.</p>'+button('إعادة التحقق','fee-refresh','',s.pending)+'</section>';
+   const matches=validFeeDraft(s),pending=f.status==='pending',label=s.pending||feeDraft?.submitting?'جارٍ تأكيد التفعيل…':pending?'إعادة تأكيد العملية':f.amount===0?'تفعيل دون رسوم إضافية':'تأكيد التفعيل مقابل '+f.amount+' ذهب';
+   return '<section class="mjVoiceFee" aria-label="تأكيد رسوم المجموعة الصوتية"><small>للمنشئ فقط · مرة واحدة للجلسة</small><h3>تفعيل المجموعة الصوتية</h3><div class="mjVoiceFeeAmount"><bdi dir="ltr">'+f.amount+'</bdi><span>ذهب'+(pending?' · قيد التأكيد':' · يُخصم عند التأكيد')+'</span></div><p>رسوم إنشاء الجلسة مع الصوت <bdi dir="ltr">'+f.total+'</bdi> ذهب، وتشمل مقعدك.'+(f.amount<f.total?' رسوم الإنشاء المدفوعة محسوبة؛ المطلوب الآن هو الفرق فقط.':'')+' لا تُخصم رسوم الإنشاء مرة أخرى عند بدء اللعب، ولا عند إيقاف الصوت وإعادته.</p>'+(pending?'<p class="mjVoiceFeePending">نتحقق من العملية السابقة؛ إعادة تأكيد الطلب نفسه لا تكرر الخصم.</p>':'')+(!matches?'<p class="mjVoiceFeePending">راجع السعر المعروض قبل تأكيد التفعيل.</p>'+button('مراجعة السعر الحالي','fee-review','',s.pending):button(label,'fee-confirm','',s.pending||feeDraft?.submitting||!f.canConfirm))+button('إعادة التحقق','fee-refresh','',s.pending)+'</section>';
+  }
  function changeReport(e){
   if(!e.target?.matches?.('[data-voice-reason]')||!controller)return;
   const s=controller.snapshot();if(!validReport(s)||reportDraft.submitting)return;
@@ -273,11 +309,18 @@
  function handle(e){
   const b=e.target.closest('[data-voice]');if(!b||b.disabled||!controller)return;e.preventDefault();e.stopPropagation();
   const s=controller.snapshot(),action=b.dataset.voice;
-  if(action==='panel'){opened=true;lastFocus=b;paint(s);panel?.querySelector('button')?.focus();}
+   if(action==='panel'){opened=true;lastFocus=b;captureFee(s);paint(s);panel?.querySelector('button')?.focus();}
   else if(action==='close')closePanel();
   else if(action==='join')controller.join();else if(action==='leave')controller.leave();
   else if(action==='mic')controller.microphone(!s.microphone);else if(action==='sound')controller.playback(!s.playback);
-  else if(action==='accept')controller.acceptRules();else if(action==='settings')controller.action('settings',{enabled:!s.enabled});
+   else if(action==='accept')controller.acceptRules();
+   else if(action==='settings'){
+    if(!s.enabled&&pricedVoice(s)&&!s.voiceFee.paid){opened=true;lastFocus=b;captureFee(s);paint(s);panel?.querySelector('[data-voice="fee-confirm"]')?.focus();}
+    else controller.action('settings',{enabled:!s.enabled});
+   }
+   else if(action==='fee-confirm')confirmFee(s);
+   else if(action==='fee-review'){captureFee(s);paint(s);}
+   else if(action==='fee-refresh')refreshFee(s);
   else if(action==='mute')controller.mute(b.dataset.player,b.dataset.muted!=='true');
   else if(action==='block')controller.action('block',{targetPlayerId:b.dataset.player,blocked:b.dataset.blocked!=='true'});
   else if(action==='report'&&reportTarget(s,b.dataset.player)){
@@ -318,15 +361,16 @@
  }
  function paint(s){
   last=s;if(reportDraft&&!validReport(s))reportDraft=null;
+   if(feeDraft&&(feeDraft.contextKey!==key(s.context)||!s.canManage||s.enabled||!s.voiceFee||s.voiceFee.paid))feeDraft=null;
   if(!visible(s)||!runtime()||!plugin()){toolbar?.parentElement?.classList.remove('mjVoiceHost');toolbar?.remove();toolbar=null;toolbarModel='';closePanel();paintSpeakers({participants:[]});return;}
   if(!toolbar){toolbar=document.createElement('aside');toolbar.id='mjFriendlyVoice';toolbar.setAttribute('aria-label','المجموعة الصوتية');toolbar.addEventListener('click',handle);}
   toolbar.dataset.game=s.context.game;
   if(!placeToolbar(s)){paintSpeakers({participants:[]});return;}
   const joined=['joined','reconnecting'].includes(s.phase),lobby=toolbar.dataset.inline==='lobby';
-  const nextToolbar=JSON.stringify([joined,s.microphone,s.canManage,s.enabled,s.pending,lobby]);
+   const nextToolbar=JSON.stringify([joined,s.microphone,s.canManage,s.enabled,s.pending,lobby,s.voiceFee]);
   if(toolbarModel!==nextToolbar||!toolbar.firstChild){
    toolbarModel=nextToolbar;
-   toolbar.innerHTML=button('المجموعة الصوتية','panel','group',false,joined)+(lobby?'<div class="mjVoiceLobbyLabel"><b>المجموعة الصوتية</b><small>'+(s.enabled?(joined?'أنت متصل':'متاحة للاعبي الطاولة'):'المحادثة مغلقة')+'</small></div>'+(s.canManage?button(s.enabled?'إيقاف المحادثة':'السماح بالمحادثة','settings','',s.pending,s.enabled):''):'');
+   toolbar.innerHTML=button('المجموعة الصوتية','panel','group',false,joined)+(lobby?'<div class="mjVoiceLobbyLabel"><b>المجموعة الصوتية</b><small>'+(s.enabled?(joined?'أنت متصل':'متاحة للاعبي الطاولة'):s.canManage&&pricedVoice(s)&&!s.voiceFee.paid&&!s.voiceFee.invalid?'التفعيل '+s.voiceFee.amount+' ذهب':'المحادثة مغلقة')+'</small></div>'+(s.canManage?button(s.enabled?'إيقاف المحادثة':pricedVoice(s)&&!s.voiceFee.paid?'عرض رسوم التفعيل':'السماح بالمحادثة','settings','',s.pending,s.enabled):''):'');
   }
   toolbar.dataset.live=String(s.microphone);toolbar.dataset.connected=String(joined);paintSpeakers(s);
   if(!opened)return;
@@ -334,10 +378,10 @@
    panel=document.createElement('section');panel.id='mjVoicePanel';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-labelledby','mjVoiceTitle');panel.addEventListener('click',handle);panel.addEventListener('change',changeReport);(document.getElementById('frame')||document.body).append(panel);
    panel.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();if(e.key==='Tab'){const list=[...panel.querySelectorAll('button:not(:disabled),select:not(:disabled)')],first=list[0],end=list.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();end?.focus();}else if(!e.shiftKey&&document.activeElement===end){e.preventDefault();first?.focus();}}});
   }
-  const nextPanel=JSON.stringify({...s,speaking:[],context:s.context,reportDraft});
+   const nextPanel=JSON.stringify({...s,speaking:[],context:s.context,reportDraft,feeDraft});
   if(panelModel===nextPanel){for(const el of panel.querySelectorAll('[data-voice-user]')){const p=s.participants.find(p=>p.uid===Number(el.dataset.voiceUser));el.querySelector('.mjVoicePersonAvatar')?.classList.toggle('speaking',!!p&&isSpeaking(s,p));}return;}panelModel=nextPanel;
   const active=document.activeElement,focus=active&&panel.contains(active)?{action:active.dataset.voice,player:active.dataset.player,reason:active.matches?.('[data-voice-reason]')}:null,scroll=panel.querySelector('.mjVoiceCard')?.scrollTop||0;
-  panel.innerHTML='<div class="mjVoiceCard"><header><div><small>مع لاعبي طاولتك</small><h2 id="mjVoiceTitle">المجموعة الصوتية</h2></div>'+button('إغلاق','close')+'</header><p class="mjVoiceHelp">يبدأ المايك مغلقًا. تحكّم في صوتك وصوت اللاعبين، وغادر المجموعة متى أردت.</p>'+(s.canManage?'<div class="mjVoiceSetting"><div><b>السماح بالمحادثة الصوتية</b><small>أنت منشئ الجلسة</small></div>'+button(s.enabled?'إيقاف':'السماح','settings','',s.pending,s.enabled)+'</div>':'')+
+  panel.innerHTML='<div class="mjVoiceCard"><header><div><small>مع لاعبي طاولتك</small><h2 id="mjVoiceTitle">المجموعة الصوتية</h2></div>'+button('إغلاق','close')+'</header><p class="mjVoiceHelp">يبدأ المايك مغلقًا. تحكّم في صوتك وصوت اللاعبين، وغادر المجموعة متى أردت.</p>'+(s.canManage&&(!pricedVoice(s)||s.voiceFee.paid)?'<div class="mjVoiceSetting"><div><b>السماح بالمحادثة الصوتية</b><small>'+(s.voiceFee?.paid?'رسوم الجلسة الصوتية مدفوعة · دون رسوم إضافية':'أنت منشئ الجلسة')+'</small></div>'+button(s.enabled?'إيقاف':'السماح','settings','',s.pending,s.enabled)+'</div>':feeHTML(s))+
    (!s.accepted?'<div class="mjVoiceConsent"><p>أوافق على تجنّب الإساءة والتهديد ومشاركة المعلومات الخاصة، وعلى قواعد المحادثة. يمكن الإبلاغ عن المخالفات وحظر أصحابها.</p>'+button('أوافق على قواعد المحادثة','accept')+'</div>':'')+
    '<div class="mjVoiceMain">'+(joined?button(s.microphone?'إغلاق المايك':'تشغيل المايك','mic',s.microphone?'mic':'off',s.pending||s.phase!=='joined',s.microphone)+button(s.playback?'كتم الجميع':'سماع الجميع','sound','sound',s.phase!=='joined',s.playback)+button('مغادرة المجموعة','leave'):button(s.phase==='connecting'?'جارٍ الاتصال…':'الانضمام للمجموعة الصوتية','join','group',!s.accepted||!s.enabled||!s.available||s.pending))+'</div><p class="mjVoiceStatus" role="status">'+E(s.error||s.notice||(s.phase==='reconnecting'?'إعادة الاتصال بالصوت…':!s.enabled?'المحادثة مغلقة؛ يستطيع منشئ الجلسة السماح بها.':joined?(s.microphone?'المايك يعمل؛ يسمعك لاعبو الطاولة.':'أنت في المجموعة؛ المايك مغلق.'):'انضم عند رغبتك في سماع اللاعبين.'))+'</p><div class="mjVoicePeople">'+s.participants.map(p=>personHTML(s,p,joined)).join('')+'</div></div>';
   if(focus?.reason)panel.querySelector('[data-voice-reason]')?.focus({preventScroll:true});

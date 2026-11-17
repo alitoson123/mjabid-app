@@ -18,6 +18,7 @@
 		A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
 		A90000000000000000000001 /* FriendlyVoicePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000002 /* FriendlyVoicePlugin.swift */; };
 		A90000000000000000000003 /* FriendlyVoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000004 /* FriendlyVoiceViewController.swift */; };
+		A91000000000000000000001 /* ScreenAwakePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91000000000000000000002 /* ScreenAwakePlugin.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 		FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
 		A90000000000000000000002 /* FriendlyVoicePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendlyVoicePlugin.swift; sourceTree = "<group>"; };
 		A90000000000000000000004 /* FriendlyVoiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendlyVoiceViewController.swift; sourceTree = "<group>"; };
+		A91000000000000000000002 /* ScreenAwakePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenAwakePlugin.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +94,7 @@
 				50B271D01FEDC1A000F3C39B /* public */,
 				A90000000000000000000002 /* FriendlyVoicePlugin.swift */,
 				A90000000000000000000004 /* FriendlyVoiceViewController.swift */,
+				A91000000000000000000002 /* ScreenAwakePlugin.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -225,6 +228,7 @@
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 				A90000000000000000000001 /* FriendlyVoicePlugin.swift in Sources */,
 				A90000000000000000000003 /* FriendlyVoiceViewController.swift in Sources */,
+				A91000000000000000000001 /* ScreenAwakePlugin.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -363,12 +367,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 51;
+				CURRENT_PROJECT_VERSION = 52;
 				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 3.0.1;
+				MARKETING_VERSION = 3.0.2;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mjabid.play;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -384,12 +388,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 51;
+				CURRENT_PROJECT_VERSION = 52;
 				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 3.0.1;
+				MARKETING_VERSION = 3.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mjabid.play;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";

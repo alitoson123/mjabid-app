@@ -64,7 +64,7 @@
 </style>
 
 <link rel="stylesheet" href="admin-notices.css?v=347">
-<link rel="stylesheet" href="admin-dashboard.css?v=366">
+<link rel="stylesheet" href="admin-dashboard.css?v=426-insights-1">
 <link rel="stylesheet" href="admin-weekly-prizes.css?v=371">
 <link rel="stylesheet" href="admin-commerce.css?v=373">
 <script src="image-cache.js"></script>
@@ -85,7 +85,7 @@
 <div id="app">
   <div id="topbar">
     <div class="adBrand"><span class="adBrandMark" aria-hidden="true">♠</span><div><h1>مجابيد</h1><span>إدارة اللعبة</span></div></div>
-    <div class="adTopActions"><span class="adVersion">لوحة الإدارة · v366</span><button id="logoutBtn">تسجيل الخروج</button></div>
+    <div class="adTopActions"><span class="adVersion">لوحة الإدارة · v426</span><button id="logoutBtn">تسجيل الخروج</button></div>
   </div>
   <div id="tabs">
     <button class="tab on" data-tab="overview">نظرة عامة</button>
@@ -109,11 +109,20 @@
     <div class="cards adMetrics">
       <div class="statCard adStatLive"><span class="adMetricIcon" aria-hidden="true">◉</span><div class="lbl">مجابيد · نشطون في الطاولات والبحث</div><div class="num" id="statActive">—</div><small>اتصال مؤكد ضمن العينة</small></div>
       <div class="statCard"><span class="adMetricIcon" aria-hidden="true">♠</span><div class="lbl">يلعبون التنافسي الآن</div><div class="num" id="adCompetitive">—</div><small>لاعبون بشر داخل مباراة تنافسية</small></div>
-      <div class="statCard"><span class="adMetricIcon" aria-hidden="true">✓</span><div class="lbl">المباريات المكتملة اليوم</div><div class="num" id="adCompleted">—</div><small id="adCompletedNote">توقيت السعودية</small></div>
+      <div class="statCard"><span class="adMetricIcon" aria-hidden="true">✓</span><div class="lbl">مجابيد · مباريات مكتملة اليوم</div><div class="num" id="adCompleted">—</div><small id="adCompletedNote">توقيت السعودية</small></div>
       <div class="statCard"><span class="adMetricIcon" aria-hidden="true">◎</span><div class="lbl">إجمالي حسابات اللاعبين</div><div class="num" id="statTotal">—</div><small>كل الحسابات المسجلة</small></div>
     </div>
     <div class="adCoverage" id="adLiveCoverage">جارٍ التحقق من تغطية المؤشرات…</div>
     <div class="adSecondaryStats"><div><span>في البحث</span><b id="adSearching">—</b></div><div><span>طاولات جارية ضمن العينة</span><b id="adRoomsPlaying">—</b></div><div><span>حسابات محظورة</span><b id="statBanned">—</b></div><button class="miniBtn" id="adOpenReports">مراجعة البلاغات ←</button></div>
+    <section class="adInsightsSection" aria-labelledby="adInsightsTitle">
+      <div class="adSectionHeading"><div><span class="adEyebrow">الاشتراكات والمباريات</span><h3 id="adInsightsTitle">بلس · كأس مجابيد · صكة</h3></div><span class="adTag">قراءة عند الطلب</span></div>
+      <div class="adInsightsGrid">
+        <article class="card adInsightCard adPlusCard"><header><span class="adInsightSymbol" aria-hidden="true">✦</span><div><span class="adEyebrow">مجابيد بلس</span><h3>المشتركون النشطون</h3></div></header><div class="adInsightNumber" id="adPlusActive">—</div><span class="adInsightUnit">حساب باشتراك سارٍ الآن</span><p id="adPlusNote" class="adNote">جارٍ التحقق من الاشتراكات…</p></article>
+        <article class="card adInsightCard"><header><span class="adInsightSymbol" aria-hidden="true">♜</span><div><span class="adEyebrow">بطولة مجابيد</span><h3>مباريات الكأس المكتملة</h3></div></header><div class="adInsightNumbers"><div><b id="adCupToday">—</b><span>اليوم · توقيت السعودية</span></div><div><b id="adCupTotal">—</b><span>إجمالي المباريات المرصودة</span></div></div><p id="adCupNote" class="adNote">جارٍ تحميل إحصاءات الكأس…</p></article>
+        <article class="card adInsightCard"><header><span class="adInsightSymbol" aria-hidden="true">♠</span><div><span class="adEyebrow">صكة</span><h3>المباريات المكتملة</h3></div></header><div class="adInsightNumbers"><div><b id="adSakkaMatchesToday">—</b><span>اليوم · توقيت السعودية</span></div><div><b id="adSakkaMatchesTotal">—</b><span>إجمالي المباريات المرصودة</span></div></div><p id="adSakkaMatchesNote" class="adNote">جارٍ تحميل إحصاءات صكة…</p></article>
+      </div>
+      <p class="adInsightsFootnote">مباريات الكأس قد تكون ضمن إجمالي مجابيد أعلاه؛ لا تُجمع البطاقات للحصول على إجمالي واحد. تُحسب المباراة مرة واحدة، وليس بعدد اللاعبين.</p>
+    </section>
         <section class="card adSakkaMetrics" aria-labelledby="adSakkaTitle">
       <div class="adCardHeading"><div><span class="adEyebrow">صكة · نشاط اللاعبين</span><h3 id="adSakkaTitle">اليوم والآن</h3></div><span class="adTag">أندرويد وآيفون</span></div>
       <div class="adGrowthStats"><div><b id="adSakkaToday">—</b><span>لاعبو صكة اليوم</span></div><div><b id="adSakkaCurrent">—</b><span>متصلون الآن</span></div><div><b id="adSakkaPlaying">—</b><span>داخل الصكة الآن</span></div></div>
@@ -121,7 +130,7 @@
       <p id="adSakkaNote" class="adNote">جارٍ تحميل نشاط صكة…</p>
     </section>
     <div class="adChartGrid">
-      <section class="card"><div class="adCardHeading"><div><span class="adEyebrow">حركة اللعب</span><h3>المباريات المكتملة</h3></div><span class="adTag">آخر 14 يومًا</span></div><div id="adMatchesChart" class="adChart"></div><div id="adMatchBreakdown" class="adBreakdown"></div><p id="adTrackingNote" class="adNote"></p></section>
+      <section class="card"><div class="adCardHeading"><div><span class="adEyebrow">حركة مجابيد</span><h3>المباريات المكتملة</h3></div><span class="adTag">آخر 14 يومًا</span></div><div id="adMatchesChart" class="adChart"></div><div id="adMatchBreakdown" class="adBreakdown"></div><p id="adTrackingNote" class="adNote"></p></section>
       <section class="card"><div class="adCardHeading"><div><span class="adEyebrow">نشاط اللاعبين</span><h3>الحسابات المرصودة يوميًا</h3></div><span class="adTag">آخر 14 يومًا</span></div><div id="adGrowthChart" class="adChart"></div><p class="adNote">رصد الزيارات المتاح؛ لا يمثل عدد المتصلين الآن، وقد يختلف عن إجمالي النشاط الفعلي.</p></section>
     </div>
     <section class="card"><div class="adCardHeading"><div><span class="adEyebrow">اتجاه النمو</span><h3>مقارنة آخر 7 أيام بالـ7 السابقة</h3></div><span id="adGrowthDelta" class="adChange">—</span></div><div class="adGrowthStats"><div><b id="adObservedToday">—</b><span>حسابات مرصودة اليوم</span></div><div><b id="adObservedWeek">—</b><span>حسابات مرصودة آخر 7 أيام</span></div><div><b id="adReturning">—</b><span>حسابات ظهرت في الفترتين</span></div></div><p id="adGrowthNote" class="adNote"></p></section>
@@ -149,7 +158,11 @@
 
   <div class="panel hidden" id="panel-players">
     <div class="card">
-      <input id="searchBox" placeholder="ابحث بالاسم أو اسم المستخدم أو معرّف الحساب...">
+      <div class="adPlayerHeading"><div><span class="adEyebrow">إدارة الحسابات</span><h2>اللاعبون</h2><p>ابحث باسم المستخدم أو الاسم الكامل للوصول إلى الحساب مباشرة.</p></div></div>
+      <label class="adSearchLabel" for="searchBox">اسم المستخدم أو اسم اللاعب أو معرّف الحساب</label>
+      <div class="adPlayerSearch"><span aria-hidden="true">⌕</span><input id="searchBox" type="search" dir="auto" maxlength="128" autocomplete="off" spellcheck="false" placeholder="@sami_1 أو اسم اللاعب الكامل"><button id="adPlayerSearchClear" class="miniBtn" type="button" hidden>مسح البحث</button></div>
+      <p id="adPlayerSearchStatus" class="adStatus" role="status" aria-live="polite">البحث باسم المستخدم يشمل جميع الحسابات.</p>
+      <button id="adPlayerSearchRetry" type="button" class="miniBtn" hidden>إعادة المحاولة</button>
       <p id="adManualLookupHint" class="adNote" role="status" hidden></p>
       <div id="playersList"></div>
     </div>
@@ -157,7 +170,7 @@
 
   <div class="panel hidden" id="panel-commerce">
     <div class="card"><h3>رسوم الجلسات وعروض الكوينز</h3><p>تسري رسوم الإنشاء الجديدة على الجلسات الجديدة فقط. يحتفظ كل طلب شراء بالعرض الذي تأكد عند بدء الدفع.</p><button class="miniBtn" id="cmReload" type="button">إعادة تحميل</button><p id="cmStatus" role="status"></p></div>
-    <form id="cmForm"><div class="card"><h3>إنشاء جلسة الأصدقاء</h3><label class="cmFee">السعر بالذهب — يشمل مقعد المنشئ<input id="cmCreatorFee" type="number" min="0" max="100000" step="1" required></label><p>0 يجعل الإنشاء مجانيًا. دخول بقية اللاعبين يبقى 100 ذهب، ومكافأة الفوز 250 ذهب.</p></div><div class="card"><h3>عرض خاص للكوينز</h3><p>أضف ذهبًا مجانيًا إلى الباقة بالسعر نفسه، وحدد اسم العرض ومدته. شراء التطبيقات ينتظر اكتمال ربط Apple وGoogle.</p><div class="cmOffers" id="cmOffers"></div></div><div class="saveBar"><button type="submit">حفظ الرسوم والعروض</button></div></form>
+    <form id="cmForm"><div class="card"><h3>إنشاء جلسة الأصدقاء</h3><label class="cmFee">جلسة مجابيد دون المجموعة الصوتية — تشمل مقعد المنشئ<input id="cmCreatorFee" type="number" min="0" max="100000" step="1" required></label><label class="cmFee">جلسة مجابيد مع المجموعة الصوتية — إجمالي رسوم الإنشاء<input id="cmVoiceCreatorFee" type="number" min="0" max="100000" step="1" required disabled></label><p id="cmVoiceFeeNote">يظهر السعر الصوتي بعد تحميل الإعدادات من السيرفر.</p><p>0 يجعل الخيار مجانيًا. السعر الصوتي يشمل رسوم الإنشاء ومقعد المنشئ. الترقية بعد دفع الإنشاء تخصم الفرق فقط بعد موافقة المنشئ. دخول بقية اللاعبين يبقى 100 ذهب مع إعفاء مشتركي VIP المؤهلين، ومكافأة الفوز 250 ذهب. رسوم صكة لا تتغير.</p></div><div class="card"><h3>عرض خاص للكوينز</h3><p>أضف ذهبًا مجانيًا إلى الباقة بالسعر نفسه، وحدد اسم العرض ومدته. شراء التطبيقات ينتظر اكتمال ربط Apple وGoogle.</p><div class="cmOffers" id="cmOffers"></div></div><div class="saveBar"><button type="submit">حفظ الرسوم والعروض</button></div></form>
     <div class="card"><h3>سجل الذهب وVIP — أحدث 100 عملية</h3><button type="button" class="miniBtn" id="cmPurchasesReload">تحديث السجل</button><div style="overflow:auto"><table><thead><tr><th>الوقت</th><th>اللاعب</th><th>المنصة</th><th>الذهب / الاشتراك</th><th>المبلغ وعملته</th><th>العرض / المنتج</th><th>الحالة</th><th>الطلب</th></tr></thead><tbody id="cmPurchases"></tbody></table></div></div>
   </div>
   <div class="panel hidden" id="panel-economy">
@@ -254,7 +267,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="admin-dashboard.js?v=423-friendly-voice-1"></script>
+<script src="admin-dashboard.js?v=426-insights-1"></script>
+<script src="admin-player-search.js?v=426-insights-1"></script>
 <script>
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCZZrU2tip4efYEfYhUi9F_DNfuRZ22adU",
@@ -332,7 +346,7 @@ document.querySelectorAll('#tabs .tab[data-tab]').forEach(t => {
 async function loadOverview(){ return AdminDashboard.loadOverview(); }
 
 // ===== اللاعبون =====
-let ALL_PLAYERS = [];
+let ALL_PLAYERS = [], DISPLAY_PLAYERS = [];
 let PLAYERS_CURSOR = null, PLAYERS_DONE = false, PLAYERS_EPOCH = 0, PLAYERS_JOB = null;
 const PLAYERS_BATCH = 200;
 const adminText = value => typeof value==='string' ? value : '';
@@ -340,17 +354,21 @@ const adminNumber = value => (typeof value==='number'||typeof value==='string')&
 function playerFromDocument(doc){
   const data=doc.data()||{};
   // The document path is the authority; a legacy/user-writable uid field is not.
-  return {...data,uid:doc.id,name:adminText(data.name),username:adminText(data.username),avatar:adminText(data.avatar),banReason:adminText(data.banReason),activeRoom:adminText(data.activeRoom),banned:data.banned===true,
+  return {...data,uid:doc.id,name:adminText(data.name),username:adminText(data.username)||adminText(data.username_lc),avatar:adminText(data.avatar),banReason:adminText(data.banReason),activeRoom:adminText(data.activeRoom),banned:data.banned===true,
     gold:adminNumber(data.gold),xp:adminNumber(data.xp),rank:adminNumber(data.rank),games:adminNumber(data.games),wins:adminNumber(data.wins),activeSince:adminNumber(data.activeSince)};
 }
-function resetAdminPlayers(){
-  PLAYERS_EPOCH++;PLAYERS_JOB=null;ALL_PLAYERS=[];PLAYERS_CURSOR=null;PLAYERS_DONE=false;
+function resetAdminPlayers({keepQuery=false}={}){
+  PLAYERS_LOOKUP.cancel();PLAYERS_EPOCH++;PLAYERS_JOB=null;ALL_PLAYERS=[];DISPLAY_PLAYERS=[];PLAYERS_CURSOR=null;PLAYERS_DONE=false;
+  if(!keepQuery){$('#searchBox').value='';delete $('#searchBox').dataset.lookupMode;}
+  $('#adPlayerSearchClear').hidden=!$('#searchBox').value.trim();$('#adPlayerSearchRetry').hidden=true;
+  $('#adPlayerSearchStatus').textContent='البحث باسم المستخدم يشمل جميع الحسابات.';
   const list=document.getElementById('playersList');if(list)list.replaceChildren();
   const hint=document.getElementById('adManualLookupHint');if(hint){hint.hidden=true;hint.textContent='';}
 }
 function playerReadCurrent(epoch,uid){return epoch===PLAYERS_EPOCH&&auth.currentUser?.uid===uid&&ADMIN_UIDS.includes(uid);}
 async function loadPlayers(){
-  resetAdminPlayers();
+  resetAdminPlayers({keepQuery:true});
+  if($('#searchBox').value.trim()){applyPlayersFilter(true);return;}
   $('#playersList').innerHTML='<div class="empty">جارٍ التحميل...</div>';
   return loadPlayersBatch();
 }
@@ -367,16 +385,27 @@ async function loadPlayersBatch(){
       snap.forEach(doc=>{if(!known.has(doc.id)){ALL_PLAYERS.push(playerFromDocument(doc));known.add(doc.id);}});
       if(snap.docs.length)PLAYERS_CURSOR=snap.docs[snap.docs.length-1];
       if(snap.docs.length<PLAYERS_BATCH)PLAYERS_DONE=true;
-      applyPlayersFilter();
-    }catch(error){if(playerReadCurrent(epoch,uid))$('#playersList').innerHTML='<div class="empty">تعذّر التحميل: '+escHtml(error.message||'')+'</div>';}
+      if(!$('#searchBox').value.trim())renderPlayers(ALL_PLAYERS);
+    }catch(error){if(playerReadCurrent(epoch,uid)&&!$('#searchBox').value.trim())$('#playersList').innerHTML='<div class="empty">تعذّر التحميل: '+escHtml(error.message||'')+'</div>';}
   })();
   PLAYERS_JOB=job;try{return await job;}finally{if(PLAYERS_JOB===job)PLAYERS_JOB=null;}
 }
-function applyPlayersFilter(){
-  const query=$('#searchBox').value.trim().toLowerCase();
-  renderPlayers(query?ALL_PLAYERS.filter(p=>[p.name,p.username,p.uid].some(v=>adminText(v).toLowerCase().includes(query))):ALL_PLAYERS);
+const PLAYERS_LOOKUP=AdminPlayerSearch.create({db,context:()=>({epoch:PLAYERS_EPOCH,uid:auth.currentUser?.uid}),current:ctx=>playerReadCurrent(ctx.epoch,ctx.uid),convert:playerFromDocument,onState:paintPlayerSearch});
+function paintPlayerSearch(result){
+  const status=$('#adPlayerSearchStatus'),list=$('#playersList');$('#adPlayerSearchRetry').hidden=result.phase!=='error';
+  status.classList.toggle('adError',result.phase==='error');list.setAttribute('aria-busy',String(result.phase==='waiting'||result.phase==='loading'));
+  if(result.phase==='empty'){status.textContent='البحث باسم المستخدم يشمل جميع الحسابات.';renderPlayers(ALL_PLAYERS);if(!ALL_PLAYERS.length&&!PLAYERS_DONE)loadPlayersBatch();return;}
+  DISPLAY_PLAYERS=[];
+  if(result.phase==='invalid'){status.textContent=result.manual?'اكتب حرفين على الأقل من الاسم المحفوظ.':'اكتب الاسم الكامل من حرفين على الأقل، أو @ واسم المستخدم من 3–16 حرفًا إنجليزيًا أو رقمًا أو _، أو الصق معرّف الحساب.';list.replaceChildren();return;}
+  if(result.phase==='waiting'||result.phase==='loading'){status.textContent='جارٍ البحث في جميع الحسابات…';list.innerHTML='<div class="empty">نبحث عن الحساب…</div>';return;}
+  if(result.phase==='error'){status.textContent='تعذّر إكمال البحث. تحقق من الاتصال ثم أعد المحاولة.';list.replaceChildren();return;}
+  status.textContent=result.items.length?(result.manual?'نتائج مطابقة للاسم المحفوظ؛ تحقّق من معرّف الحساب.':result.items.length>1?'نتائج مطابقة: '+result.items.length+(result.items.length===10?' كحد أقصى':'')+'؛ الأسماء قد تتشابه، طابق معرّف الحساب.':'تم العثور على حساب مطابق.'):'لا يوجد حساب مطابق'+(result.manual?' لهذا الاسم.':' للاسم أو معرّف الحساب.');
+  renderPlayers(result.items,{search:true});
 }
-$('#searchBox').oninput=applyPlayersFilter;
+function applyPlayersFilter(immediate=false){const search=$('#searchBox');$('#adPlayerSearchClear').hidden=!search.value.trim();PLAYERS_LOOKUP.search(search.value,{manual:search.dataset.lookupMode==='name',immediate});}
+$('#searchBox').oninput=()=>{delete $('#searchBox').dataset.lookupMode;$('#adManualLookupHint').hidden=true;applyPlayersFilter();};
+$('#adPlayerSearchClear').onclick=()=>{$('#searchBox').value='';$('#searchBox').oninput();$('#searchBox').focus();};
+$('#adPlayerSearchRetry').onclick=()=>applyPlayersFilter(true);
 function avaHtml(player){
   const avatar=adminText(player?.avatar).trim();
   if(!avatar)return '😎';
@@ -397,10 +426,11 @@ document.addEventListener('error',event=>{
   const image=event.target;
   if(image?.matches?.('img[data-admin-avatar]'))image.replaceWith(Object.assign(document.createElement('span'),{textContent:'😎'}));
 },true);
-function renderPlayers(list){
+function renderPlayers(list,{search=false}={}){
+  DISPLAY_PLAYERS=list;
   const el=$('#playersList');
   if(!list.length){
-    el.innerHTML='<div class="empty">لا توجد مطابقة في الدفعات المحمّلة</div>'+(PLAYERS_DONE?'':'<button class="miniBtn" data-player-action="more">ابحث في الدفعة التالية (200)</button>');return;
+    el.innerHTML='<div class="empty">'+(search?'لم نعثر على حساب مطابق.':'لا توجد حسابات في القائمة.')+'</div>'+(search||PLAYERS_DONE?'':'<button class="miniBtn" data-player-action="more">تحميل اللاعبين</button>');return;
   }
   el.innerHTML=list.map(p=>{
     const id=escHtml(p.uid),n=value=>adminNumber(value).toLocaleString('en');
@@ -408,6 +438,7 @@ function renderPlayers(list){
     const diagnostic=p.activeRoom?`<div class="pMeta" style="opacity:.65;font-size:11px">🔧 تشخيص: activeRoom="${escHtml(p.activeRoom)}" · activeSince=${since&&Number.isFinite(date.getTime())?date.toLocaleTimeString('ar-SA'):'—'}</div>`:'';
     return `<div class="pRow"><div class="pAva">${avaHtml(p)}</div><div class="pInfo">
       <div class="pName"><button class="adNameButton" data-ad-player="${id}">${escHtml(p.name||'لاعب')}</button> ${p.banned?'🚫 محظور'+(p.banReason?' — '+escHtml(p.banReason):''):''}</div>
+      <div class="adPlayerIdentity"><bdi>${p.username?'@'+escHtml(p.username):'اسم المستخدم غير محفوظ'}</bdi><code>${id}</code></div>
       <div class="pMeta">🪙 ${n(p.gold)} · ⭐ ${n(p.xp)} XP · 🏆 ${n(p.rank)} رتبة · مباريات ${n(p.games)} · فوز ${n(p.wins)} ${p.activeRoom?' · 🟢 بطاولة':''}</div>${diagnostic}
       </div><div class="pActions"><button class="miniBtn" data-player-action="edit" data-player-uid="${id}">تعديل</button></div></div>
       <div class="editRow" id="edit-${id}"><label>الذهب</label><input type="number" id="gold-${id}" value="${adminNumber(p.gold)}" min="0" step="1">
@@ -416,19 +447,19 @@ function renderPlayers(list){
       <label>سبب الحظر (اختياري — يظهر للاعب لو مفعّل الحظر)</label><input type="text" id="banReason-${id}" value="${escHtml(p.banReason||'')}" maxlength="300" placeholder="مثلاً: إساءة بالدردشة">
       <div style="display:flex;gap:8px"><button class="miniBtn ok" data-player-action="save" data-player-uid="${id}">حفظ الكل</button>
       <button class="miniBtn ${p.banned?'ok':'danger'}" data-player-action="ban" data-player-uid="${id}">${p.banned?'رفع الحظر':'حظر الحساب'}</button></div></div>`;
-  }).join('')+(PLAYERS_DONE?'':`<button class="miniBtn" data-player-action="more" style="width:100%;margin-top:10px">تحميل المزيد (${ALL_PLAYERS.length} مُحمَّل حتى الآن)</button>`);
+  }).join('')+(search||PLAYERS_DONE?'':`<button class="miniBtn" data-player-action="more" style="width:100%;margin-top:10px">تحميل المزيد (${ALL_PLAYERS.length} مُحمَّل حتى الآن)</button>`);
 }
 $('#playersList').addEventListener('click',async event=>{
   const button=event.target.closest('[data-player-action]');if(!button||button.disabled||!$('#playersList').contains(button))return;
   const action=button.dataset.playerAction,uid=button.dataset.playerUid;
   if(action==='edit'){toggleEdit(uid);return;}
-  if(action==='ban'){const player=ALL_PLAYERS.find(p=>p.uid===uid);if(player)toggleBan(uid,!player.banned);return;}
+  if(action==='ban'){const player=DISPLAY_PLAYERS.find(p=>p.uid===uid);if(player)toggleBan(uid,!player.banned);return;}
   button.disabled=true;try{if(action==='more')await loadPlayersBatch();else if(action==='save')await saveStats(uid);}finally{if(button.isConnected)button.disabled=false;}
 });
 function toggleEdit(uid){document.getElementById('edit-'+uid)?.classList.toggle('show');}
 async function saveStats(uid){
   const actor=auth.currentUser?.uid,epoch=PLAYERS_EPOCH;
-  if(!playerReadCurrent(epoch,actor)||!ALL_PLAYERS.some(p=>p.uid===uid))return;
+  if(!playerReadCurrent(epoch,actor)||!DISPLAY_PLAYERS.some(p=>p.uid===uid))return;
   const values={};
   for(const key of ['gold','xp','rank']){
     const input=document.getElementById(key+'-'+uid),value=Number(input?.value);
@@ -623,6 +654,6 @@ async function deleteGift(id){
 <script src="admin-notices.js?v=347"></script>
 <script src="admin-weekly-prizes.js?v=371"></script>
 <script src="admin-monthly-prizes.js?v=378"></script>
-<script src="admin-commerce.js?v=373"></script>
+<script src="admin-commerce.js?v=429-voice-fees-1"></script>
 </body>
 </html>

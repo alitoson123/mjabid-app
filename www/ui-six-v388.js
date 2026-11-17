@@ -61,7 +61,7 @@ window.MajabeedSix=(()=>{
   if(!FB.user){toast2('سجّل الدخول لإنشاء الجلسة');return;}
   if(document.getElementById('sixCreateDialog'))return;
   const overlay=document.createElement('div');overlay.id='sixCreateDialog';
-  overlay.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="sixCreateTitle"><button class="sixClose" aria-label="إغلاق">×</button><h2 id="sixCreateTitle">طاولة ودية</h2><p>اختر عدد اللاعبين</p><button data-format="four"><b>2 ضد 2</b><span>٤ لاعبين · فريقان</span></button><button data-format="six"><b>3 ضد 3</b><span>٦ لاعبين · فريقان · كومة مستقلة لكل لاعب</span></button><p class="sixCreateNote">تظهر رسوم الجلسة قبل البدء.</p></section>';
+  overlay.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="sixCreateTitle"><button class="sixClose" aria-label="إغلاق">×</button><h2 id="sixCreateTitle">طاولة ودية</h2><p>اختر عدد اللاعبين</p><button data-format="four"><b>2 ضد 2</b><span>٤ لاعبين · فريقان</span></button><button data-format="six"><b>3 ضد 3</b><span>٦ لاعبين · فريقان · كومة مستقلة لكل لاعب</span></button><p class="sixCreateNote">تظهر رسوم الجلسة قبل البدء. المجموعة الصوتية اختيارية، وتؤكّد رسومها قبل تفعيلها.</p></section>';
   const close=()=>{overlay.remove();document.getElementById('hGroup').focus();};
   overlay.querySelector('.sixClose').onclick=close;overlay.onclick=e=>{if(e.target===overlay)close();};
   overlay.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
@@ -398,7 +398,7 @@ function renderLobbySix(){
   const friendlyPolicy=!ONL.cup&&!ONL.league&&!ONL.tournament&&!lb.tier?.fee&&uiFriendlyEconomy(lb.friendlyEconomy||ONL.friendlyEconomy);
   if(friendlyPolicy){
     if(!economy){economy=document.createElement('div');economy.id='uiFriendlyLobbyEconomy';economy.style.cssText='padding:12px 14px;margin:10px 0;border:1px solid #d5ba7455;border-radius:16px;background:#082c24;color:#f7e7ba;font-size:12px;line-height:1.9;text-align:center';const start=document.getElementById('lobbyStart');start.parentNode.insertBefore(economy,start);}
-    economy.innerHTML='<b>رسوم الجلسة مرة واحدة</b><br>المنشئ <bdi>'+toH(friendlyPolicy.creatorFee)+'</bdi> ذهب وتشمل مقعده · كل لاعب آخر <bdi>'+toH(friendlyPolicy.entryFee)+'</bdi> ذهب<br><small>تُخصم عند أول مشاركة. لكل فائز <bdi>'+toH(friendlyPolicy.winGold)+'</bdi> ذهب في كل جولة · بلا نقاط تنافسية</small>';economy.hidden=false;
+    economy.innerHTML=uiFriendlyLobbyFeeText(lb,friendlyPolicy);economy.hidden=false;
   }else if(economy)economy.hidden=true;
   for(const b of document.querySelectorAll('#lobbyMode .lmBtn')){
     b.classList.toggle('on',b.dataset.m===lb.mode);

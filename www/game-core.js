@@ -37,7 +37,7 @@ const $=s=>document.querySelector(s);
 // ⚠️ الصق مفاتيح مشروعك هنا (من إعدادات Firebase → تطبيق الويب).
 // هذه المفاتيح آمنة للنشر في كود الواجهة (مصمّمة لذلك).
 // رقم إصدار التطبيق — يُحدَّث يدويًا مع كل نسخة تُرفع للمتاجر (مو نفس رقم كاش الـSW)
-const APP_VERSION='3.0.1'; // V423 FRIENDLY VOICE2: permission lifecycle.
+const APP_VERSION='3.0.2'; // V429: explicit Majabeed voice creation pricing with recovered match connections.
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCZZrU2tip4efYEfYhUi9F_DNfuRZ22adU",
   authDomain: "jops-e508d.firebaseapp.com",
@@ -342,6 +342,7 @@ const WBMsg={
   },
   async sendPublic(text){
     if(!FB.ready||!FB.user||!text.trim())return;
+    if(!window.MajabeedContentFilter.allow(text,'chat',toast2))return;
     try{
       await FB.db.collection('public_chat').add({
         uid:FB.user.uid, name:this.myName(), ava:this.myAva(), user:this.myUser(), rank:ST.n('rank'),
@@ -363,6 +364,7 @@ const WBMsg={
   // ===== الرسائل الخاصة =====
   async sendPrivate(toUid, toName, text){
     if(!FB.ready||!FB.user||!text.trim())return;
+    if(!window.MajabeedContentFilter.allow(text,'chat',toast2))return;
     const id=this.dmId(FB.user.uid,toUid);
     try{
       await FB.db.collection('dms').doc(id).collection('msgs').add({
@@ -370,7 +372,7 @@ const WBMsg={
       });
       // حدّث ملخّص المحادثة للطرفين
       await FB.db.collection('dms').doc(id).set({
-        members:[FB.user.uid,toUid], last:text.trim().slice(0,60), lastTs:Date.now(), lastFrom:FB.user.uid,
+        members:[FB.user.uid,toUid], last:window.MajabeedContentFilter.preview(text,60), lastTs:Date.now(), lastFrom:FB.user.uid,
         names:{[FB.user.uid]:this.myName(),[toUid]:toName||'صديق'}
       },{merge:true});
     }catch(e){ toast2('تعذّر الإرسال'); }
@@ -957,7 +959,8 @@ document.querySelectorAll('.oChatTab').forEach(tb=>{ // FIX
 function sendFreeChatText(){ // FIX
   if(!uiOnlineCanPlay())return;
   if(window.MajabeedSessionChat?.maySendMajabeed()===false)return;
-  const inp=$('#oChatInput'); const text=(inp.value||'').trim(); if(!text)return; // FIX
+  const inp=$('#oChatInput'); const text=(inp.value||'').trim(); if(!text)return;
+  if(!window.MajabeedContentFilter.allow(text,'chat',toast2))return; // FIX
   if(!(ONL.active&&ONL.ws&&ONL.ws.readyState===1)){ toast2('الدردشة متاحة أونلاين فقط'); return; } // FIX
   oSend({type:'chat',text}); // FIX
   const bub=$('#oChatBubble'); // FIX — نفس فقاعتي الشخصية اللي تستخدمها الاختصارات الجاهزة بالضبط
@@ -1682,6 +1685,7 @@ function confetti(){
 
 /* ================= الواجهة ================= */
 function show(id,overlay){
+  window.MajabeedRewardedAd?.cancelPending();
   id=window.MajabeedBaloot?.routeFor?.(id,overlay)||id;
   if(!overlay&&document.getElementById('uiFriendlyEntry'))uiFriendlyEntryCancel(true);
   if(!overlay)uiCostRoute(id);
@@ -1691,6 +1695,7 @@ function show(id,overlay){
   if(!overlay&&typeof uiCommunityRoute==='function')uiCommunityRoute(id);
   if(!overlay&&typeof uiThemeRoute==='function')uiThemeRoute(id);
   if(typeof uiNavRoute==='function')uiNavRoute(id,overlay);
+  window.MajabeedScreenAwake?.sync();
   quickScreen(id,overlay); // QUICK-MATCH — فتح/غلق مراقبة العدد عند التنقل فقط
   if(typeof lgAutoWake==='function')lgAutoWake(); // v331: navigation explicitly wakes/stops home admission.
 }
@@ -2132,6 +2137,7 @@ function applyHandSpacing(handEl,count){
 }
 
 function render(){
+  window.MajabeedScreenAwake?.sync();
   if(!G.players)return;
   if(typeof uiPlayerPanelsRoom==='function')uiPlayerPanelsRoom('local');
   renderDeck(); renderBoard();
@@ -2331,7 +2337,7 @@ function segWire(id,key,cast){
   });
 }
 segWire('modeSeg','mode');
-$('#startBtn').onclick=()=>{ac();opts.name=$('#nameIn').value.trim()||'أنت';try{localStorage.setItem('wb-opts',JSON.stringify(opts))}catch(e){};newGame({...opts})};
+$('#startBtn').onclick=()=>{if(!window.MajabeedContentFilter.allow($('#nameIn').value,'name',toast2))return;ac();opts.name=$('#nameIn').value.trim()||'أنت';try{localStorage.setItem('wb-opts',JSON.stringify(opts))}catch(e){};newGame({...opts})};
 $('#sndBtn').onclick=()=>{muted=!muted;uiSoundButtons();if(!muted){ac();SFX.tick()}};
 $('#throwBtn').onclick=()=>{if(G.sel&&!G.busy&&G.turn===0&&G.phase==='turn'){const ta=throwAllowed(0,G.sel);if(ta.ok)doThrow(0,G.sel)}};
 $('#cancelBtn').onclick=()=>{G.sel=null;render()};
@@ -2444,14 +2450,16 @@ async function uiFriendlyEntryOpen(room,{restore=false,fromSpectator=false}={}){
   const serial=UI_FRIENDLY_ENTRY.serial,uid=user.uid,controller=new AbortController();UI_FRIENDLY_ENTRY.controller=controller;
   const modal=document.createElement('div');modal.id='uiFriendlyEntry';modal.dataset.room=room;modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label','المشاركة في الجلسة');
   modal.style.cssText='position:fixed;inset:0;z-index:9998;background:rgba(5,22,17,.82);display:flex;align-items:center;justify-content:center;padding:24px;direction:rtl';
-  modal.innerHTML='<div style="width:min(100%,360px);border:1px solid #d8bf7b;border-radius:24px;background:#123a2d;color:#f8edcf;padding:24px;text-align:center;box-shadow:0 18px 60px #0005"><h3 style="margin:0 0 14px">طاولة الأصدقاء</h3><p id="uiFriendlyEntryText" role="status" style="line-height:1.9;margin:0 0 18px">جارٍ التحقق من رسوم الجلسة…</p><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button id="uiFriendlyEntryPlay" class="btn primary" hidden>المشاركة</button><button id="uiFriendlyEntryWatch" class="btn" hidden>مشاهدة مجانًا</button><button id="uiFriendlyEntryBack" class="btn">رجوع</button></div></div>';
+  modal.innerHTML='<div style="width:min(100%,360px);border:1px solid #d8bf7b;border-radius:24px;background:#123a2d;color:#f8edcf;padding:24px;text-align:center;box-shadow:0 18px 60px #0005"><h3 style="margin:0 0 14px">طاولة الأصدقاء</h3><p id="uiFriendlyEntryText" role="status" style="line-height:1.9;margin:0 0 18px">جارٍ التحقق من رسوم الجلسة والرصيد…</p><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button id="uiFriendlyEntryPlay" class="btn primary" hidden>المشاركة</button><button id="uiFriendlyEntryRetry" class="btn" hidden>إعادة التحقق</button><button id="uiFriendlyEntryWatch" class="btn" hidden>مشاهدة مجانًا</button><button id="uiFriendlyEntryBack" class="btn">رجوع</button></div></div>';
   document.body.appendChild(modal);
   if(fromSpectator)uiRenderSpectatorJoin(ONL.view,false);
   document.getElementById('uiFriendlyEntryBack').onclick=uiFriendlyEntryExit;
   const current=()=>UI_FRIENDLY_ENTRY.serial===serial&&FB.user?.uid===uid&&new URLSearchParams(location.search).get('room')===room&&!controller.signal.aborted&&(!fromSpectator||(ONL.active&&ONL.spectateOnly&&ONL.room===room&&ONL.generation===viewerGeneration));
-  let quotedPolicy=null,quotedMatchId=null,quotedParticipationId=null;
+  let quotedPolicy=null,quotedMatchId=null,quotedParticipationId=null,participationAllowed=false;
+  document.getElementById('uiFriendlyEntryRetry').onclick=()=>{if(current())uiFriendlyEntryOpen(room,{restore,fromSpectator});};
   const enter=spectate=>{
     if(!current()){if(UI_FRIENDLY_ENTRY.serial===serial)uiFriendlyEntryExit();return;}
+    if(!spectate&&!participationAllowed)return;
     if(fromSpectator&&!spectate&&!uiSpectatorCanJoin()){uiFriendlyEntryExit();toast2('المقعد غير متاح الآن؛ يمكنك متابعة المشاهدة والمحاولة عند توفره');return;}
     if(fromSpectator){
       if(spectate){uiFriendlyEntryExit();return;}
@@ -2473,12 +2481,20 @@ async function uiFriendlyEntryOpen(room,{restore=false,fromSpectator=false}={}){
     if(!info?.ok||info.room!==room||typeof info.exists!=='boolean'||!Number.isSafeInteger(info.entryAmount)||info.entryAmount<0)throw Error('invalid entry info');
     if(!info.exists||info.status==='closed'){uiFriendlyEntryExit();toast2('هذه الجلسة غير متاحة الآن؛ اختر جلسة جديدة');return;}
     const policy=uiFriendlyEconomy(info.friendlyEconomy);if(info.friendlyEconomy&&(!policy||typeof info.friendlyMatchId!=='string'||!info.friendlyMatchId||info.friendlyMatchId.length>240||typeof info.friendlyParticipationId!=='string'||!/^[-A-Za-z0-9_]{1,160}$/.test(info.friendlyParticipationId)))throw Error('unsupported session policy');quotedPolicy=policy;quotedMatchId=policy?info.friendlyMatchId:null;quotedParticipationId=policy?info.friendlyParticipationId:null;
+    const admission=info.admission;
+    if(admission!==undefined&&(!admission||typeof admission.allowed!=='boolean'||admission.amount!==info.entryAmount||!['allowed','insufficient_gold','wallet_pending','room_changed'].includes(admission.code)||admission.allowed!==(admission.code==='allowed')))throw Error('invalid admission quote');
+    const watch=document.getElementById('uiFriendlyEntryWatch');watch.hidden=false;watch.onclick=()=>enter(true);
+    if(admission?.allowed===false){
+      const text=document.getElementById('uiFriendlyEntryText'),play=document.getElementById('uiFriendlyEntryPlay');play.hidden=true;play.disabled=true;play.onclick=null;
+      text.textContent=admission.code==='insufficient_gold'?'رصيدك لا يكفي لدخول الجلسة. رسوم الدخول '+toH(admission.amount)+' ذهب'+(Number.isSafeInteger(admission.balance)?'، ورصيدك '+toH(admission.balance)+' ذهب.':'.'):admission.code==='room_changed'?'تغيّرت الجلسة؛ أعد التحقق قبل المشاركة.':'تعذّر التحقق من رصيدك الآن؛ أعد التحقق قبل المشاركة.';
+      document.getElementById('uiFriendlyEntryRetry').hidden=false;return;
+    }
+    participationAllowed=true;
     if(restore&&policy&&info.paid!==true){uiFriendlyEntryExit();return;}
     if(!policy||info.paid===true){enter(false);return;}
     document.getElementById('uiFriendlyEntryText').innerHTML=(info.entryAmount===0?(info.creator?'إنشاء الجلسة مجاني.':'الانضمام مجاني.'):'رسوم '+(info.creator?'إنشاء الجلسة':'مشاركتك')+' <bdi dir="ltr" style="font-weight:900">'+toH(info.entryAmount)+'</bdi> ذهب، مرة واحدة للجلسة.')+'<br><small>'+(info.entryAmount===0?'':'تُخصم عند أول مشاركة. ')+'مكافأة كل فائز <bdi dir="ltr">'+toH(policy.winGold)+'</bdi> ذهب لكل جولة، دون نقاط تنافسية.</small>';
     const play=document.getElementById('uiFriendlyEntryPlay');play.hidden=false;play.textContent=info.entryAmount===0?'الانضمام مجانًا':'المشاركة · '+toH(info.entryAmount)+' ذهب';play.onclick=()=>enter(false);
-    const watch=document.getElementById('uiFriendlyEntryWatch');watch.hidden=false;watch.onclick=()=>enter(true);
-  }catch(_){if(UI_FRIENDLY_ENTRY.serial===serial&&FB.user?.uid===uid){if(restore){uiFriendlyEntryExit();toast2('تعذّرت استعادة الجلسة؛ يمكنك فتحها من الجلسات النشطة');}else{const text=document.getElementById('uiFriendlyEntryText');if(text)text.textContent='تعذّر التحقق من رسوم الجلسة. ارجع وحاول مجددًا.';}}}
+  }catch(_){if(UI_FRIENDLY_ENTRY.serial===serial&&FB.user?.uid===uid){if(restore){uiFriendlyEntryExit();toast2('تعذّرت استعادة الجلسة؛ يمكنك فتحها من الجلسات النشطة');}else{const text=document.getElementById('uiFriendlyEntryText');if(text)text.textContent='تعذّر التحقق من رسوم الجلسة والرصيد؛ أعد التحقق قبل المشاركة.';const retry=document.getElementById('uiFriendlyEntryRetry');if(retry)retry.hidden=false;}}}
   finally{clearTimeout(timer);if(abort)controller.signal.removeEventListener('abort',abort);if(UI_FRIENDLY_ENTRY.serial===serial)UI_FRIENDLY_ENTRY.controller=null;}
 }
 const ONL={ws:null,room:null,view:null,status:null,you:null,seats:[],result:null,transport:'ws',wsFails:0,queue:[],pollSeq:0,pollGen:0,
@@ -2649,7 +2665,43 @@ function uiWalletSyncPlan(){
   },[2000,5000,10000][UI_WALLET_SYNC.attempt]);
 }
 function oSessionCurrent(generation,room){return ONL.active&&ONL.generation===generation&&ONL.room===room;}
+function oReconnectClear(){
+  clearTimeout(ONL.joinTimer);clearTimeout(ONL.reconnectTimer);ONL.joinTimer=null;ONL.reconnectTimer=null;
+  ONL.reconnectAttempts=0;ONL.reconnectUntil=0;
+  document.getElementById('uiOnlineReconnect')?.remove();
+}
+function oArmJoinDeadline(current){
+  clearTimeout(ONL.joinTimer);clearTimeout(ONL.reconnectTimer);ONL.reconnectTimer=null;
+  if(ONL.status===null)return;
+  if(!ONL.reconnectUntil)ONL.reconnectUntil=Date.now()+40000;
+  ONL.joinTimer=setTimeout(()=>{if(current()&&!ONL.stateReady)oReconnectJoinFailed('تعذّر تأكيد الاتصال. تحقق من الشبكة ثم أعد المحاولة.');},Math.max(0,Math.min(15000,ONL.reconnectUntil-Date.now())));
+}
+function oReconnectJoinFailed(message,automatic=true){
+  if(!ONL.active)return;
+  if(ONL.status===null){uiOnlineEntryFailed(message);return;}
+  const generation=ONL.generation,room=ONL.room,uid=FB.user?.uid;
+  const current=()=>oSessionCurrent(generation,room)&&FB.user?.uid===uid&&!ONL.stateReady;
+  clearTimeout(ONL.joinTimer);clearTimeout(ONL.reconnectTimer);ONL.joinTimer=null;ONL.reconnectTimer=null;
+  ONL.joinEpoch=(ONL.joinEpoch||0)+1;ONL.pollGen++;ONL.stateReady=false;
+  if(ONL.transport==='ws')ONL.wsFails++;
+  const ws=ONL.ws;ONL.ws=null;
+  if(ws){ws.onopen=null;ws.onmessage=null;ws.onclose=null;ws.onerror=null;try{ws.close();}catch(_){}}
+  clearInterval(ONL.connectionTimer);ONL.connectionTimer=null;
+  window.UISessionReturn?.disconnected('majabeed');window.MajabeedFriendlyVoice?.disconnect('majabeed');
+  $('#connDot').classList.add('off');
+  if(!ONL.reconnectUntil)ONL.reconnectUntil=Date.now()+40000;
+  const attempt=ONL.reconnectAttempts=(ONL.reconnectAttempts||0)+1,delay=[1200,2500,5000][attempt-1];
+  const retry=automatic&&delay!=null&&Date.now()+delay<ONL.reconnectUntil;
+  let panel=document.getElementById('uiOnlineReconnect');
+  if(!panel){panel=document.createElement('section');panel.id='uiOnlineReconnect';panel.setAttribute('role','status');panel.setAttribute('aria-live','polite');panel.style.cssText='position:absolute;top:24%;left:50%;transform:translateX(-50%);width:300px;max-width:calc(100% - 32px);z-index:75;background:#123a2df5;border:1px solid #d8bf7b;border-radius:18px;padding:16px;text-align:center;direction:rtl;color:#f8edcf;box-sizing:border-box';panel.innerHTML='<p style="margin:0 0 12px;line-height:1.7"></p><button type="button" class="btn sm" style="min-height:44px;min-width:150px;padding:10px 18px;border:1px solid #d8bf7b;border-radius:12px;background:#dbc589;color:#14392d;font:inherit;font-weight:800;cursor:pointer">إعادة الاتصال</button>';document.getElementById('onl').appendChild(panel);}
+  panel.querySelector('p').textContent=retry?'جارٍ إعادة الاتصال…':(message||'تعذّر الاتصال. تحقق من الشبكة ثم أعد المحاولة.');
+  panel.querySelector('button').hidden=retry;
+  const reconnect=()=>{if(!current()||document.hidden&&window.UISessionReturn?.blocked('majabeed'))return;ONL.transport='ws';if(ONL.wsFails>=2)switchToPoll();else oConnect();};
+  panel.querySelector('button').onclick=()=>{if(!current())return;ONL.reconnectAttempts=0;ONL.reconnectUntil=0;panel.querySelector('button').hidden=true;panel.querySelector('p').textContent='جارٍ إعادة الاتصال…';reconnect();};
+  if(retry)ONL.reconnectTimer=setTimeout(()=>{ONL.reconnectTimer=null;reconnect();},delay);
+}
 function oDisconnectTransport(){
+  oReconnectClear();ONL.joinEpoch=(ONL.joinEpoch||0)+1;
   window.MajabeedFriendlyVoice?.disconnect('majabeed');
   uiOnlineEntryClear();
   document.getElementById('uiOnlineFeePending')?.remove();
@@ -2669,6 +2721,7 @@ function oToast(txt){
 function oSend(obj){
   if(['chat','react'].includes(obj.type)&&window.MajabeedSessionChat?.maySendMajabeed()===false)return false;
   if(window.UISessionReturn?.blocked('majabeed')&&!['sessionAway','sessionReturn','leave','sync','ping','connectionAck'].includes(obj.type))return;
+  if(ONL.stateReady===false&&ONL.status!==null&&!['leave','sessionAway'].includes(obj.type)){ONL.queue.push(obj);return;}
   if(ONL.transport==='poll'){ oPost(obj); return; }
   if(ONL.ws&&ONL.ws.readyState===1)ONL.ws.send(JSON.stringify(obj));
   else ONL.queue.push(obj);
@@ -2688,13 +2741,16 @@ async function uiBoundedIdToken(user,force=false,timeoutMs=6000){
 }
 async function withIdToken(payload){
   await Promise.race([FB.authReadyPromise,new Promise(r=>setTimeout(r,4000))]);
-  let idToken=null;
+  let idToken=null,authError=null;
   const user=FB.user;
   if(user){
     try{ idToken=await uiBoundedIdToken(user,false,4000); }
-    catch(e){ if(FB.user===user)try{ idToken=await uiBoundedIdToken(user,true,4000); }catch(e2){} }
+    catch(e){ authError=e;if(FB.user===user)try{ idToken=await uiBoundedIdToken(user,true,4000); }catch(e2){authError=e2;} }
   }
-  return Object.assign({},payload,{idToken});
+  const result=Object.assign({},payload,{idToken});
+  // Local retry advice is not serialized or sent to the game server.
+  Object.defineProperty(result,'authRetryable',{value:!/^auth\/(user-disabled|user-token-expired|invalid-user-token|user-not-found|invalid-credential)$/.test(authError?.code||'')});
+  return result;
 }
 // ===== إعداد خادم الطاولات =====
 // للتبديل لخادم Cloudflare: ضع رابط الـWorker هنا (مثل 'waggif-baloot.اسمك.workers.dev')
@@ -2708,7 +2764,7 @@ async function claimAdRewardClient(user){
   const timeout=setTimeout(()=>controller.abort(),15000);
   try{
     const idToken=await user.getIdToken();
-    if(FB.user!==user)return {ok:false,error:'account-changed'};
+    // A verified native reward belongs to the captured account, even if auth changed while it showed.
     const res=await fetch('https://'+GAME_SRV+'/claim-ad-reward',{
       method:'POST',headers:{'content-type':'application/json'},signal:controller.signal,
       body:JSON.stringify({idToken})
@@ -2769,15 +2825,23 @@ function renderAdRewardBtn(){
   updateAdRewardDisplay();
   if(adRewardRemainingMs()>0||_adRewardBusy)_adRewardTimer=setInterval(updateAdRewardDisplay,1000);
 }
+function uiRewardAdCanPresent(user,origin){
+  const visible=id=>{const el=document.getElementById(id);return !!el&&!el.hidden&&!el.classList.contains('hidden');};
+  const b=window.MajabeedBaloot?.state;
+  return FB.user===user&&!document.hidden&&!ONL.active&&!MATCH.on&&!QUICK_SEARCH.wanted&&!b?.room&&!b?.queue&&!b?.loading&&!UI_FRIENDLY_ENTRY.room&&!window.MajabeedEntryGate?.busy&&
+    !document.documentElement.classList.contains('mjRankedLocked')&&!document.documentElement.classList.contains('mcPageLocked')&&
+    !visible('sessionsModal')&&!visible('blModal')&&(origin==='reward'?visible('rewardScr')&&visible('home'):origin==='shop'&&visible('shop'));
+}
 async function watchAdForGold(){
   if(_adRewardBusy||adRewardRemainingMs()>0)return;
   const user=FB.user;
   if(!FB.ready||!user){toast2('سجّل دخولك أولاً لاستلام ذهب الإعلان');return;}
+  const origin=document.getElementById('shop')?.classList.contains('hidden')===false?'shop':'reward';
+  if(!uiRewardAdCanPresent(user,origin))return;
   _adRewardBusy=true;renderAdRewardBtn();
   try{
-    const watched=await showRewardedAd();
-    if(FB.user!==user)return;
-    if(!watched){toast2('لم تكتمل مشاهدة الإعلان؛ حاول مرة أخرى');return;}
+    const watched=await showRewardedAd({isCurrent:()=>uiRewardAdCanPresent(user,origin)});
+    if(!watched){if(uiRewardAdCanPresent(user,origin))toast2('لم تكتمل مشاهدة الإعلان؛ حاول مرة أخرى');return;}
     const r=await claimAdRewardClient(user);
     if(FB.user!==user)return;
     if(r.ok&&Number.isSafeInteger(r.goldAfter)&&Number.isSafeInteger(r.amount)){
@@ -2844,7 +2908,7 @@ function uiOnlineEntryBegin(generation,room){
 }
 async function oPost(obj){
   const generation=ONL.generation,room=ONL.room,url=oBase()+'?send=1&pid='+encodeURIComponent(ONL.pid)+(ONL.room?.startsWith('f6-')?'&tableProtocol=385':'')+oWatchQuery();
-  const uid=FB.user?.uid,current=()=>oSessionCurrent(generation,room)&&FB.user?.uid===uid;
+  const uid=FB.user?.uid,joinEpoch=ONL.joinEpoch,current=()=>oSessionCurrent(generation,room)&&FB.user?.uid===uid&&ONL.joinEpoch===joinEpoch;
   try{
     if(obj.type==='sessionReturn'||obj.type==='sessionAway')obj=await withIdToken(obj);
     const headers=await oMatchHeaders();if(!current())return;
@@ -2853,13 +2917,15 @@ async function oPost(obj){
     if(d?.type&&d.type!=='error'){if(d.type==='state')oHandle(d);else uiConnectionMessage(d);}
     if(d&&d.type==='error'){
       if(obj.type==='join'&&uiOnlineEntryFailed(d.error))return;
-      if(uiSpectatorJoinPending()){uiFinishSpectatorJoin(d.error);return;}
+      if(uiSpectatorJoinPending()){uiFinishSpectatorJoin(d.error);return {ok:false,retry:false,error:d.error};}
+      if(obj.type==='join')return {ok:false,retry:false,error:d.error};
       if(obj.type==='sessionReturn')window.UISessionReturn?.disconnected('majabeed');
       if(obj.type==='start')uiSessionStartFailed();
       if(ONL.lastSent==='settle'||ONL.lastSent==='timeout'){ONL.lastSent=null;return}
       oToast(d.error);
     }
-  }catch(e){if(current()&&obj.type==='join'&&uiSpectatorJoinPending())uiFinishSpectatorJoin('تعذّر تأكيد المقعد؛ يمكنك متابعة المشاهدة والمحاولة مجددًا');if(current()&&obj.type==='sessionReturn')window.UISessionReturn?.disconnected('majabeed');if(current()&&obj.type==='start'){uiSessionStartFailed();oToast('تعذّر تأكيد البدء؛ تحقق من الاتصال');}}
+    return {ok:(d?.ok===true||!!d?.type)&&d.type!=='error'&&d.type!=='sessionReturnRejected',retry:d?.type==='sessionReturnRejected'?false:undefined};
+  }catch(e){if(current()&&obj.type==='join'&&uiSpectatorJoinPending())uiFinishSpectatorJoin('تعذّر تأكيد المقعد؛ يمكنك متابعة المشاهدة والمحاولة مجددًا');if(current()&&obj.type==='sessionReturn')window.UISessionReturn?.disconnected('majabeed');if(current()&&obj.type==='start'){uiSessionStartFailed();oToast('تعذّر تأكيد البدء؛ تحقق من الاتصال');}return {ok:false,retry:!/^table-http-(401|403)$/.test(e?.message||'')};}
 }
 async function oPollLoop(){
   const my=++ONL.pollGen,generation=ONL.generation,room=ONL.room;
@@ -2893,22 +2959,25 @@ async function oPollLoop(){
 async function switchToPoll(){
   if(!ONL.active||ONL.transport==='poll')return;
   const generation=ONL.generation,room=ONL.room;
-  const uid=FB.user?.uid,current=()=>oSessionCurrent(generation,room)&&FB.user?.uid===uid;
+  const uid=FB.user?.uid,joinEpoch=ONL.joinEpoch=(ONL.joinEpoch||0)+1,current=()=>oSessionCurrent(generation,room)&&FB.user?.uid===uid&&ONL.joinEpoch===joinEpoch;
   ONL.transport='poll';
+  ONL.stateReady=false;oArmJoinDeadline(current);
   if(ONL.ws){ONL.ws.onopen=null;ONL.ws.onmessage=null;ONL.ws.onclose=null;try{ONL.ws.close();}catch(_){}ONL.ws=null;}
   const join=await withIdToken({type:'join',rankedProtocol:1,features:{sessionReturn:1,connectionQuality:1},sessionToken:ONL.sessionToken,sessionResume:window.UISessionReturn?.resumeFields('majabeed',ONL.sessionToken,ONL.sessionMatch),tableProtocol:ONL.room?.startsWith('f6-')?385:undefined,playerId:ONL.pid,name:(($('#lobbyName')&&$('#lobbyName').value)||$('#nameIn').value||localStorage.getItem('wb-name')||'').trim(),avatar:myAvatar(),tier:ONL.pendingTier||undefined,mode:ONL.pendingTier?(ONL.pendingMode||'solo'):undefined,spectate:ONL.spectateOnly||undefined,friendlyEconomyVersion:ONL.friendlyEconomyVersion||undefined,friendlyParticipationId:ONL.friendlyParticipationId||undefined});
   if(!current()||ONL.transport!=='poll')return;
-  if(FB.user&&!join.idToken){uiOnlineEntryFailed('تعذّر تأكيد تسجيل الدخول. تحقق من الاتصال ثم أعد المحاولة.');return;}
-  await oPost(join);
+  if(FB.user&&!join.idToken){oReconnectJoinFailed('تعذّر تأكيد تسجيل الدخول. تحقق من الاتصال ثم أعد المحاولة.',join.authRetryable!==false);return;}
+  const joined=await oPost(join);
   if(!current()||ONL.transport!=='poll')return;
+  if(!joined?.ok){oReconnectJoinFailed(joined?.error,joined?.retry!==false);return;}
   while(ONL.queue.length)oPost(ONL.queue.shift());
   oPollLoop();
 }
 function oAction(a){
-  if(['eat','steal','throw','bid','pass'].includes(a.t)&&(ONL.paymentPending||!uiOnlineCanPlay()))return;
+  if(['eat','steal','throw','bid','pass'].includes(a.t)&&(ONL.stateReady===false||ONL.paymentPending||!uiOnlineCanPlay()))return;
   ONL.lastSent=a.t;oSend({type:'action',action:a});
 }
 function enterOnline({restore=false,createSix=false}={}){
+  if(window.MajabeedAdSafety?.beforeEntry()===false)return false;
   ac();
   // ملاحظة: تصفير pendingTier لا يتم هنا — هذي الدالة مشتركة ويستدعيها مسار البحث عن مباراة نفسه بعد ضبط الطبقة مباشرة.
   // التصفير يتم عند نقاط الدخول التي تبدأ حرة فعلاً (إنشاء مجموعة، رابط غرفة، دعوة).
@@ -3074,7 +3143,7 @@ function uiSessionReturnConfigure(){
       }
     },
     suspend:()=>{ONL.sel=null;ONL.queue=[];oDisconnectTransport();clearInterval(ONL.iv);ONL.iv=null;clearInterval(ONL.hbIv);ONL.hbIv=null;document.getElementById('uiSessionFeeToast')?.remove();},
-    reconnect:()=>{if(document.hidden||!ONL.active)return;if(ONL.transport==='poll'){if(!ONL._returnPollStarting&&!ONL.stateReady){ONL._returnPollStarting=true;ONL.transport='ws';switchToPoll().finally(()=>{ONL._returnPollStarting=false;});}return;}if(!ONL.ws||ONL.ws.readyState>1)oConnect();},
+    reconnect:()=>{if(document.hidden||!ONL.active)return;if(!ONL.stateReady&&ONL.reconnectAttempts&&!ONL.reconnectTimer&&!ONL.joinTimer){ONL.reconnectAttempts=0;ONL.reconnectUntil=0;}if(ONL.transport==='poll'){if(!ONL._returnPollStarting&&!ONL.stateReady){ONL._returnPollStarting=true;ONL.transport='ws';switchToPoll().finally(()=>{ONL._returnPollStarting=false;});}return;}if(!ONL.ws||ONL.ws.readyState>1)oConnect();},
     sendReturn:message=>{if(!ONL.stateReady)return false;if(ONL.transport==='poll'){oPost(message);return true;}if(ONL.ws?.readyState!==1)return false;ONL.ws.send(JSON.stringify(message));return true;},
     resumed:()=>{ONL.sel=null;ONL.queue=[];if(!ONL.iv)ONL.iv=setInterval(oTick,180);if(!ONL.hbIv)ONL.hbIv=setInterval(()=>{if(FB.ready&&FB.user&&ONL.active&&!document.hidden)FB.db.collection('players').doc(FB.user.uid).set({activeSince:Date.now()},{merge:true}).catch(()=>{});},60000);show('onl');renderOnl();},
     expire:reason=>{leaveOnline();toast2(reason);},
@@ -3131,6 +3200,7 @@ function oHandle(msg){
   if(msg.type!=='state'){uiConnectionMessage(msg);return;}
   if(ONL.status===null&&['lobby','waiting'].includes(msg.status)&&(!Array.isArray(msg.seats)||!msg.seats.length)){uiOnlineEntryFailed('هذه الطاولة لم تعد متاحة. ارجع إلى الجلسات واختر طاولة أخرى.');return;}
   uiOnlineEntryClear();
+  oReconnectClear();ONL.wsFails=0;
   window.MajabeedFinale?.receive(msg);
   const firstConnection=!ONL.stateReady;ONL.stateReady=true;if(firstConnection&&ONL.transport==='ws')uiConnectionStart();
   ONL.sessionMatch=msg.sessionMatch||ONL.sessionMatch;ONL.connections=msg.connections||ONL.connections||{};
@@ -3176,17 +3246,19 @@ function oConnect(){
   const url=onSrvHost()?((location.protocol==='https:'?'wss://':'ws://')+location.host+location.pathname.replace(/\/+$/,'')+'/ws/'+room):('wss://'+GAME_SRV+'/ws/'+room);
   ONL.stateReady=false;clearInterval(ONL.connectionTimer);const ws=new WebSocket(url);ONL.ws=ws;
   const current=()=>oSessionCurrent(generation,room)&&ONL.transport==='ws'&&ONL.ws===ws&&FB.user?.uid===uid;
+  oArmJoinDeadline(current);
   ws.onopen=async()=>{
     if(!current())return;
-    $('#connDot').classList.remove('off');ONL.wsFails=0;
+    $('#connDot').classList.remove('off');
     const joinMsg=await withIdToken({type:'join',rankedProtocol:1,features:{sessionReturn:1,connectionQuality:1},sessionToken:ONL.sessionToken,sessionResume:window.UISessionReturn?.resumeFields('majabeed',ONL.sessionToken,ONL.sessionMatch),tableProtocol:ONL.room?.startsWith('f6-')?385:undefined,playerId:ONL.pid,name:(($('#lobbyName')&&$('#lobbyName').value)||$('#nameIn').value||localStorage.getItem('wb-name')||'').trim(),avatar:myAvatar(),tier:ONL.pendingTier||undefined,mode:ONL.pendingTier?(ONL.pendingMode||'solo'):undefined,spectate:ONL.spectateOnly||undefined,friendlyEconomyVersion:ONL.friendlyEconomyVersion||undefined,friendlyParticipationId:ONL.friendlyParticipationId||undefined});
     if(!current()||ws.readyState!==1)return;
-    if(FB.user&&!joinMsg.idToken){uiOnlineEntryFailed('تعذّر تأكيد تسجيل الدخول. تحقق من الاتصال ثم أعد المحاولة.');return;}
+    if(FB.user&&!joinMsg.idToken){oReconnectJoinFailed('تعذّر تأكيد تسجيل الدخول. تحقق من الاتصال ثم أعد المحاولة.',joinMsg.authRetryable!==false);return;}
     ws.send(JSON.stringify(joinMsg));if(!joinMsg.spectate&&ONL.friendlyJoinIntent)ONL.friendlyJoinIntent.sent=true;
     while(ONL.queue.length&&current())ws.send(JSON.stringify(ONL.queue.shift()));
   };
   ws.onclose=()=>{
     if(!current())return;
+    if(ONL.status!==null){uiFinishSpectatorJoin('انقطع الاتصال؛ نعيد المشاهدة ويمكنك المحاولة مجددًا',{cancel:false});uiSessionStartFailed();oReconnectJoinFailed();return;}
     uiFinishSpectatorJoin('انقطع الاتصال؛ نعيد المشاهدة ويمكنك المحاولة مجددًا',{cancel:false});
     ONL.stateReady=false;clearInterval(ONL.connectionTimer);window.UISessionReturn?.disconnected('majabeed');window.MajabeedFriendlyVoice?.disconnect('majabeed');if(ONL.you){ONL.connections={...ONL.connections,[ONL.you]:{quality:'offline',updatedAt:Date.now()+(ONL.offset||0)}};uiConnectionPaint();}uiSessionStartFailed();$('#connDot').classList.add('off');ONL.wsFails++;
     if(ONL.wsFails>=2&&ONL.status===null){switchToPoll();return;}
@@ -3200,6 +3272,7 @@ function oConnect(){
     if(uiConnectionMessage(msg))return;
     if(msg.type==='error'){
       if(uiOnlineEntryFailed(msg.error))return;
+      if(!ONL.stateReady){oReconnectJoinFailed(msg.error,false);return;}
       if(uiSpectatorJoinPending()){uiFinishSpectatorJoin(msg.error);return;}
       window.UISessionReturn?.disconnected('majabeed');uiSessionStartFailed();
       if(ONL.lastSent==='settle'||ONL.lastSent==='timeout'){ONL.lastSent=null;return;}
@@ -3560,6 +3633,7 @@ function attachHandCardDrag(el,c,isMyTurnNow,opts){
   el.addEventListener('pointercancel',finish);
 }
 function renderOnl(){
+  window.MajabeedScreenAwake?.sync();
   window.MajabeedSessionTheme?.syncMajabeed(ONL);
   window.MajabeedSessionChat?.syncMajabeed(ONL);window.MajabeedFriendlyVoice?.syncMajabeed(ONL);
   window.MajabeedSessionTheme?.applyMajabeed(ONL);
@@ -3933,6 +4007,10 @@ function uiSessionStartReset(){
   UI_SESSION_START={room:ONL.room||null,pending:false,awaitingDebit:false,requested:false,seen:null};
   uiSessionClearDebit();
 }
+function uiFriendlyLobbyFeeText(lb,policy){
+  const paid=lb?.creationFee?.paid===true;
+  return '<b>رسوم الجلسة مرة واحدة</b><br>المنشئ <bdi>'+toH(policy.creatorFee)+'</bdi> ذهب وتشمل مقعده'+(paid?' · رسوم الإنشاء مدفوعة':'')+'<br>دخول كل لاعب آخر <bdi>'+toH(policy.entryFee)+'</bdi> ذهب عند أول مشاركة، مع إعفاء مشتركي VIP المؤهلين.<br><small>'+(paid?'':'تُخصم رسوم الإنشاء عند بدء الجلسة. ')+'لكل فائز <bdi>'+toH(policy.winGold)+'</bdi> ذهب في كل جولة · بلا نقاط تنافسية</small>';
+}
 function uiSessionFeeModel(lb){
   if(!ONL.room||ONL.room.startsWith('pub-')||ONL.cup||ONL.league||ONL.tournament||lb?.tier?.fee)return null;
   const fee=lb?.creationFee;
@@ -4044,7 +4122,7 @@ function renderLobby(){
   const friendlyPolicy=!ONL.cup&&!ONL.league&&!ONL.tournament&&!lb.tier?.fee&&uiFriendlyEconomy(lb.friendlyEconomy||ONL.friendlyEconomy);
   if(friendlyPolicy){
     if(!economy){economy=document.createElement('div');economy.id='uiFriendlyLobbyEconomy';economy.style.cssText='padding:12px 14px;margin:10px 0;border:1px solid #d5ba7455;border-radius:16px;background:#082c24;color:#f7e7ba;font-size:12px;line-height:1.9;text-align:center';const start=document.getElementById('lobbyStart');start.parentNode.insertBefore(economy,start);}
-    economy.innerHTML='<b>رسوم الجلسة مرة واحدة</b><br>المنشئ <bdi>'+toH(friendlyPolicy.creatorFee)+'</bdi> ذهب وتشمل مقعده · كل لاعب آخر <bdi>'+toH(friendlyPolicy.entryFee)+'</bdi> ذهب<br><small>تُخصم عند أول مشاركة. لكل فائز <bdi>'+toH(friendlyPolicy.winGold)+'</bdi> ذهب في كل جولة · بلا نقاط تنافسية</small>';economy.hidden=false;
+    economy.innerHTML=uiFriendlyLobbyFeeText(lb,friendlyPolicy);economy.hidden=false;
   }else if(economy)economy.hidden=true;
   // أزرار الوضع
   for(const b of document.querySelectorAll('#lobbyMode .lmBtn')){
@@ -4100,6 +4178,7 @@ $('#lobbyName').addEventListener('input',()=>{
   $('#lobbyName')._t=setTimeout(()=>{
     const nm=$('#lobbyName').value.trim();
     if(!nm)return;
+    if(!window.MajabeedContentFilter.allow(nm,'name',toast2))return;
     localStorage.setItem('wb-name',nm);
     try{fbSaveProfile()}catch(e){} // FIX — تغيير الاسم من اللوبي كان يوصل السيرفر (الطاولة) بس ما يوصل السحابة، فيرجع القديم بعد إعادة الدخول
     oSend({type:'join',rankedProtocol:1,features:{sessionReturn:1,connectionQuality:1},sessionToken:ONL.sessionToken,sessionResume:window.UISessionReturn?.resumeFields('majabeed',ONL.sessionToken,ONL.sessionMatch),tableProtocol:ONL.room?.startsWith('f6-')?385:undefined,playerId:ONL.pid,name:nm,avatar:myAvatar(),friendlyEconomyVersion:ONL.friendlyEconomyVersion||undefined,friendlyParticipationId:ONL.friendlyParticipationId||undefined});
@@ -4799,7 +4878,7 @@ function refreshRankCard(){
   }else{
     $('#rcFill').style.width='100%';
     $('#rcFill').style.background=cur.color;
-    $('#rcRemain').textContent='وصلت لأعلى مستوى 🏆';
+    $('#rcRemain').textContent='وصلت لأعلى رتبة 🏆';
     $('#rcNextName').textContent='';
   }
 }
@@ -5030,7 +5109,7 @@ function showRewardChoice(){
         </div>
       </div></div>`;
     $('#frame').appendChild(sc);
-    $('#rewardX').onclick=()=>sc.classList.add('hidden');
+    $('#rewardX').onclick=()=>{window.MajabeedRewardedAd?.cancelPending();sc.classList.add('hidden');};
     $('#rwDaily').onclick=()=>{ sc.classList.add('hidden'); if(!showDailyReward())toast2('استلمتها اليوم — رجعلك بكرة 🎁'); };
     $('#rwAd').onclick=watchAdForGold;
   }
@@ -5819,6 +5898,7 @@ async function doSignupFull(){
   const pw=$('#suPass').value||'';
   const pw2=$('#suPass2').value||'';
   if(!name){toast2('اكتب اسمك المعروض');return}
+  if(!window.MajabeedContentFilter.allow(name,'name',toast2)||!window.MajabeedContentFilter.allow(user,'name',toast2))return;
   if(!validUsername(user)){toast2('اسم المستخدم: ٣-١٦ حرفاً إنجليزياً/أرقاماً/_ فقط');return}
   if(!em||!em.includes('@')){toast2('أدخل بريداً صحيحاً');return}
   if(pw.length<6){toast2('كلمة المرور ٦ أحرف على الأقل');return}
@@ -5853,6 +5933,7 @@ async function doGoogleComplete(){
   const name=($('#gcName').value||'').trim();
   const user=($('#gcUser').value||'').trim();
   if(!name){toast2('اكتب اسمك المعروض');return}
+  if(!window.MajabeedContentFilter.allow(name,'name',toast2)||!window.MajabeedContentFilter.allow(user,'name',toast2))return;
   if(!validUsername(user)){toast2('اسم المستخدم: ٣-١٦ حرفاً إنجليزياً/أرقاماً/_ فقط');return}
   toast2('جارٍ الحفظ...');
   if(!(await ensureFB())){toast2('تعذّر الاتصال');return}
@@ -6240,7 +6321,7 @@ function renderAchievements(player){
 $('#pfBack').onclick=()=>{ viewedProfile=null; const target=document.getElementById(uiProfileReturn); if(target&&uiProfileReturn!=='profile')show(uiProfileReturn);else goHome(); };
 $('#pfEdit').onclick=()=>{
   const nm=prompt('اسمك الجديد على الطاولة:',localStorage.getItem('wb-name')||'');
-  if(nm&&nm.trim()){localStorage.setItem('wb-name',nm.trim().slice(0,14));try{fbSaveProfile()}catch(e){}openProfile();refreshHome()} // FIX — كان يُحفظ محلياً فقط بلا fbSaveProfile إطلاقاً، فالسحابة تبقى بالاسم القديم وتُرجعه عند التحميل التالي (سبب "غيّرت الاسم وترجع نفس ما هي")
+  if(nm&&nm.trim()){if(!window.MajabeedContentFilter.allow(nm,'name',toast2))return;localStorage.setItem('wb-name',nm.trim().slice(0,14));try{fbSaveProfile()}catch(e){}openProfile();refreshHome()} // FIX — كان يُحفظ محلياً فقط بلا fbSaveProfile إطلاقاً، فالسحابة تبقى بالاسم القديم وتُرجعه عند التحميل التالي (سبب "غيّرت الاسم وترجع نفس ما هي")
 };
 $('#pfOut').onclick=async()=>{
   if(!confirm('تسجيل الخروج؟ بياناتك محفوظة في حسابك وتُستعاد عند العودة'))return;
@@ -6608,7 +6689,7 @@ function setChatTab(mode){
         try{
           const id=WBMsg.dmId(me,f.uid);
           const doc=await uiCostDoc('dms/'+id);
-          if(doc.exists){const d=doc.data(); last=d.last||last; lastTs=d.lastTs||0; lastFrom=d.lastFrom||null;}
+          if(doc.exists){const d=doc.data(); last=window.MajabeedContentFilter.preview(d.last||last,60); lastTs=d.lastTs||0; lastFrom=d.lastFrom||null;}
         }catch(e){}
         try{
           const pdoc=await uiCostDoc('players/'+f.uid);
@@ -6713,6 +6794,7 @@ $('#chBack').onclick=()=>{
 document.querySelectorAll('.chTab').forEach(t=>t.onclick=()=>setChatTab(t.dataset.ct));
 function sendChatMsg(){
   const v=$('#chMsg').value.trim(); if(!v)return;
+  if(!window.MajabeedContentFilter.allow(v,'chat',toast2))return;
   $('#chMsg').value='';
   if(CHAT_MODE==='public'){ WBMsg.sendPublic(v); }
   else if(CHAT_MODE==='dm'&&CHAT_DM){ WBMsg.sendPrivate(CHAT_DM.uid, CHAT_DM.name, v); }

@@ -1,0 +1,17 @@
+/* v371 — scoped to the new admin tab; no game/app styles changed. */
+#panel-weekly-prizes [hidden]{display:none!important}
+#panel-weekly-prizes .wpWarning{background:#fff4dc;border-inline-start:3px solid #b28a3f;border-radius:8px;padding:12px 15px;line-height:1.9;color:#785321;font-size:13px}
+#panel-weekly-prizes .wpWarning:empty{display:none}
+#panel-weekly-prizes .wpTableWrap{overflow-x:auto;margin:16px 0}
+#panel-weekly-prizes table{width:100%;border-collapse:collapse;text-align:right;font-size:13px}
+#panel-weekly-prizes th,#panel-weekly-prizes td{padding:11px 12px;border-bottom:1px solid #dfe7da;overflow-wrap:anywhere}
+#panel-weekly-prizes th{background:#edf2e7;color:#456d47;white-space:nowrap}
+#panel-weekly-prizes td small{display:block;direction:ltr;text-align:right;color:#718470;font-size:10px}
+#panel-weekly-prizes #wpChecks{display:grid;gap:15px;margin:18px 0;padding:16px;background:#fff8e8;border:1px solid #e7d7ac;border-radius:10px}
+#panel-weekly-prizes #wpChecks label{display:flex;align-items:flex-start;gap:9px;line-height:1.9;font-size:13px}
+#panel-weekly-prizes input[type=checkbox]{width:20px;height:20px;flex:none;margin-top:3px;accent-color:#29573c}
+#panel-weekly-prizes button{min-height:44px;font:inherit;font-size:13px}
+#panel-weekly-prizes button:disabled{opacity:.5;cursor:wait}
+#panel-weekly-prizes button:focus-visible{outline:3px solid #bba062;outline-offset:3px}
+#panel-weekly-prizes #wpProgress{font-weight:800;color:#29573c}
+@media(max-width:760px){#panel-weekly-prizes .adButtonRow>button{width:100%}#panel-weekly-prizes table{font-size:12px}#panel-weekly-prizes td,#panel-weekly-prizes th{padding:9px 6px}}

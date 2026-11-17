@@ -3,6 +3,71 @@
  */
 (function (root) {
   'use strict';
+  let presentation = null, rewardController = null;
+  const pendingInterstitials = new Set();
+  const claimPresentation = owner => { if (presentation) return false; presentation = owner; return true; };
+  const releasePresentation = owner => { if (presentation === owner) presentation = null; };
+  // Loading can be cancelled. A dispatched native presentation must finish first.
+  root.MajabeedAdSafety = {
+    beforeEntry() { rewardController?.cancelPending(); for (const cancel of [...pendingInterstitials]) cancel(); return presentation === null; },
+    get presenting() { return presentation !== null; }
+  };
+  root.MajabeedRewarded = {
+    create({getPlugin, adId, loadTimeoutMs = 8000}) {
+      let flight = null, nativeLoading = false;
+      function cancelPending() { if (flight && !flight.presenting) flight.finish(false); }
+      function show({isCurrent = () => false} = {}) {
+        // An unfinished native load has no request ID in AdMob's global events.
+        // Do not overlap a retry with an abandoned load from the previous request.
+        if (flight || nativeLoading || presentation) return Promise.resolve(false);
+        const valid = () => { try { return isCurrent() === true; } catch (_) { return false; } };
+        const plugin = getPlugin(); if (!plugin || !valid()) return Promise.resolve(false);
+        const owner = {}, handles = []; let ended = false, rewarded = false, timer, observer;
+        let resolve; const promise = new Promise(r => { resolve = r; });
+        const record = {presenting:false, finish}; flight = record;
+        const remove = handle => { try { Promise.resolve(handle.remove()).catch(() => {}); } catch (_) {} };
+        function finish(result) {
+          if (ended) return; ended = true; clearTimeout(timer); observer?.disconnect();
+          root.document?.removeEventListener('visibilitychange', validate);
+          root.document?.removeEventListener('pause', cancelPending);
+          root.removeEventListener?.('pagehide', cancelPending);
+          handles.splice(0).forEach(remove); releasePresentation(owner);
+          if (flight === record) flight = null; resolve(result === true);
+        }
+        function validate() { if (!record.presenting && !valid()) finish(false); }
+        async function listen(event, callback) {
+          const handle = await plugin.addListener(event, callback);
+          if (ended) { remove(handle); return false; } handles.push(handle); return true;
+        }
+        timer = setTimeout(() => finish(false), loadTimeoutMs);
+        root.document?.addEventListener('visibilitychange', validate);
+        root.document?.addEventListener('pause', cancelPending);
+        root.addEventListener?.('pagehide', cancelPending);
+        if (root.MutationObserver && root.document?.body) {
+          observer = new root.MutationObserver(validate);
+          observer.observe(root.document.body, {subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden']});
+        }
+        (async () => {
+          if (!await listen('onRewardedVideoAdReward', () => { if (record.presenting) rewarded = true; })) return;
+          if (!await listen('onRewardedVideoAdDismissed', () => finish(rewarded))) return;
+          if (!await listen('onRewardedVideoAdFailedToLoad', () => { if (!record.presenting) finish(false); })) return;
+          if (!await listen('onRewardedVideoAdFailedToShow', () => finish(rewarded))) return;
+          if (ended || !valid()) { finish(false); return; }
+          nativeLoading = true;
+          try { await plugin.prepareRewardVideoAd({adId}); } finally { nativeLoading = false; }
+          if (ended) return;
+          if (!valid() || !claimPresentation(owner)) { finish(false); return; }
+          record.presenting = true; clearTimeout(timer);
+          // No timeout after native show dispatch: it could otherwise appear over a new match.
+          await plugin.showRewardVideoAd();
+          // Resolving show() is neither dismissal nor proof of a reward.
+        })().catch(() => finish(rewarded));
+        return promise;
+      }
+      const controller = {show, cancelPending, get busy() { return !!flight; }, get presenting() { return !!flight?.presenting; }};
+      rewardController = controller; return controller;
+    }
+  };
   function nativePlatform() {
     const cap = root.Capacitor;
     return !!(cap && typeof cap.isNativePlatform === 'function' && cap.isNativePlatform());
@@ -16,56 +81,59 @@
   }
   root.MajabeedInterstitial = {
     create({ getPlugin, adId, isExempt = () => false, isNative = nativePlatform, loadTimeoutMs = 8000 }) {
-      let flight = null;
-      return function showInterstitial() {
-        if (flight) return flight;
-        if (!isNative()) return Promise.resolve(false);
-        const plugin = getPlugin();
-        if (!plugin) return Promise.resolve(false);
-        flight = (async () => {
+      let flight = null, nativeLoading = false;
+      return function showInterstitial({isCurrent = () => true} = {}) {
+        if (flight) return flight.promise;
+        if (nativeLoading || presentation || !isNative()) return Promise.resolve(false);
+        const valid = () => { try { return !root.document?.hidden && isCurrent() === true; } catch (_) { return false; } };
+        const plugin = getPlugin(); if (!plugin || !valid()) return Promise.resolve(false);
+        const owner = {}, handles = []; let ended = false, shown = false, timer, observer;
+        let resolve; const promise = new Promise(r => { resolve = r; });
+        const record = {promise, presenting:false}; flight = record;
+        const remove = handle => { try { Promise.resolve(handle.remove()).catch(() => {}); } catch (_) {} };
+        function finish(result) {
+          if (ended) return; ended = true; clearTimeout(timer); observer?.disconnect();
+          root.document?.removeEventListener('visibilitychange', validate);
+          root.document?.removeEventListener('pause', cancelPending);
+          root.removeEventListener?.('pagehide', cancelPending);
+          pendingInterstitials.delete(cancelPending); handles.splice(0).forEach(remove); releasePresentation(owner);
+          if (flight === record) flight = null; resolve(result === true);
+        }
+        function cancelPending() { if (!record.presenting) finish(false); }
+        function validate() { if (!record.presenting && !valid()) finish(false); }
+        async function listen(event, callback) {
+          const handle = await plugin.addListener(event, callback);
+          if (ended) { remove(handle); return false; } handles.push(handle); return true;
+        }
+        pendingInterstitials.add(cancelPending);
+        timer = setTimeout(() => finish(false), loadTimeoutMs);
+        root.document?.addEventListener('visibilitychange', validate);
+        root.document?.addEventListener('pause', cancelPending);
+        root.addEventListener?.('pagehide', cancelPending);
+        if (root.MutationObserver && root.document?.body) {
+          observer = new root.MutationObserver(validate);
+          observer.observe(root.document.body, {subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden']});
+        }
+        (async () => {
           // An unknown entitlement must never turn into an ad for a paid member.
-          try { if (await bounded(isExempt, 2500)) return false; }
-          catch (_) { return false; }
-          return new Promise(resolve => {
-            let ended = false, shown = false;
-            const handles = [];
-            let timer = setTimeout(() => finish(false), loadTimeoutMs);
-            function remove(handle) {
-              try { Promise.resolve(handle.remove()).catch(() => {}); } catch (_) {}
-            }
-            function finish(result) {
-              if (ended) return;
-              ended = true;
-              clearTimeout(timer);
-              handles.splice(0).forEach(remove);
-              resolve(result);
-            }
-            async function listen(event, callback) {
-              const handle = await plugin.addListener(event, callback);
-              if (ended) { remove(handle); return false; }
-              handles.push(handle);
-              return true;
-            }
-            (async () => {
-              if (!await listen('interstitialAdDismissed', () => finish(shown))) return;
-              if (!await listen('interstitialAdFailedToLoad', () => finish(false))) return;
-              if (!await listen('interstitialAdFailedToShow', () => finish(false))) return;
-              if (!await listen('interstitialAdShowed', () => { shown = true; clearTimeout(timer); })) return;
-              await plugin.prepareInterstitial({ adId });
-              // A late load after the deadline must never show over the sessions list.
-              if (ended) return;
-              clearTimeout(timer);
-              // Once presentation is dispatched the native operation cannot be
-              // cancelled here. A timeout would admit the player to a table
-              // while this same ad can still appear later over the match.
-              // Only native dismissal/failure may release the entry gate now.
-              await plugin.showInterstitial();
-              // Native show() is not dismissal. Keep navigation waiting for Dismissed.
-              if (!ended) { shown = true; clearTimeout(timer); }
-            })().catch(() => finish(false));
-          });
-        })().finally(() => { flight = null; });
-        return flight;
+          if (await bounded(isExempt, 2500)) { finish(false); return; }
+          if (ended) return;
+          if (!valid() || presentation) { finish(false); return; }
+          if (!await listen('interstitialAdDismissed', () => finish(shown))) return;
+          if (!await listen('interstitialAdFailedToLoad', () => { if (!record.presenting) finish(false); })) return;
+          if (!await listen('interstitialAdFailedToShow', () => finish(false))) return;
+          if (!await listen('interstitialAdShowed', () => { if (record.presenting) shown = true; })) return;
+          if (ended || !valid()) { finish(false); return; }
+          nativeLoading = true;
+          try { await plugin.prepareInterstitial({adId}); } finally { nativeLoading = false; }
+          if (ended) return;
+          if (!valid() || !claimPresentation(owner)) { finish(false); return; }
+          record.presenting = true; clearTimeout(timer);
+          // Native show cannot be cancelled. Only dismissal/failure releases entry now.
+          await plugin.showInterstitial();
+          if (!ended) shown = true;
+        })().catch(() => finish(false));
+        return promise;
       };
     }
   };

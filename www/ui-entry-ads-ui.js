@@ -53,7 +53,7 @@
   exempt:()=>!!root.VipClient?.active?.(),
   chooseEntry,
   openStore:()=>{goHome();openShop('gold');},
-  showAd:()=>root.showInterstitialAd?.(),
+   showAd:options=>root.showInterstitialAd?.(options),
   onAdUnavailable:()=>{if(typeof toast2==='function')toast2('تعذّر عرض الإعلان. لم يتم بدء اللعب؛ حاول مرة أخرى.');},
   storage:()=>root.localStorage,
   onChange:schedule
